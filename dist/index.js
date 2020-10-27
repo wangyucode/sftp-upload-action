@@ -32895,7 +32895,7 @@ let config = {
 };
 
 let options = {
-  dryRun: core.getInput('dryRun'), // Enable dry-run mode. Default to false
+  dryRun: JSON.parse(core.getInput('dryRun')), // Enable dry-run mode. Default to false
   excludeMode: 'remove', // Behavior for excluded files ('remove' or 'ignore'), Default to 'remove'.
   forceUpload: false // Force uploading all files, Default to false(upload only newer files).
 };
