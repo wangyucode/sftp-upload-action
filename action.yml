@@ -1,0 +1,23 @@
+name: 'SFTP uploader'
+description: 'upload files to server via SFTP'
+inputs:
+  host:
+    required: true
+  port:
+    required: false
+    default: 22
+  username:
+    required: false
+    default: 'root'
+  password:
+    required: true
+  localDir:
+    required: true
+  remoteDir:
+    required: true
+  dryRun:
+    required: false
+    default: false
+runs:
+  using: 'node12'
+  main: 'sftp.js'

@@ -1,0 +1,25 @@
+{
+  "name": "sftp-upload-action",
+  "version": "1.0.0",
+  "description": "sftp upload using sftp-sync-deploy",
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wangyucode/sftp-upload-action.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/wangyucode/sftp-upload-action/issues"
+  },
+  "homepage": "https://github.com/wangyucode/sftp-upload-action#readme",
+  "dependencies": {
+    "@actions/core": "^1.2.6",
+    "@actions/github": "^4.0.0",
+    "sftp-sync-deploy": "^0.7.1"
+  }
+}
