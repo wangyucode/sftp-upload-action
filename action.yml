@@ -20,4 +20,4 @@ inputs:
     default: false
 runs:
   using: 'node12'
-  main: 'sftp.js'
+  main: 'dist/index.js'

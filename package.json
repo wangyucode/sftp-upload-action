@@ -4,6 +4,7 @@
   "description": "sftp upload using sftp-sync-deploy",
   "private": true,
   "scripts": {
+    "build": "ncc build sftp.js --license licenses.txt",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -20,6 +21,7 @@
   "dependencies": {
     "@actions/core": "^1.2.6",
     "@actions/github": "^4.0.0",
+    "@vercel/ncc": "^0.24.1",
     "sftp-sync-deploy": "^0.7.1"
   }
 }
