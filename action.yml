@@ -1,5 +1,6 @@
 name: 'SFTP uploader'
 color: 'green'
+icon: 'upload'
 description: 'upload files to server via SFTP'
 inputs:
   host:
