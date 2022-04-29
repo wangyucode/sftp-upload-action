@@ -20,6 +20,21 @@ inputs:
   dryRun:
     required: false
     default: false
+  privateKey:
+    required: false
+    default: ''
+  passphrase:
+    required: false
+    default: ''
+  agent:
+    required: false
+    default: ''
+  excludeMode:
+    required: false
+    default: 'remove'
+  forceUpload:
+    required: false
+    default: false
 runs:
-  using: 'node12'
+  using: 'node16'
   main: 'dist/index.js'

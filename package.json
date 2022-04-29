@@ -19,9 +19,8 @@
   },
   "homepage": "https://github.com/wangyucode/sftp-upload-action#readme",
   "dependencies": {
-    "@actions/core": "^1.2.6",
-    "@actions/github": "^4.0.0",
-    "@vercel/ncc": "^0.24.1",
+    "@actions/core": "^1.7.0",
+    "@vercel/ncc": "^0.33.4",
     "sftp-sync-deploy": "^0.7.1"
   }
 }
