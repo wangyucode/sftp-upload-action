@@ -11,7 +11,7 @@ it using [sftp-sync-deploy](https://www.npmjs.com/package/sftp-sync-deploy)
   port: 22,                  // Optional, Default to 22.
   username: 'user',          // Required.
   password: 'password',      // Optional.
-  privateKey: '',            // Optional.
+  privateKey: '',            // Optional, your private key(Raw content).
   passphrase: '',            // Optional.
   agent: '',                 // Optional, path to the ssh-agent socket.
   localDir: 'dist',          // Required, Absolute or relative to cwd.
@@ -23,12 +23,26 @@ it using [sftp-sync-deploy](https://www.npmjs.com/package/sftp-sync-deploy)
 
 ## Example usage
 
+### Use password
 ```yml
-
+- name: SFTP uploader
+  uses: wangyucode/sftp-upload-action@v1.2
+  with:
+    host: 'wycode.cn'
+    password: ${{ secrets.password }} 
+    localDir: 'dist'
+    remoteDir: '/data/nginx/www/wycode.cn/'
+    dryRun: true # use dryRun for test
 ```
 
-## useful link
-
-<https://www.npmjs.com/package/sftp-sync-deploy>
-
-<https://github.com/dobbydog/sftp-sync-deploy>
+### Use privateKey
+```yml
+- name: SFTP uploader
+  uses: wangyucode/sftp-upload-action@v1.2
+  with:
+    host: 'wycode.cn'
+    privateKey: ${{ secrets.key }} 
+    localDir: 'dist'
+    remoteDir: '/data/nginx/www/wycode.cn/'
+    dryRun: true # use dryRun for test
+```
