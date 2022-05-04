@@ -1585,9 +1585,12 @@ var __createBinding = (this && this.__createBinding) || (Object.create ? (functi
 var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.deploy = void 0;
-const chalk_1 = __nccwpck_require__(6323);
+const chalk_1 = __importDefault(__nccwpck_require__(8818));
 const sftpSync_1 = __nccwpck_require__(8729);
 function deploy(config, options) {
     const deployer = new sftpSync_1.SftpSync(config, options);
@@ -1630,9 +1633,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.QueuifiedSFTP = void 0;
-const queue_1 = __nccwpck_require__(3795);
+const queue_1 = __importDefault(__nccwpck_require__(3795));
 class QueuifiedSFTP {
     constructor(concurrency) {
         this.started = false;
@@ -1723,6 +1729,29 @@ exports.QueuifiedSFTP = QueuifiedSFTP;
 
 "use strict";
 
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -1735,8 +1764,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SftpSync = void 0;
 const ssh2_1 = __nccwpck_require__(9236);
-const path = __nccwpck_require__(1017);
-const fs = __nccwpck_require__(7147);
+const ssh2_streams_1 = __nccwpck_require__(792);
+const path = __importStar(__nccwpck_require__(1017));
+const fs = __importStar(__nccwpck_require__(7147));
 const util_1 = __nccwpck_require__(9310);
 const queuifiedSftp_1 = __nccwpck_require__(9962);
 const syncTable_1 = __nccwpck_require__(8594);
@@ -1862,13 +1892,13 @@ class SftpSync {
                 }
                 catch (err) {
                     switch (err.code) {
-                        case ssh2_1.SFTP_STATUS_CODE.NO_SUCH_FILE: {
-                            throw new Error(`Remote Error: Cannot upload file ${remotePath}`);
+                        case ssh2_streams_1.SFTPStream.STATUS_CODE.NO_SUCH_FILE: {
+                            throw new Error(`Remote Error: Cannot upload file. No such file ${remotePath}`);
                         }
-                        case ssh2_1.SFTP_STATUS_CODE.PERMISSION_DENIED: {
+                        case ssh2_streams_1.SFTPStream.STATUS_CODE.PERMISSION_DENIED: {
                             throw new Error(`Remote Error: Cannot upload file. Permission denied ${remotePath}`);
                         }
-                        case ssh2_1.SFTP_STATUS_CODE.FAILURE: {
+                        case ssh2_streams_1.SFTPStream.STATUS_CODE.FAILURE: {
                             throw new Error(`Remote Error: Unknown error while uploading file ${remotePath}`);
                         }
                         default: throw err;
@@ -1925,13 +1955,13 @@ class SftpSync {
             }
             catch (err) {
                 switch (err.code) {
-                    case ssh2_1.SFTP_STATUS_CODE.NO_SUCH_FILE: {
+                    case ssh2_streams_1.SFTPStream.STATUS_CODE.NO_SUCH_FILE: {
                         throw new Error(`Remote Error: Cannot create directory ${remotePath}`);
                     }
-                    case ssh2_1.SFTP_STATUS_CODE.PERMISSION_DENIED: {
+                    case ssh2_streams_1.SFTPStream.STATUS_CODE.PERMISSION_DENIED: {
                         throw new Error(`Remote Error: Cannot create directory. Permission denied ${remotePath}`);
                     }
-                    case ssh2_1.SFTP_STATUS_CODE.FAILURE: {
+                    case ssh2_streams_1.SFTPStream.STATUS_CODE.FAILURE: {
                         throw new Error(`Remote Error: Unknown error while creating directory ${remotePath}`);
                     }
                     default: throw err;
@@ -2008,7 +2038,7 @@ class SftpSync {
                         }
                     }
                     catch (err) {
-                        if (err.code === ssh2_1.SFTP_STATUS_CODE.PERMISSION_DENIED) {
+                        if (err.code === ssh2_streams_1.SFTPStream.STATUS_CODE.PERMISSION_DENIED) {
                             table.set(file.filename, { remoteStat: 'error', remoteTimestamp: null });
                         }
                         return;
@@ -2060,15 +2090,41 @@ exports.SftpSync = SftpSync;
 /***/ }),
 
 /***/ 8594:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
 
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SyncTable = exports.SyncTableEntry = void 0;
-const minimatch = __nccwpck_require__(6802);
-const chalk_1 = __nccwpck_require__(6323);
-const path = __nccwpck_require__(1017);
+const minimatch_1 = __importDefault(__nccwpck_require__(6802));
+const chalk_1 = __importDefault(__nccwpck_require__(8818));
+const path = __importStar(__nccwpck_require__(1017));
 class SyncTableEntry {
     constructor(table, name) {
         this.table = table;
@@ -2193,7 +2249,7 @@ class SyncTableEntry {
         if (this.localStat === 'dir') {
             pathForMatch += path.posix.sep;
         }
-        if (patterns.some(pattern => minimatch(pathForMatch, pattern))) {
+        if (patterns.some(pattern => (0, minimatch_1.default)(pathForMatch, pattern))) {
             this.localStat = 'excluded';
         }
     }
@@ -7049,7 +7105,7 @@ const {
   KexInit,
   kexinit,
   onKEXPayload,
-} = __nccwpck_require__(8510);
+} = __nccwpck_require__(7469);
 const {
   parseKey,
 } = __nccwpck_require__(456);
@@ -14973,7 +15029,7 @@ else {}
 
 const MESSAGE_HANDLERS = new Array(256);
 [
-  (__nccwpck_require__(8510).HANDLERS),
+  (__nccwpck_require__(7469).HANDLERS),
   __nccwpck_require__(7031),
 ].forEach((handlers) => {
   // eslint-disable-next-line prefer-const
@@ -16211,7 +16267,7 @@ module.exports = {
 
 /***/ }),
 
-/***/ 8510:
+/***/ 7469:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
@@ -20322,7 +20378,7 @@ const {
   SUPPORTED_SERVER_HOST_KEY,
 } = __nccwpck_require__(8413);
 const { init: cryptoInit } = __nccwpck_require__(2452);
-const { KexInit } = __nccwpck_require__(8510);
+const { KexInit } = __nccwpck_require__(7469);
 const { parseKey } = __nccwpck_require__(456);
 const Protocol = __nccwpck_require__(5598);
 const { SFTP } = __nccwpck_require__(2540);
@@ -22010,6 +22066,178 @@ module.exports = {
 
 /***/ }),
 
+/***/ 2068:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+"use strict";
+/* module decorator */ module = __nccwpck_require__.nmd(module);
+
+
+const wrapAnsi16 = (fn, offset) => (...args) => {
+	const code = fn(...args);
+	return `\u001B[${code + offset}m`;
+};
+
+const wrapAnsi256 = (fn, offset) => (...args) => {
+	const code = fn(...args);
+	return `\u001B[${38 + offset};5;${code}m`;
+};
+
+const wrapAnsi16m = (fn, offset) => (...args) => {
+	const rgb = fn(...args);
+	return `\u001B[${38 + offset};2;${rgb[0]};${rgb[1]};${rgb[2]}m`;
+};
+
+const ansi2ansi = n => n;
+const rgb2rgb = (r, g, b) => [r, g, b];
+
+const setLazyProperty = (object, property, get) => {
+	Object.defineProperty(object, property, {
+		get: () => {
+			const value = get();
+
+			Object.defineProperty(object, property, {
+				value,
+				enumerable: true,
+				configurable: true
+			});
+
+			return value;
+		},
+		enumerable: true,
+		configurable: true
+	});
+};
+
+/** @type {typeof import('color-convert')} */
+let colorConvert;
+const makeDynamicStyles = (wrap, targetSpace, identity, isBackground) => {
+	if (colorConvert === undefined) {
+		colorConvert = __nccwpck_require__(6931);
+	}
+
+	const offset = isBackground ? 10 : 0;
+	const styles = {};
+
+	for (const [sourceSpace, suite] of Object.entries(colorConvert)) {
+		const name = sourceSpace === 'ansi16' ? 'ansi' : sourceSpace;
+		if (sourceSpace === targetSpace) {
+			styles[name] = wrap(identity, offset);
+		} else if (typeof suite === 'object') {
+			styles[name] = wrap(suite[targetSpace], offset);
+		}
+	}
+
+	return styles;
+};
+
+function assembleStyles() {
+	const codes = new Map();
+	const styles = {
+		modifier: {
+			reset: [0, 0],
+			// 21 isn't widely supported and 22 does the same thing
+			bold: [1, 22],
+			dim: [2, 22],
+			italic: [3, 23],
+			underline: [4, 24],
+			inverse: [7, 27],
+			hidden: [8, 28],
+			strikethrough: [9, 29]
+		},
+		color: {
+			black: [30, 39],
+			red: [31, 39],
+			green: [32, 39],
+			yellow: [33, 39],
+			blue: [34, 39],
+			magenta: [35, 39],
+			cyan: [36, 39],
+			white: [37, 39],
+
+			// Bright color
+			blackBright: [90, 39],
+			redBright: [91, 39],
+			greenBright: [92, 39],
+			yellowBright: [93, 39],
+			blueBright: [94, 39],
+			magentaBright: [95, 39],
+			cyanBright: [96, 39],
+			whiteBright: [97, 39]
+		},
+		bgColor: {
+			bgBlack: [40, 49],
+			bgRed: [41, 49],
+			bgGreen: [42, 49],
+			bgYellow: [43, 49],
+			bgBlue: [44, 49],
+			bgMagenta: [45, 49],
+			bgCyan: [46, 49],
+			bgWhite: [47, 49],
+
+			// Bright color
+			bgBlackBright: [100, 49],
+			bgRedBright: [101, 49],
+			bgGreenBright: [102, 49],
+			bgYellowBright: [103, 49],
+			bgBlueBright: [104, 49],
+			bgMagentaBright: [105, 49],
+			bgCyanBright: [106, 49],
+			bgWhiteBright: [107, 49]
+		}
+	};
+
+	// Alias bright black as gray (and grey)
+	styles.color.gray = styles.color.blackBright;
+	styles.bgColor.bgGray = styles.bgColor.bgBlackBright;
+	styles.color.grey = styles.color.blackBright;
+	styles.bgColor.bgGrey = styles.bgColor.bgBlackBright;
+
+	for (const [groupName, group] of Object.entries(styles)) {
+		for (const [styleName, style] of Object.entries(group)) {
+			styles[styleName] = {
+				open: `\u001B[${style[0]}m`,
+				close: `\u001B[${style[1]}m`
+			};
+
+			group[styleName] = styles[styleName];
+
+			codes.set(style[0], style[1]);
+		}
+
+		Object.defineProperty(styles, groupName, {
+			value: group,
+			enumerable: false
+		});
+	}
+
+	Object.defineProperty(styles, 'codes', {
+		value: codes,
+		enumerable: false
+	});
+
+	styles.color.close = '\u001B[39m';
+	styles.bgColor.close = '\u001B[49m';
+
+	setLazyProperty(styles.color, 'ansi', () => makeDynamicStyles(wrapAnsi16, 'ansi16', ansi2ansi, false));
+	setLazyProperty(styles.color, 'ansi256', () => makeDynamicStyles(wrapAnsi256, 'ansi256', ansi2ansi, false));
+	setLazyProperty(styles.color, 'ansi16m', () => makeDynamicStyles(wrapAnsi16m, 'rgb', rgb2rgb, false));
+	setLazyProperty(styles.bgColor, 'ansi', () => makeDynamicStyles(wrapAnsi16, 'ansi16', ansi2ansi, true));
+	setLazyProperty(styles.bgColor, 'ansi256', () => makeDynamicStyles(wrapAnsi256, 'ansi256', ansi2ansi, true));
+	setLazyProperty(styles.bgColor, 'ansi16m', () => makeDynamicStyles(wrapAnsi16m, 'rgb', rgb2rgb, true));
+
+	return styles;
+}
+
+// Make the export immutable
+Object.defineProperty(module, 'exports', {
+	enumerable: true,
+	get: assembleStyles
+});
+
+
+/***/ }),
+
 /***/ 9348:
 /***/ ((module) => {
 
@@ -23358,6 +23586,1646 @@ module.exports = {
 
 /***/ }),
 
+/***/ 8818:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+"use strict";
+
+const ansiStyles = __nccwpck_require__(2068);
+const {stdout: stdoutColor, stderr: stderrColor} = __nccwpck_require__(9318);
+const {
+	stringReplaceAll,
+	stringEncaseCRLFWithFirstIndex
+} = __nccwpck_require__(2415);
+
+const {isArray} = Array;
+
+// `supportsColor.level` → `ansiStyles.color[name]` mapping
+const levelMapping = [
+	'ansi',
+	'ansi',
+	'ansi256',
+	'ansi16m'
+];
+
+const styles = Object.create(null);
+
+const applyOptions = (object, options = {}) => {
+	if (options.level && !(Number.isInteger(options.level) && options.level >= 0 && options.level <= 3)) {
+		throw new Error('The `level` option should be an integer from 0 to 3');
+	}
+
+	// Detect level if not set manually
+	const colorLevel = stdoutColor ? stdoutColor.level : 0;
+	object.level = options.level === undefined ? colorLevel : options.level;
+};
+
+class ChalkClass {
+	constructor(options) {
+		// eslint-disable-next-line no-constructor-return
+		return chalkFactory(options);
+	}
+}
+
+const chalkFactory = options => {
+	const chalk = {};
+	applyOptions(chalk, options);
+
+	chalk.template = (...arguments_) => chalkTag(chalk.template, ...arguments_);
+
+	Object.setPrototypeOf(chalk, Chalk.prototype);
+	Object.setPrototypeOf(chalk.template, chalk);
+
+	chalk.template.constructor = () => {
+		throw new Error('`chalk.constructor()` is deprecated. Use `new chalk.Instance()` instead.');
+	};
+
+	chalk.template.Instance = ChalkClass;
+
+	return chalk.template;
+};
+
+function Chalk(options) {
+	return chalkFactory(options);
+}
+
+for (const [styleName, style] of Object.entries(ansiStyles)) {
+	styles[styleName] = {
+		get() {
+			const builder = createBuilder(this, createStyler(style.open, style.close, this._styler), this._isEmpty);
+			Object.defineProperty(this, styleName, {value: builder});
+			return builder;
+		}
+	};
+}
+
+styles.visible = {
+	get() {
+		const builder = createBuilder(this, this._styler, true);
+		Object.defineProperty(this, 'visible', {value: builder});
+		return builder;
+	}
+};
+
+const usedModels = ['rgb', 'hex', 'keyword', 'hsl', 'hsv', 'hwb', 'ansi', 'ansi256'];
+
+for (const model of usedModels) {
+	styles[model] = {
+		get() {
+			const {level} = this;
+			return function (...arguments_) {
+				const styler = createStyler(ansiStyles.color[levelMapping[level]][model](...arguments_), ansiStyles.color.close, this._styler);
+				return createBuilder(this, styler, this._isEmpty);
+			};
+		}
+	};
+}
+
+for (const model of usedModels) {
+	const bgModel = 'bg' + model[0].toUpperCase() + model.slice(1);
+	styles[bgModel] = {
+		get() {
+			const {level} = this;
+			return function (...arguments_) {
+				const styler = createStyler(ansiStyles.bgColor[levelMapping[level]][model](...arguments_), ansiStyles.bgColor.close, this._styler);
+				return createBuilder(this, styler, this._isEmpty);
+			};
+		}
+	};
+}
+
+const proto = Object.defineProperties(() => {}, {
+	...styles,
+	level: {
+		enumerable: true,
+		get() {
+			return this._generator.level;
+		},
+		set(level) {
+			this._generator.level = level;
+		}
+	}
+});
+
+const createStyler = (open, close, parent) => {
+	let openAll;
+	let closeAll;
+	if (parent === undefined) {
+		openAll = open;
+		closeAll = close;
+	} else {
+		openAll = parent.openAll + open;
+		closeAll = close + parent.closeAll;
+	}
+
+	return {
+		open,
+		close,
+		openAll,
+		closeAll,
+		parent
+	};
+};
+
+const createBuilder = (self, _styler, _isEmpty) => {
+	const builder = (...arguments_) => {
+		if (isArray(arguments_[0]) && isArray(arguments_[0].raw)) {
+			// Called as a template literal, for example: chalk.red`2 + 3 = {bold ${2+3}}`
+			return applyStyle(builder, chalkTag(builder, ...arguments_));
+		}
+
+		// Single argument is hot path, implicit coercion is faster than anything
+		// eslint-disable-next-line no-implicit-coercion
+		return applyStyle(builder, (arguments_.length === 1) ? ('' + arguments_[0]) : arguments_.join(' '));
+	};
+
+	// We alter the prototype because we must return a function, but there is
+	// no way to create a function with a different prototype
+	Object.setPrototypeOf(builder, proto);
+
+	builder._generator = self;
+	builder._styler = _styler;
+	builder._isEmpty = _isEmpty;
+
+	return builder;
+};
+
+const applyStyle = (self, string) => {
+	if (self.level <= 0 || !string) {
+		return self._isEmpty ? '' : string;
+	}
+
+	let styler = self._styler;
+
+	if (styler === undefined) {
+		return string;
+	}
+
+	const {openAll, closeAll} = styler;
+	if (string.indexOf('\u001B') !== -1) {
+		while (styler !== undefined) {
+			// Replace any instances already present with a re-opening code
+			// otherwise only the part of the string until said closing code
+			// will be colored, and the rest will simply be 'plain'.
+			string = stringReplaceAll(string, styler.close, styler.open);
+
+			styler = styler.parent;
+		}
+	}
+
+	// We can move both next actions out of loop, because remaining actions in loop won't have
+	// any/visible effect on parts we add here. Close the styling before a linebreak and reopen
+	// after next line to fix a bleed issue on macOS: https://github.com/chalk/chalk/pull/92
+	const lfIndex = string.indexOf('\n');
+	if (lfIndex !== -1) {
+		string = stringEncaseCRLFWithFirstIndex(string, closeAll, openAll, lfIndex);
+	}
+
+	return openAll + string + closeAll;
+};
+
+let template;
+const chalkTag = (chalk, ...strings) => {
+	const [firstString] = strings;
+
+	if (!isArray(firstString) || !isArray(firstString.raw)) {
+		// If chalk() was called by itself or with a string,
+		// return the string itself as a string.
+		return strings.join(' ');
+	}
+
+	const arguments_ = strings.slice(1);
+	const parts = [firstString.raw[0]];
+
+	for (let i = 1; i < firstString.length; i++) {
+		parts.push(
+			String(arguments_[i - 1]).replace(/[{}\\]/g, '\\$&'),
+			String(firstString.raw[i])
+		);
+	}
+
+	if (template === undefined) {
+		template = __nccwpck_require__(500);
+	}
+
+	return template(chalk, parts.join(''));
+};
+
+Object.defineProperties(Chalk.prototype, styles);
+
+const chalk = Chalk(); // eslint-disable-line new-cap
+chalk.supportsColor = stdoutColor;
+chalk.stderr = Chalk({level: stderrColor ? stderrColor.level : 0}); // eslint-disable-line new-cap
+chalk.stderr.supportsColor = stderrColor;
+
+module.exports = chalk;
+
+
+/***/ }),
+
+/***/ 500:
+/***/ ((module) => {
+
+"use strict";
+
+const TEMPLATE_REGEX = /(?:\\(u(?:[a-f\d]{4}|\{[a-f\d]{1,6}\})|x[a-f\d]{2}|.))|(?:\{(~)?(\w+(?:\([^)]*\))?(?:\.\w+(?:\([^)]*\))?)*)(?:[ \t]|(?=\r?\n)))|(\})|((?:.|[\r\n\f])+?)/gi;
+const STYLE_REGEX = /(?:^|\.)(\w+)(?:\(([^)]*)\))?/g;
+const STRING_REGEX = /^(['"])((?:\\.|(?!\1)[^\\])*)\1$/;
+const ESCAPE_REGEX = /\\(u(?:[a-f\d]{4}|{[a-f\d]{1,6}})|x[a-f\d]{2}|.)|([^\\])/gi;
+
+const ESCAPES = new Map([
+	['n', '\n'],
+	['r', '\r'],
+	['t', '\t'],
+	['b', '\b'],
+	['f', '\f'],
+	['v', '\v'],
+	['0', '\0'],
+	['\\', '\\'],
+	['e', '\u001B'],
+	['a', '\u0007']
+]);
+
+function unescape(c) {
+	const u = c[0] === 'u';
+	const bracket = c[1] === '{';
+
+	if ((u && !bracket && c.length === 5) || (c[0] === 'x' && c.length === 3)) {
+		return String.fromCharCode(parseInt(c.slice(1), 16));
+	}
+
+	if (u && bracket) {
+		return String.fromCodePoint(parseInt(c.slice(2, -1), 16));
+	}
+
+	return ESCAPES.get(c) || c;
+}
+
+function parseArguments(name, arguments_) {
+	const results = [];
+	const chunks = arguments_.trim().split(/\s*,\s*/g);
+	let matches;
+
+	for (const chunk of chunks) {
+		const number = Number(chunk);
+		if (!Number.isNaN(number)) {
+			results.push(number);
+		} else if ((matches = chunk.match(STRING_REGEX))) {
+			results.push(matches[2].replace(ESCAPE_REGEX, (m, escape, character) => escape ? unescape(escape) : character));
+		} else {
+			throw new Error(`Invalid Chalk template style argument: ${chunk} (in style '${name}')`);
+		}
+	}
+
+	return results;
+}
+
+function parseStyle(style) {
+	STYLE_REGEX.lastIndex = 0;
+
+	const results = [];
+	let matches;
+
+	while ((matches = STYLE_REGEX.exec(style)) !== null) {
+		const name = matches[1];
+
+		if (matches[2]) {
+			const args = parseArguments(name, matches[2]);
+			results.push([name].concat(args));
+		} else {
+			results.push([name]);
+		}
+	}
+
+	return results;
+}
+
+function buildStyle(chalk, styles) {
+	const enabled = {};
+
+	for (const layer of styles) {
+		for (const style of layer.styles) {
+			enabled[style[0]] = layer.inverse ? null : style.slice(1);
+		}
+	}
+
+	let current = chalk;
+	for (const [styleName, styles] of Object.entries(enabled)) {
+		if (!Array.isArray(styles)) {
+			continue;
+		}
+
+		if (!(styleName in current)) {
+			throw new Error(`Unknown Chalk style: ${styleName}`);
+		}
+
+		current = styles.length > 0 ? current[styleName](...styles) : current[styleName];
+	}
+
+	return current;
+}
+
+module.exports = (chalk, temporary) => {
+	const styles = [];
+	const chunks = [];
+	let chunk = [];
+
+	// eslint-disable-next-line max-params
+	temporary.replace(TEMPLATE_REGEX, (m, escapeCharacter, inverse, style, close, character) => {
+		if (escapeCharacter) {
+			chunk.push(unescape(escapeCharacter));
+		} else if (style) {
+			const string = chunk.join('');
+			chunk = [];
+			chunks.push(styles.length === 0 ? string : buildStyle(chalk, styles)(string));
+			styles.push({inverse, styles: parseStyle(style)});
+		} else if (close) {
+			if (styles.length === 0) {
+				throw new Error('Found extraneous } in Chalk template literal');
+			}
+
+			chunks.push(buildStyle(chalk, styles)(chunk.join('')));
+			chunk = [];
+			styles.pop();
+		} else {
+			chunk.push(character);
+		}
+	});
+
+	chunks.push(chunk.join(''));
+
+	if (styles.length > 0) {
+		const errMessage = `Chalk template literal is missing ${styles.length} closing bracket${styles.length === 1 ? '' : 's'} (\`}\`)`;
+		throw new Error(errMessage);
+	}
+
+	return chunks.join('');
+};
+
+
+/***/ }),
+
+/***/ 2415:
+/***/ ((module) => {
+
+"use strict";
+
+
+const stringReplaceAll = (string, substring, replacer) => {
+	let index = string.indexOf(substring);
+	if (index === -1) {
+		return string;
+	}
+
+	const substringLength = substring.length;
+	let endIndex = 0;
+	let returnValue = '';
+	do {
+		returnValue += string.substr(endIndex, index - endIndex) + substring + replacer;
+		endIndex = index + substringLength;
+		index = string.indexOf(substring, endIndex);
+	} while (index !== -1);
+
+	returnValue += string.substr(endIndex);
+	return returnValue;
+};
+
+const stringEncaseCRLFWithFirstIndex = (string, prefix, postfix, index) => {
+	let endIndex = 0;
+	let returnValue = '';
+	do {
+		const gotCR = string[index - 1] === '\r';
+		returnValue += string.substr(endIndex, (gotCR ? index - 1 : index) - endIndex) + prefix + (gotCR ? '\r\n' : '\n') + postfix;
+		endIndex = index + 1;
+		index = string.indexOf('\n', endIndex);
+	} while (index !== -1);
+
+	returnValue += string.substr(endIndex);
+	return returnValue;
+};
+
+module.exports = {
+	stringReplaceAll,
+	stringEncaseCRLFWithFirstIndex
+};
+
+
+/***/ }),
+
+/***/ 7391:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+/* MIT license */
+/* eslint-disable no-mixed-operators */
+const cssKeywords = __nccwpck_require__(8510);
+
+// NOTE: conversions should only return primitive values (i.e. arrays, or
+//       values that give correct `typeof` results).
+//       do not use box values types (i.e. Number(), String(), etc.)
+
+const reverseKeywords = {};
+for (const key of Object.keys(cssKeywords)) {
+	reverseKeywords[cssKeywords[key]] = key;
+}
+
+const convert = {
+	rgb: {channels: 3, labels: 'rgb'},
+	hsl: {channels: 3, labels: 'hsl'},
+	hsv: {channels: 3, labels: 'hsv'},
+	hwb: {channels: 3, labels: 'hwb'},
+	cmyk: {channels: 4, labels: 'cmyk'},
+	xyz: {channels: 3, labels: 'xyz'},
+	lab: {channels: 3, labels: 'lab'},
+	lch: {channels: 3, labels: 'lch'},
+	hex: {channels: 1, labels: ['hex']},
+	keyword: {channels: 1, labels: ['keyword']},
+	ansi16: {channels: 1, labels: ['ansi16']},
+	ansi256: {channels: 1, labels: ['ansi256']},
+	hcg: {channels: 3, labels: ['h', 'c', 'g']},
+	apple: {channels: 3, labels: ['r16', 'g16', 'b16']},
+	gray: {channels: 1, labels: ['gray']}
+};
+
+module.exports = convert;
+
+// Hide .channels and .labels properties
+for (const model of Object.keys(convert)) {
+	if (!('channels' in convert[model])) {
+		throw new Error('missing channels property: ' + model);
+	}
+
+	if (!('labels' in convert[model])) {
+		throw new Error('missing channel labels property: ' + model);
+	}
+
+	if (convert[model].labels.length !== convert[model].channels) {
+		throw new Error('channel and label counts mismatch: ' + model);
+	}
+
+	const {channels, labels} = convert[model];
+	delete convert[model].channels;
+	delete convert[model].labels;
+	Object.defineProperty(convert[model], 'channels', {value: channels});
+	Object.defineProperty(convert[model], 'labels', {value: labels});
+}
+
+convert.rgb.hsl = function (rgb) {
+	const r = rgb[0] / 255;
+	const g = rgb[1] / 255;
+	const b = rgb[2] / 255;
+	const min = Math.min(r, g, b);
+	const max = Math.max(r, g, b);
+	const delta = max - min;
+	let h;
+	let s;
+
+	if (max === min) {
+		h = 0;
+	} else if (r === max) {
+		h = (g - b) / delta;
+	} else if (g === max) {
+		h = 2 + (b - r) / delta;
+	} else if (b === max) {
+		h = 4 + (r - g) / delta;
+	}
+
+	h = Math.min(h * 60, 360);
+
+	if (h < 0) {
+		h += 360;
+	}
+
+	const l = (min + max) / 2;
+
+	if (max === min) {
+		s = 0;
+	} else if (l <= 0.5) {
+		s = delta / (max + min);
+	} else {
+		s = delta / (2 - max - min);
+	}
+
+	return [h, s * 100, l * 100];
+};
+
+convert.rgb.hsv = function (rgb) {
+	let rdif;
+	let gdif;
+	let bdif;
+	let h;
+	let s;
+
+	const r = rgb[0] / 255;
+	const g = rgb[1] / 255;
+	const b = rgb[2] / 255;
+	const v = Math.max(r, g, b);
+	const diff = v - Math.min(r, g, b);
+	const diffc = function (c) {
+		return (v - c) / 6 / diff + 1 / 2;
+	};
+
+	if (diff === 0) {
+		h = 0;
+		s = 0;
+	} else {
+		s = diff / v;
+		rdif = diffc(r);
+		gdif = diffc(g);
+		bdif = diffc(b);
+
+		if (r === v) {
+			h = bdif - gdif;
+		} else if (g === v) {
+			h = (1 / 3) + rdif - bdif;
+		} else if (b === v) {
+			h = (2 / 3) + gdif - rdif;
+		}
+
+		if (h < 0) {
+			h += 1;
+		} else if (h > 1) {
+			h -= 1;
+		}
+	}
+
+	return [
+		h * 360,
+		s * 100,
+		v * 100
+	];
+};
+
+convert.rgb.hwb = function (rgb) {
+	const r = rgb[0];
+	const g = rgb[1];
+	let b = rgb[2];
+	const h = convert.rgb.hsl(rgb)[0];
+	const w = 1 / 255 * Math.min(r, Math.min(g, b));
+
+	b = 1 - 1 / 255 * Math.max(r, Math.max(g, b));
+
+	return [h, w * 100, b * 100];
+};
+
+convert.rgb.cmyk = function (rgb) {
+	const r = rgb[0] / 255;
+	const g = rgb[1] / 255;
+	const b = rgb[2] / 255;
+
+	const k = Math.min(1 - r, 1 - g, 1 - b);
+	const c = (1 - r - k) / (1 - k) || 0;
+	const m = (1 - g - k) / (1 - k) || 0;
+	const y = (1 - b - k) / (1 - k) || 0;
+
+	return [c * 100, m * 100, y * 100, k * 100];
+};
+
+function comparativeDistance(x, y) {
+	/*
+		See https://en.m.wikipedia.org/wiki/Euclidean_distance#Squared_Euclidean_distance
+	*/
+	return (
+		((x[0] - y[0]) ** 2) +
+		((x[1] - y[1]) ** 2) +
+		((x[2] - y[2]) ** 2)
+	);
+}
+
+convert.rgb.keyword = function (rgb) {
+	const reversed = reverseKeywords[rgb];
+	if (reversed) {
+		return reversed;
+	}
+
+	let currentClosestDistance = Infinity;
+	let currentClosestKeyword;
+
+	for (const keyword of Object.keys(cssKeywords)) {
+		const value = cssKeywords[keyword];
+
+		// Compute comparative distance
+		const distance = comparativeDistance(rgb, value);
+
+		// Check if its less, if so set as closest
+		if (distance < currentClosestDistance) {
+			currentClosestDistance = distance;
+			currentClosestKeyword = keyword;
+		}
+	}
+
+	return currentClosestKeyword;
+};
+
+convert.keyword.rgb = function (keyword) {
+	return cssKeywords[keyword];
+};
+
+convert.rgb.xyz = function (rgb) {
+	let r = rgb[0] / 255;
+	let g = rgb[1] / 255;
+	let b = rgb[2] / 255;
+
+	// Assume sRGB
+	r = r > 0.04045 ? (((r + 0.055) / 1.055) ** 2.4) : (r / 12.92);
+	g = g > 0.04045 ? (((g + 0.055) / 1.055) ** 2.4) : (g / 12.92);
+	b = b > 0.04045 ? (((b + 0.055) / 1.055) ** 2.4) : (b / 12.92);
+
+	const x = (r * 0.4124) + (g * 0.3576) + (b * 0.1805);
+	const y = (r * 0.2126) + (g * 0.7152) + (b * 0.0722);
+	const z = (r * 0.0193) + (g * 0.1192) + (b * 0.9505);
+
+	return [x * 100, y * 100, z * 100];
+};
+
+convert.rgb.lab = function (rgb) {
+	const xyz = convert.rgb.xyz(rgb);
+	let x = xyz[0];
+	let y = xyz[1];
+	let z = xyz[2];
+
+	x /= 95.047;
+	y /= 100;
+	z /= 108.883;
+
+	x = x > 0.008856 ? (x ** (1 / 3)) : (7.787 * x) + (16 / 116);
+	y = y > 0.008856 ? (y ** (1 / 3)) : (7.787 * y) + (16 / 116);
+	z = z > 0.008856 ? (z ** (1 / 3)) : (7.787 * z) + (16 / 116);
+
+	const l = (116 * y) - 16;
+	const a = 500 * (x - y);
+	const b = 200 * (y - z);
+
+	return [l, a, b];
+};
+
+convert.hsl.rgb = function (hsl) {
+	const h = hsl[0] / 360;
+	const s = hsl[1] / 100;
+	const l = hsl[2] / 100;
+	let t2;
+	let t3;
+	let val;
+
+	if (s === 0) {
+		val = l * 255;
+		return [val, val, val];
+	}
+
+	if (l < 0.5) {
+		t2 = l * (1 + s);
+	} else {
+		t2 = l + s - l * s;
+	}
+
+	const t1 = 2 * l - t2;
+
+	const rgb = [0, 0, 0];
+	for (let i = 0; i < 3; i++) {
+		t3 = h + 1 / 3 * -(i - 1);
+		if (t3 < 0) {
+			t3++;
+		}
+
+		if (t3 > 1) {
+			t3--;
+		}
+
+		if (6 * t3 < 1) {
+			val = t1 + (t2 - t1) * 6 * t3;
+		} else if (2 * t3 < 1) {
+			val = t2;
+		} else if (3 * t3 < 2) {
+			val = t1 + (t2 - t1) * (2 / 3 - t3) * 6;
+		} else {
+			val = t1;
+		}
+
+		rgb[i] = val * 255;
+	}
+
+	return rgb;
+};
+
+convert.hsl.hsv = function (hsl) {
+	const h = hsl[0];
+	let s = hsl[1] / 100;
+	let l = hsl[2] / 100;
+	let smin = s;
+	const lmin = Math.max(l, 0.01);
+
+	l *= 2;
+	s *= (l <= 1) ? l : 2 - l;
+	smin *= lmin <= 1 ? lmin : 2 - lmin;
+	const v = (l + s) / 2;
+	const sv = l === 0 ? (2 * smin) / (lmin + smin) : (2 * s) / (l + s);
+
+	return [h, sv * 100, v * 100];
+};
+
+convert.hsv.rgb = function (hsv) {
+	const h = hsv[0] / 60;
+	const s = hsv[1] / 100;
+	let v = hsv[2] / 100;
+	const hi = Math.floor(h) % 6;
+
+	const f = h - Math.floor(h);
+	const p = 255 * v * (1 - s);
+	const q = 255 * v * (1 - (s * f));
+	const t = 255 * v * (1 - (s * (1 - f)));
+	v *= 255;
+
+	switch (hi) {
+		case 0:
+			return [v, t, p];
+		case 1:
+			return [q, v, p];
+		case 2:
+			return [p, v, t];
+		case 3:
+			return [p, q, v];
+		case 4:
+			return [t, p, v];
+		case 5:
+			return [v, p, q];
+	}
+};
+
+convert.hsv.hsl = function (hsv) {
+	const h = hsv[0];
+	const s = hsv[1] / 100;
+	const v = hsv[2] / 100;
+	const vmin = Math.max(v, 0.01);
+	let sl;
+	let l;
+
+	l = (2 - s) * v;
+	const lmin = (2 - s) * vmin;
+	sl = s * vmin;
+	sl /= (lmin <= 1) ? lmin : 2 - lmin;
+	sl = sl || 0;
+	l /= 2;
+
+	return [h, sl * 100, l * 100];
+};
+
+// http://dev.w3.org/csswg/css-color/#hwb-to-rgb
+convert.hwb.rgb = function (hwb) {
+	const h = hwb[0] / 360;
+	let wh = hwb[1] / 100;
+	let bl = hwb[2] / 100;
+	const ratio = wh + bl;
+	let f;
+
+	// Wh + bl cant be > 1
+	if (ratio > 1) {
+		wh /= ratio;
+		bl /= ratio;
+	}
+
+	const i = Math.floor(6 * h);
+	const v = 1 - bl;
+	f = 6 * h - i;
+
+	if ((i & 0x01) !== 0) {
+		f = 1 - f;
+	}
+
+	const n = wh + f * (v - wh); // Linear interpolation
+
+	let r;
+	let g;
+	let b;
+	/* eslint-disable max-statements-per-line,no-multi-spaces */
+	switch (i) {
+		default:
+		case 6:
+		case 0: r = v;  g = n;  b = wh; break;
+		case 1: r = n;  g = v;  b = wh; break;
+		case 2: r = wh; g = v;  b = n; break;
+		case 3: r = wh; g = n;  b = v; break;
+		case 4: r = n;  g = wh; b = v; break;
+		case 5: r = v;  g = wh; b = n; break;
+	}
+	/* eslint-enable max-statements-per-line,no-multi-spaces */
+
+	return [r * 255, g * 255, b * 255];
+};
+
+convert.cmyk.rgb = function (cmyk) {
+	const c = cmyk[0] / 100;
+	const m = cmyk[1] / 100;
+	const y = cmyk[2] / 100;
+	const k = cmyk[3] / 100;
+
+	const r = 1 - Math.min(1, c * (1 - k) + k);
+	const g = 1 - Math.min(1, m * (1 - k) + k);
+	const b = 1 - Math.min(1, y * (1 - k) + k);
+
+	return [r * 255, g * 255, b * 255];
+};
+
+convert.xyz.rgb = function (xyz) {
+	const x = xyz[0] / 100;
+	const y = xyz[1] / 100;
+	const z = xyz[2] / 100;
+	let r;
+	let g;
+	let b;
+
+	r = (x * 3.2406) + (y * -1.5372) + (z * -0.4986);
+	g = (x * -0.9689) + (y * 1.8758) + (z * 0.0415);
+	b = (x * 0.0557) + (y * -0.2040) + (z * 1.0570);
+
+	// Assume sRGB
+	r = r > 0.0031308
+		? ((1.055 * (r ** (1.0 / 2.4))) - 0.055)
+		: r * 12.92;
+
+	g = g > 0.0031308
+		? ((1.055 * (g ** (1.0 / 2.4))) - 0.055)
+		: g * 12.92;
+
+	b = b > 0.0031308
+		? ((1.055 * (b ** (1.0 / 2.4))) - 0.055)
+		: b * 12.92;
+
+	r = Math.min(Math.max(0, r), 1);
+	g = Math.min(Math.max(0, g), 1);
+	b = Math.min(Math.max(0, b), 1);
+
+	return [r * 255, g * 255, b * 255];
+};
+
+convert.xyz.lab = function (xyz) {
+	let x = xyz[0];
+	let y = xyz[1];
+	let z = xyz[2];
+
+	x /= 95.047;
+	y /= 100;
+	z /= 108.883;
+
+	x = x > 0.008856 ? (x ** (1 / 3)) : (7.787 * x) + (16 / 116);
+	y = y > 0.008856 ? (y ** (1 / 3)) : (7.787 * y) + (16 / 116);
+	z = z > 0.008856 ? (z ** (1 / 3)) : (7.787 * z) + (16 / 116);
+
+	const l = (116 * y) - 16;
+	const a = 500 * (x - y);
+	const b = 200 * (y - z);
+
+	return [l, a, b];
+};
+
+convert.lab.xyz = function (lab) {
+	const l = lab[0];
+	const a = lab[1];
+	const b = lab[2];
+	let x;
+	let y;
+	let z;
+
+	y = (l + 16) / 116;
+	x = a / 500 + y;
+	z = y - b / 200;
+
+	const y2 = y ** 3;
+	const x2 = x ** 3;
+	const z2 = z ** 3;
+	y = y2 > 0.008856 ? y2 : (y - 16 / 116) / 7.787;
+	x = x2 > 0.008856 ? x2 : (x - 16 / 116) / 7.787;
+	z = z2 > 0.008856 ? z2 : (z - 16 / 116) / 7.787;
+
+	x *= 95.047;
+	y *= 100;
+	z *= 108.883;
+
+	return [x, y, z];
+};
+
+convert.lab.lch = function (lab) {
+	const l = lab[0];
+	const a = lab[1];
+	const b = lab[2];
+	let h;
+
+	const hr = Math.atan2(b, a);
+	h = hr * 360 / 2 / Math.PI;
+
+	if (h < 0) {
+		h += 360;
+	}
+
+	const c = Math.sqrt(a * a + b * b);
+
+	return [l, c, h];
+};
+
+convert.lch.lab = function (lch) {
+	const l = lch[0];
+	const c = lch[1];
+	const h = lch[2];
+
+	const hr = h / 360 * 2 * Math.PI;
+	const a = c * Math.cos(hr);
+	const b = c * Math.sin(hr);
+
+	return [l, a, b];
+};
+
+convert.rgb.ansi16 = function (args, saturation = null) {
+	const [r, g, b] = args;
+	let value = saturation === null ? convert.rgb.hsv(args)[2] : saturation; // Hsv -> ansi16 optimization
+
+	value = Math.round(value / 50);
+
+	if (value === 0) {
+		return 30;
+	}
+
+	let ansi = 30
+		+ ((Math.round(b / 255) << 2)
+		| (Math.round(g / 255) << 1)
+		| Math.round(r / 255));
+
+	if (value === 2) {
+		ansi += 60;
+	}
+
+	return ansi;
+};
+
+convert.hsv.ansi16 = function (args) {
+	// Optimization here; we already know the value and don't need to get
+	// it converted for us.
+	return convert.rgb.ansi16(convert.hsv.rgb(args), args[2]);
+};
+
+convert.rgb.ansi256 = function (args) {
+	const r = args[0];
+	const g = args[1];
+	const b = args[2];
+
+	// We use the extended greyscale palette here, with the exception of
+	// black and white. normal palette only has 4 greyscale shades.
+	if (r === g && g === b) {
+		if (r < 8) {
+			return 16;
+		}
+
+		if (r > 248) {
+			return 231;
+		}
+
+		return Math.round(((r - 8) / 247) * 24) + 232;
+	}
+
+	const ansi = 16
+		+ (36 * Math.round(r / 255 * 5))
+		+ (6 * Math.round(g / 255 * 5))
+		+ Math.round(b / 255 * 5);
+
+	return ansi;
+};
+
+convert.ansi16.rgb = function (args) {
+	let color = args % 10;
+
+	// Handle greyscale
+	if (color === 0 || color === 7) {
+		if (args > 50) {
+			color += 3.5;
+		}
+
+		color = color / 10.5 * 255;
+
+		return [color, color, color];
+	}
+
+	const mult = (~~(args > 50) + 1) * 0.5;
+	const r = ((color & 1) * mult) * 255;
+	const g = (((color >> 1) & 1) * mult) * 255;
+	const b = (((color >> 2) & 1) * mult) * 255;
+
+	return [r, g, b];
+};
+
+convert.ansi256.rgb = function (args) {
+	// Handle greyscale
+	if (args >= 232) {
+		const c = (args - 232) * 10 + 8;
+		return [c, c, c];
+	}
+
+	args -= 16;
+
+	let rem;
+	const r = Math.floor(args / 36) / 5 * 255;
+	const g = Math.floor((rem = args % 36) / 6) / 5 * 255;
+	const b = (rem % 6) / 5 * 255;
+
+	return [r, g, b];
+};
+
+convert.rgb.hex = function (args) {
+	const integer = ((Math.round(args[0]) & 0xFF) << 16)
+		+ ((Math.round(args[1]) & 0xFF) << 8)
+		+ (Math.round(args[2]) & 0xFF);
+
+	const string = integer.toString(16).toUpperCase();
+	return '000000'.substring(string.length) + string;
+};
+
+convert.hex.rgb = function (args) {
+	const match = args.toString(16).match(/[a-f0-9]{6}|[a-f0-9]{3}/i);
+	if (!match) {
+		return [0, 0, 0];
+	}
+
+	let colorString = match[0];
+
+	if (match[0].length === 3) {
+		colorString = colorString.split('').map(char => {
+			return char + char;
+		}).join('');
+	}
+
+	const integer = parseInt(colorString, 16);
+	const r = (integer >> 16) & 0xFF;
+	const g = (integer >> 8) & 0xFF;
+	const b = integer & 0xFF;
+
+	return [r, g, b];
+};
+
+convert.rgb.hcg = function (rgb) {
+	const r = rgb[0] / 255;
+	const g = rgb[1] / 255;
+	const b = rgb[2] / 255;
+	const max = Math.max(Math.max(r, g), b);
+	const min = Math.min(Math.min(r, g), b);
+	const chroma = (max - min);
+	let grayscale;
+	let hue;
+
+	if (chroma < 1) {
+		grayscale = min / (1 - chroma);
+	} else {
+		grayscale = 0;
+	}
+
+	if (chroma <= 0) {
+		hue = 0;
+	} else
+	if (max === r) {
+		hue = ((g - b) / chroma) % 6;
+	} else
+	if (max === g) {
+		hue = 2 + (b - r) / chroma;
+	} else {
+		hue = 4 + (r - g) / chroma;
+	}
+
+	hue /= 6;
+	hue %= 1;
+
+	return [hue * 360, chroma * 100, grayscale * 100];
+};
+
+convert.hsl.hcg = function (hsl) {
+	const s = hsl[1] / 100;
+	const l = hsl[2] / 100;
+
+	const c = l < 0.5 ? (2.0 * s * l) : (2.0 * s * (1.0 - l));
+
+	let f = 0;
+	if (c < 1.0) {
+		f = (l - 0.5 * c) / (1.0 - c);
+	}
+
+	return [hsl[0], c * 100, f * 100];
+};
+
+convert.hsv.hcg = function (hsv) {
+	const s = hsv[1] / 100;
+	const v = hsv[2] / 100;
+
+	const c = s * v;
+	let f = 0;
+
+	if (c < 1.0) {
+		f = (v - c) / (1 - c);
+	}
+
+	return [hsv[0], c * 100, f * 100];
+};
+
+convert.hcg.rgb = function (hcg) {
+	const h = hcg[0] / 360;
+	const c = hcg[1] / 100;
+	const g = hcg[2] / 100;
+
+	if (c === 0.0) {
+		return [g * 255, g * 255, g * 255];
+	}
+
+	const pure = [0, 0, 0];
+	const hi = (h % 1) * 6;
+	const v = hi % 1;
+	const w = 1 - v;
+	let mg = 0;
+
+	/* eslint-disable max-statements-per-line */
+	switch (Math.floor(hi)) {
+		case 0:
+			pure[0] = 1; pure[1] = v; pure[2] = 0; break;
+		case 1:
+			pure[0] = w; pure[1] = 1; pure[2] = 0; break;
+		case 2:
+			pure[0] = 0; pure[1] = 1; pure[2] = v; break;
+		case 3:
+			pure[0] = 0; pure[1] = w; pure[2] = 1; break;
+		case 4:
+			pure[0] = v; pure[1] = 0; pure[2] = 1; break;
+		default:
+			pure[0] = 1; pure[1] = 0; pure[2] = w;
+	}
+	/* eslint-enable max-statements-per-line */
+
+	mg = (1.0 - c) * g;
+
+	return [
+		(c * pure[0] + mg) * 255,
+		(c * pure[1] + mg) * 255,
+		(c * pure[2] + mg) * 255
+	];
+};
+
+convert.hcg.hsv = function (hcg) {
+	const c = hcg[1] / 100;
+	const g = hcg[2] / 100;
+
+	const v = c + g * (1.0 - c);
+	let f = 0;
+
+	if (v > 0.0) {
+		f = c / v;
+	}
+
+	return [hcg[0], f * 100, v * 100];
+};
+
+convert.hcg.hsl = function (hcg) {
+	const c = hcg[1] / 100;
+	const g = hcg[2] / 100;
+
+	const l = g * (1.0 - c) + 0.5 * c;
+	let s = 0;
+
+	if (l > 0.0 && l < 0.5) {
+		s = c / (2 * l);
+	} else
+	if (l >= 0.5 && l < 1.0) {
+		s = c / (2 * (1 - l));
+	}
+
+	return [hcg[0], s * 100, l * 100];
+};
+
+convert.hcg.hwb = function (hcg) {
+	const c = hcg[1] / 100;
+	const g = hcg[2] / 100;
+	const v = c + g * (1.0 - c);
+	return [hcg[0], (v - c) * 100, (1 - v) * 100];
+};
+
+convert.hwb.hcg = function (hwb) {
+	const w = hwb[1] / 100;
+	const b = hwb[2] / 100;
+	const v = 1 - b;
+	const c = v - w;
+	let g = 0;
+
+	if (c < 1) {
+		g = (v - c) / (1 - c);
+	}
+
+	return [hwb[0], c * 100, g * 100];
+};
+
+convert.apple.rgb = function (apple) {
+	return [(apple[0] / 65535) * 255, (apple[1] / 65535) * 255, (apple[2] / 65535) * 255];
+};
+
+convert.rgb.apple = function (rgb) {
+	return [(rgb[0] / 255) * 65535, (rgb[1] / 255) * 65535, (rgb[2] / 255) * 65535];
+};
+
+convert.gray.rgb = function (args) {
+	return [args[0] / 100 * 255, args[0] / 100 * 255, args[0] / 100 * 255];
+};
+
+convert.gray.hsl = function (args) {
+	return [0, 0, args[0]];
+};
+
+convert.gray.hsv = convert.gray.hsl;
+
+convert.gray.hwb = function (gray) {
+	return [0, 100, gray[0]];
+};
+
+convert.gray.cmyk = function (gray) {
+	return [0, 0, 0, gray[0]];
+};
+
+convert.gray.lab = function (gray) {
+	return [gray[0], 0, 0];
+};
+
+convert.gray.hex = function (gray) {
+	const val = Math.round(gray[0] / 100 * 255) & 0xFF;
+	const integer = (val << 16) + (val << 8) + val;
+
+	const string = integer.toString(16).toUpperCase();
+	return '000000'.substring(string.length) + string;
+};
+
+convert.rgb.gray = function (rgb) {
+	const val = (rgb[0] + rgb[1] + rgb[2]) / 3;
+	return [val / 255 * 100];
+};
+
+
+/***/ }),
+
+/***/ 6931:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+const conversions = __nccwpck_require__(7391);
+const route = __nccwpck_require__(880);
+
+const convert = {};
+
+const models = Object.keys(conversions);
+
+function wrapRaw(fn) {
+	const wrappedFn = function (...args) {
+		const arg0 = args[0];
+		if (arg0 === undefined || arg0 === null) {
+			return arg0;
+		}
+
+		if (arg0.length > 1) {
+			args = arg0;
+		}
+
+		return fn(args);
+	};
+
+	// Preserve .conversion property if there is one
+	if ('conversion' in fn) {
+		wrappedFn.conversion = fn.conversion;
+	}
+
+	return wrappedFn;
+}
+
+function wrapRounded(fn) {
+	const wrappedFn = function (...args) {
+		const arg0 = args[0];
+
+		if (arg0 === undefined || arg0 === null) {
+			return arg0;
+		}
+
+		if (arg0.length > 1) {
+			args = arg0;
+		}
+
+		const result = fn(args);
+
+		// We're assuming the result is an array here.
+		// see notice in conversions.js; don't use box types
+		// in conversion functions.
+		if (typeof result === 'object') {
+			for (let len = result.length, i = 0; i < len; i++) {
+				result[i] = Math.round(result[i]);
+			}
+		}
+
+		return result;
+	};
+
+	// Preserve .conversion property if there is one
+	if ('conversion' in fn) {
+		wrappedFn.conversion = fn.conversion;
+	}
+
+	return wrappedFn;
+}
+
+models.forEach(fromModel => {
+	convert[fromModel] = {};
+
+	Object.defineProperty(convert[fromModel], 'channels', {value: conversions[fromModel].channels});
+	Object.defineProperty(convert[fromModel], 'labels', {value: conversions[fromModel].labels});
+
+	const routes = route(fromModel);
+	const routeModels = Object.keys(routes);
+
+	routeModels.forEach(toModel => {
+		const fn = routes[toModel];
+
+		convert[fromModel][toModel] = wrapRounded(fn);
+		convert[fromModel][toModel].raw = wrapRaw(fn);
+	});
+});
+
+module.exports = convert;
+
+
+/***/ }),
+
+/***/ 880:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+const conversions = __nccwpck_require__(7391);
+
+/*
+	This function routes a model to all other models.
+
+	all functions that are routed have a property `.conversion` attached
+	to the returned synthetic function. This property is an array
+	of strings, each with the steps in between the 'from' and 'to'
+	color models (inclusive).
+
+	conversions that are not possible simply are not included.
+*/
+
+function buildGraph() {
+	const graph = {};
+	// https://jsperf.com/object-keys-vs-for-in-with-closure/3
+	const models = Object.keys(conversions);
+
+	for (let len = models.length, i = 0; i < len; i++) {
+		graph[models[i]] = {
+			// http://jsperf.com/1-vs-infinity
+			// micro-opt, but this is simple.
+			distance: -1,
+			parent: null
+		};
+	}
+
+	return graph;
+}
+
+// https://en.wikipedia.org/wiki/Breadth-first_search
+function deriveBFS(fromModel) {
+	const graph = buildGraph();
+	const queue = [fromModel]; // Unshift -> queue -> pop
+
+	graph[fromModel].distance = 0;
+
+	while (queue.length) {
+		const current = queue.pop();
+		const adjacents = Object.keys(conversions[current]);
+
+		for (let len = adjacents.length, i = 0; i < len; i++) {
+			const adjacent = adjacents[i];
+			const node = graph[adjacent];
+
+			if (node.distance === -1) {
+				node.distance = graph[current].distance + 1;
+				node.parent = current;
+				queue.unshift(adjacent);
+			}
+		}
+	}
+
+	return graph;
+}
+
+function link(from, to) {
+	return function (args) {
+		return to(from(args));
+	};
+}
+
+function wrapConversion(toModel, graph) {
+	const path = [graph[toModel].parent, toModel];
+	let fn = conversions[graph[toModel].parent][toModel];
+
+	let cur = graph[toModel].parent;
+	while (graph[cur].parent) {
+		path.unshift(graph[cur].parent);
+		fn = link(conversions[graph[cur].parent][cur], fn);
+		cur = graph[cur].parent;
+	}
+
+	fn.conversion = path;
+	return fn;
+}
+
+module.exports = function (fromModel) {
+	const graph = deriveBFS(fromModel);
+	const conversion = {};
+
+	const models = Object.keys(graph);
+	for (let len = models.length, i = 0; i < len; i++) {
+		const toModel = models[i];
+		const node = graph[toModel];
+
+		if (node.parent === null) {
+			// No possible conversion, or this node is the source model.
+			continue;
+		}
+
+		conversion[toModel] = wrapConversion(toModel, graph);
+	}
+
+	return conversion;
+};
+
+
+
+/***/ }),
+
+/***/ 8510:
+/***/ ((module) => {
+
+"use strict";
+
+
+module.exports = {
+	"aliceblue": [240, 248, 255],
+	"antiquewhite": [250, 235, 215],
+	"aqua": [0, 255, 255],
+	"aquamarine": [127, 255, 212],
+	"azure": [240, 255, 255],
+	"beige": [245, 245, 220],
+	"bisque": [255, 228, 196],
+	"black": [0, 0, 0],
+	"blanchedalmond": [255, 235, 205],
+	"blue": [0, 0, 255],
+	"blueviolet": [138, 43, 226],
+	"brown": [165, 42, 42],
+	"burlywood": [222, 184, 135],
+	"cadetblue": [95, 158, 160],
+	"chartreuse": [127, 255, 0],
+	"chocolate": [210, 105, 30],
+	"coral": [255, 127, 80],
+	"cornflowerblue": [100, 149, 237],
+	"cornsilk": [255, 248, 220],
+	"crimson": [220, 20, 60],
+	"cyan": [0, 255, 255],
+	"darkblue": [0, 0, 139],
+	"darkcyan": [0, 139, 139],
+	"darkgoldenrod": [184, 134, 11],
+	"darkgray": [169, 169, 169],
+	"darkgreen": [0, 100, 0],
+	"darkgrey": [169, 169, 169],
+	"darkkhaki": [189, 183, 107],
+	"darkmagenta": [139, 0, 139],
+	"darkolivegreen": [85, 107, 47],
+	"darkorange": [255, 140, 0],
+	"darkorchid": [153, 50, 204],
+	"darkred": [139, 0, 0],
+	"darksalmon": [233, 150, 122],
+	"darkseagreen": [143, 188, 143],
+	"darkslateblue": [72, 61, 139],
+	"darkslategray": [47, 79, 79],
+	"darkslategrey": [47, 79, 79],
+	"darkturquoise": [0, 206, 209],
+	"darkviolet": [148, 0, 211],
+	"deeppink": [255, 20, 147],
+	"deepskyblue": [0, 191, 255],
+	"dimgray": [105, 105, 105],
+	"dimgrey": [105, 105, 105],
+	"dodgerblue": [30, 144, 255],
+	"firebrick": [178, 34, 34],
+	"floralwhite": [255, 250, 240],
+	"forestgreen": [34, 139, 34],
+	"fuchsia": [255, 0, 255],
+	"gainsboro": [220, 220, 220],
+	"ghostwhite": [248, 248, 255],
+	"gold": [255, 215, 0],
+	"goldenrod": [218, 165, 32],
+	"gray": [128, 128, 128],
+	"green": [0, 128, 0],
+	"greenyellow": [173, 255, 47],
+	"grey": [128, 128, 128],
+	"honeydew": [240, 255, 240],
+	"hotpink": [255, 105, 180],
+	"indianred": [205, 92, 92],
+	"indigo": [75, 0, 130],
+	"ivory": [255, 255, 240],
+	"khaki": [240, 230, 140],
+	"lavender": [230, 230, 250],
+	"lavenderblush": [255, 240, 245],
+	"lawngreen": [124, 252, 0],
+	"lemonchiffon": [255, 250, 205],
+	"lightblue": [173, 216, 230],
+	"lightcoral": [240, 128, 128],
+	"lightcyan": [224, 255, 255],
+	"lightgoldenrodyellow": [250, 250, 210],
+	"lightgray": [211, 211, 211],
+	"lightgreen": [144, 238, 144],
+	"lightgrey": [211, 211, 211],
+	"lightpink": [255, 182, 193],
+	"lightsalmon": [255, 160, 122],
+	"lightseagreen": [32, 178, 170],
+	"lightskyblue": [135, 206, 250],
+	"lightslategray": [119, 136, 153],
+	"lightslategrey": [119, 136, 153],
+	"lightsteelblue": [176, 196, 222],
+	"lightyellow": [255, 255, 224],
+	"lime": [0, 255, 0],
+	"limegreen": [50, 205, 50],
+	"linen": [250, 240, 230],
+	"magenta": [255, 0, 255],
+	"maroon": [128, 0, 0],
+	"mediumaquamarine": [102, 205, 170],
+	"mediumblue": [0, 0, 205],
+	"mediumorchid": [186, 85, 211],
+	"mediumpurple": [147, 112, 219],
+	"mediumseagreen": [60, 179, 113],
+	"mediumslateblue": [123, 104, 238],
+	"mediumspringgreen": [0, 250, 154],
+	"mediumturquoise": [72, 209, 204],
+	"mediumvioletred": [199, 21, 133],
+	"midnightblue": [25, 25, 112],
+	"mintcream": [245, 255, 250],
+	"mistyrose": [255, 228, 225],
+	"moccasin": [255, 228, 181],
+	"navajowhite": [255, 222, 173],
+	"navy": [0, 0, 128],
+	"oldlace": [253, 245, 230],
+	"olive": [128, 128, 0],
+	"olivedrab": [107, 142, 35],
+	"orange": [255, 165, 0],
+	"orangered": [255, 69, 0],
+	"orchid": [218, 112, 214],
+	"palegoldenrod": [238, 232, 170],
+	"palegreen": [152, 251, 152],
+	"paleturquoise": [175, 238, 238],
+	"palevioletred": [219, 112, 147],
+	"papayawhip": [255, 239, 213],
+	"peachpuff": [255, 218, 185],
+	"peru": [205, 133, 63],
+	"pink": [255, 192, 203],
+	"plum": [221, 160, 221],
+	"powderblue": [176, 224, 230],
+	"purple": [128, 0, 128],
+	"rebeccapurple": [102, 51, 153],
+	"red": [255, 0, 0],
+	"rosybrown": [188, 143, 143],
+	"royalblue": [65, 105, 225],
+	"saddlebrown": [139, 69, 19],
+	"salmon": [250, 128, 114],
+	"sandybrown": [244, 164, 96],
+	"seagreen": [46, 139, 87],
+	"seashell": [255, 245, 238],
+	"sienna": [160, 82, 45],
+	"silver": [192, 192, 192],
+	"skyblue": [135, 206, 235],
+	"slateblue": [106, 90, 205],
+	"slategray": [112, 128, 144],
+	"slategrey": [112, 128, 144],
+	"snow": [255, 250, 250],
+	"springgreen": [0, 255, 127],
+	"steelblue": [70, 130, 180],
+	"tan": [210, 180, 140],
+	"teal": [0, 128, 128],
+	"thistle": [216, 191, 216],
+	"tomato": [255, 99, 71],
+	"turquoise": [64, 224, 208],
+	"violet": [238, 130, 238],
+	"wheat": [245, 222, 179],
+	"white": [255, 255, 255],
+	"whitesmoke": [245, 245, 245],
+	"yellow": [255, 255, 0],
+	"yellowgreen": [154, 205, 50]
+};
+
+
+/***/ }),
+
+/***/ 1621:
+/***/ ((module) => {
+
+"use strict";
+
+
+module.exports = (flag, argv = process.argv) => {
+	const prefix = flag.startsWith('-') ? '' : (flag.length === 1 ? '-' : '--');
+	const position = argv.indexOf(prefix + flag);
+	const terminatorPosition = argv.indexOf('--');
+	return position !== -1 && (terminatorPosition === -1 || position < terminatorPosition);
+};
+
+
+/***/ }),
+
 /***/ 4124:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
@@ -23691,6 +25559,12461 @@ if (!safer.constants) {
 }
 
 module.exports = safer
+
+
+/***/ }),
+
+/***/ 792:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+module.exports = {
+  SFTPStream: __nccwpck_require__(1517),
+  SSH2Stream: __nccwpck_require__(1788),
+  utils: __nccwpck_require__(4928),
+  constants: __nccwpck_require__(4617)
+};
+
+/***/ }),
+
+/***/ 9419:
+/***/ ((module) => {
+
+module.exports = {
+  readUInt32BE: function readUInt32BE(buf, offset) {
+    return buf[offset++] * 16777216
+           + buf[offset++] * 65536
+           + buf[offset++] * 256
+           + buf[offset];
+  },
+  writeUInt32BE: function writeUInt32BE(buf, value, offset) {
+    buf[offset++] = (value >>> 24);
+    buf[offset++] = (value >>> 16);
+    buf[offset++] = (value >>> 8);
+    buf[offset++] = value;
+    return offset;
+  },
+  writeUInt32LE: function writeUInt32LE(buf, value, offset) {
+    buf[offset++] = value;
+    buf[offset++] = (value >>> 8);
+    buf[offset++] = (value >>> 16);
+    buf[offset++] = (value >>> 24);
+    return offset;
+  }
+};
+
+
+/***/ }),
+
+/***/ 4617:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+var i;
+var keys;
+var len;
+
+var crypto = __nccwpck_require__(6113);
+var eddsaSupported = (function() {
+  if (typeof crypto.sign === 'function'
+      && typeof crypto.verify === 'function') {
+    var key = '-----BEGIN PRIVATE KEY-----\r\nMC4CAQAwBQYDK2VwBCIEIHKj+sVa9WcD'
+              + '/q2DJUJaf43Kptc8xYuUQA4bOFj9vC8T\r\n-----END PRIVATE KEY-----';
+    var data = Buffer.from('a');
+    var sig;
+    var verified;
+    try {
+      sig = crypto.sign(null, data, key);
+      verified = crypto.verify(null, data, key, sig);
+    } catch (ex) {}
+    return (Buffer.isBuffer(sig) && sig.length === 64 && verified === true);
+  }
+
+  return false;
+})();
+
+var curve25519Supported = (typeof crypto.diffieHellman === 'function'
+                           && typeof crypto.generateKeyPairSync === 'function'
+                           && typeof crypto.createPublicKey === 'function');
+
+var MESSAGE = exports.MESSAGE = {
+  // Transport layer protocol -- generic (1-19)
+  DISCONNECT: 1,
+  IGNORE: 2,
+  UNIMPLEMENTED: 3,
+  DEBUG: 4,
+  SERVICE_REQUEST: 5,
+  SERVICE_ACCEPT: 6,
+
+  // Transport layer protocol -- algorithm negotiation (20-29)
+  KEXINIT: 20,
+  NEWKEYS: 21,
+
+  // Transport layer protocol -- key exchange method-specific (30-49)
+
+  // User auth protocol -- generic (50-59)
+  USERAUTH_REQUEST: 50,
+  USERAUTH_FAILURE: 51,
+  USERAUTH_SUCCESS: 52,
+  USERAUTH_BANNER: 53,
+
+  // User auth protocol -- user auth method-specific (60-79)
+
+  // Connection protocol -- generic (80-89)
+  GLOBAL_REQUEST: 80,
+  REQUEST_SUCCESS: 81,
+  REQUEST_FAILURE: 82,
+
+  // Connection protocol -- channel-related (90-127)
+  CHANNEL_OPEN: 90,
+  CHANNEL_OPEN_CONFIRMATION: 91,
+  CHANNEL_OPEN_FAILURE: 92,
+  CHANNEL_WINDOW_ADJUST: 93,
+  CHANNEL_DATA: 94,
+  CHANNEL_EXTENDED_DATA: 95,
+  CHANNEL_EOF: 96,
+  CHANNEL_CLOSE: 97,
+  CHANNEL_REQUEST: 98,
+  CHANNEL_SUCCESS: 99,
+  CHANNEL_FAILURE: 100
+
+  // Reserved for client protocols (128-191)
+
+  // Local extensions (192-155)
+};
+for (i = 0, keys = Object.keys(MESSAGE), len = keys.length; i < len; ++i)
+  MESSAGE[MESSAGE[keys[i]]] = keys[i];
+// context-specific message codes:
+MESSAGE.KEXDH_INIT = 30;
+MESSAGE.KEXDH_REPLY = 31;
+MESSAGE.KEXDH_GEX_REQUEST = 34;
+MESSAGE.KEXDH_GEX_GROUP = 31;
+MESSAGE.KEXDH_GEX_INIT = 32;
+MESSAGE.KEXDH_GEX_REPLY = 33;
+MESSAGE.KEXECDH_INIT = 30; // included here for completeness
+MESSAGE.KEXECDH_REPLY = 31; // included here for completeness
+MESSAGE.USERAUTH_PASSWD_CHANGEREQ = 60;
+MESSAGE.USERAUTH_PK_OK = 60;
+MESSAGE.USERAUTH_INFO_REQUEST = 60;
+MESSAGE.USERAUTH_INFO_RESPONSE = 61;
+
+var DYNAMIC_KEXDH_MESSAGE = exports.DYNAMIC_KEXDH_MESSAGE = {};
+DYNAMIC_KEXDH_MESSAGE[MESSAGE.KEXDH_GEX_GROUP] = 'KEXDH_GEX_GROUP';
+DYNAMIC_KEXDH_MESSAGE[MESSAGE.KEXDH_GEX_REPLY] = 'KEXDH_GEX_REPLY';
+
+var KEXDH_MESSAGE = exports.KEXDH_MESSAGE = {};
+KEXDH_MESSAGE[MESSAGE.KEXDH_INIT] = 'KEXDH_INIT';
+KEXDH_MESSAGE[MESSAGE.KEXDH_REPLY] = 'KEXDH_REPLY';
+
+var DISCONNECT_REASON = exports.DISCONNECT_REASON = {
+  HOST_NOT_ALLOWED_TO_CONNECT: 1,
+  PROTOCOL_ERROR: 2,
+  KEY_EXCHANGE_FAILED: 3,
+  RESERVED: 4,
+  MAC_ERROR: 5,
+  COMPRESSION_ERROR: 6,
+  SERVICE_NOT_AVAILABLE: 7,
+  PROTOCOL_VERSION_NOT_SUPPORTED: 8,
+  HOST_KEY_NOT_VERIFIABLE: 9,
+  CONNECTION_LOST: 10,
+  BY_APPLICATION: 11,
+  TOO_MANY_CONNECTIONS: 12,
+  AUTH_CANCELED_BY_USER: 13,
+  NO_MORE_AUTH_METHODS_AVAILABLE: 14,
+  ILLEGAL_USER_NAME: 15
+};
+for (i = 0, keys = Object.keys(DISCONNECT_REASON), len = keys.length;
+     i < len;
+     ++i) {
+  DISCONNECT_REASON[DISCONNECT_REASON[keys[i]]] = keys[i];
+}
+
+var CHANNEL_OPEN_FAILURE = exports.CHANNEL_OPEN_FAILURE = {
+  ADMINISTRATIVELY_PROHIBITED: 1,
+  CONNECT_FAILED: 2,
+  UNKNOWN_CHANNEL_TYPE: 3,
+  RESOURCE_SHORTAGE: 4
+};
+for (i = 0, keys = Object.keys(CHANNEL_OPEN_FAILURE), len = keys.length;
+     i < len;
+     ++i) {
+  CHANNEL_OPEN_FAILURE[CHANNEL_OPEN_FAILURE[keys[i]]] = keys[i];
+}
+
+var TERMINAL_MODE = exports.TERMINAL_MODE = {
+  TTY_OP_END: 0,        // Indicates end of options.
+  VINTR: 1,             // Interrupt character; 255 if none. Similarly for the
+                        //  other characters.  Not all of these characters are
+                        //  supported on all systems.
+  VQUIT: 2,             // The quit character (sends SIGQUIT signal on POSIX
+                        //  systems).
+  VERASE: 3,            // Erase the character to left of the cursor.
+  VKILL: 4,             // Kill the current input line.
+  VEOF: 5,              // End-of-file character (sends EOF from the terminal).
+  VEOL: 6,              // End-of-line character in addition to carriage return
+                        //  and/or linefeed.
+  VEOL2: 7,             // Additional end-of-line character.
+  VSTART: 8,            // Continues paused output (normally control-Q).
+  VSTOP: 9,             // Pauses output (normally control-S).
+  VSUSP: 10,            // Suspends the current program.
+  VDSUSP: 11,           // Another suspend character.
+  VREPRINT: 12,         // Reprints the current input line.
+  VWERASE: 13,          // Erases a word left of cursor.
+  VLNEXT: 14,           // Enter the next character typed literally, even if it
+                        //  is a special character
+  VFLUSH: 15,           // Character to flush output.
+  VSWTCH: 16,           // Switch to a different shell layer.
+  VSTATUS: 17,          // Prints system status line (load, command, pid, etc).
+  VDISCARD: 18,         // Toggles the flushing of terminal output.
+  IGNPAR: 30,           // The ignore parity flag.  The parameter SHOULD be 0
+                        //  if this flag is FALSE, and 1 if it is TRUE.
+  PARMRK: 31,           // Mark parity and framing errors.
+  INPCK: 32,            // Enable checking of parity errors.
+  ISTRIP: 33,           // Strip 8th bit off characters.
+  INLCR: 34,            // Map NL into CR on input.
+  IGNCR: 35,            // Ignore CR on input.
+  ICRNL: 36,            // Map CR to NL on input.
+  IUCLC: 37,            // Translate uppercase characters to lowercase.
+  IXON: 38,             // Enable output flow control.
+  IXANY: 39,            // Any char will restart after stop.
+  IXOFF: 40,            // Enable input flow control.
+  IMAXBEL: 41,          // Ring bell on input queue full.
+  ISIG: 50,             // Enable signals INTR, QUIT, [D]SUSP.
+  ICANON: 51,           // Canonicalize input lines.
+  XCASE: 52,            // Enable input and output of uppercase characters by
+                        //  preceding their lowercase equivalents with "\".
+  ECHO: 53,             // Enable echoing.
+  ECHOE: 54,            // Visually erase chars.
+  ECHOK: 55,            // Kill character discards current line.
+  ECHONL: 56,           // Echo NL even if ECHO is off.
+  NOFLSH: 57,           // Don't flush after interrupt.
+  TOSTOP: 58,           // Stop background jobs from output.
+  IEXTEN: 59,           // Enable extensions.
+  ECHOCTL: 60,          // Echo control characters as ^(Char).
+  ECHOKE: 61,           // Visual erase for line kill.
+  PENDIN: 62,           // Retype pending input.
+  OPOST: 70,            // Enable output processing.
+  OLCUC: 71,            // Convert lowercase to uppercase.
+  ONLCR: 72,            // Map NL to CR-NL.
+  OCRNL: 73,            // Translate carriage return to newline (output).
+  ONOCR: 74,            // Translate newline to carriage return-newline
+                        // (output).
+  ONLRET: 75,           // Newline performs a carriage return (output).
+  CS7: 90,              // 7 bit mode.
+  CS8: 91,              // 8 bit mode.
+  PARENB: 92,           // Parity enable.
+  PARODD: 93,           // Odd parity, else even.
+  TTY_OP_ISPEED: 128,   // Specifies the input baud rate in bits per second.
+  TTY_OP_OSPEED: 129    // Specifies the output baud rate in bits per second.
+};
+for (i = 0, keys = Object.keys(TERMINAL_MODE), len = keys.length; i < len; ++i)
+  TERMINAL_MODE[TERMINAL_MODE[keys[i]]] = keys[i];
+
+var CHANNEL_EXTENDED_DATATYPE = exports.CHANNEL_EXTENDED_DATATYPE = {
+  STDERR: 1
+};
+for (i = 0, keys = Object.keys(CHANNEL_EXTENDED_DATATYPE), len = keys.length;
+     i < len;
+     ++i) {
+  CHANNEL_EXTENDED_DATATYPE[CHANNEL_EXTENDED_DATATYPE[keys[i]]] = keys[i];
+}
+
+exports.SIGNALS = ['ABRT', 'ALRM', 'FPE', 'HUP', 'ILL', 'INT',
+                   'QUIT', 'SEGV', 'TERM', 'USR1', 'USR2', 'KILL',
+                   'PIPE'];
+
+var DEFAULT_KEX = [
+  // https://tools.ietf.org/html/rfc5656#section-10.1
+  'ecdh-sha2-nistp256',
+  'ecdh-sha2-nistp384',
+  'ecdh-sha2-nistp521',
+
+  // https://tools.ietf.org/html/rfc4419#section-4
+  'diffie-hellman-group-exchange-sha256',
+
+  'diffie-hellman-group14-sha256',
+  'diffie-hellman-group16-sha512',
+  'diffie-hellman-group18-sha512',
+
+  'diffie-hellman-group14-sha1', // REQUIRED
+];
+if (curve25519Supported) {
+  DEFAULT_KEX.unshift('curve25519-sha256');
+  DEFAULT_KEX.unshift('curve25519-sha256@libssh.org');
+}
+var SUPPORTED_KEX = [
+  // https://tools.ietf.org/html/rfc4419#section-4
+  'diffie-hellman-group-exchange-sha1',
+
+  'diffie-hellman-group1-sha1'  // REQUIRED
+];
+var KEX_BUF = Buffer.from(DEFAULT_KEX.join(','), 'ascii');
+SUPPORTED_KEX = DEFAULT_KEX.concat(SUPPORTED_KEX);
+
+var DEFAULT_SERVER_HOST_KEY = [
+  'ecdsa-sha2-nistp256',
+  'ecdsa-sha2-nistp384',
+  'ecdsa-sha2-nistp521',
+  'ssh-rsa',
+];
+if (eddsaSupported)
+  DEFAULT_SERVER_HOST_KEY.unshift('ssh-ed25519');
+var SUPPORTED_SERVER_HOST_KEY = [
+  'ssh-dss'
+];
+var SERVER_HOST_KEY_BUF = Buffer.from(DEFAULT_SERVER_HOST_KEY.join(','),
+                                      'ascii');
+SUPPORTED_SERVER_HOST_KEY = DEFAULT_SERVER_HOST_KEY.concat(
+  SUPPORTED_SERVER_HOST_KEY
+);
+
+var DEFAULT_CIPHER = [
+  // http://tools.ietf.org/html/rfc4344#section-4
+  'aes128-ctr',
+  'aes192-ctr',
+  'aes256-ctr',
+
+  // http://tools.ietf.org/html/rfc5647
+  'aes128-gcm',
+  'aes128-gcm@openssh.com',
+  'aes256-gcm',
+  'aes256-gcm@openssh.com'
+];
+var SUPPORTED_CIPHER = [
+  'aes256-cbc',
+  'aes192-cbc',
+  'aes128-cbc',
+  'blowfish-cbc',
+  '3des-cbc',
+
+  // http://tools.ietf.org/html/rfc4345#section-4:
+  'arcfour256',
+  'arcfour128',
+
+  'cast128-cbc',
+  'arcfour'
+];
+var CIPHER_BUF = Buffer.from(DEFAULT_CIPHER.join(','), 'ascii');
+SUPPORTED_CIPHER = DEFAULT_CIPHER.concat(SUPPORTED_CIPHER);
+
+var DEFAULT_HMAC = [
+  'hmac-sha2-256',
+  'hmac-sha2-512',
+  'hmac-sha1',
+];
+var SUPPORTED_HMAC = [
+  'hmac-md5',
+  'hmac-sha2-256-96', // first 96 bits of HMAC-SHA256
+  'hmac-sha2-512-96', // first 96 bits of HMAC-SHA512
+  'hmac-ripemd160',
+  'hmac-sha1-96',     // first 96 bits of HMAC-SHA1
+  'hmac-md5-96'       // first 96 bits of HMAC-MD5
+];
+var HMAC_BUF = Buffer.from(DEFAULT_HMAC.join(','), 'ascii');
+SUPPORTED_HMAC = DEFAULT_HMAC.concat(SUPPORTED_HMAC);
+
+var DEFAULT_COMPRESS = [
+  'none',
+  'zlib@openssh.com', // ZLIB (LZ77) compression, except
+                      // compression/decompression does not start until after
+                      // successful user authentication
+  'zlib'              // ZLIB (LZ77) compression
+];
+var SUPPORTED_COMPRESS = [];
+var COMPRESS_BUF = Buffer.from(DEFAULT_COMPRESS.join(','), 'ascii');
+SUPPORTED_COMPRESS = DEFAULT_COMPRESS.concat(SUPPORTED_COMPRESS);
+
+function makeCipherInfo(blockLen, keyLen, ivLen, authLen, discardLen, stream) {
+  return {
+    blockLen: blockLen,
+    keyLen: keyLen,
+    ivLen: ivLen === 0 ? blockLen : ivLen,
+    authLen: authLen,
+    discardLen: discardLen,
+    stream: stream,
+  };
+}
+exports.CIPHER_INFO = {
+  'aes128-gcm': makeCipherInfo(16, 16, 12, 16, 0, false),
+  'aes256-gcm': makeCipherInfo(16, 32, 12, 16, 0, false),
+  'aes128-gcm@openssh.com': makeCipherInfo(16, 16, 12, 16, 0, false),
+  'aes256-gcm@openssh.com': makeCipherInfo(16, 32, 12, 16, 0, false),
+
+  'aes128-cbc': makeCipherInfo(16, 16, 0, 0, 0, false),
+  'aes192-cbc': makeCipherInfo(16, 24, 0, 0, 0, false),
+  'aes256-cbc': makeCipherInfo(16, 32, 0, 0, 0, false),
+  'rijndael-cbc@lysator.liu.se': makeCipherInfo(16, 32, 0, 0, 0, false),
+  '3des-cbc': makeCipherInfo(8, 24, 0, 0, 0, false),
+  'blowfish-cbc': makeCipherInfo(8, 16, 0, 0, 0, false),
+  'idea-cbc': makeCipherInfo(8, 16, 0, 0, 0, false),
+  'cast128-cbc': makeCipherInfo(8, 16, 0, 0, 0, false),
+  'camellia128-cbc': makeCipherInfo(16, 16, 0, 0, 0, false),
+  'camellia192-cbc': makeCipherInfo(16, 24, 0, 0, 0, false),
+  'camellia256-cbc': makeCipherInfo(16, 32, 0, 0, 0, false),
+  'camellia128-cbc@openssh.com': makeCipherInfo(16, 16, 0, 0, 0, false),
+  'camellia192-cbc@openssh.com': makeCipherInfo(16, 24, 0, 0, 0, false),
+  'camellia256-cbc@openssh.com': makeCipherInfo(16, 32, 0, 0, 0, false),
+
+  'aes128-ctr': makeCipherInfo(16, 16, 0, 0, 0, false),
+  'aes192-ctr': makeCipherInfo(16, 24, 0, 0, 0, false),
+  'aes256-ctr': makeCipherInfo(16, 32, 0, 0, 0, false),
+  '3des-ctr': makeCipherInfo(8, 24, 0, 0, 0, false),
+  'blowfish-ctr': makeCipherInfo(8, 16, 0, 0, 0, false),
+  'cast128-ctr': makeCipherInfo(8, 16, 0, 0, 0, false),
+  'camellia128-ctr': makeCipherInfo(16, 16, 0, 0, 0, false),
+  'camellia192-ctr': makeCipherInfo(16, 24, 0, 0, 0, false),
+  'camellia256-ctr': makeCipherInfo(16, 32, 0, 0, 0, false),
+  'camellia128-ctr@openssh.com': makeCipherInfo(16, 16, 0, 0, 0, false),
+  'camellia192-ctr@openssh.com': makeCipherInfo(16, 24, 0, 0, 0, false),
+  'camellia256-ctr@openssh.com': makeCipherInfo(16, 32, 0, 0, 0, false),
+
+  /* The "arcfour128" algorithm is the RC4 cipher, as described in
+     [SCHNEIER], using a 128-bit key.  The first 1536 bytes of keystream
+     generated by the cipher MUST be discarded, and the first byte of the
+     first encrypted packet MUST be encrypted using the 1537th byte of
+     keystream.
+
+     -- http://tools.ietf.org/html/rfc4345#section-4 */
+  'arcfour': makeCipherInfo(8, 16, 0, 0, 1536, true),
+  'arcfour128': makeCipherInfo(8, 16, 0, 0, 1536, true),
+  'arcfour256': makeCipherInfo(8, 32, 0, 0, 1536, true),
+  'arcfour512': makeCipherInfo(8, 64, 0, 0, 1536, true),
+};
+
+function makeHMACInfo(len, actualLen) {
+  return { len: len, actualLen: actualLen };
+}
+exports.HMAC_INFO = {
+  'hmac-md5': makeHMACInfo(16, 16),
+  'hmac-md5-96': makeHMACInfo(16, 12),
+  'hmac-ripemd160': makeHMACInfo(20, 20),
+  'hmac-sha1': makeHMACInfo(20, 20),
+  'hmac-sha1-96': makeHMACInfo(20, 12),
+  'hmac-sha2-256': makeHMACInfo(32, 32),
+  'hmac-sha2-256-96': makeHMACInfo(32, 12),
+  'hmac-sha2-512': makeHMACInfo(64, 64),
+  'hmac-sha2-512-96': makeHMACInfo(64, 12),
+};
+
+exports.ALGORITHMS = {
+  KEX: DEFAULT_KEX,
+  KEX_BUF: KEX_BUF,
+  SUPPORTED_KEX: SUPPORTED_KEX,
+
+  SERVER_HOST_KEY: DEFAULT_SERVER_HOST_KEY,
+  SERVER_HOST_KEY_BUF: SERVER_HOST_KEY_BUF,
+  SUPPORTED_SERVER_HOST_KEY: SUPPORTED_SERVER_HOST_KEY,
+
+  CIPHER: DEFAULT_CIPHER,
+  CIPHER_BUF: CIPHER_BUF,
+  SUPPORTED_CIPHER: SUPPORTED_CIPHER,
+
+  HMAC: DEFAULT_HMAC,
+  HMAC_BUF: HMAC_BUF,
+  SUPPORTED_HMAC: SUPPORTED_HMAC,
+
+  COMPRESS: DEFAULT_COMPRESS,
+  COMPRESS_BUF: COMPRESS_BUF,
+  SUPPORTED_COMPRESS: SUPPORTED_COMPRESS
+};
+exports.SSH_TO_OPENSSL = {
+  // ECDH key exchange
+  'ecdh-sha2-nistp256': 'prime256v1', // OpenSSL's name for 'secp256r1'
+  'ecdh-sha2-nistp384': 'secp384r1',
+  'ecdh-sha2-nistp521': 'secp521r1',
+  // Ciphers
+  'aes128-gcm': 'aes-128-gcm',
+  'aes256-gcm': 'aes-256-gcm',
+  'aes128-gcm@openssh.com': 'aes-128-gcm',
+  'aes256-gcm@openssh.com': 'aes-256-gcm',
+  '3des-cbc': 'des-ede3-cbc',
+  'blowfish-cbc': 'bf-cbc',
+  'aes256-cbc': 'aes-256-cbc',
+  'aes192-cbc': 'aes-192-cbc',
+  'aes128-cbc': 'aes-128-cbc',
+  'idea-cbc': 'idea-cbc',
+  'cast128-cbc': 'cast-cbc',
+  'rijndael-cbc@lysator.liu.se': 'aes-256-cbc',
+  'arcfour128': 'rc4',
+  'arcfour256': 'rc4',
+  'arcfour512': 'rc4',
+  'arcfour': 'rc4',
+  'camellia128-cbc': 'camellia-128-cbc',
+  'camellia192-cbc': 'camellia-192-cbc',
+  'camellia256-cbc': 'camellia-256-cbc',
+  'camellia128-cbc@openssh.com': 'camellia-128-cbc',
+  'camellia192-cbc@openssh.com': 'camellia-192-cbc',
+  'camellia256-cbc@openssh.com': 'camellia-256-cbc',
+  '3des-ctr': 'des-ede3',
+  'blowfish-ctr': 'bf-ecb',
+  'aes256-ctr': 'aes-256-ctr',
+  'aes192-ctr': 'aes-192-ctr',
+  'aes128-ctr': 'aes-128-ctr',
+  'cast128-ctr': 'cast5-ecb',
+  'camellia128-ctr': 'camellia-128-ecb',
+  'camellia192-ctr': 'camellia-192-ecb',
+  'camellia256-ctr': 'camellia-256-ecb',
+  'camellia128-ctr@openssh.com': 'camellia-128-ecb',
+  'camellia192-ctr@openssh.com': 'camellia-192-ecb',
+  'camellia256-ctr@openssh.com': 'camellia-256-ecb',
+  // HMAC
+  'hmac-sha1-96': 'sha1',
+  'hmac-sha1': 'sha1',
+  'hmac-sha2-256': 'sha256',
+  'hmac-sha2-256-96': 'sha256',
+  'hmac-sha2-512': 'sha512',
+  'hmac-sha2-512-96': 'sha512',
+  'hmac-md5-96': 'md5',
+  'hmac-md5': 'md5',
+  'hmac-ripemd160': 'ripemd160'
+};
+
+var BUGS = exports.BUGS = {
+  BAD_DHGEX: 1,
+  OLD_EXIT: 2,
+  DYN_RPORT_BUG: 4
+};
+
+exports.BUGGY_IMPLS = [
+  [ 'Cisco-1.25', BUGS.BAD_DHGEX ],
+  [ /^[0-9.]+$/, BUGS.OLD_EXIT ], // old SSH.com implementations
+  [ /^OpenSSH_5\.\d+/, BUGS.DYN_RPORT_BUG ]
+];
+
+exports.EDDSA_SUPPORTED = eddsaSupported;
+exports.CURVE25519_SUPPORTED = curve25519Supported;
+
+
+/***/ }),
+
+/***/ 4950:
+/***/ ((module) => {
+
+// Copyright (c) 2005  Tom Wu
+// All Rights Reserved.
+// See "LICENSE" for details.
+
+// Basic JavaScript BN library - subset useful for RSA encryption.
+
+// Bits per digit
+var dbits;
+
+// JavaScript engine analysis
+var canary = 0xdeadbeefcafe;
+var j_lm = ((canary&0xffffff)==0xefcafe);
+
+// (public) Constructor
+function BigInteger(a,b,c) {
+  if(a != null)
+    if("number" == typeof a) this.fromNumber(a,b,c);
+    else if(b == null && "string" != typeof a) this.fromString(a,256);
+    else this.fromString(a,b);
+}
+
+// return new, unset BigInteger
+function nbi() { return new BigInteger(null); }
+
+// am: Compute w_j += (x*this_i), propagate carries,
+// c is initial carry, returns final carry.
+// c < 3*dvalue, x < 2*dvalue, this_i < dvalue
+// We need to select the fastest one that works in this environment.
+
+// Set max digit bits to 28 since some
+// browsers slow down when dealing with 32-bit numbers.
+function am3(i,x,w,j,c,n) {
+  var xl = x&0x3fff, xh = x>>14;
+  while(--n >= 0) {
+    var l = this[i]&0x3fff;
+    var h = this[i++]>>14;
+    var m = xh*l+h*xl;
+    l = xl*l+((m&0x3fff)<<14)+w[j]+c;
+    c = (l>>28)+(m>>14)+xh*h;
+    w[j++] = l&0xfffffff;
+  }
+  return c;
+}
+BigInteger.prototype.am = am3;
+dbits = 28;
+
+BigInteger.prototype.DB = dbits;
+BigInteger.prototype.DM = ((1<<dbits)-1);
+BigInteger.prototype.DV = (1<<dbits);
+
+var BI_FP = 52;
+BigInteger.prototype.FV = Math.pow(2,BI_FP);
+BigInteger.prototype.F1 = BI_FP-dbits;
+BigInteger.prototype.F2 = 2*dbits-BI_FP;
+
+// Digit conversions
+var BI_RM = "0123456789abcdefghijklmnopqrstuvwxyz";
+var BI_RC = new Array();
+var rr,vv;
+rr = "0".charCodeAt(0);
+for(vv = 0; vv <= 9; ++vv) BI_RC[rr++] = vv;
+rr = "a".charCodeAt(0);
+for(vv = 10; vv < 36; ++vv) BI_RC[rr++] = vv;
+rr = "A".charCodeAt(0);
+for(vv = 10; vv < 36; ++vv) BI_RC[rr++] = vv;
+
+function int2char(n) { return BI_RM.charAt(n); }
+function intAt(s,i) {
+  var c = BI_RC[s.charCodeAt(i)];
+  return (c==null)?-1:c;
+}
+
+// (protected) copy this to r
+function bnpCopyTo(r) {
+  for(var i = this.t-1; i >= 0; --i) r[i] = this[i];
+  r.t = this.t;
+  r.s = this.s;
+}
+
+// (protected) set from integer value x, -DV <= x < DV
+function bnpFromInt(x) {
+  this.t = 1;
+  this.s = (x<0)?-1:0;
+  if(x > 0) this[0] = x;
+  else if(x < -1) this[0] = x+this.DV;
+  else this.t = 0;
+}
+
+// return bigint initialized to value
+function nbv(i) { var r = nbi(); r.fromInt(i); return r; }
+
+// (protected) set from string and radix
+function bnpFromString(s,b) {
+  var k;
+  if(b == 16) k = 4;
+  else if(b == 8) k = 3;
+  else if(b == 256) k = 8; // byte array
+  else if(b == 2) k = 1;
+  else if(b == 32) k = 5;
+  else if(b == 4) k = 2;
+  else { this.fromRadix(s,b); return; }
+  this.t = 0;
+  this.s = 0;
+  var i = s.length, mi = false, sh = 0;
+  while(--i >= 0) {
+    var x = (k==8)?s[i]&0xff:intAt(s,i);
+    if(x < 0) {
+      if(s.charAt(i) == "-") mi = true;
+      continue;
+    }
+    mi = false;
+    if(sh == 0)
+      this[this.t++] = x;
+    else if(sh+k > this.DB) {
+      this[this.t-1] |= (x&((1<<(this.DB-sh))-1))<<sh;
+      this[this.t++] = (x>>(this.DB-sh));
+    }
+    else
+      this[this.t-1] |= x<<sh;
+    sh += k;
+    if(sh >= this.DB) sh -= this.DB;
+  }
+  if(k == 8 && (s[0]&0x80) != 0) {
+    this.s = -1;
+    if(sh > 0) this[this.t-1] |= ((1<<(this.DB-sh))-1)<<sh;
+  }
+  this.clamp();
+  if(mi) BigInteger.ZERO.subTo(this,this);
+}
+
+// (protected) clamp off excess high words
+function bnpClamp() {
+  var c = this.s&this.DM;
+  while(this.t > 0 && this[this.t-1] == c) --this.t;
+}
+
+// (public) return string representation in given radix
+function bnToString(b) {
+  if(this.s < 0) return "-"+this.negate().toString(b);
+  var k;
+  if(b == 16) k = 4;
+  else if(b == 8) k = 3;
+  else if(b == 2) k = 1;
+  else if(b == 32) k = 5;
+  else if(b == 4) k = 2;
+  else return this.toRadix(b);
+  var km = (1<<k)-1, d, m = false, r = "", i = this.t;
+  var p = this.DB-(i*this.DB)%k;
+  if(i-- > 0) {
+    if(p < this.DB && (d = this[i]>>p) > 0) { m = true; r = int2char(d); }
+    while(i >= 0) {
+      if(p < k) {
+        d = (this[i]&((1<<p)-1))<<(k-p);
+        d |= this[--i]>>(p+=this.DB-k);
+      }
+      else {
+        d = (this[i]>>(p-=k))&km;
+        if(p <= 0) { p += this.DB; --i; }
+      }
+      if(d > 0) m = true;
+      if(m) r += int2char(d);
+    }
+  }
+  return m?r:"0";
+}
+
+// (public) -this
+function bnNegate() { var r = nbi(); BigInteger.ZERO.subTo(this,r); return r; }
+
+// (public) |this|
+function bnAbs() { return (this.s<0)?this.negate():this; }
+
+// (public) return + if this > a, - if this < a, 0 if equal
+function bnCompareTo(a) {
+  var r = this.s-a.s;
+  if(r != 0) return r;
+  var i = this.t;
+  r = i-a.t;
+  if(r != 0) return (this.s<0)?-r:r;
+  while(--i >= 0) if((r=this[i]-a[i]) != 0) return r;
+  return 0;
+}
+
+// returns bit length of the integer x
+function nbits(x) {
+  var r = 1, t;
+  if((t=x>>>16) != 0) { x = t; r += 16; }
+  if((t=x>>8) != 0) { x = t; r += 8; }
+  if((t=x>>4) != 0) { x = t; r += 4; }
+  if((t=x>>2) != 0) { x = t; r += 2; }
+  if((t=x>>1) != 0) { x = t; r += 1; }
+  return r;
+}
+
+// (public) return the number of bits in "this"
+function bnBitLength() {
+  if(this.t <= 0) return 0;
+  return this.DB*(this.t-1)+nbits(this[this.t-1]^(this.s&this.DM));
+}
+
+// (protected) r = this << n*DB
+function bnpDLShiftTo(n,r) {
+  var i;
+  for(i = this.t-1; i >= 0; --i) r[i+n] = this[i];
+  for(i = n-1; i >= 0; --i) r[i] = 0;
+  r.t = this.t+n;
+  r.s = this.s;
+}
+
+// (protected) r = this >> n*DB
+function bnpDRShiftTo(n,r) {
+  for(var i = n; i < this.t; ++i) r[i-n] = this[i];
+  r.t = Math.max(this.t-n,0);
+  r.s = this.s;
+}
+
+// (protected) r = this << n
+function bnpLShiftTo(n,r) {
+  var bs = n%this.DB;
+  var cbs = this.DB-bs;
+  var bm = (1<<cbs)-1;
+  var ds = Math.floor(n/this.DB), c = (this.s<<bs)&this.DM, i;
+  for(i = this.t-1; i >= 0; --i) {
+    r[i+ds+1] = (this[i]>>cbs)|c;
+    c = (this[i]&bm)<<bs;
+  }
+  for(i = ds-1; i >= 0; --i) r[i] = 0;
+  r[ds] = c;
+  r.t = this.t+ds+1;
+  r.s = this.s;
+  r.clamp();
+}
+
+// (protected) r = this >> n
+function bnpRShiftTo(n,r) {
+  r.s = this.s;
+  var ds = Math.floor(n/this.DB);
+  if(ds >= this.t) { r.t = 0; return; }
+  var bs = n%this.DB;
+  var cbs = this.DB-bs;
+  var bm = (1<<bs)-1;
+  r[0] = this[ds]>>bs;
+  for(var i = ds+1; i < this.t; ++i) {
+    r[i-ds-1] |= (this[i]&bm)<<cbs;
+    r[i-ds] = this[i]>>bs;
+  }
+  if(bs > 0) r[this.t-ds-1] |= (this.s&bm)<<cbs;
+  r.t = this.t-ds;
+  r.clamp();
+}
+
+// (protected) r = this - a
+function bnpSubTo(a,r) {
+  var i = 0, c = 0, m = Math.min(a.t,this.t);
+  while(i < m) {
+    c += this[i]-a[i];
+    r[i++] = c&this.DM;
+    c >>= this.DB;
+  }
+  if(a.t < this.t) {
+    c -= a.s;
+    while(i < this.t) {
+      c += this[i];
+      r[i++] = c&this.DM;
+      c >>= this.DB;
+    }
+    c += this.s;
+  }
+  else {
+    c += this.s;
+    while(i < a.t) {
+      c -= a[i];
+      r[i++] = c&this.DM;
+      c >>= this.DB;
+    }
+    c -= a.s;
+  }
+  r.s = (c<0)?-1:0;
+  if(c < -1) r[i++] = this.DV+c;
+  else if(c > 0) r[i++] = c;
+  r.t = i;
+  r.clamp();
+}
+
+// (protected) r = this * a, r != this,a (HAC 14.12)
+// "this" should be the larger one if appropriate.
+function bnpMultiplyTo(a,r) {
+  var x = this.abs(), y = a.abs();
+  var i = x.t;
+  r.t = i+y.t;
+  while(--i >= 0) r[i] = 0;
+  for(i = 0; i < y.t; ++i) r[i+x.t] = x.am(0,y[i],r,i,0,x.t);
+  r.s = 0;
+  r.clamp();
+  if(this.s != a.s) BigInteger.ZERO.subTo(r,r);
+}
+
+// (protected) r = this^2, r != this (HAC 14.16)
+function bnpSquareTo(r) {
+  var x = this.abs();
+  var i = r.t = 2*x.t;
+  while(--i >= 0) r[i] = 0;
+  for(i = 0; i < x.t-1; ++i) {
+    var c = x.am(i,x[i],r,2*i,0,1);
+    if((r[i+x.t]+=x.am(i+1,2*x[i],r,2*i+1,c,x.t-i-1)) >= x.DV) {
+      r[i+x.t] -= x.DV;
+      r[i+x.t+1] = 1;
+    }
+  }
+  if(r.t > 0) r[r.t-1] += x.am(i,x[i],r,2*i,0,1);
+  r.s = 0;
+  r.clamp();
+}
+
+// (protected) divide this by m, quotient and remainder to q, r (HAC 14.20)
+// r != q, this != m.  q or r may be null.
+function bnpDivRemTo(m,q,r) {
+  var pm = m.abs();
+  if(pm.t <= 0) return;
+  var pt = this.abs();
+  if(pt.t < pm.t) {
+    if(q != null) q.fromInt(0);
+    if(r != null) this.copyTo(r);
+    return;
+  }
+  if(r == null) r = nbi();
+  var y = nbi(), ts = this.s, ms = m.s;
+  var nsh = this.DB-nbits(pm[pm.t-1]);   // normalize modulus
+  if(nsh > 0) { pm.lShiftTo(nsh,y); pt.lShiftTo(nsh,r); }
+  else { pm.copyTo(y); pt.copyTo(r); }
+  var ys = y.t;
+  var y0 = y[ys-1];
+  if(y0 == 0) return;
+  var yt = y0*(1<<this.F1)+((ys>1)?y[ys-2]>>this.F2:0);
+  var d1 = this.FV/yt, d2 = (1<<this.F1)/yt, e = 1<<this.F2;
+  var i = r.t, j = i-ys, t = (q==null)?nbi():q;
+  y.dlShiftTo(j,t);
+  if(r.compareTo(t) >= 0) {
+    r[r.t++] = 1;
+    r.subTo(t,r);
+  }
+  BigInteger.ONE.dlShiftTo(ys,t);
+  t.subTo(y,y);  // "negative" y so we can replace sub with am later
+  while(y.t < ys) y[y.t++] = 0;
+  while(--j >= 0) {
+    // Estimate quotient digit
+    var qd = (r[--i]==y0)?this.DM:Math.floor(r[i]*d1+(r[i-1]+e)*d2);
+    if((r[i]+=y.am(0,qd,r,j,0,ys)) < qd) {   // Try it out
+      y.dlShiftTo(j,t);
+      r.subTo(t,r);
+      while(r[i] < --qd) r.subTo(t,r);
+    }
+  }
+  if(q != null) {
+    r.drShiftTo(ys,q);
+    if(ts != ms) BigInteger.ZERO.subTo(q,q);
+  }
+  r.t = ys;
+  r.clamp();
+  if(nsh > 0) r.rShiftTo(nsh,r); // Denormalize remainder
+  if(ts < 0) BigInteger.ZERO.subTo(r,r);
+}
+
+// (public) this mod a
+function bnMod(a) {
+  var r = nbi();
+  this.abs().divRemTo(a,null,r);
+  if(this.s < 0 && r.compareTo(BigInteger.ZERO) > 0) a.subTo(r,r);
+  return r;
+}
+
+// Modular reduction using "classic" algorithm
+function Classic(m) { this.m = m; }
+function cConvert(x) {
+  if(x.s < 0 || x.compareTo(this.m) >= 0) return x.mod(this.m);
+  else return x;
+}
+function cRevert(x) { return x; }
+function cReduce(x) { x.divRemTo(this.m,null,x); }
+function cMulTo(x,y,r) { x.multiplyTo(y,r); this.reduce(r); }
+function cSqrTo(x,r) { x.squareTo(r); this.reduce(r); }
+
+Classic.prototype.convert = cConvert;
+Classic.prototype.revert = cRevert;
+Classic.prototype.reduce = cReduce;
+Classic.prototype.mulTo = cMulTo;
+Classic.prototype.sqrTo = cSqrTo;
+
+// (protected) return "-1/this % 2^DB"; useful for Mont. reduction
+// justification:
+//         xy == 1 (mod m)
+//         xy =  1+km
+//   xy(2-xy) = (1+km)(1-km)
+// x[y(2-xy)] = 1-k^2m^2
+// x[y(2-xy)] == 1 (mod m^2)
+// if y is 1/x mod m, then y(2-xy) is 1/x mod m^2
+// should reduce x and y(2-xy) by m^2 at each step to keep size bounded.
+// JS multiply "overflows" differently from C/C++, so care is needed here.
+function bnpInvDigit() {
+  if(this.t < 1) return 0;
+  var x = this[0];
+  if((x&1) == 0) return 0;
+  var y = x&3;       // y == 1/x mod 2^2
+  y = (y*(2-(x&0xf)*y))&0xf; // y == 1/x mod 2^4
+  y = (y*(2-(x&0xff)*y))&0xff;   // y == 1/x mod 2^8
+  y = (y*(2-(((x&0xffff)*y)&0xffff)))&0xffff;    // y == 1/x mod 2^16
+  // last step - calculate inverse mod DV directly;
+  // assumes 16 < DB <= 32 and assumes ability to handle 48-bit ints
+  y = (y*(2-x*y%this.DV))%this.DV;       // y == 1/x mod 2^dbits
+  // we really want the negative inverse, and -DV < y < DV
+  return (y>0)?this.DV-y:-y;
+}
+
+// Montgomery reduction
+function Montgomery(m) {
+  this.m = m;
+  this.mp = m.invDigit();
+  this.mpl = this.mp&0x7fff;
+  this.mph = this.mp>>15;
+  this.um = (1<<(m.DB-15))-1;
+  this.mt2 = 2*m.t;
+}
+
+// xR mod m
+function montConvert(x) {
+  var r = nbi();
+  x.abs().dlShiftTo(this.m.t,r);
+  r.divRemTo(this.m,null,r);
+  if(x.s < 0 && r.compareTo(BigInteger.ZERO) > 0) this.m.subTo(r,r);
+  return r;
+}
+
+// x/R mod m
+function montRevert(x) {
+  var r = nbi();
+  x.copyTo(r);
+  this.reduce(r);
+  return r;
+}
+
+// x = x/R mod m (HAC 14.32)
+function montReduce(x) {
+  while(x.t <= this.mt2) // pad x so am has enough room later
+    x[x.t++] = 0;
+  for(var i = 0; i < this.m.t; ++i) {
+    // faster way of calculating u0 = x[i]*mp mod DV
+    var j = x[i]&0x7fff;
+    var u0 = (j*this.mpl+(((j*this.mph+(x[i]>>15)*this.mpl)&this.um)<<15))&x.DM;
+    // use am to combine the multiply-shift-add into one call
+    j = i+this.m.t;
+    x[j] += this.m.am(0,u0,x,i,0,this.m.t);
+    // propagate carry
+    while(x[j] >= x.DV) { x[j] -= x.DV; x[++j]++; }
+  }
+  x.clamp();
+  x.drShiftTo(this.m.t,x);
+  if(x.compareTo(this.m) >= 0) x.subTo(this.m,x);
+}
+
+// r = "x^2/R mod m"; x != r
+function montSqrTo(x,r) { x.squareTo(r); this.reduce(r); }
+
+// r = "xy/R mod m"; x,y != r
+function montMulTo(x,y,r) { x.multiplyTo(y,r); this.reduce(r); }
+
+Montgomery.prototype.convert = montConvert;
+Montgomery.prototype.revert = montRevert;
+Montgomery.prototype.reduce = montReduce;
+Montgomery.prototype.mulTo = montMulTo;
+Montgomery.prototype.sqrTo = montSqrTo;
+
+// (protected) true iff this is even
+function bnpIsEven() { return ((this.t>0)?(this[0]&1):this.s) == 0; }
+
+// (protected) this^e, e < 2^32, doing sqr and mul with "r" (HAC 14.79)
+function bnpExp(e,z) {
+  if(e > 0xffffffff || e < 1) return BigInteger.ONE;
+  var r = nbi(), r2 = nbi(), g = z.convert(this), i = nbits(e)-1;
+  g.copyTo(r);
+  while(--i >= 0) {
+    z.sqrTo(r,r2);
+    if((e&(1<<i)) > 0) z.mulTo(r2,g,r);
+    else { var t = r; r = r2; r2 = t; }
+  }
+  return z.revert(r);
+}
+
+// (public) this^e % m, 0 <= e < 2^32
+function bnModPowInt(e,m) {
+  var z;
+  if(e < 256 || m.isEven()) z = new Classic(m); else z = new Montgomery(m);
+  return this.exp(e,z);
+}
+
+// protected
+BigInteger.prototype.copyTo = bnpCopyTo;
+BigInteger.prototype.fromInt = bnpFromInt;
+BigInteger.prototype.fromString = bnpFromString;
+BigInteger.prototype.clamp = bnpClamp;
+BigInteger.prototype.dlShiftTo = bnpDLShiftTo;
+BigInteger.prototype.drShiftTo = bnpDRShiftTo;
+BigInteger.prototype.lShiftTo = bnpLShiftTo;
+BigInteger.prototype.rShiftTo = bnpRShiftTo;
+BigInteger.prototype.subTo = bnpSubTo;
+BigInteger.prototype.multiplyTo = bnpMultiplyTo;
+BigInteger.prototype.squareTo = bnpSquareTo;
+BigInteger.prototype.divRemTo = bnpDivRemTo;
+BigInteger.prototype.invDigit = bnpInvDigit;
+BigInteger.prototype.isEven = bnpIsEven;
+BigInteger.prototype.exp = bnpExp;
+
+// public
+BigInteger.prototype.toString = bnToString;
+BigInteger.prototype.negate = bnNegate;
+BigInteger.prototype.abs = bnAbs;
+BigInteger.prototype.compareTo = bnCompareTo;
+BigInteger.prototype.bitLength = bnBitLength;
+BigInteger.prototype.mod = bnMod;
+BigInteger.prototype.modPowInt = bnModPowInt;
+
+// "constants"
+BigInteger.ZERO = nbv(0);
+BigInteger.ONE = nbv(1);
+
+// Copyright (c) 2005-2009  Tom Wu
+// All Rights Reserved.
+// See "LICENSE" for details.
+
+// Extended JavaScript BN functions, required for RSA private ops.
+
+// Version 1.1: new BigInteger("0", 10) returns "proper" zero
+// Version 1.2: square() API, isProbablePrime fix
+
+// (public)
+function bnClone() { var r = nbi(); this.copyTo(r); return r; }
+
+// (public) return value as integer
+function bnIntValue() {
+  if(this.s < 0) {
+    if(this.t == 1) return this[0]-this.DV;
+    else if(this.t == 0) return -1;
+  }
+  else if(this.t == 1) return this[0];
+  else if(this.t == 0) return 0;
+  // assumes 16 < DB < 32
+  return ((this[1]&((1<<(32-this.DB))-1))<<this.DB)|this[0];
+}
+
+// (public) return value as byte
+function bnByteValue() { return (this.t==0)?this.s:(this[0]<<24)>>24; }
+
+// (public) return value as short (assumes DB>=16)
+function bnShortValue() { return (this.t==0)?this.s:(this[0]<<16)>>16; }
+
+// (protected) return x s.t. r^x < DV
+function bnpChunkSize(r) { return Math.floor(Math.LN2*this.DB/Math.log(r)); }
+
+// (public) 0 if this == 0, 1 if this > 0
+function bnSigNum() {
+  if(this.s < 0) return -1;
+  else if(this.t <= 0 || (this.t == 1 && this[0] <= 0)) return 0;
+  else return 1;
+}
+
+// (protected) convert to radix string
+function bnpToRadix(b) {
+  if(b == null) b = 10;
+  if(this.signum() == 0 || b < 2 || b > 36) return "0";
+  var cs = this.chunkSize(b);
+  var a = Math.pow(b,cs);
+  var d = nbv(a), y = nbi(), z = nbi(), r = "";
+  this.divRemTo(d,y,z);
+  while(y.signum() > 0) {
+    r = (a+z.intValue()).toString(b).substr(1) + r;
+    y.divRemTo(d,y,z);
+  }
+  return z.intValue().toString(b) + r;
+}
+
+// (protected) convert from radix string
+function bnpFromRadix(s,b) {
+  this.fromInt(0);
+  if(b == null) b = 10;
+  var cs = this.chunkSize(b);
+  var d = Math.pow(b,cs), mi = false, j = 0, w = 0;
+  for(var i = 0; i < s.length; ++i) {
+    var x = intAt(s,i);
+    if(x < 0) {
+      if(s.charAt(i) == "-" && this.signum() == 0) mi = true;
+      continue;
+    }
+    w = b*w+x;
+    if(++j >= cs) {
+      this.dMultiply(d);
+      this.dAddOffset(w,0);
+      j = 0;
+      w = 0;
+    }
+  }
+  if(j > 0) {
+    this.dMultiply(Math.pow(b,j));
+    this.dAddOffset(w,0);
+  }
+  if(mi) BigInteger.ZERO.subTo(this,this);
+}
+
+// (protected) alternate constructor
+function bnpFromNumber(a,b,c) {
+  if("number" == typeof b) {
+    // new BigInteger(int,int,RNG)
+    if(a < 2) this.fromInt(1);
+    else {
+      this.fromNumber(a,c);
+      if(!this.testBit(a-1))  // force MSB set
+        this.bitwiseTo(BigInteger.ONE.shiftLeft(a-1),op_or,this);
+      if(this.isEven()) this.dAddOffset(1,0); // force odd
+      while(!this.isProbablePrime(b)) {
+        this.dAddOffset(2,0);
+        if(this.bitLength() > a) this.subTo(BigInteger.ONE.shiftLeft(a-1),this);
+      }
+    }
+  }
+  else {
+    // new BigInteger(int,RNG)
+    var x = new Array(), t = a&7;
+    x.length = (a>>3)+1;
+    b.nextBytes(x);
+    if(t > 0) x[0] &= ((1<<t)-1); else x[0] = 0;
+    this.fromString(x,256);
+  }
+}
+
+// (public) convert to bigendian byte array
+function bnToByteArray() {
+  var i = this.t, r = new Array();
+  r[0] = this.s;
+  var p = this.DB-(i*this.DB)%8, d, k = 0;
+  if(i-- > 0) {
+    if(p < this.DB && (d = this[i]>>p) != (this.s&this.DM)>>p)
+      r[k++] = d|(this.s<<(this.DB-p));
+    while(i >= 0) {
+      if(p < 8) {
+        d = (this[i]&((1<<p)-1))<<(8-p);
+        d |= this[--i]>>(p+=this.DB-8);
+      }
+      else {
+        d = (this[i]>>(p-=8))&0xff;
+        if(p <= 0) { p += this.DB; --i; }
+      }
+      if((d&0x80) != 0) d |= -256;
+      if(k == 0 && (this.s&0x80) != (d&0x80)) ++k;
+      if(k > 0 || d != this.s) r[k++] = d;
+    }
+  }
+  return r;
+}
+
+function bnEquals(a) { return(this.compareTo(a)==0); }
+function bnMin(a) { return(this.compareTo(a)<0)?this:a; }
+function bnMax(a) { return(this.compareTo(a)>0)?this:a; }
+
+// (protected) r = this op a (bitwise)
+function bnpBitwiseTo(a,op,r) {
+  var i, f, m = Math.min(a.t,this.t);
+  for(i = 0; i < m; ++i) r[i] = op(this[i],a[i]);
+  if(a.t < this.t) {
+    f = a.s&this.DM;
+    for(i = m; i < this.t; ++i) r[i] = op(this[i],f);
+    r.t = this.t;
+  }
+  else {
+    f = this.s&this.DM;
+    for(i = m; i < a.t; ++i) r[i] = op(f,a[i]);
+    r.t = a.t;
+  }
+  r.s = op(this.s,a.s);
+  r.clamp();
+}
+
+// (public) this & a
+function op_and(x,y) { return x&y; }
+function bnAnd(a) { var r = nbi(); this.bitwiseTo(a,op_and,r); return r; }
+
+// (public) this | a
+function op_or(x,y) { return x|y; }
+function bnOr(a) { var r = nbi(); this.bitwiseTo(a,op_or,r); return r; }
+
+// (public) this ^ a
+function op_xor(x,y) { return x^y; }
+function bnXor(a) { var r = nbi(); this.bitwiseTo(a,op_xor,r); return r; }
+
+// (public) this & ~a
+function op_andnot(x,y) { return x&~y; }
+function bnAndNot(a) { var r = nbi(); this.bitwiseTo(a,op_andnot,r); return r; }
+
+// (public) ~this
+function bnNot() {
+  var r = nbi();
+  for(var i = 0; i < this.t; ++i) r[i] = this.DM&~this[i];
+  r.t = this.t;
+  r.s = ~this.s;
+  return r;
+}
+
+// (public) this << n
+function bnShiftLeft(n) {
+  var r = nbi();
+  if(n < 0) this.rShiftTo(-n,r); else this.lShiftTo(n,r);
+  return r;
+}
+
+// (public) this >> n
+function bnShiftRight(n) {
+  var r = nbi();
+  if(n < 0) this.lShiftTo(-n,r); else this.rShiftTo(n,r);
+  return r;
+}
+
+// return index of lowest 1-bit in x, x < 2^31
+function lbit(x) {
+  if(x == 0) return -1;
+  var r = 0;
+  if((x&0xffff) == 0) { x >>= 16; r += 16; }
+  if((x&0xff) == 0) { x >>= 8; r += 8; }
+  if((x&0xf) == 0) { x >>= 4; r += 4; }
+  if((x&3) == 0) { x >>= 2; r += 2; }
+  if((x&1) == 0) ++r;
+  return r;
+}
+
+// (public) returns index of lowest 1-bit (or -1 if none)
+function bnGetLowestSetBit() {
+  for(var i = 0; i < this.t; ++i)
+    if(this[i] != 0) return i*this.DB+lbit(this[i]);
+  if(this.s < 0) return this.t*this.DB;
+  return -1;
+}
+
+// return number of 1 bits in x
+function cbit(x) {
+  var r = 0;
+  while(x != 0) { x &= x-1; ++r; }
+  return r;
+}
+
+// (public) return number of set bits
+function bnBitCount() {
+  var r = 0, x = this.s&this.DM;
+  for(var i = 0; i < this.t; ++i) r += cbit(this[i]^x);
+  return r;
+}
+
+// (public) true iff nth bit is set
+function bnTestBit(n) {
+  var j = Math.floor(n/this.DB);
+  if(j >= this.t) return(this.s!=0);
+  return((this[j]&(1<<(n%this.DB)))!=0);
+}
+
+// (protected) this op (1<<n)
+function bnpChangeBit(n,op) {
+  var r = BigInteger.ONE.shiftLeft(n);
+  this.bitwiseTo(r,op,r);
+  return r;
+}
+
+// (public) this | (1<<n)
+function bnSetBit(n) { return this.changeBit(n,op_or); }
+
+// (public) this & ~(1<<n)
+function bnClearBit(n) { return this.changeBit(n,op_andnot); }
+
+// (public) this ^ (1<<n)
+function bnFlipBit(n) { return this.changeBit(n,op_xor); }
+
+// (protected) r = this + a
+function bnpAddTo(a,r) {
+  var i = 0, c = 0, m = Math.min(a.t,this.t);
+  while(i < m) {
+    c += this[i]+a[i];
+    r[i++] = c&this.DM;
+    c >>= this.DB;
+  }
+  if(a.t < this.t) {
+    c += a.s;
+    while(i < this.t) {
+      c += this[i];
+      r[i++] = c&this.DM;
+      c >>= this.DB;
+    }
+    c += this.s;
+  }
+  else {
+    c += this.s;
+    while(i < a.t) {
+      c += a[i];
+      r[i++] = c&this.DM;
+      c >>= this.DB;
+    }
+    c += a.s;
+  }
+  r.s = (c<0)?-1:0;
+  if(c > 0) r[i++] = c;
+  else if(c < -1) r[i++] = this.DV+c;
+  r.t = i;
+  r.clamp();
+}
+
+// (public) this + a
+function bnAdd(a) { var r = nbi(); this.addTo(a,r); return r; }
+
+// (public) this - a
+function bnSubtract(a) { var r = nbi(); this.subTo(a,r); return r; }
+
+// (public) this * a
+function bnMultiply(a) { var r = nbi(); this.multiplyTo(a,r); return r; }
+
+// (public) this^2
+function bnSquare() { var r = nbi(); this.squareTo(r); return r; }
+
+// (public) this / a
+function bnDivide(a) { var r = nbi(); this.divRemTo(a,r,null); return r; }
+
+// (public) this % a
+function bnRemainder(a) { var r = nbi(); this.divRemTo(a,null,r); return r; }
+
+// (public) [this/a,this%a]
+function bnDivideAndRemainder(a) {
+  var q = nbi(), r = nbi();
+  this.divRemTo(a,q,r);
+  return new Array(q,r);
+}
+
+// (protected) this *= n, this >= 0, 1 < n < DV
+function bnpDMultiply(n) {
+  this[this.t] = this.am(0,n-1,this,0,0,this.t);
+  ++this.t;
+  this.clamp();
+}
+
+// (protected) this += n << w words, this >= 0
+function bnpDAddOffset(n,w) {
+  if(n == 0) return;
+  while(this.t <= w) this[this.t++] = 0;
+  this[w] += n;
+  while(this[w] >= this.DV) {
+    this[w] -= this.DV;
+    if(++w >= this.t) this[this.t++] = 0;
+    ++this[w];
+  }
+}
+
+// A "null" reducer
+function NullExp() {}
+function nNop(x) { return x; }
+function nMulTo(x,y,r) { x.multiplyTo(y,r); }
+function nSqrTo(x,r) { x.squareTo(r); }
+
+NullExp.prototype.convert = nNop;
+NullExp.prototype.revert = nNop;
+NullExp.prototype.mulTo = nMulTo;
+NullExp.prototype.sqrTo = nSqrTo;
+
+// (public) this^e
+function bnPow(e) { return this.exp(e,new NullExp()); }
+
+// (protected) r = lower n words of "this * a", a.t <= n
+// "this" should be the larger one if appropriate.
+function bnpMultiplyLowerTo(a,n,r) {
+  var i = Math.min(this.t+a.t,n);
+  r.s = 0; // assumes a,this >= 0
+  r.t = i;
+  while(i > 0) r[--i] = 0;
+  var j;
+  for(j = r.t-this.t; i < j; ++i) r[i+this.t] = this.am(0,a[i],r,i,0,this.t);
+  for(j = Math.min(a.t,n); i < j; ++i) this.am(0,a[i],r,i,0,n-i);
+  r.clamp();
+}
+
+// (protected) r = "this * a" without lower n words, n > 0
+// "this" should be the larger one if appropriate.
+function bnpMultiplyUpperTo(a,n,r) {
+  --n;
+  var i = r.t = this.t+a.t-n;
+  r.s = 0; // assumes a,this >= 0
+  while(--i >= 0) r[i] = 0;
+  for(i = Math.max(n-this.t,0); i < a.t; ++i)
+    r[this.t+i-n] = this.am(n-i,a[i],r,0,0,this.t+i-n);
+  r.clamp();
+  r.drShiftTo(1,r);
+}
+
+// Barrett modular reduction
+function Barrett(m) {
+  // setup Barrett
+  this.r2 = nbi();
+  this.q3 = nbi();
+  BigInteger.ONE.dlShiftTo(2*m.t,this.r2);
+  this.mu = this.r2.divide(m);
+  this.m = m;
+}
+
+function barrettConvert(x) {
+  if(x.s < 0 || x.t > 2*this.m.t) return x.mod(this.m);
+  else if(x.compareTo(this.m) < 0) return x;
+  else { var r = nbi(); x.copyTo(r); this.reduce(r); return r; }
+}
+
+function barrettRevert(x) { return x; }
+
+// x = x mod m (HAC 14.42)
+function barrettReduce(x) {
+  x.drShiftTo(this.m.t-1,this.r2);
+  if(x.t > this.m.t+1) { x.t = this.m.t+1; x.clamp(); }
+  this.mu.multiplyUpperTo(this.r2,this.m.t+1,this.q3);
+  this.m.multiplyLowerTo(this.q3,this.m.t+1,this.r2);
+  while(x.compareTo(this.r2) < 0) x.dAddOffset(1,this.m.t+1);
+  x.subTo(this.r2,x);
+  while(x.compareTo(this.m) >= 0) x.subTo(this.m,x);
+}
+
+// r = x^2 mod m; x != r
+function barrettSqrTo(x,r) { x.squareTo(r); this.reduce(r); }
+
+// r = x*y mod m; x,y != r
+function barrettMulTo(x,y,r) { x.multiplyTo(y,r); this.reduce(r); }
+
+Barrett.prototype.convert = barrettConvert;
+Barrett.prototype.revert = barrettRevert;
+Barrett.prototype.reduce = barrettReduce;
+Barrett.prototype.mulTo = barrettMulTo;
+Barrett.prototype.sqrTo = barrettSqrTo;
+
+// (public) this^e % m (HAC 14.85)
+function bnModPow(e,m) {
+  var i = e.bitLength(), k, r = nbv(1), z;
+  if(i <= 0) return r;
+  else if(i < 18) k = 1;
+  else if(i < 48) k = 3;
+  else if(i < 144) k = 4;
+  else if(i < 768) k = 5;
+  else k = 6;
+  if(i < 8)
+    z = new Classic(m);
+  else if(m.isEven())
+    z = new Barrett(m);
+  else
+    z = new Montgomery(m);
+
+  // precomputation
+  var g = new Array(), n = 3, k1 = k-1, km = (1<<k)-1;
+  g[1] = z.convert(this);
+  if(k > 1) {
+    var g2 = nbi();
+    z.sqrTo(g[1],g2);
+    while(n <= km) {
+      g[n] = nbi();
+      z.mulTo(g2,g[n-2],g[n]);
+      n += 2;
+    }
+  }
+
+  var j = e.t-1, w, is1 = true, r2 = nbi(), t;
+  i = nbits(e[j])-1;
+  while(j >= 0) {
+    if(i >= k1) w = (e[j]>>(i-k1))&km;
+    else {
+      w = (e[j]&((1<<(i+1))-1))<<(k1-i);
+      if(j > 0) w |= e[j-1]>>(this.DB+i-k1);
+    }
+
+    n = k;
+    while((w&1) == 0) { w >>= 1; --n; }
+    if((i -= n) < 0) { i += this.DB; --j; }
+    if(is1) {  // ret == 1, don't bother squaring or multiplying it
+      g[w].copyTo(r);
+      is1 = false;
+    }
+    else {
+      while(n > 1) { z.sqrTo(r,r2); z.sqrTo(r2,r); n -= 2; }
+      if(n > 0) z.sqrTo(r,r2); else { t = r; r = r2; r2 = t; }
+      z.mulTo(r2,g[w],r);
+    }
+
+    while(j >= 0 && (e[j]&(1<<i)) == 0) {
+      z.sqrTo(r,r2); t = r; r = r2; r2 = t;
+      if(--i < 0) { i = this.DB-1; --j; }
+    }
+  }
+  return z.revert(r);
+}
+
+// (public) gcd(this,a) (HAC 14.54)
+function bnGCD(a) {
+  var x = (this.s<0)?this.negate():this.clone();
+  var y = (a.s<0)?a.negate():a.clone();
+  if(x.compareTo(y) < 0) { var t = x; x = y; y = t; }
+  var i = x.getLowestSetBit(), g = y.getLowestSetBit();
+  if(g < 0) return x;
+  if(i < g) g = i;
+  if(g > 0) {
+    x.rShiftTo(g,x);
+    y.rShiftTo(g,y);
+  }
+  while(x.signum() > 0) {
+    if((i = x.getLowestSetBit()) > 0) x.rShiftTo(i,x);
+    if((i = y.getLowestSetBit()) > 0) y.rShiftTo(i,y);
+    if(x.compareTo(y) >= 0) {
+      x.subTo(y,x);
+      x.rShiftTo(1,x);
+    }
+    else {
+      y.subTo(x,y);
+      y.rShiftTo(1,y);
+    }
+  }
+  if(g > 0) y.lShiftTo(g,y);
+  return y;
+}
+
+// (protected) this % n, n < 2^26
+function bnpModInt(n) {
+  if(n <= 0) return 0;
+  var d = this.DV%n, r = (this.s<0)?n-1:0;
+  if(this.t > 0)
+    if(d == 0) r = this[0]%n;
+    else for(var i = this.t-1; i >= 0; --i) r = (d*r+this[i])%n;
+  return r;
+}
+
+// (public) 1/this % m (HAC 14.61)
+function bnModInverse(m) {
+  var ac = m.isEven();
+  if((this.isEven() && ac) || m.signum() == 0) return BigInteger.ZERO;
+  var u = m.clone(), v = this.clone();
+  var a = nbv(1), b = nbv(0), c = nbv(0), d = nbv(1);
+  while(u.signum() != 0) {
+    while(u.isEven()) {
+      u.rShiftTo(1,u);
+      if(ac) {
+        if(!a.isEven() || !b.isEven()) { a.addTo(this,a); b.subTo(m,b); }
+        a.rShiftTo(1,a);
+      }
+      else if(!b.isEven()) b.subTo(m,b);
+      b.rShiftTo(1,b);
+    }
+    while(v.isEven()) {
+      v.rShiftTo(1,v);
+      if(ac) {
+        if(!c.isEven() || !d.isEven()) { c.addTo(this,c); d.subTo(m,d); }
+        c.rShiftTo(1,c);
+      }
+      else if(!d.isEven()) d.subTo(m,d);
+      d.rShiftTo(1,d);
+    }
+    if(u.compareTo(v) >= 0) {
+      u.subTo(v,u);
+      if(ac) a.subTo(c,a);
+      b.subTo(d,b);
+    }
+    else {
+      v.subTo(u,v);
+      if(ac) c.subTo(a,c);
+      d.subTo(b,d);
+    }
+  }
+  if(v.compareTo(BigInteger.ONE) != 0) return BigInteger.ZERO;
+  if(d.compareTo(m) >= 0) return d.subtract(m);
+  if(d.signum() < 0) d.addTo(m,d); else return d;
+  if(d.signum() < 0) return d.add(m); else return d;
+}
+
+var lowprimes = [2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89,97,101,103,107,109,113,127,131,137,139,149,151,157,163,167,173,179,181,191,193,197,199,211,223,227,229,233,239,241,251,257,263,269,271,277,281,283,293,307,311,313,317,331,337,347,349,353,359,367,373,379,383,389,397,401,409,419,421,431,433,439,443,449,457,461,463,467,479,487,491,499,503,509,521,523,541,547,557,563,569,571,577,587,593,599,601,607,613,617,619,631,641,643,647,653,659,661,673,677,683,691,701,709,719,727,733,739,743,751,757,761,769,773,787,797,809,811,821,823,827,829,839,853,857,859,863,877,881,883,887,907,911,919,929,937,941,947,953,967,971,977,983,991,997];
+var lplim = (1<<26)/lowprimes[lowprimes.length-1];
+
+// (public) test primality with certainty >= 1-.5^t
+function bnIsProbablePrime(t) {
+  var i, x = this.abs();
+  if(x.t == 1 && x[0] <= lowprimes[lowprimes.length-1]) {
+    for(i = 0; i < lowprimes.length; ++i)
+      if(x[0] == lowprimes[i]) return true;
+    return false;
+  }
+  if(x.isEven()) return false;
+  i = 1;
+  while(i < lowprimes.length) {
+    var m = lowprimes[i], j = i+1;
+    while(j < lowprimes.length && m < lplim) m *= lowprimes[j++];
+    m = x.modInt(m);
+    while(i < j) if(m%lowprimes[i++] == 0) return false;
+  }
+  return x.millerRabin(t);
+}
+
+// (protected) true if probably prime (HAC 4.24, Miller-Rabin)
+function bnpMillerRabin(t) {
+  var n1 = this.subtract(BigInteger.ONE);
+  var k = n1.getLowestSetBit();
+  if(k <= 0) return false;
+  var r = n1.shiftRight(k);
+  t = (t+1)>>1;
+  if(t > lowprimes.length) t = lowprimes.length;
+  var a = nbi();
+  for(var i = 0; i < t; ++i) {
+    //Pick bases at random, instead of starting at 2
+    a.fromInt(lowprimes[Math.floor(Math.random()*lowprimes.length)]);
+    var y = a.modPow(r,this);
+    if(y.compareTo(BigInteger.ONE) != 0 && y.compareTo(n1) != 0) {
+      var j = 1;
+      while(j++ < k && y.compareTo(n1) != 0) {
+        y = y.modPowInt(2,this);
+        if(y.compareTo(BigInteger.ONE) == 0) return false;
+      }
+      if(y.compareTo(n1) != 0) return false;
+    }
+  }
+  return true;
+}
+
+// protected
+BigInteger.prototype.chunkSize = bnpChunkSize;
+BigInteger.prototype.toRadix = bnpToRadix;
+BigInteger.prototype.fromRadix = bnpFromRadix;
+BigInteger.prototype.fromNumber = bnpFromNumber;
+BigInteger.prototype.bitwiseTo = bnpBitwiseTo;
+BigInteger.prototype.changeBit = bnpChangeBit;
+BigInteger.prototype.addTo = bnpAddTo;
+BigInteger.prototype.dMultiply = bnpDMultiply;
+BigInteger.prototype.dAddOffset = bnpDAddOffset;
+BigInteger.prototype.multiplyLowerTo = bnpMultiplyLowerTo;
+BigInteger.prototype.multiplyUpperTo = bnpMultiplyUpperTo;
+BigInteger.prototype.modInt = bnpModInt;
+BigInteger.prototype.millerRabin = bnpMillerRabin;
+
+// public
+BigInteger.prototype.clone = bnClone;
+BigInteger.prototype.intValue = bnIntValue;
+BigInteger.prototype.byteValue = bnByteValue;
+BigInteger.prototype.shortValue = bnShortValue;
+BigInteger.prototype.signum = bnSigNum;
+BigInteger.prototype.toByteArray = bnToByteArray;
+BigInteger.prototype.equals = bnEquals;
+BigInteger.prototype.min = bnMin;
+BigInteger.prototype.max = bnMax;
+BigInteger.prototype.and = bnAnd;
+BigInteger.prototype.or = bnOr;
+BigInteger.prototype.xor = bnXor;
+BigInteger.prototype.andNot = bnAndNot;
+BigInteger.prototype.not = bnNot;
+BigInteger.prototype.shiftLeft = bnShiftLeft;
+BigInteger.prototype.shiftRight = bnShiftRight;
+BigInteger.prototype.getLowestSetBit = bnGetLowestSetBit;
+BigInteger.prototype.bitCount = bnBitCount;
+BigInteger.prototype.testBit = bnTestBit;
+BigInteger.prototype.setBit = bnSetBit;
+BigInteger.prototype.clearBit = bnClearBit;
+BigInteger.prototype.flipBit = bnFlipBit;
+BigInteger.prototype.add = bnAdd;
+BigInteger.prototype.subtract = bnSubtract;
+BigInteger.prototype.multiply = bnMultiply;
+BigInteger.prototype.divide = bnDivide;
+BigInteger.prototype.remainder = bnRemainder;
+BigInteger.prototype.divideAndRemainder = bnDivideAndRemainder;
+BigInteger.prototype.modPow = bnModPow;
+BigInteger.prototype.modInverse = bnModInverse;
+BigInteger.prototype.pow = bnPow;
+BigInteger.prototype.gcd = bnGCD;
+BigInteger.prototype.isProbablePrime = bnIsProbablePrime;
+
+// JSBN-specific extension
+BigInteger.prototype.square = bnSquare;
+
+// Expose the Barrett function
+BigInteger.prototype.Barrett = Barrett
+
+// BigInteger interfaces not implemented in jsbn:
+
+// BigInteger(int signum, byte[] magnitude)
+// double doubleValue()
+// float floatValue()
+// int hashCode()
+// long longValue()
+// static BigInteger valueOf(long val)
+
+module.exports = BigInteger;
+
+
+
+/***/ }),
+
+/***/ 8820:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+// TODO:
+//    * utilize `crypto.create(Private|Public)Key()` and `keyObject.export()`
+//    * handle multi-line header values (OpenSSH)?
+//    * more thorough validation?
+
+var crypto = __nccwpck_require__(6113);
+var cryptoSign = crypto.sign;
+var cryptoVerify = crypto.verify;
+var createSign = crypto.createSign;
+var createVerify = crypto.createVerify;
+var createDecipheriv = crypto.createDecipheriv;
+var createHash = crypto.createHash;
+var createHmac = crypto.createHmac;
+var supportedOpenSSLCiphers = crypto.getCiphers();
+
+var utils;
+var Ber = (__nccwpck_require__(970).Ber);
+var bcrypt_pbkdf = (__nccwpck_require__(5447).pbkdf);
+
+var bufferHelpers = __nccwpck_require__(9419);
+var readUInt32BE = bufferHelpers.readUInt32BE;
+var writeUInt32BE = bufferHelpers.writeUInt32BE;
+var constants = __nccwpck_require__(4617);
+var SUPPORTED_CIPHER = constants.ALGORITHMS.SUPPORTED_CIPHER;
+var CIPHER_INFO = constants.CIPHER_INFO;
+var SSH_TO_OPENSSL = constants.SSH_TO_OPENSSL;
+var EDDSA_SUPPORTED = constants.EDDSA_SUPPORTED;
+
+var SYM_HASH_ALGO = Symbol('Hash Algorithm');
+var SYM_PRIV_PEM = Symbol('Private key PEM');
+var SYM_PUB_PEM = Symbol('Public key PEM');
+var SYM_PUB_SSH = Symbol('Public key SSH');
+var SYM_DECRYPTED = Symbol('Decrypted Key');
+
+// Create OpenSSL cipher name -> SSH cipher name conversion table
+var CIPHER_INFO_OPENSSL = Object.create(null);
+(function() {
+  var keys = Object.keys(CIPHER_INFO);
+  for (var i = 0; i < keys.length; ++i) {
+    var cipherName = SSH_TO_OPENSSL[keys[i]];
+    if (!cipherName || CIPHER_INFO_OPENSSL[cipherName])
+      continue;
+    CIPHER_INFO_OPENSSL[cipherName] = CIPHER_INFO[keys[i]];
+  }
+})();
+
+var trimStart = (function() {
+  if (typeof String.prototype.trimStart === 'function') {
+    return function trimStart(str) {
+      return str.trimStart();
+    };
+  }
+
+  return function trimStart(str) {
+    var start = 0;
+    for (var i = 0; i < str.length; ++i) {
+      switch (str.charCodeAt(i)) {
+        case 32: // ' '
+        case 9: // '\t'
+        case 13: // '\r'
+        case 10: // '\n'
+        case 12: // '\f'
+          ++start;
+          continue;
+      }
+      break;
+    }
+    if (start === 0)
+      return str;
+    return str.slice(start);
+  };
+})();
+
+function makePEM(type, data) {
+  data = data.toString('base64');
+  return '-----BEGIN ' + type + ' KEY-----\n'
+         + data.replace(/.{64}/g, '$&\n')
+         + (data.length % 64 ? '\n' : '')
+         + '-----END ' + type + ' KEY-----';
+}
+
+function combineBuffers(buf1, buf2) {
+  var result = Buffer.allocUnsafe(buf1.length + buf2.length);
+  buf1.copy(result, 0);
+  buf2.copy(result, buf1.length);
+  return result;
+}
+
+function skipFields(buf, nfields) {
+  var bufLen = buf.length;
+  var pos = (buf._pos || 0);
+  for (var i = 0; i < nfields; ++i) {
+    var left = (bufLen - pos);
+    if (pos >= bufLen || left < 4)
+      return false;
+    var len = readUInt32BE(buf, pos);
+    if (left < 4 + len)
+      return false;
+    pos += 4 + len;
+  }
+  buf._pos = pos;
+  return true;
+}
+
+function genOpenSSLRSAPub(n, e) {
+  var asnWriter = new Ber.Writer();
+  asnWriter.startSequence();
+    // algorithm
+    asnWriter.startSequence();
+      asnWriter.writeOID('1.2.840.113549.1.1.1'); // rsaEncryption
+      // algorithm parameters (RSA has none)
+      asnWriter.writeNull();
+    asnWriter.endSequence();
+
+    // subjectPublicKey
+    asnWriter.startSequence(Ber.BitString);
+      asnWriter.writeByte(0x00);
+      asnWriter.startSequence();
+        asnWriter.writeBuffer(n, Ber.Integer);
+        asnWriter.writeBuffer(e, Ber.Integer);
+      asnWriter.endSequence();
+    asnWriter.endSequence();
+  asnWriter.endSequence();
+  return makePEM('PUBLIC', asnWriter.buffer);
+}
+
+function genOpenSSHRSAPub(n, e) {
+  var publicKey = Buffer.allocUnsafe(4 + 7 // "ssh-rsa"
+                                     + 4 + n.length
+                                     + 4 + e.length);
+
+  writeUInt32BE(publicKey, 7, 0);
+  publicKey.write('ssh-rsa', 4, 7, 'ascii');
+
+  var i = 4 + 7;
+  writeUInt32BE(publicKey, e.length, i);
+  e.copy(publicKey, i += 4);
+
+  writeUInt32BE(publicKey, n.length, i += e.length);
+  n.copy(publicKey, i + 4);
+
+  return publicKey;
+}
+
+var genOpenSSLRSAPriv = (function() {
+  function genRSAASN1Buf(n, e, d, p, q, dmp1, dmq1, iqmp) {
+    var asnWriter = new Ber.Writer();
+    asnWriter.startSequence();
+      asnWriter.writeInt(0x00, Ber.Integer);
+      asnWriter.writeBuffer(n, Ber.Integer);
+      asnWriter.writeBuffer(e, Ber.Integer);
+      asnWriter.writeBuffer(d, Ber.Integer);
+      asnWriter.writeBuffer(p, Ber.Integer);
+      asnWriter.writeBuffer(q, Ber.Integer);
+      asnWriter.writeBuffer(dmp1, Ber.Integer);
+      asnWriter.writeBuffer(dmq1, Ber.Integer);
+      asnWriter.writeBuffer(iqmp, Ber.Integer);
+    asnWriter.endSequence();
+    return asnWriter.buffer;
+  }
+
+  function bigIntFromBuffer(buf) {
+    return BigInt('0x' + buf.toString('hex'));
+  }
+
+  function bigIntToBuffer(bn) {
+    var hex = bn.toString(16);
+    if ((hex.length & 1) !== 0) {
+      hex = '0' + hex;
+    } else {
+      var sigbit = hex.charCodeAt(0);
+      // BER/DER integers require leading zero byte to denote a positive value
+      // when first byte >= 0x80
+      if (sigbit === 56 || (sigbit >= 97 && sigbit <= 102))
+        hex = '00' + hex;
+    }
+    return Buffer.from(hex, 'hex');
+  }
+
+  // Feature detect native BigInt availability and use it when possible
+  try {
+    var code = [
+      'return function genOpenSSLRSAPriv(n, e, d, iqmp, p, q) {',
+      '  var bn_d = bigIntFromBuffer(d);',
+      '  var dmp1 = bigIntToBuffer(bn_d % (bigIntFromBuffer(p) - 1n));',
+      '  var dmq1 = bigIntToBuffer(bn_d % (bigIntFromBuffer(q) - 1n));',
+      '  return makePEM(\'RSA PRIVATE\', '
+        + 'genRSAASN1Buf(n, e, d, p, q, dmp1, dmq1, iqmp));',
+      '};'
+    ].join('\n');
+    return new Function(
+      'bigIntFromBuffer, bigIntToBuffer, makePEM, genRSAASN1Buf',
+      code
+    )(bigIntFromBuffer, bigIntToBuffer, makePEM, genRSAASN1Buf);
+  } catch (ex) {
+    return (function() {
+      var BigInteger = __nccwpck_require__(4950);
+      return function genOpenSSLRSAPriv(n, e, d, iqmp, p, q) {
+        var pbi = new BigInteger(p, 256);
+        var qbi = new BigInteger(q, 256);
+        var dbi = new BigInteger(d, 256);
+        var dmp1bi = dbi.mod(pbi.subtract(BigInteger.ONE));
+        var dmq1bi = dbi.mod(qbi.subtract(BigInteger.ONE));
+        var dmp1 = Buffer.from(dmp1bi.toByteArray());
+        var dmq1 = Buffer.from(dmq1bi.toByteArray());
+        return makePEM('RSA PRIVATE',
+                       genRSAASN1Buf(n, e, d, p, q, dmp1, dmq1, iqmp));
+      };
+    })();
+  }
+})();
+
+function genOpenSSLDSAPub(p, q, g, y) {
+  var asnWriter = new Ber.Writer();
+  asnWriter.startSequence();
+    // algorithm
+    asnWriter.startSequence();
+      asnWriter.writeOID('1.2.840.10040.4.1'); // id-dsa
+      // algorithm parameters
+      asnWriter.startSequence();
+        asnWriter.writeBuffer(p, Ber.Integer);
+        asnWriter.writeBuffer(q, Ber.Integer);
+        asnWriter.writeBuffer(g, Ber.Integer);
+      asnWriter.endSequence();
+    asnWriter.endSequence();
+
+    // subjectPublicKey
+    asnWriter.startSequence(Ber.BitString);
+      asnWriter.writeByte(0x00);
+      asnWriter.writeBuffer(y, Ber.Integer);
+    asnWriter.endSequence();
+  asnWriter.endSequence();
+  return makePEM('PUBLIC', asnWriter.buffer);
+}
+
+function genOpenSSHDSAPub(p, q, g, y) {
+  var publicKey = Buffer.allocUnsafe(4 + 7 // ssh-dss
+                                     + 4 + p.length
+                                     + 4 + q.length
+                                     + 4 + g.length
+                                     + 4 + y.length);
+
+  writeUInt32BE(publicKey, 7, 0);
+  publicKey.write('ssh-dss', 4, 7, 'ascii');
+
+  var i = 4 + 7;
+  writeUInt32BE(publicKey, p.length, i);
+  p.copy(publicKey, i += 4);
+
+  writeUInt32BE(publicKey, q.length, i += p.length);
+  q.copy(publicKey, i += 4);
+
+  writeUInt32BE(publicKey, g.length, i += q.length);
+  g.copy(publicKey, i += 4);
+
+  writeUInt32BE(publicKey, y.length, i += g.length);
+  y.copy(publicKey, i + 4);
+
+  return publicKey;
+}
+
+function genOpenSSLDSAPriv(p, q, g, y, x) {
+  var asnWriter = new Ber.Writer();
+  asnWriter.startSequence();
+    asnWriter.writeInt(0x00, Ber.Integer);
+    asnWriter.writeBuffer(p, Ber.Integer);
+    asnWriter.writeBuffer(q, Ber.Integer);
+    asnWriter.writeBuffer(g, Ber.Integer);
+    asnWriter.writeBuffer(y, Ber.Integer);
+    asnWriter.writeBuffer(x, Ber.Integer);
+  asnWriter.endSequence();
+  return makePEM('DSA PRIVATE', asnWriter.buffer);
+}
+
+function genOpenSSLEdPub(pub) {
+  var asnWriter = new Ber.Writer();
+  asnWriter.startSequence();
+    // algorithm
+    asnWriter.startSequence();
+      asnWriter.writeOID('1.3.101.112'); // id-Ed25519
+    asnWriter.endSequence();
+
+    // PublicKey
+    asnWriter.startSequence(Ber.BitString);
+      asnWriter.writeByte(0x00);
+      // XXX: hack to write a raw buffer without a tag -- yuck
+      asnWriter._ensure(pub.length);
+      pub.copy(asnWriter._buf, asnWriter._offset, 0, pub.length);
+      asnWriter._offset += pub.length;
+    asnWriter.endSequence();
+  asnWriter.endSequence();
+  return makePEM('PUBLIC', asnWriter.buffer);
+}
+
+function genOpenSSHEdPub(pub) {
+  var publicKey = Buffer.allocUnsafe(4 + 11 // ssh-ed25519
+                                     + 4 + pub.length);
+
+  writeUInt32BE(publicKey, 11, 0);
+  publicKey.write('ssh-ed25519', 4, 11, 'ascii');
+
+  writeUInt32BE(publicKey, pub.length, 15);
+  pub.copy(publicKey, 19);
+
+  return publicKey;
+}
+
+function genOpenSSLEdPriv(priv) {
+  var asnWriter = new Ber.Writer();
+  asnWriter.startSequence();
+    // version
+    asnWriter.writeInt(0x00, Ber.Integer);
+
+    // algorithm
+    asnWriter.startSequence();
+      asnWriter.writeOID('1.3.101.112'); // id-Ed25519
+    asnWriter.endSequence();
+
+    // PrivateKey
+    asnWriter.startSequence(Ber.OctetString);
+      asnWriter.writeBuffer(priv, Ber.OctetString);
+    asnWriter.endSequence();
+  asnWriter.endSequence();
+  return makePEM('PRIVATE', asnWriter.buffer);
+}
+
+function genOpenSSLECDSAPub(oid, Q) {
+  var asnWriter = new Ber.Writer();
+  asnWriter.startSequence();
+    // algorithm
+    asnWriter.startSequence();
+      asnWriter.writeOID('1.2.840.10045.2.1'); // id-ecPublicKey
+      // algorithm parameters (namedCurve)
+      asnWriter.writeOID(oid);
+    asnWriter.endSequence();
+
+    // subjectPublicKey
+    asnWriter.startSequence(Ber.BitString);
+      asnWriter.writeByte(0x00);
+      // XXX: hack to write a raw buffer without a tag -- yuck
+      asnWriter._ensure(Q.length);
+      Q.copy(asnWriter._buf, asnWriter._offset, 0, Q.length);
+      asnWriter._offset += Q.length;
+      // end hack
+    asnWriter.endSequence();
+  asnWriter.endSequence();
+  return makePEM('PUBLIC', asnWriter.buffer);
+}
+
+function genOpenSSHECDSAPub(oid, Q) {
+  var curveName;
+  switch (oid) {
+    case '1.2.840.10045.3.1.7':
+      // prime256v1/secp256r1
+      curveName = 'nistp256';
+      break;
+    case '1.3.132.0.34':
+      // secp384r1
+      curveName = 'nistp384';
+      break;
+    case '1.3.132.0.35':
+      // secp521r1
+      curveName = 'nistp521';
+      break;
+    default:
+      return;
+  }
+
+  var publicKey = Buffer.allocUnsafe(4 + 19 // ecdsa-sha2-<curve name>
+                                     + 4 + 8 // <curve name>
+                                     + 4 + Q.length);
+
+  writeUInt32BE(publicKey, 19, 0);
+  publicKey.write('ecdsa-sha2-' + curveName, 4, 19, 'ascii');
+
+  writeUInt32BE(publicKey, 8, 23);
+  publicKey.write(curveName, 27, 8, 'ascii');
+
+  writeUInt32BE(publicKey, Q.length, 35);
+  Q.copy(publicKey, 39);
+
+  return publicKey;
+}
+
+function genOpenSSLECDSAPriv(oid, pub, priv) {
+  var asnWriter = new Ber.Writer();
+  asnWriter.startSequence();
+    // version
+    asnWriter.writeInt(0x01, Ber.Integer);
+    // privateKey
+    asnWriter.writeBuffer(priv, Ber.OctetString);
+    // parameters (optional)
+    asnWriter.startSequence(0xA0);
+      asnWriter.writeOID(oid);
+    asnWriter.endSequence();
+    // publicKey (optional)
+    asnWriter.startSequence(0xA1);
+      asnWriter.startSequence(Ber.BitString);
+        asnWriter.writeByte(0x00);
+        // XXX: hack to write a raw buffer without a tag -- yuck
+        asnWriter._ensure(pub.length);
+        pub.copy(asnWriter._buf, asnWriter._offset, 0, pub.length);
+        asnWriter._offset += pub.length;
+        // end hack
+      asnWriter.endSequence();
+    asnWriter.endSequence();
+  asnWriter.endSequence();
+  return makePEM('EC PRIVATE', asnWriter.buffer);
+}
+
+function genOpenSSLECDSAPubFromPriv(curveName, priv) {
+  var tempECDH = crypto.createECDH(curveName);
+  tempECDH.setPrivateKey(priv);
+  return tempECDH.getPublicKey();
+}
+
+var baseKeySign = (function() {
+  if (typeof cryptoSign === 'function') {
+    return function sign(data) {
+      var pem = this[SYM_PRIV_PEM];
+      if (pem === null)
+        return new Error('No private key available');
+      try {
+        return cryptoSign(this[SYM_HASH_ALGO], data, pem);
+      } catch (ex) {
+        return ex;
+      }
+    };
+  } else {
+    function trySign(signature, privKey) {
+      try {
+        return signature.sign(privKey);
+      } catch (ex) {
+        return ex;
+      }
+    }
+
+    return function sign(data) {
+      var pem = this[SYM_PRIV_PEM];
+      if (pem === null)
+        return new Error('No private key available');
+      var signature = createSign(this[SYM_HASH_ALGO]);
+      signature.update(data);
+      return trySign(signature, pem);
+    };
+  }
+})();
+
+var baseKeyVerify = (function() {
+  if (typeof cryptoVerify === 'function') {
+    return function verify(data, signature) {
+      var pem = this[SYM_PUB_PEM];
+      if (pem === null)
+        return new Error('No public key available');
+      try {
+        return cryptoVerify(this[SYM_HASH_ALGO], data, pem, signature);
+      } catch (ex) {
+        return ex;
+      }
+    };
+  } else {
+    function tryVerify(verifier, pubKey, signature) {
+      try {
+        return verifier.verify(pubKey, signature);
+      } catch (ex) {
+        return ex;
+      }
+    }
+
+    return function verify(data, signature) {
+      var pem = this[SYM_PUB_PEM];
+      if (pem === null)
+        return new Error('No public key available');
+      var verifier = createVerify(this[SYM_HASH_ALGO]);
+      verifier.update(data);
+      return tryVerify(verifier, pem, signature);
+    };
+  }
+})();
+
+var BaseKey = {
+  sign: baseKeySign,
+  verify: baseKeyVerify,
+  getPrivatePEM: function getPrivatePEM() {
+    return this[SYM_PRIV_PEM];
+  },
+  getPublicPEM: function getPublicPEM() {
+    return this[SYM_PUB_PEM];
+  },
+  getPublicSSH: function getPublicSSH() {
+    return this[SYM_PUB_SSH];
+  },
+};
+
+
+
+function OpenSSH_Private(type, comment, privPEM, pubPEM, pubSSH, algo, decrypted) {
+  this.type = type;
+  this.comment = comment;
+  this[SYM_PRIV_PEM] = privPEM;
+  this[SYM_PUB_PEM] = pubPEM;
+  this[SYM_PUB_SSH] = pubSSH;
+  this[SYM_HASH_ALGO] = algo;
+  this[SYM_DECRYPTED] = decrypted;
+}
+OpenSSH_Private.prototype = BaseKey;
+(function() {
+  var regexp = /^-----BEGIN OPENSSH PRIVATE KEY-----(?:\r\n|\n)([\s\S]+)(?:\r\n|\n)-----END OPENSSH PRIVATE KEY-----$/;
+  OpenSSH_Private.parse = function(str, passphrase) {
+    var m = regexp.exec(str);
+    if (m === null)
+      return null;
+    var ret;
+    var data = Buffer.from(m[1], 'base64');
+    if (data.length < 31) // magic (+ magic null term.) + minimum field lengths
+      return new Error('Malformed OpenSSH private key');
+    var magic = data.toString('ascii', 0, 15);
+    if (magic !== 'openssh-key-v1\0')
+      return new Error('Unsupported OpenSSH key magic: ' + magic);
+
+    // avoid cyclic require by requiring on first use
+    if (!utils)
+      utils = __nccwpck_require__(4928);
+
+    var cipherName = utils.readString(data, 15, 'ascii');
+    if (cipherName === false)
+      return new Error('Malformed OpenSSH private key');
+    if (cipherName !== 'none' && SUPPORTED_CIPHER.indexOf(cipherName) === -1)
+      return new Error('Unsupported cipher for OpenSSH key: ' + cipherName);
+
+    var kdfName = utils.readString(data, data._pos, 'ascii');
+    if (kdfName === false)
+      return new Error('Malformed OpenSSH private key');
+    if (kdfName !== 'none') {
+      if (cipherName === 'none')
+        return new Error('Malformed OpenSSH private key');
+      if (kdfName !== 'bcrypt')
+        return new Error('Unsupported kdf name for OpenSSH key: ' + kdfName);
+      if (!passphrase) {
+        return new Error(
+          'Encrypted private OpenSSH key detected, but no passphrase given'
+        );
+      }
+    } else if (cipherName !== 'none') {
+      return new Error('Malformed OpenSSH private key');
+    }
+
+    var encInfo;
+    var cipherKey;
+    var cipherIV;
+    if (cipherName !== 'none')
+      encInfo = CIPHER_INFO[cipherName];
+    var kdfOptions = utils.readString(data, data._pos);
+    if (kdfOptions === false)
+      return new Error('Malformed OpenSSH private key');
+    if (kdfOptions.length) {
+      switch (kdfName) {
+        case 'none':
+          return new Error('Malformed OpenSSH private key');
+        case 'bcrypt':
+          /*
+            string salt
+            uint32 rounds
+          */
+          var salt = utils.readString(kdfOptions, 0);
+          if (salt === false || kdfOptions._pos + 4 > kdfOptions.length)
+            return new Error('Malformed OpenSSH private key');
+          var rounds = readUInt32BE(kdfOptions, kdfOptions._pos);
+          var gen = Buffer.allocUnsafe(encInfo.keyLen + encInfo.ivLen);
+          var r = bcrypt_pbkdf(passphrase,
+                               passphrase.length,
+                               salt,
+                               salt.length,
+                               gen,
+                               gen.length,
+                               rounds);
+          if (r !== 0)
+            return new Error('Failed to generate information to decrypt key');
+          cipherKey = gen.slice(0, encInfo.keyLen);
+          cipherIV = gen.slice(encInfo.keyLen);
+          break;
+      }
+    } else if (kdfName !== 'none') {
+      return new Error('Malformed OpenSSH private key');
+    }
+
+    var keyCount = utils.readInt(data, data._pos);
+    if (keyCount === false)
+      return new Error('Malformed OpenSSH private key');
+    data._pos += 4;
+
+    if (keyCount > 0) {
+      // TODO: place sensible limit on max `keyCount`
+
+      // Read public keys first
+      for (var i = 0; i < keyCount; ++i) {
+        var pubData = utils.readString(data, data._pos);
+        if (pubData === false)
+          return new Error('Malformed OpenSSH private key');
+        var type = utils.readString(pubData, 0, 'ascii');
+        if (type === false)
+          return new Error('Malformed OpenSSH private key');
+      }
+
+      var privBlob = utils.readString(data, data._pos);
+      if (privBlob === false)
+        return new Error('Malformed OpenSSH private key');
+
+      if (cipherKey !== undefined) {
+        // encrypted private key(s)
+        if (privBlob.length < encInfo.blockLen
+            || (privBlob.length % encInfo.blockLen) !== 0) {
+          return new Error('Malformed OpenSSH private key');
+        }
+        try {
+          var options = { authTagLength: encInfo.authLen };
+          var decipher = createDecipheriv(SSH_TO_OPENSSL[cipherName],
+                                          cipherKey,
+                                          cipherIV,
+                                          options);
+          if (encInfo.authLen > 0) {
+            if (data.length - data._pos < encInfo.authLen)
+              return new Error('Malformed OpenSSH private key');
+            decipher.setAuthTag(
+              data.slice(data._pos, data._pos += encInfo.authLen)
+            );
+          }
+          privBlob = combineBuffers(decipher.update(privBlob),
+                                    decipher.final());
+        } catch (ex) {
+          return ex;
+        }
+      }
+      // Nothing should we follow the private key(s), except a possible
+      // authentication tag for relevant ciphers
+      if (data._pos !== data.length)
+        return new Error('Malformed OpenSSH private key');
+
+      ret = parseOpenSSHPrivKeys(privBlob, keyCount, cipherKey !== undefined);
+    } else {
+      ret = [];
+    }
+    return ret;
+  };
+
+  function parseOpenSSHPrivKeys(data, nkeys, decrypted) {
+    var keys = [];
+    /*
+      uint32	checkint
+      uint32	checkint
+      string	privatekey1
+      string	comment1
+      string	privatekey2
+      string	comment2
+      ...
+      string	privatekeyN
+      string	commentN
+      char	1
+      char	2
+      char	3
+      ...
+      char	padlen % 255
+    */
+    if (data.length < 8)
+      return new Error('Malformed OpenSSH private key');
+    var check1 = readUInt32BE(data, 0);
+    var check2 = readUInt32BE(data, 4);
+    if (check1 !== check2) {
+      if (decrypted)
+        return new Error('OpenSSH key integrity check failed -- bad passphrase?');
+      return new Error('OpenSSH key integrity check failed');
+    }
+    data._pos = 8;
+    var i;
+    var oid;
+    for (i = 0; i < nkeys; ++i) {
+      var algo = undefined;
+      var privPEM = undefined;
+      var pubPEM = undefined;
+      var pubSSH = undefined;
+      // The OpenSSH documentation for the key format actually lies, the entirety
+      // of the private key content is not contained with a string field, it's
+      // actually the literal contents of the private key, so to be able to find
+      // the end of the key data you need to know the layout/format of each key
+      // type ...
+      var type = utils.readString(data, data._pos, 'ascii');
+      if (type === false)
+        return new Error('Malformed OpenSSH private key');
+
+      switch (type) {
+        case 'ssh-rsa':
+          /*
+            string  n -- public
+            string  e -- public
+            string  d -- private
+            string  iqmp -- private
+            string  p -- private
+            string  q -- private
+          */
+          var n = utils.readString(data, data._pos);
+          if (n === false)
+            return new Error('Malformed OpenSSH private key');
+          var e = utils.readString(data, data._pos);
+          if (e === false)
+            return new Error('Malformed OpenSSH private key');
+          var d = utils.readString(data, data._pos);
+          if (d === false)
+            return new Error('Malformed OpenSSH private key');
+          var iqmp = utils.readString(data, data._pos);
+          if (iqmp === false)
+            return new Error('Malformed OpenSSH private key');
+          var p = utils.readString(data, data._pos);
+          if (p === false)
+            return new Error('Malformed OpenSSH private key');
+          var q = utils.readString(data, data._pos);
+          if (q === false)
+            return new Error('Malformed OpenSSH private key');
+
+          pubPEM = genOpenSSLRSAPub(n, e);
+          pubSSH = genOpenSSHRSAPub(n, e);
+          privPEM = genOpenSSLRSAPriv(n, e, d, iqmp, p, q);
+          algo = 'sha1';
+          break;
+        case 'ssh-dss':
+          /*
+            string  p -- public
+            string  q -- public
+            string  g -- public
+            string  y -- public
+            string  x -- private
+          */
+          var p = utils.readString(data, data._pos);
+          if (p === false)
+            return new Error('Malformed OpenSSH private key');
+          var q = utils.readString(data, data._pos);
+          if (q === false)
+            return new Error('Malformed OpenSSH private key');
+          var g = utils.readString(data, data._pos);
+          if (g === false)
+            return new Error('Malformed OpenSSH private key');
+          var y = utils.readString(data, data._pos);
+          if (y === false)
+            return new Error('Malformed OpenSSH private key');
+          var x = utils.readString(data, data._pos);
+          if (x === false)
+            return new Error('Malformed OpenSSH private key');
+
+          pubPEM = genOpenSSLDSAPub(p, q, g, y);
+          pubSSH = genOpenSSHDSAPub(p, q, g, y);
+          privPEM = genOpenSSLDSAPriv(p, q, g, y, x);
+          algo = 'sha1';
+          break;
+        case 'ssh-ed25519':
+          if (!EDDSA_SUPPORTED)
+            return new Error('Unsupported OpenSSH private key type: ' + type);
+          /*
+            * string  public key
+            * string  private key + public key
+          */
+          var edpub = utils.readString(data, data._pos);
+          if (edpub === false || edpub.length !== 32)
+            return new Error('Malformed OpenSSH private key');
+          var edpriv = utils.readString(data, data._pos);
+          if (edpriv === false || edpriv.length !== 64)
+            return new Error('Malformed OpenSSH private key');
+
+          pubPEM = genOpenSSLEdPub(edpub);
+          pubSSH = genOpenSSHEdPub(edpub);
+          privPEM = genOpenSSLEdPriv(edpriv.slice(0, 32));
+          algo = null;
+          break;
+        case 'ecdsa-sha2-nistp256':
+          algo = 'sha256';
+          oid = '1.2.840.10045.3.1.7';
+        case 'ecdsa-sha2-nistp384':
+          if (algo === undefined) {
+            algo = 'sha384';
+            oid = '1.3.132.0.34';
+          }
+        case 'ecdsa-sha2-nistp521':
+          if (algo === undefined) {
+            algo = 'sha512';
+            oid = '1.3.132.0.35';
+          }
+          /*
+            string  curve name
+            string  Q -- public
+            string  d -- private
+          */
+          // TODO: validate curve name against type
+          if (!skipFields(data, 1)) // Skip curve name
+            return new Error('Malformed OpenSSH private key');
+          var ecpub = utils.readString(data, data._pos);
+          if (ecpub === false)
+            return new Error('Malformed OpenSSH private key');
+          var ecpriv = utils.readString(data, data._pos);
+          if (ecpriv === false)
+            return new Error('Malformed OpenSSH private key');
+
+          pubPEM = genOpenSSLECDSAPub(oid, ecpub);
+          pubSSH = genOpenSSHECDSAPub(oid, ecpub);
+          privPEM = genOpenSSLECDSAPriv(oid, ecpub, ecpriv);
+          break;
+        default:
+          return new Error('Unsupported OpenSSH private key type: ' + type);
+      }
+
+      var privComment = utils.readString(data, data._pos, 'utf8');
+      if (privComment === false)
+        return new Error('Malformed OpenSSH private key');
+
+      keys.push(
+        new OpenSSH_Private(type, privComment, privPEM, pubPEM, pubSSH, algo,
+                            decrypted)
+      );
+    }
+    var cnt = 0;
+    for (i = data._pos; i < data.length; ++i) {
+      if (data[i] !== (++cnt % 255))
+        return new Error('Malformed OpenSSH private key');
+    }
+
+    return keys;
+  }
+})();
+
+
+
+function OpenSSH_Old_Private(type, comment, privPEM, pubPEM, pubSSH, algo, decrypted) {
+  this.type = type;
+  this.comment = comment;
+  this[SYM_PRIV_PEM] = privPEM;
+  this[SYM_PUB_PEM] = pubPEM;
+  this[SYM_PUB_SSH] = pubSSH;
+  this[SYM_HASH_ALGO] = algo;
+  this[SYM_DECRYPTED] = decrypted;
+}
+OpenSSH_Old_Private.prototype = BaseKey;
+(function() {
+  var regexp = /^-----BEGIN (RSA|DSA|EC) PRIVATE KEY-----(?:\r\n|\n)((?:[^:]+:\s*[\S].*(?:\r\n|\n))*)([\s\S]+)(?:\r\n|\n)-----END (RSA|DSA|EC) PRIVATE KEY-----$/;
+  OpenSSH_Old_Private.parse = function(str, passphrase) {
+    var m = regexp.exec(str);
+    if (m === null)
+      return null;
+    var privBlob = Buffer.from(m[3], 'base64');
+    var headers = m[2];
+    var decrypted = false;
+    if (headers !== undefined) {
+      // encrypted key
+      headers = headers.split(/\r\n|\n/g);
+      for (var i = 0; i < headers.length; ++i) {
+        var header = headers[i];
+        var sepIdx = header.indexOf(':');
+        if (header.slice(0, sepIdx) === 'DEK-Info') {
+          var val = header.slice(sepIdx + 2);
+          sepIdx = val.indexOf(',');
+          if (sepIdx === -1)
+            continue;
+          var cipherName = val.slice(0, sepIdx).toLowerCase();
+          if (supportedOpenSSLCiphers.indexOf(cipherName) === -1) {
+            return new Error(
+              'Cipher ('
+              + cipherName
+              + ') not supported for encrypted OpenSSH private key'
+            );
+          }
+          var encInfo = CIPHER_INFO_OPENSSL[cipherName];
+          if (!encInfo) {
+            return new Error(
+              'Cipher ('
+              + cipherName
+              + ') not supported for encrypted OpenSSH private key'
+            );
+          }
+          var cipherIV = Buffer.from(val.slice(sepIdx + 1), 'hex');
+          if (cipherIV.length !== encInfo.ivLen)
+            return new Error('Malformed encrypted OpenSSH private key');
+          if (!passphrase) {
+            return new Error(
+              'Encrypted OpenSSH private key detected, but no passphrase given'
+            );
+          }
+          var cipherKey = createHash('md5')
+                            .update(passphrase)
+                            .update(cipherIV.slice(0, 8))
+                            .digest();
+          while (cipherKey.length < encInfo.keyLen) {
+            cipherKey = combineBuffers(
+              cipherKey,
+              (createHash('md5')
+                .update(cipherKey)
+                .update(passphrase)
+                .update(cipherIV)
+                .digest()).slice(0, 8)
+            );
+          }
+          if (cipherKey.length > encInfo.keyLen)
+            cipherKey = cipherKey.slice(0, encInfo.keyLen);
+          try {
+            var decipher = createDecipheriv(cipherName, cipherKey, cipherIV);
+            decipher.setAutoPadding(false);
+            privBlob = combineBuffers(decipher.update(privBlob),
+                                      decipher.final());
+            decrypted = true;
+          } catch (ex) {
+            return ex;
+          }
+        }
+      }
+    }
+
+    var type;
+    var privPEM;
+    var pubPEM;
+    var pubSSH;
+    var algo;
+    var reader;
+    var errMsg = 'Malformed OpenSSH private key';
+    if (decrypted)
+      errMsg += '. Bad passphrase?';
+    switch (m[1]) {
+      case 'RSA':
+        type = 'ssh-rsa';
+        privPEM = makePEM('RSA PRIVATE', privBlob);
+        try {
+          reader = new Ber.Reader(privBlob);
+          reader.readSequence();
+          reader.readInt(); // skip version
+          var n = reader.readString(Ber.Integer, true);
+          if (n === null)
+            return new Error(errMsg);
+          var e = reader.readString(Ber.Integer, true);
+          if (e === null)
+            return new Error(errMsg);
+          pubPEM = genOpenSSLRSAPub(n, e);
+          pubSSH = genOpenSSHRSAPub(n, e);
+        } catch (ex) {
+          return new Error(errMsg);
+        }
+        algo = 'sha1';
+        break;
+      case 'DSA':
+        type = 'ssh-dss';
+        privPEM = makePEM('DSA PRIVATE', privBlob);
+        try {
+          reader = new Ber.Reader(privBlob);
+          reader.readSequence();
+          reader.readInt(); // skip version
+          var p = reader.readString(Ber.Integer, true);
+          if (p === null)
+            return new Error(errMsg);
+          var q = reader.readString(Ber.Integer, true);
+          if (q === null)
+            return new Error(errMsg);
+          var g = reader.readString(Ber.Integer, true);
+          if (g === null)
+            return new Error(errMsg);
+          var y = reader.readString(Ber.Integer, true);
+          if (y === null)
+            return new Error(errMsg);
+          pubPEM = genOpenSSLDSAPub(p, q, g, y);
+          pubSSH = genOpenSSHDSAPub(p, q, g, y);
+        } catch (ex) {
+          return new Error(errMsg);
+        }
+        algo = 'sha1';
+        break;
+      case 'EC':
+        var ecSSLName;
+        var ecPriv;
+        try {
+          reader = new Ber.Reader(privBlob);
+          reader.readSequence();
+          reader.readInt(); // skip version
+          ecPriv = reader.readString(Ber.OctetString, true);
+          reader.readByte(); // Skip "complex" context type byte
+          var offset = reader.readLength(); // Skip context length
+          if (offset !== null) {
+            reader._offset = offset;
+            var oid = reader.readOID();
+            if (oid === null)
+              return new Error(errMsg);
+            switch (oid) {
+              case '1.2.840.10045.3.1.7':
+                // prime256v1/secp256r1
+                ecSSLName = 'prime256v1';
+                type = 'ecdsa-sha2-nistp256';
+                algo = 'sha256';
+                break;
+              case '1.3.132.0.34':
+                // secp384r1
+                ecSSLName = 'secp384r1';
+                type = 'ecdsa-sha2-nistp384';
+                algo = 'sha384';
+                break;
+              case '1.3.132.0.35':
+                // secp521r1
+                ecSSLName = 'secp521r1';
+                type = 'ecdsa-sha2-nistp521';
+                algo = 'sha512';
+                break;
+              default:
+                return new Error('Unsupported private key EC OID: ' + oid);
+            }
+          } else {
+            return new Error(errMsg);
+          }
+        } catch (ex) {
+          return new Error(errMsg);
+        }
+        privPEM = makePEM('EC PRIVATE', privBlob);
+        var pubBlob = genOpenSSLECDSAPubFromPriv(ecSSLName, ecPriv);
+        pubPEM = genOpenSSLECDSAPub(oid, pubBlob);
+        pubSSH = genOpenSSHECDSAPub(oid, pubBlob);
+        break;
+    }
+
+    return new OpenSSH_Old_Private(type, '', privPEM, pubPEM, pubSSH, algo,
+                                   decrypted);
+  };
+})();
+
+
+
+function PPK_Private(type, comment, privPEM, pubPEM, pubSSH, algo, decrypted) {
+  this.type = type;
+  this.comment = comment;
+  this[SYM_PRIV_PEM] = privPEM;
+  this[SYM_PUB_PEM] = pubPEM;
+  this[SYM_PUB_SSH] = pubSSH;
+  this[SYM_HASH_ALGO] = algo;
+  this[SYM_DECRYPTED] = decrypted;
+}
+PPK_Private.prototype = BaseKey;
+(function() {
+  var EMPTY_PASSPHRASE = Buffer.alloc(0);
+  var PPK_IV = Buffer.from([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+  var PPK_PP1 = Buffer.from([0, 0, 0, 0]);
+  var PPK_PP2 = Buffer.from([0, 0, 0, 1]);
+  var regexp = /^PuTTY-User-Key-File-2: (ssh-(?:rsa|dss))\r?\nEncryption: (aes256-cbc|none)\r?\nComment: ([^\r\n]*)\r?\nPublic-Lines: \d+\r?\n([\s\S]+?)\r?\nPrivate-Lines: \d+\r?\n([\s\S]+?)\r?\nPrivate-MAC: ([^\r\n]+)/;
+  PPK_Private.parse = function(str, passphrase) {
+    var m = regexp.exec(str);
+    if (m === null)
+      return null;
+    // m[1] = key type
+    // m[2] = encryption type
+    // m[3] = comment
+    // m[4] = base64-encoded public key data:
+    //         for "ssh-rsa":
+    //          string "ssh-rsa"
+    //          mpint  e    (public exponent)
+    //          mpint  n    (modulus)
+    //         for "ssh-dss":
+    //          string "ssh-dss"
+    //          mpint p     (modulus)
+    //          mpint q     (prime)
+    //          mpint g     (base number)
+    //          mpint y     (public key parameter: g^x mod p)
+    // m[5] = base64-encoded private key data:
+    //         for "ssh-rsa":
+    //          mpint  d    (private exponent)
+    //          mpint  p    (prime 1)
+    //          mpint  q    (prime 2)
+    //          mpint  iqmp ([inverse of q] mod p)
+    //         for "ssh-dss":
+    //          mpint x     (private key parameter)
+    // m[6] = SHA1 HMAC over:
+    //          string  name of algorithm ("ssh-dss", "ssh-rsa")
+    //          string  encryption type
+    //          string  comment
+    //          string  public key data
+    //          string  private-plaintext (including the final padding)
+    var cipherName = m[2];
+    var encrypted = (cipherName !== 'none');
+    if (encrypted && !passphrase) {
+      return new Error(
+        'Encrypted PPK private key detected, but no passphrase given'
+      );
+    }
+
+    var privBlob = Buffer.from(m[5], 'base64');
+
+    if (encrypted) {
+      var encInfo = CIPHER_INFO[cipherName];
+      var cipherKey = combineBuffers(
+        createHash('sha1').update(PPK_PP1).update(passphrase).digest(),
+        createHash('sha1').update(PPK_PP2).update(passphrase).digest()
+      );
+      if (cipherKey.length > encInfo.keyLen)
+        cipherKey = cipherKey.slice(0, encInfo.keyLen);
+      try {
+        var decipher = createDecipheriv(SSH_TO_OPENSSL[cipherName],
+                                        cipherKey,
+                                        PPK_IV);
+        decipher.setAutoPadding(false);
+        privBlob = combineBuffers(decipher.update(privBlob),
+                                  decipher.final());
+        decrypted = true;
+      } catch (ex) {
+        return ex;
+      }
+    }
+
+    var type = m[1];
+    var comment = m[3];
+    var pubBlob = Buffer.from(m[4], 'base64');
+
+    var mac = m[6];
+    var typeLen = type.length;
+    var cipherNameLen = cipherName.length;
+    var commentLen = Buffer.byteLength(comment);
+    var pubLen = pubBlob.length;
+    var privLen = privBlob.length;
+    var macData = Buffer.allocUnsafe(4 + typeLen
+                                     + 4 + cipherNameLen
+                                     + 4 + commentLen
+                                     + 4 + pubLen
+                                     + 4 + privLen);
+    var p = 0;
+
+    writeUInt32BE(macData, typeLen, p);
+    macData.write(type, p += 4, typeLen, 'ascii');
+    writeUInt32BE(macData, cipherNameLen, p += typeLen);
+    macData.write(cipherName, p += 4, cipherNameLen, 'ascii');
+    writeUInt32BE(macData, commentLen, p += cipherNameLen);
+    macData.write(comment, p += 4, commentLen, 'utf8');
+    writeUInt32BE(macData, pubLen, p += commentLen);
+    pubBlob.copy(macData, p += 4);
+    writeUInt32BE(macData, privLen, p += pubLen);
+    privBlob.copy(macData, p + 4);
+
+    if (!passphrase)
+      passphrase = EMPTY_PASSPHRASE;
+
+    var calcMAC = createHmac('sha1',
+                             createHash('sha1')
+                               .update('putty-private-key-file-mac-key')
+                               .update(passphrase)
+                               .digest())
+                    .update(macData)
+                    .digest('hex');
+
+    if (calcMAC !== mac) {
+      if (encrypted) {
+        return new Error(
+          'PPK private key integrity check failed -- bad passphrase?'
+        );
+      } else {
+        return new Error('PPK private key integrity check failed');
+      }
+    }
+
+    // avoid cyclic require by requiring on first use
+    if (!utils)
+      utils = __nccwpck_require__(4928);
+
+    var pubPEM;
+    var pubSSH;
+    var privPEM;
+    pubBlob._pos = 0;
+    skipFields(pubBlob, 1); // skip (duplicate) key type
+    switch (type) {
+      case 'ssh-rsa':
+        var e = utils.readString(pubBlob, pubBlob._pos);
+        if (e === false)
+          return new Error('Malformed PPK public key');
+        var n = utils.readString(pubBlob, pubBlob._pos);
+        if (n === false)
+          return new Error('Malformed PPK public key');
+        var d = utils.readString(privBlob, 0);
+        if (d === false)
+          return new Error('Malformed PPK private key');
+        var p = utils.readString(privBlob, privBlob._pos);
+        if (p === false)
+          return new Error('Malformed PPK private key');
+        var q = utils.readString(privBlob, privBlob._pos);
+        if (q === false)
+          return new Error('Malformed PPK private key');
+        var iqmp = utils.readString(privBlob, privBlob._pos);
+        if (iqmp === false)
+          return new Error('Malformed PPK private key');
+        pubPEM = genOpenSSLRSAPub(n, e);
+        pubSSH = genOpenSSHRSAPub(n, e);
+        privPEM = genOpenSSLRSAPriv(n, e, d, iqmp, p, q);
+        break;
+      case 'ssh-dss':
+        var p = utils.readString(pubBlob, pubBlob._pos);
+        if (p === false)
+          return new Error('Malformed PPK public key');
+        var q = utils.readString(pubBlob, pubBlob._pos);
+        if (q === false)
+          return new Error('Malformed PPK public key');
+        var g = utils.readString(pubBlob, pubBlob._pos);
+        if (g === false)
+          return new Error('Malformed PPK public key');
+        var y = utils.readString(pubBlob, pubBlob._pos);
+        if (y === false)
+          return new Error('Malformed PPK public key');
+        var x = utils.readString(privBlob, 0);
+        if (x === false)
+          return new Error('Malformed PPK private key');
+
+        pubPEM = genOpenSSLDSAPub(p, q, g, y);
+        pubSSH = genOpenSSHDSAPub(p, q, g, y);
+        privPEM = genOpenSSLDSAPriv(p, q, g, y, x);
+        break;
+    }
+
+    return new PPK_Private(type, comment, privPEM, pubPEM, pubSSH, 'sha1',
+                           encrypted);
+  };
+})();
+
+
+function parseDER(data, baseType, comment, fullType) {
+  // avoid cyclic require by requiring on first use
+  if (!utils)
+    utils = __nccwpck_require__(4928);
+
+  var algo;
+  var pubPEM = null;
+  var pubSSH = null;
+  switch (baseType) {
+    case 'ssh-rsa':
+      var e = utils.readString(data, data._pos);
+      if (e === false)
+        return new Error('Malformed OpenSSH public key');
+      var n = utils.readString(data, data._pos);
+      if (n === false)
+        return new Error('Malformed OpenSSH public key');
+      pubPEM = genOpenSSLRSAPub(n, e);
+      pubSSH = genOpenSSHRSAPub(n, e);
+      algo = 'sha1';
+      break;
+    case 'ssh-dss':
+      var p = utils.readString(data, data._pos);
+      if (p === false)
+        return new Error('Malformed OpenSSH public key');
+      var q = utils.readString(data, data._pos);
+      if (q === false)
+        return new Error('Malformed OpenSSH public key');
+      var g = utils.readString(data, data._pos);
+      if (g === false)
+        return new Error('Malformed OpenSSH public key');
+      var y = utils.readString(data, data._pos);
+      if (y === false)
+        return new Error('Malformed OpenSSH public key');
+      pubPEM = genOpenSSLDSAPub(p, q, g, y);
+      pubSSH = genOpenSSHDSAPub(p, q, g, y);
+      algo = 'sha1';
+      break;
+    case 'ssh-ed25519':
+      var edpub = utils.readString(data, data._pos);
+      if (edpub === false || edpub.length !== 32)
+        return new Error('Malformed OpenSSH public key');
+      pubPEM = genOpenSSLEdPub(edpub);
+      pubSSH = genOpenSSHEdPub(edpub);
+      algo = null;
+      break;
+    case 'ecdsa-sha2-nistp256':
+      algo = 'sha256';
+      oid = '1.2.840.10045.3.1.7';
+    case 'ecdsa-sha2-nistp384':
+      if (algo === undefined) {
+        algo = 'sha384';
+        oid = '1.3.132.0.34';
+      }
+    case 'ecdsa-sha2-nistp521':
+      if (algo === undefined) {
+        algo = 'sha512';
+        oid = '1.3.132.0.35';
+      }
+      // TODO: validate curve name against type
+      if (!skipFields(data, 1)) // Skip curve name
+        return new Error('Malformed OpenSSH public key');
+      var ecpub = utils.readString(data, data._pos);
+      if (ecpub === false)
+        return new Error('Malformed OpenSSH public key');
+      pubPEM = genOpenSSLECDSAPub(oid, ecpub);
+      pubSSH = genOpenSSHECDSAPub(oid, ecpub);
+      break;
+    default:
+      return new Error('Unsupported OpenSSH public key type: ' + baseType);
+  }
+
+  return new OpenSSH_Public(fullType, comment, pubPEM, pubSSH, algo);
+}
+function OpenSSH_Public(type, comment, pubPEM, pubSSH, algo) {
+  this.type = type;
+  this.comment = comment;
+  this[SYM_PRIV_PEM] = null;
+  this[SYM_PUB_PEM] = pubPEM;
+  this[SYM_PUB_SSH] = pubSSH;
+  this[SYM_HASH_ALGO] = algo;
+  this[SYM_DECRYPTED] = false;
+}
+OpenSSH_Public.prototype = BaseKey;
+(function() {
+  var regexp;
+  if (EDDSA_SUPPORTED)
+    regexp = /^(((?:ssh-(?:rsa|dss|ed25519))|ecdsa-sha2-nistp(?:256|384|521))(?:-cert-v0[01]@openssh.com)?) ([A-Z0-9a-z\/+=]+)(?:$|\s+([\S].*)?)$/;
+  else
+    regexp = /^(((?:ssh-(?:rsa|dss))|ecdsa-sha2-nistp(?:256|384|521))(?:-cert-v0[01]@openssh.com)?) ([A-Z0-9a-z\/+=]+)(?:$|\s+([\S].*)?)$/;
+  OpenSSH_Public.parse = function(str) {
+    var m = regexp.exec(str);
+    if (m === null)
+      return null;
+    // m[1] = full type
+    // m[2] = base type
+    // m[3] = base64-encoded public key
+    // m[4] = comment
+
+    // avoid cyclic require by requiring on first use
+    if (!utils)
+      utils = __nccwpck_require__(4928);
+
+    var fullType = m[1];
+    var baseType = m[2];
+    var data = Buffer.from(m[3], 'base64');
+    var comment = (m[4] || '');
+
+    var type = utils.readString(data, data._pos, 'ascii');
+    if (type === false || type.indexOf(baseType) !== 0)
+      return new Error('Malformed OpenSSH public key');
+
+    return parseDER(data, baseType, comment, fullType);
+  };
+})();
+
+
+
+function RFC4716_Public(type, comment, pubPEM, pubSSH, algo) {
+  this.type = type;
+  this.comment = comment;
+  this[SYM_PRIV_PEM] = null;
+  this[SYM_PUB_PEM] = pubPEM;
+  this[SYM_PUB_SSH] = pubSSH;
+  this[SYM_HASH_ALGO] = algo;
+  this[SYM_DECRYPTED] = false;
+}
+RFC4716_Public.prototype = BaseKey;
+(function() {
+  var regexp = /^---- BEGIN SSH2 PUBLIC KEY ----(?:\r\n|\n)((?:(?:[\x21-\x7E]+?):(?:(?:.*?\\\r?\n)*.*)(?:\r\n|\n))*)((?:[A-Z0-9a-z\/+=]+(?:\r\n|\n))+)---- END SSH2 PUBLIC KEY ----$/;
+  var RE_HEADER = /^([\x21-\x7E]+?):((?:.*?\\\r?\n)*.*)$/gm;
+  var RE_HEADER_ENDS = /\\\r?\n/g;
+  RFC4716_Public.parse = function(str) {
+    var m = regexp.exec(str);
+    if (m === null)
+      return null;
+    // m[1] = header(s)
+    // m[2] = base64-encoded public key
+
+    var headers = m[1];
+    var data = Buffer.from(m[2], 'base64');
+    var comment = '';
+
+    if (headers !== undefined) {
+      while (m = RE_HEADER.exec(headers)) {
+        if (m[1].toLowerCase() === 'comment') {
+          comment = trimStart(m[2].replace(RE_HEADER_ENDS, ''));
+          if (comment.length > 1
+              && comment.charCodeAt(0) === 34/*'"'*/
+              && comment.charCodeAt(comment.length - 1) === 34/*'"'*/) {
+            comment = comment.slice(1, -1);
+          }
+        }
+      }
+    }
+
+    // avoid cyclic require by requiring on first use
+    if (!utils)
+      utils = __nccwpck_require__(4928);
+
+    var type = utils.readString(data, 0, 'ascii');
+    if (type === false)
+      return new Error('Malformed RFC4716 public key');
+
+    var pubPEM = null;
+    var pubSSH = null;
+    switch (type) {
+      case 'ssh-rsa':
+        var e = utils.readString(data, data._pos);
+        if (e === false)
+          return new Error('Malformed RFC4716 public key');
+        var n = utils.readString(data, data._pos);
+        if (n === false)
+          return new Error('Malformed RFC4716 public key');
+        pubPEM = genOpenSSLRSAPub(n, e);
+        pubSSH = genOpenSSHRSAPub(n, e);
+        break;
+      case 'ssh-dss':
+        var p = utils.readString(data, data._pos);
+        if (p === false)
+          return new Error('Malformed RFC4716 public key');
+        var q = utils.readString(data, data._pos);
+        if (q === false)
+          return new Error('Malformed RFC4716 public key');
+        var g = utils.readString(data, data._pos);
+        if (g === false)
+          return new Error('Malformed RFC4716 public key');
+        var y = utils.readString(data, data._pos);
+        if (y === false)
+          return new Error('Malformed RFC4716 public key');
+        pubPEM = genOpenSSLDSAPub(p, q, g, y);
+        pubSSH = genOpenSSHDSAPub(p, q, g, y);
+        break;
+      default:
+        return new Error('Malformed RFC4716 public key');
+    }
+
+    return new RFC4716_Public(type, comment, pubPEM, pubSSH, 'sha1');
+  };
+})();
+
+
+
+module.exports = {
+  parseDERKey: function parseDERKey(data, type) {
+    return parseDER(data, type, '', type);
+  },
+  parseKey: function parseKey(data, passphrase) {
+    if (Buffer.isBuffer(data))
+      data = data.toString('utf8').trim();
+    else if (typeof data !== 'string')
+      return new Error('Key data must be a Buffer or string');
+    else
+      data = data.trim();
+
+    // intentional !=
+    if (passphrase != undefined) {
+      if (typeof passphrase === 'string')
+        passphrase = Buffer.from(passphrase);
+      else if (!Buffer.isBuffer(passphrase))
+        return new Error('Passphrase must be a string or Buffer when supplied');
+    }
+
+    var ret;
+
+    // Private keys
+    if ((ret = OpenSSH_Private.parse(data, passphrase)) !== null)
+      return ret;
+    if ((ret = OpenSSH_Old_Private.parse(data, passphrase)) !== null)
+      return ret;
+    if ((ret = PPK_Private.parse(data, passphrase)) !== null)
+      return ret;
+
+    // Public keys
+    if ((ret = OpenSSH_Public.parse(data)) !== null)
+      return ret;
+    if ((ret = RFC4716_Public.parse(data)) !== null)
+      return ret;
+
+    return new Error('Unsupported key format');
+  }
+}
+
+
+/***/ }),
+
+/***/ 5265:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+
+var inspect = (__nccwpck_require__(3837).inspect);
+
+function assert(value, message) {
+  if (!value)
+    throw new ERR_INTERNAL_ASSERTION(message);
+}
+assert.fail = function fail(message) {
+  throw new ERR_INTERNAL_ASSERTION(message);
+};
+
+// Only use this for integers! Decimal numbers do not work with this function.
+function addNumericalSeparator(val) {
+  var res = '';
+  var i = val.length;
+  var start = val[0] === '-' ? 1 : 0;
+  for (; i >= start + 4; i -= 3)
+    res = `_${val.slice(i - 3, i)}${res}`;
+  return `${val.slice(0, i)}${res}`;
+}
+
+function oneOf(expected, thing) {
+  assert(typeof thing === 'string', '`thing` has to be of type string');
+  if (Array.isArray(expected)) {
+    var len = expected.length;
+    assert(len > 0, 'At least one expected value needs to be specified');
+    expected = expected.map((i) => String(i));
+    if (len > 2) {
+      return `one of ${thing} ${expected.slice(0, len - 1).join(', ')}, or `
+              + expected[len - 1];
+    } else if (len === 2) {
+      return `one of ${thing} ${expected[0]} or ${expected[1]}`;
+    } else {
+      return `of ${thing} ${expected[0]}`;
+    }
+  } else {
+    return `of ${thing} ${String(expected)}`;
+  }
+}
+
+
+
+exports.ERR_INTERNAL_ASSERTION = class ERR_INTERNAL_ASSERTION extends Error {
+  constructor(message) {
+    super();
+    Error.captureStackTrace(this, ERR_INTERNAL_ASSERTION);
+
+    var suffix = 'This is caused by either a bug in ssh2-streams '
+                 + 'or incorrect usage of ssh2-streams internals.\n'
+                 + 'Please open an issue with this stack trace at '
+                 + 'https://github.com/mscdex/ssh2-streams/issues\n';
+
+    this.message = (message === undefined ? suffix : `${message}\n${suffix}`);
+  }
+};
+
+var MAX_32BIT_INT = Math.pow(2, 32);
+var MAX_32BIT_BIGINT = (function() {
+  try {
+    return new Function('return 2n ** 32n')();
+  } catch (ex) {}
+})();
+exports.ERR_OUT_OF_RANGE = class ERR_OUT_OF_RANGE extends RangeError {
+  constructor(str, range, input, replaceDefaultBoolean) {
+    super();
+    Error.captureStackTrace(this, ERR_OUT_OF_RANGE);
+
+    assert(range, 'Missing "range" argument');
+    var msg = (replaceDefaultBoolean
+               ? str
+               : `The value of "${str}" is out of range.`);
+    var received;
+    if (Number.isInteger(input) && Math.abs(input) > MAX_32BIT_INT) {
+      received = addNumericalSeparator(String(input));
+    } else if (typeof input === 'bigint') {
+      received = String(input);
+      if (input > MAX_32BIT_BIGINT || input < -MAX_32BIT_BIGINT)
+        received = addNumericalSeparator(received);
+      received += 'n';
+    } else {
+      received = inspect(input);
+    }
+    msg += ` It must be ${range}. Received ${received}`;
+
+    this.message = msg;
+  }
+};
+
+exports.ERR_INVALID_ARG_TYPE = class ERR_INVALID_ARG_TYPE extends TypeError {
+  constructor(name, expected, actual) {
+    super();
+    Error.captureStackTrace(this, ERR_INVALID_ARG_TYPE);
+
+    assert(typeof name === 'string', `'name' must be a string`);
+
+    // determiner: 'must be' or 'must not be'
+    var determiner;
+    if (typeof expected === 'string' && expected.startsWith('not ')) {
+      determiner = 'must not be';
+      expected = expected.replace(/^not /, '');
+    } else {
+      determiner = 'must be';
+    }
+
+    var msg;
+    if (name.endsWith(' argument')) {
+      // For cases like 'first argument'
+      msg = `The ${name} ${determiner} ${oneOf(expected, 'type')}`;
+    } else {
+      var type = (name.includes('.') ? 'property' : 'argument');
+      msg = `The "${name}" ${type} ${determiner} ${oneOf(expected, 'type')}`;
+    }
+
+    msg += `. Received type ${typeof actual}`;
+
+    this.message = msg;
+  }
+};
+
+exports.validateNumber = function validateNumber(value, name) {
+  if (typeof value !== 'number')
+    throw new ERR_INVALID_ARG_TYPE(name, 'number', value);
+};
+
+
+// =============================================================================
+// Following code is only needed to support node v6.x ....
+
+// Undocumented cb() API, needed for core, not for public API
+exports.destroyImpl = function destroy(err, cb) {
+  const readableDestroyed = this._readableState &&
+    this._readableState.destroyed;
+  const writableDestroyed = this._writableState &&
+    this._writableState.destroyed;
+
+  if (readableDestroyed || writableDestroyed) {
+    if (cb) {
+      cb(err);
+    } else if (err) {
+      if (!this._writableState) {
+        process.nextTick(emitErrorNT, this, err);
+      } else if (!this._writableState.errorEmitted) {
+        this._writableState.errorEmitted = true;
+        process.nextTick(emitErrorNT, this, err);
+      }
+    }
+
+    return this;
+  }
+
+  // We set destroyed to true before firing error callbacks in order
+  // to make it re-entrance safe in case destroy() is called within callbacks
+
+  if (this._readableState) {
+    this._readableState.destroyed = true;
+  }
+
+  // If this is a duplex stream mark the writable part as destroyed as well
+  if (this._writableState) {
+    this._writableState.destroyed = true;
+  }
+
+  this._destroy(err || null, (err) => {
+    if (!cb && err) {
+      if (!this._writableState) {
+        process.nextTick(emitErrorAndCloseNT, this, err);
+      } else if (!this._writableState.errorEmitted) {
+        this._writableState.errorEmitted = true;
+        process.nextTick(emitErrorAndCloseNT, this, err);
+      } else {
+        process.nextTick(emitCloseNT, this);
+      }
+    } else if (cb) {
+      process.nextTick(emitCloseNT, this);
+      cb(err);
+    } else {
+      process.nextTick(emitCloseNT, this);
+    }
+  });
+
+  return this;
+};
+
+function emitErrorAndCloseNT(self, err) {
+  emitErrorNT(self, err);
+  emitCloseNT(self);
+}
+
+function emitCloseNT(self) {
+  if (self._writableState && !self._writableState.emitClose)
+    return;
+  if (self._readableState && !self._readableState.emitClose)
+    return;
+  self.emit('close');
+}
+// =============================================================================
+
+
+/***/ }),
+
+/***/ 1517:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+// TODO: support EXTENDED request packets
+
+var TransformStream = (__nccwpck_require__(2781).Transform);
+var ReadableStream = (__nccwpck_require__(2781).Readable);
+var WritableStream = (__nccwpck_require__(2781).Writable);
+var constants = (__nccwpck_require__(7147).constants) || process.binding('constants');
+var util = __nccwpck_require__(3837);
+var inherits = util.inherits;
+var isDate = util.isDate;
+var listenerCount = (__nccwpck_require__(2361).EventEmitter.listenerCount);
+var fs = __nccwpck_require__(7147);
+
+var readString = (__nccwpck_require__(4928).readString);
+var readInt = (__nccwpck_require__(4928).readInt);
+var readUInt32BE = (__nccwpck_require__(9419).readUInt32BE);
+var writeUInt32BE = (__nccwpck_require__(9419).writeUInt32BE);
+
+var ATTR = {
+  SIZE: 0x00000001,
+  UIDGID: 0x00000002,
+  PERMISSIONS: 0x00000004,
+  ACMODTIME: 0x00000008,
+  EXTENDED: 0x80000000
+};
+
+var STATUS_CODE = {
+  OK: 0,
+  EOF: 1,
+  NO_SUCH_FILE: 2,
+  PERMISSION_DENIED: 3,
+  FAILURE: 4,
+  BAD_MESSAGE: 5,
+  NO_CONNECTION: 6,
+  CONNECTION_LOST: 7,
+  OP_UNSUPPORTED: 8
+};
+Object.keys(STATUS_CODE).forEach(function(key) {
+  STATUS_CODE[STATUS_CODE[key]] = key;
+});
+var STATUS_CODE_STR = {
+  0: 'No error',
+  1: 'End of file',
+  2: 'No such file or directory',
+  3: 'Permission denied',
+  4: 'Failure',
+  5: 'Bad message',
+  6: 'No connection',
+  7: 'Connection lost',
+  8: 'Operation unsupported'
+};
+SFTPStream.STATUS_CODE = STATUS_CODE;
+
+var REQUEST = {
+  INIT: 1,
+  OPEN: 3,
+  CLOSE: 4,
+  READ: 5,
+  WRITE: 6,
+  LSTAT: 7,
+  FSTAT: 8,
+  SETSTAT: 9,
+  FSETSTAT: 10,
+  OPENDIR: 11,
+  READDIR: 12,
+  REMOVE: 13,
+  MKDIR: 14,
+  RMDIR: 15,
+  REALPATH: 16,
+  STAT: 17,
+  RENAME: 18,
+  READLINK: 19,
+  SYMLINK: 20,
+  EXTENDED: 200
+};
+Object.keys(REQUEST).forEach(function(key) {
+  REQUEST[REQUEST[key]] = key;
+});
+
+var RESPONSE = {
+  VERSION: 2,
+  STATUS: 101,
+  HANDLE: 102,
+  DATA: 103,
+  NAME: 104,
+  ATTRS: 105,
+  EXTENDED: 201
+};
+Object.keys(RESPONSE).forEach(function(key) {
+  RESPONSE[RESPONSE[key]] = key;
+});
+
+var OPEN_MODE = {
+  READ: 0x00000001,
+  WRITE: 0x00000002,
+  APPEND: 0x00000004,
+  CREAT: 0x00000008,
+  TRUNC: 0x00000010,
+  EXCL: 0x00000020
+};
+SFTPStream.OPEN_MODE = OPEN_MODE;
+
+var MAX_PKT_LEN = 34000;
+var MAX_REQID = Math.pow(2, 32) - 1;
+var CLIENT_VERSION_BUFFER = Buffer.from([0, 0, 0, 5 /* length */,
+                                         REQUEST.INIT,
+                                         0, 0, 0, 3 /* version */]);
+var SERVER_VERSION_BUFFER = Buffer.from([0, 0, 0, 5 /* length */,
+                                         RESPONSE.VERSION,
+                                         0, 0, 0, 3 /* version */]);
+/*
+  http://tools.ietf.org/html/draft-ietf-secsh-filexfer-02:
+
+     The maximum size of a packet is in practice determined by the client
+     (the maximum size of read or write requests that it sends, plus a few
+     bytes of packet overhead).  All servers SHOULD support packets of at
+     least 34000 bytes (where the packet size refers to the full length,
+     including the header above).  This should allow for reads and writes
+     of at most 32768 bytes.
+
+  OpenSSH caps this to 256kb instead of the ~34kb as mentioned in the sftpv3
+  spec.
+*/
+var RE_OPENSSH = /^SSH-2.0-(?:OpenSSH|dropbear)/;
+var OPENSSH_MAX_DATA_LEN = (256 * 1024) - (2 * 1024)/*account for header data*/;
+
+function DEBUG_NOOP(msg) {}
+
+function SFTPStream(cfg, remoteIdentRaw) {
+  if (typeof cfg === 'string' && !remoteIdentRaw) {
+    remoteIdentRaw = cfg;
+    cfg = undefined;
+  }
+  if (typeof cfg !== 'object' || !cfg)
+    cfg = {};
+
+  TransformStream.call(this, {
+    highWaterMark: (typeof cfg.highWaterMark === 'number'
+                    ? cfg.highWaterMark
+                    : 32 * 1024)
+  });
+
+  this.debug = (typeof cfg.debug === 'function' ? cfg.debug : DEBUG_NOOP);
+  this.server = (cfg.server ? true : false);
+  this._isOpenSSH = (remoteIdentRaw && RE_OPENSSH.test(remoteIdentRaw));
+  this._needContinue = false;
+  this._state = {
+    // common
+    status: 'packet_header',
+    writeReqid: -1,
+    pktLeft: undefined,
+    pktHdrBuf: Buffer.allocUnsafe(9), // room for pktLen + pktType + req id
+    pktBuf: undefined,
+    pktType: undefined,
+    version: undefined,
+    extensions: {},
+
+    // client
+    maxDataLen: (this._isOpenSSH ? OPENSSH_MAX_DATA_LEN : 32768),
+    requests: {}
+  };
+
+  var self = this;
+  this.on('end', function() {
+    self.readable = false;
+  }).on('finish', onFinish)
+    .on('prefinish', onFinish);
+  function onFinish() {
+    self.writable = false;
+    self._cleanup(false);
+  }
+
+  if (!this.server)
+    this.push(CLIENT_VERSION_BUFFER);
+}
+inherits(SFTPStream, TransformStream);
+
+SFTPStream.prototype.__read = TransformStream.prototype._read;
+SFTPStream.prototype._read = function(n) {
+  if (this._needContinue) {
+    this._needContinue = false;
+    this.emit('continue');
+  }
+  return this.__read(n);
+};
+SFTPStream.prototype.__push = TransformStream.prototype.push;
+SFTPStream.prototype.push = function(chunk, encoding) {
+  if (!this.readable)
+    return false;
+  if (chunk === null)
+    this.readable = false;
+  var ret = this.__push(chunk, encoding);
+  this._needContinue = (ret === false);
+  return ret;
+};
+
+SFTPStream.prototype._cleanup = function(callback) {
+  var state = this._state;
+
+  state.pktBuf = undefined; // give GC something to do
+
+  var requests = state.requests;
+  var keys = Object.keys(requests);
+  var len = keys.length;
+  if (len) {
+    if (this.readable) {
+      var err = new Error('SFTP session ended early');
+      for (var i = 0, cb; i < len; ++i)
+        (cb = requests[keys[i]].cb) && cb(err);
+    }
+    state.requests = {};
+  }
+
+  if (this.readable)
+    this.push(null);
+  if (!this._readableState.endEmitted && !this._readableState.flowing) {
+    // Ugh!
+    this.resume();
+  }
+  if (callback !== false) {
+    this.debug('DEBUG[SFTP]: Parser: Malformed packet');
+    callback && callback(new Error('Malformed packet'));
+  }
+};
+
+SFTPStream.prototype._transform = function(chunk, encoding, callback) {
+  var state = this._state;
+  var server = this.server;
+  var status = state.status;
+  var pktType = state.pktType;
+  var pktBuf = state.pktBuf;
+  var pktLeft = state.pktLeft;
+  var version = state.version;
+  var pktHdrBuf = state.pktHdrBuf;
+  var requests = state.requests;
+  var debug = this.debug;
+  var chunkLen = chunk.length;
+  var chunkPos = 0;
+  var buffer;
+  var chunkLeft;
+  var id;
+
+  while (true) {
+    if (status === 'discard') {
+      chunkLeft = (chunkLen - chunkPos);
+      if (pktLeft <= chunkLeft) {
+        chunkPos += pktLeft;
+        pktLeft = 0;
+        status = 'packet_header';
+        buffer = pktBuf = undefined;
+      } else {
+        pktLeft -= chunkLeft;
+        break;
+      }
+    } else if (pktBuf !== undefined) {
+      chunkLeft = (chunkLen - chunkPos);
+      if (pktLeft <= chunkLeft) {
+        chunk.copy(pktBuf,
+                   pktBuf.length - pktLeft,
+                   chunkPos,
+                   chunkPos + pktLeft);
+        chunkPos += pktLeft;
+        pktLeft = 0;
+        buffer = pktBuf;
+        pktBuf = undefined;
+        continue;
+      } else {
+        chunk.copy(pktBuf, pktBuf.length - pktLeft, chunkPos);
+        pktLeft -= chunkLeft;
+        break;
+      }
+    } else if (status === 'packet_header') {
+      if (!buffer) {
+        pktLeft = 5;
+        pktBuf = pktHdrBuf;
+      } else {
+        // here we read the right-most 5 bytes from buffer (pktHdrBuf)
+        pktLeft = readUInt32BE(buffer, 4) - 1; // account for type byte
+        pktType = buffer[8];
+
+        if (server) {
+          if (version === undefined && pktType !== REQUEST.INIT) {
+            debug('DEBUG[SFTP]: Parser: Unexpected packet before init');
+            this._cleanup(false);
+            return callback(new Error('Unexpected packet before init'));
+          } else if (version !== undefined && pktType === REQUEST.INIT) {
+            debug('DEBUG[SFTP]: Parser: Unexpected duplicate init');
+            status = 'bad_pkt';
+          } else if (pktLeft > MAX_PKT_LEN) {
+            var msg = 'Packet length ('
+                      + pktLeft
+                      + ') exceeds max length ('
+                      + MAX_PKT_LEN
+                      + ')';
+            debug('DEBUG[SFTP]: Parser: ' + msg);
+            this._cleanup(false);
+            return callback(new Error(msg));
+          } else if (pktType === REQUEST.EXTENDED) {
+            status = 'bad_pkt';
+          } else if (REQUEST[pktType] === undefined) {
+            debug('DEBUG[SFTP]: Parser: Unsupported packet type: ' + pktType);
+            status = 'discard';
+          }
+        } else if (version === undefined && pktType !== RESPONSE.VERSION) {
+          debug('DEBUG[SFTP]: Parser: Unexpected packet before version');
+          this._cleanup(false);
+          return callback(new Error('Unexpected packet before version'));
+        } else if (version !== undefined && pktType === RESPONSE.VERSION) {
+          debug('DEBUG[SFTP]: Parser: Unexpected duplicate version');
+          status = 'bad_pkt';
+        } else if (RESPONSE[pktType] === undefined) {
+          status = 'discard';
+        }
+
+        if (status === 'bad_pkt') {
+          // Copy original packet info to left of pktHdrBuf
+          writeUInt32BE(pktHdrBuf, pktLeft + 1, 0);
+          pktHdrBuf[4] = pktType;
+
+          pktLeft = 4;
+          pktBuf = pktHdrBuf;
+        } else {
+          pktBuf = Buffer.allocUnsafe(pktLeft);
+          status = 'payload';
+        }
+      }
+    } else if (status === 'payload') {
+      if (pktType === RESPONSE.VERSION || pktType === REQUEST.INIT) {
+        /*
+          uint32 version
+          <extension data>
+        */
+        version = state.version = readInt(buffer, 0, this, callback);
+        if (version === false)
+          return;
+        if (version < 3) {
+          this._cleanup(false);
+          return callback(new Error('Incompatible SFTP version: ' + version));
+        } else if (server)
+          this.push(SERVER_VERSION_BUFFER);
+
+        var buflen = buffer.length;
+        var extname;
+        var extdata;
+        buffer._pos = 4;
+        while (buffer._pos < buflen) {
+          extname = readString(buffer, buffer._pos, 'ascii', this, callback);
+          if (extname === false)
+            return;
+          extdata = readString(buffer, buffer._pos, 'ascii', this, callback);
+          if (extdata === false)
+            return;
+          if (state.extensions[extname])
+            state.extensions[extname].push(extdata);
+          else
+            state.extensions[extname] = [ extdata ];
+        }
+
+        this.emit('ready');
+      } else {
+        /*
+          All other packets (client and server) begin with a (client) request
+          id:
+          uint32     id
+        */
+        id = readInt(buffer, 0, this, callback);
+        if (id === false)
+          return;
+
+        var filename;
+        var attrs;
+        var handle;
+        var data;
+
+        if (!server) {
+          var req = requests[id];
+          var cb = req && req.cb;
+          debug('DEBUG[SFTP]: Parser: Response: ' + RESPONSE[pktType]);
+          if (req && cb) {
+            if (pktType === RESPONSE.STATUS) {
+              /*
+                uint32     error/status code
+                string     error message (ISO-10646 UTF-8)
+                string     language tag
+              */
+              var code = readInt(buffer, 4, this, callback);
+              if (code === false)
+                return;
+              if (code === STATUS_CODE.OK) {
+                cb();
+              } else {
+                // We borrow OpenSSH behavior here, specifically we make the
+                // message and language fields optional, despite the
+                // specification requiring them (even if they are empty). This
+                // helps to avoid problems with buggy implementations that do
+                // not fully conform to the SFTP(v3) specification.
+                var msg;
+                var lang = '';
+                if (buffer.length >= 12) {
+                  msg = readString(buffer, 8, 'utf8', this, callback);
+                  if (msg === false)
+                    return;
+                  if ((buffer._pos + 4) < buffer.length) {
+                    lang = readString(buffer,
+                                      buffer._pos,
+                                      'ascii',
+                                      this,
+                                      callback);
+                    if (lang === false)
+                      return;
+                  }
+                }
+                var err = new Error(msg
+                                    || STATUS_CODE_STR[code]
+                                    || 'Unknown status');
+                err.code = code;
+                err.lang = lang;
+                cb(err);
+              }
+            } else if (pktType === RESPONSE.HANDLE) {
+              /*
+                string     handle
+              */
+              handle = readString(buffer, 4, this, callback);
+              if (handle === false)
+                return;
+              cb(undefined, handle);
+            } else if (pktType === RESPONSE.DATA) {
+              /*
+                string     data
+              */
+              if (req.buffer) {
+                // we have already pre-allocated space to store the data
+                var dataLen = readInt(buffer, 4, this, callback);
+                if (dataLen === false)
+                  return;
+                var reqBufLen = req.buffer.length;
+                if (dataLen > reqBufLen) {
+                  // truncate response data to fit expected size
+                  writeUInt32BE(buffer, reqBufLen, 4);
+                }
+                data = readString(buffer, 4, req.buffer, this, callback);
+                if (data === false)
+                  return;
+                cb(undefined, data, dataLen);
+              } else {
+                data = readString(buffer, 4, this, callback);
+                if (data === false)
+                  return;
+                cb(undefined, data);
+              }
+            } else if (pktType === RESPONSE.NAME) {
+              /*
+                uint32     count
+                repeats count times:
+                        string     filename
+                        string     longname
+                        ATTRS      attrs
+              */
+              var namesLen = readInt(buffer, 4, this, callback);
+              if (namesLen === false)
+                return;
+              var names = [],
+                  longname;
+              buffer._pos = 8;
+              for (var i = 0; i < namesLen; ++i) {
+                // we are going to assume UTF-8 for filenames despite the SFTPv3
+                // spec not specifying an encoding because the specs for newer
+                // versions of the protocol all explicitly specify UTF-8 for
+                // filenames
+                filename = readString(buffer,
+                                      buffer._pos,
+                                      'utf8',
+                                      this,
+                                      callback);
+                if (filename === false)
+                  return;
+                // `longname` only exists in SFTPv3 and since it typically will
+                // contain the filename, we assume it is also UTF-8
+                longname = readString(buffer,
+                                      buffer._pos,
+                                      'utf8',
+                                      this,
+                                      callback);
+                if (longname === false)
+                  return;
+                attrs = readAttrs(buffer, buffer._pos, this, callback);
+                if (attrs === false)
+                  return;
+                names.push({
+                  filename: filename,
+                  longname: longname,
+                  attrs: attrs
+                });
+              }
+              cb(undefined, names);
+            } else if (pktType === RESPONSE.ATTRS) {
+              /*
+                ATTRS      attrs
+              */
+              attrs = readAttrs(buffer, 4, this, callback);
+              if (attrs === false)
+                return;
+              cb(undefined, attrs);
+            } else if (pktType === RESPONSE.EXTENDED) {
+              if (req.extended) {
+                switch (req.extended) {
+                  case 'statvfs@openssh.com':
+                  case 'fstatvfs@openssh.com':
+                    /*
+                      uint64    f_bsize   // file system block size
+                      uint64    f_frsize  // fundamental fs block size
+                      uint64    f_blocks  // number of blocks (unit f_frsize)
+                      uint64    f_bfree   // free blocks in file system
+                      uint64    f_bavail  // free blocks for non-root
+                      uint64    f_files   // total file inodes
+                      uint64    f_ffree   // free file inodes
+                      uint64    f_favail  // free file inodes for to non-root
+                      uint64    f_fsid    // file system id
+                      uint64    f_flag    // bit mask of f_flag values
+                      uint64    f_namemax // maximum filename length
+                    */
+                    var stats = {
+                      f_bsize: undefined,
+                      f_frsize: undefined,
+                      f_blocks: undefined,
+                      f_bfree: undefined,
+                      f_bavail: undefined,
+                      f_files: undefined,
+                      f_ffree: undefined,
+                      f_favail: undefined,
+                      f_sid: undefined,
+                      f_flag: undefined,
+                      f_namemax: undefined
+                    };
+                    stats.f_bsize = readUInt64BE(buffer, 4, this, callback);
+                    if (stats.f_bsize === false)
+                      return;
+                    stats.f_frsize = readUInt64BE(buffer, 12, this, callback);
+                    if (stats.f_frsize === false)
+                      return;
+                    stats.f_blocks = readUInt64BE(buffer, 20, this, callback);
+                    if (stats.f_blocks === false)
+                      return;
+                    stats.f_bfree = readUInt64BE(buffer, 28, this, callback);
+                    if (stats.f_bfree === false)
+                      return;
+                    stats.f_bavail = readUInt64BE(buffer, 36, this, callback);
+                    if (stats.f_bavail === false)
+                      return;
+                    stats.f_files = readUInt64BE(buffer, 44, this, callback);
+                    if (stats.f_files === false)
+                      return;
+                    stats.f_ffree = readUInt64BE(buffer, 52, this, callback);
+                    if (stats.f_ffree === false)
+                      return;
+                    stats.f_favail = readUInt64BE(buffer, 60, this, callback);
+                    if (stats.f_favail === false)
+                      return;
+                    stats.f_sid = readUInt64BE(buffer, 68, this, callback);
+                    if (stats.f_sid === false)
+                      return;
+                    stats.f_flag = readUInt64BE(buffer, 76, this, callback);
+                    if (stats.f_flag === false)
+                      return;
+                    stats.f_namemax = readUInt64BE(buffer, 84, this, callback);
+                    if (stats.f_namemax === false)
+                      return;
+                    cb(undefined, stats);
+                  break;
+                }
+              }
+              // XXX: at least provide the raw buffer data to the callback in
+              // case of unexpected extended response?
+              cb();
+            }
+          }
+          if (req)
+            delete requests[id];
+        } else {
+          // server
+          var evName = REQUEST[pktType];
+          var offset;
+          var path;
+
+          debug('DEBUG[SFTP]: Parser: Request: ' + evName);
+          if (listenerCount(this, evName)) {
+            if (pktType === REQUEST.OPEN) {
+              /*
+                string        filename
+                uint32        pflags
+                ATTRS         attrs
+              */
+              filename = readString(buffer, 4, 'utf8', this, callback);
+              if (filename === false)
+                return;
+              var pflags = readInt(buffer, buffer._pos, this, callback);
+              if (pflags === false)
+                return;
+              attrs = readAttrs(buffer, buffer._pos + 4, this, callback);
+              if (attrs === false)
+                return;
+              this.emit(evName, id, filename, pflags, attrs);
+            } else if (pktType === REQUEST.CLOSE
+                       || pktType === REQUEST.FSTAT
+                       || pktType === REQUEST.READDIR) {
+              /*
+                string     handle
+              */
+              handle = readString(buffer, 4, this, callback);
+              if (handle === false)
+                return;
+              this.emit(evName, id, handle);
+            } else if (pktType === REQUEST.READ) {
+              /*
+                string     handle
+                uint64     offset
+                uint32     len
+              */
+              handle = readString(buffer, 4, this, callback);
+              if (handle === false)
+                return;
+              offset = readUInt64BE(buffer, buffer._pos, this, callback);
+              if (offset === false)
+                return;
+              var len = readInt(buffer, buffer._pos, this, callback);
+              if (len === false)
+                return;
+              this.emit(evName, id, handle, offset, len);
+            } else if (pktType === REQUEST.WRITE) {
+              /*
+                string     handle
+                uint64     offset
+                string     data
+              */
+              handle = readString(buffer, 4, this, callback);
+              if (handle === false)
+                return;
+              offset = readUInt64BE(buffer, buffer._pos, this, callback);
+              if (offset === false)
+                return;
+              data = readString(buffer, buffer._pos, this, callback);
+              if (data === false)
+                return;
+              this.emit(evName, id, handle, offset, data);
+            } else if (pktType === REQUEST.LSTAT
+                       || pktType === REQUEST.STAT
+                       || pktType === REQUEST.OPENDIR
+                       || pktType === REQUEST.REMOVE
+                       || pktType === REQUEST.RMDIR
+                       || pktType === REQUEST.REALPATH
+                       || pktType === REQUEST.READLINK) {
+              /*
+                string     path
+              */
+              path = readString(buffer, 4, 'utf8', this, callback);
+              if (path === false)
+                return;
+              this.emit(evName, id, path);
+            } else if (pktType === REQUEST.SETSTAT
+                       || pktType === REQUEST.MKDIR) {
+              /*
+                string     path
+                ATTRS      attrs
+              */
+              path = readString(buffer, 4, 'utf8', this, callback);
+              if (path === false)
+                return;
+              attrs = readAttrs(buffer, buffer._pos, this, callback);
+              if (attrs === false)
+                return;
+              this.emit(evName, id, path, attrs);
+            } else if (pktType === REQUEST.FSETSTAT) {
+              /*
+                string     handle
+                ATTRS      attrs
+              */
+              handle = readString(buffer, 4, this, callback);
+              if (handle === false)
+                return;
+              attrs = readAttrs(buffer, buffer._pos, this, callback);
+              if (attrs === false)
+                return;
+              this.emit(evName, id, handle, attrs);
+            } else if (pktType === REQUEST.RENAME
+                       || pktType === REQUEST.SYMLINK) {
+              /*
+                RENAME:
+                  string     oldpath
+                  string     newpath
+                SYMLINK:
+                  string     linkpath
+                  string     targetpath
+              */
+              var str1;
+              var str2;
+              str1 = readString(buffer, 4, 'utf8', this, callback);
+              if (str1 === false)
+                return;
+              str2 = readString(buffer, buffer._pos, 'utf8', this, callback);
+              if (str2 === false)
+                return;
+              if (pktType === REQUEST.SYMLINK && this._isOpenSSH) {
+                // OpenSSH has linkpath and targetpath positions switched
+                this.emit(evName, id, str2, str1);
+              } else
+                this.emit(evName, id, str1, str2);
+            }
+          } else {
+            // automatically reject request if no handler for request type
+            this.status(id, STATUS_CODE.OP_UNSUPPORTED);
+          }
+        }
+      }
+
+      // prepare for next packet
+      status = 'packet_header';
+      buffer = pktBuf = undefined;
+    } else if (status === 'bad_pkt') {
+      if (server && buffer[4] !== REQUEST.INIT) {
+        var errCode = (buffer[4] === REQUEST.EXTENDED
+                       ? STATUS_CODE.OP_UNSUPPORTED
+                       : STATUS_CODE.FAILURE);
+
+        // no request id for init/version packets, so we have no way to send a
+        // status response, so we just close up shop ...
+        if (buffer[4] === REQUEST.INIT || buffer[4] === RESPONSE.VERSION)
+          return this._cleanup(callback);
+
+        id = readInt(buffer, 5, this, callback);
+        if (id === false)
+          return;
+        this.status(id, errCode);
+      }
+
+      // by this point we have already read the type byte and the id bytes, so
+      // we subtract those from the number of bytes to skip
+      pktLeft = readUInt32BE(buffer, 0) - 5;
+
+      status = 'discard';
+    }
+
+    if (chunkPos >= chunkLen)
+      break;
+  }
+
+  state.status = status;
+  state.pktType = pktType;
+  state.pktBuf = pktBuf;
+  state.pktLeft = pktLeft;
+  state.version = version;
+
+  callback();
+};
+
+// client
+SFTPStream.prototype.createReadStream = function(path, options) {
+  if (this.server)
+    throw new Error('Client-only method called in server mode');
+
+  return new ReadStream(this, path, options);
+};
+SFTPStream.prototype.createWriteStream = function(path, options) {
+  if (this.server)
+    throw new Error('Client-only method called in server mode');
+
+  return new WriteStream(this, path, options);
+};
+SFTPStream.prototype.open = function(path, flags_, attrs, cb) {
+  if (this.server)
+    throw new Error('Client-only method called in server mode');
+
+  var state = this._state;
+
+  if (typeof attrs === 'function') {
+    cb = attrs;
+    attrs = undefined;
+  }
+
+  var flags = (typeof flags_ === 'number' ? flags_ : stringToFlags(flags_));
+  if (flags === null)
+    throw new Error('Unknown flags string: ' + flags_);
+
+  var attrFlags = 0;
+  var attrBytes = 0;
+  if (typeof attrs === 'string' || typeof attrs === 'number') {
+    attrs = { mode: attrs };
+  }
+  if (typeof attrs === 'object' && attrs !== null) {
+    attrs = attrsToBytes(attrs);
+    attrFlags = attrs.flags;
+    attrBytes = attrs.nbytes;
+    attrs = attrs.bytes;
+  }
+
+  /*
+    uint32        id
+    string        filename
+    uint32        pflags
+    ATTRS         attrs
+  */
+  var pathlen = Buffer.byteLength(path);
+  var p = 9;
+  var buf = Buffer.allocUnsafe(4 + 1 + 4 + 4 + pathlen + 4 + 4 + attrBytes);
+
+  writeUInt32BE(buf, buf.length - 4, 0);
+  buf[4] = REQUEST.OPEN;
+  var reqid = state.writeReqid = (state.writeReqid + 1) % MAX_REQID;
+  writeUInt32BE(buf, reqid, 5);
+
+  writeUInt32BE(buf, pathlen, p);
+  buf.write(path, p += 4, pathlen, 'utf8');
+  writeUInt32BE(buf, flags, p += pathlen);
+  writeUInt32BE(buf, attrFlags, p += 4);
+  if (attrs && attrFlags) {
+    p += 4;
+    for (var i = 0, len = attrs.length; i < len; ++i)
+      for (var j = 0, len2 = attrs[i].length; j < len2; ++j)
+        buf[p++] = attrs[i][j];
+  }
+  state.requests[reqid] = { cb: cb };
+
+  this.debug('DEBUG[SFTP]: Outgoing: Writing OPEN');
+  return this.push(buf);
+};
+SFTPStream.prototype.close = function(handle, cb) {
+  if (this.server)
+    throw new Error('Client-only method called in server mode');
+  else if (!Buffer.isBuffer(handle))
+    throw new Error('handle is not a Buffer');
+
+  var state = this._state;
+
+  /*
+    uint32     id
+    string     handle
+  */
+  var handlelen = handle.length;
+  var p = 9;
+  var buf = Buffer.allocUnsafe(4 + 1 + 4 + 4 + handlelen);
+
+  writeUInt32BE(buf, buf.length - 4, 0);
+  buf[4] = REQUEST.CLOSE;
+  var reqid = state.writeReqid = (state.writeReqid + 1) % MAX_REQID;
+  writeUInt32BE(buf, reqid, 5);
+
+  writeUInt32BE(buf, handlelen, p);
+  handle.copy(buf, p += 4);
+
+  state.requests[reqid] = { cb: cb };
+
+  this.debug('DEBUG[SFTP]: Outgoing: Writing CLOSE');
+  return this.push(buf);
+};
+SFTPStream.prototype.readData = function(handle, buf, off, len, position, cb) {
+  if (this.server)
+    throw new Error('Client-only method called in server mode');
+  else if (!Buffer.isBuffer(handle))
+    throw new Error('handle is not a Buffer');
+  else if (!Buffer.isBuffer(buf))
+    throw new Error('buffer is not a Buffer');
+  else if (off >= buf.length)
+    throw new Error('offset is out of bounds');
+  else if (off + len > buf.length)
+    throw new Error('length extends beyond buffer');
+  else if (position === null)
+    throw new Error('null position currently unsupported');
+
+  var state = this._state;
+
+  /*
+    uint32     id
+    string     handle
+    uint64     offset
+    uint32     len
+  */
+  var handlelen = handle.length;
+  var p = 9;
+  var pos = position;
+  var out = Buffer.allocUnsafe(4 + 1 + 4 + 4 + handlelen + 8 + 4);
+
+  writeUInt32BE(out, out.length - 4, 0);
+  out[4] = REQUEST.READ;
+  var reqid = state.writeReqid = (state.writeReqid + 1) % MAX_REQID;
+  writeUInt32BE(out, reqid, 5);
+
+  writeUInt32BE(out, handlelen, p);
+  handle.copy(out, p += 4);
+  p += handlelen;
+  for (var i = 7; i >= 0; --i) {
+    out[p + i] = pos & 0xFF;
+    pos /= 256;
+  }
+  writeUInt32BE(out, len, p += 8);
+
+  state.requests[reqid] = {
+    cb: function(err, data, nb) {
+      if (err) {
+        if (cb._wantEOFError || err.code !== STATUS_CODE.EOF)
+          return cb(err);
+      } else if (nb > len) {
+        return cb(new Error('Received more data than requested'));
+      }
+      cb(undefined, nb || 0, data, position);
+    },
+    buffer: buf.slice(off, off + len)
+  };
+
+  this.debug('DEBUG[SFTP]: Outgoing: Writing READ');
+  return this.push(out);
+};
+SFTPStream.prototype.writeData = function(handle, buf, off, len, position, cb) {
+  if (this.server)
+    throw new Error('Client-only method called in server mode');
+  else if (!Buffer.isBuffer(handle))
+    throw new Error('handle is not a Buffer');
+  else if (!Buffer.isBuffer(buf))
+    throw new Error('buffer is not a Buffer');
+  else if (off > buf.length)
+    throw new Error('offset is out of bounds');
+  else if (off + len > buf.length)
+    throw new Error('length extends beyond buffer');
+  else if (position === null)
+    throw new Error('null position currently unsupported');
+
+  var self = this;
+  var state = this._state;
+
+  if (!len) {
+    cb && process.nextTick(function() { cb(undefined, 0); });
+    return;
+  }
+
+  var overflow = (len > state.maxDataLen
+                  ? len - state.maxDataLen
+                  : 0);
+  var origPosition = position;
+
+  if (overflow)
+    len = state.maxDataLen;
+
+  /*
+    uint32     id
+    string     handle
+    uint64     offset
+    string     data
+  */
+  var handlelen = handle.length;
+  var p = 9;
+  var out = Buffer.allocUnsafe(4 + 1 + 4 + 4 + handlelen + 8 + 4 + len);
+
+  writeUInt32BE(out, out.length - 4, 0);
+  out[4] = REQUEST.WRITE;
+  var reqid = state.writeReqid = (state.writeReqid + 1) % MAX_REQID;
+  writeUInt32BE(out, reqid, 5);
+
+  writeUInt32BE(out, handlelen, p);
+  handle.copy(out, p += 4);
+  p += handlelen;
+  for (var i = 7; i >= 0; --i) {
+    out[p + i] = position & 0xFF;
+    position /= 256;
+  }
+  writeUInt32BE(out, len, p += 8);
+  buf.copy(out, p += 4, off, off + len);
+
+  state.requests[reqid] = {
+    cb: function(err) {
+      if (err)
+        cb && cb(err);
+      else if (overflow) {
+        self.writeData(handle,
+                       buf,
+                       off + len,
+                       overflow,
+                       origPosition + len,
+                       cb);
+      } else
+        cb && cb(undefined, off + len);
+    }
+  };
+
+  this.debug('DEBUG[SFTP]: Outgoing: Writing WRITE');
+  return this.push(out);
+};
+function tryCreateBuffer(size) {
+  try {
+    return Buffer.allocUnsafe(size);
+  } catch (ex) {
+    return ex;
+  }
+}
+function fastXfer(src, dst, srcPath, dstPath, opts, cb) {
+  var concurrency = 64;
+  var chunkSize = 32768;
+  //var preserve = false;
+  var onstep;
+  var mode;
+  var fileSize;
+
+  if (typeof opts === 'function') {
+    cb = opts;
+  } else if (typeof opts === 'object' && opts !== null) {
+    if (typeof opts.concurrency === 'number'
+        && opts.concurrency > 0
+        && !isNaN(opts.concurrency))
+      concurrency = opts.concurrency;
+    if (typeof opts.chunkSize === 'number'
+        && opts.chunkSize > 0
+        && !isNaN(opts.chunkSize))
+      chunkSize = opts.chunkSize;
+    if (typeof opts.fileSize === 'number'
+        && opts.fileSize > 0
+        && !isNaN(opts.fileSize))
+      fileSize = opts.fileSize;
+    if (typeof opts.step === 'function')
+      onstep = opts.step;
+    //preserve = (opts.preserve ? true : false);
+    if (typeof opts.mode === 'string' || typeof opts.mode === 'number')
+      mode = modeNum(opts.mode);
+  }
+
+  // internal state variables
+  var fsize;
+  var pdst = 0;
+  var total = 0;
+  var hadError = false;
+  var srcHandle;
+  var dstHandle;
+  var readbuf;
+  var bufsize = chunkSize * concurrency;
+
+  function onerror(err) {
+    if (hadError)
+      return;
+
+    hadError = true;
+
+    var left = 0;
+    var cbfinal;
+
+    if (srcHandle || dstHandle) {
+      cbfinal = function() {
+        if (--left === 0)
+          cb(err);
+      };
+      if (srcHandle && (src === fs || src.writable))
+        ++left;
+      if (dstHandle && (dst === fs || dst.writable))
+        ++left;
+      if (srcHandle && (src === fs || src.writable))
+        src.close(srcHandle, cbfinal);
+      if (dstHandle && (dst === fs || dst.writable))
+        dst.close(dstHandle, cbfinal);
+    } else
+      cb(err);
+  }
+
+  src.open(srcPath, 'r', function(err, sourceHandle) {
+    if (err)
+      return onerror(err);
+
+    srcHandle = sourceHandle;
+
+    if (fileSize === undefined)
+      src.fstat(srcHandle, tryStat);
+    else
+      tryStat(null, { size: fileSize });
+
+    function tryStat(err, attrs) {
+      if (err) {
+        if (src !== fs) {
+          // Try stat() for sftp servers that may not support fstat() for
+          // whatever reason
+          src.stat(srcPath, function(err_, attrs_) {
+            if (err_)
+              return onerror(err);
+            tryStat(null, attrs_);
+          });
+          return;
+        }
+        return onerror(err);
+      }
+      fsize = attrs.size;
+
+      dst.open(dstPath, 'w', function(err, destHandle) {
+        if (err)
+          return onerror(err);
+
+        dstHandle = destHandle;
+
+        if (fsize <= 0)
+          return onerror();
+
+        // Use less memory where possible
+        while (bufsize > fsize) {
+          if (concurrency === 1) {
+            bufsize = fsize;
+            break;
+          }
+          bufsize -= chunkSize;
+          --concurrency;
+        }
+
+        readbuf = tryCreateBuffer(bufsize);
+        if (readbuf instanceof Error)
+          return onerror(readbuf);
+
+        if (mode !== undefined) {
+          dst.fchmod(dstHandle, mode, function tryAgain(err) {
+            if (err) {
+              // Try chmod() for sftp servers that may not support fchmod() for
+              // whatever reason
+              dst.chmod(dstPath, mode, function(err_) {
+                tryAgain();
+              });
+              return;
+            }
+            startReads();
+          });
+        } else {
+          startReads();
+        }
+
+        function onread(err, nb, data, dstpos, datapos, origChunkLen) {
+          if (err)
+            return onerror(err);
+
+          datapos = datapos || 0;
+
+          if (src === fs)
+            dst.writeData(dstHandle, readbuf, datapos, nb, dstpos, writeCb);
+          else
+            dst.write(dstHandle, readbuf, datapos, nb, dstpos, writeCb);
+
+          function writeCb(err) {
+            if (err)
+              return onerror(err);
+
+            total += nb;
+            onstep && onstep(total, nb, fsize);
+
+            if (nb < origChunkLen)
+              return singleRead(datapos, dstpos + nb, origChunkLen - nb);
+
+            if (total === fsize) {
+              dst.close(dstHandle, function(err) {
+                dstHandle = undefined;
+                if (err)
+                  return onerror(err);
+                src.close(srcHandle, function(err) {
+                  srcHandle = undefined;
+                  if (err)
+                    return onerror(err);
+                  cb();
+                });
+              });
+              return;
+            }
+
+            if (pdst >= fsize)
+              return;
+
+            var chunk = (pdst + chunkSize > fsize ? fsize - pdst : chunkSize);
+            singleRead(datapos, pdst, chunk);
+            pdst += chunk;
+          }
+        }
+
+        function makeCb(psrc, pdst, chunk) {
+          return function(err, nb, data) {
+            onread(err, nb, data, pdst, psrc, chunk);
+          };
+        }
+
+        function singleRead(psrc, pdst, chunk) {
+          if (src === fs) {
+            src.read(srcHandle,
+                     readbuf,
+                     psrc,
+                     chunk,
+                     pdst,
+                     makeCb(psrc, pdst, chunk));
+          } else {
+            src.readData(srcHandle,
+                         readbuf,
+                         psrc,
+                         chunk,
+                         pdst,
+                         makeCb(psrc, pdst, chunk));
+          }
+        }
+
+        function startReads() {
+          var reads = 0;
+          var psrc = 0;
+          while (pdst < fsize && reads < concurrency) {
+            var chunk = (pdst + chunkSize > fsize ? fsize - pdst : chunkSize);
+            singleRead(psrc, pdst, chunk);
+            psrc += chunk;
+            pdst += chunk;
+            ++reads;
+          }
+        }
+      });
+    }
+  });
+}
+SFTPStream.prototype.fastGet = function(remotePath, localPath, opts, cb) {
+  if (this.server)
+    throw new Error('Client-only method called in server mode');
+
+  fastXfer(this, fs, remotePath, localPath, opts, cb);
+};
+SFTPStream.prototype.fastPut = function(localPath, remotePath, opts, cb) {
+  if (this.server)
+    throw new Error('Client-only method called in server mode');
+
+  fastXfer(fs, this, localPath, remotePath, opts, cb);
+};
+SFTPStream.prototype.readFile = function(path, options, callback_) {
+  if (this.server)
+    throw new Error('Client-only method called in server mode');
+
+  var callback;
+  if (typeof callback_ === 'function') {
+    callback = callback_;
+  } else if (typeof options === 'function') {
+    callback = options;
+    options = undefined;
+  }
+
+  var self = this;
+
+  if (typeof options === 'string')
+    options = { encoding: options, flag: 'r' };
+  else if (!options)
+    options = { encoding: null, flag: 'r' };
+  else if (typeof options !== 'object')
+    throw new TypeError('Bad arguments');
+
+  var encoding = options.encoding;
+  if (encoding && !Buffer.isEncoding(encoding))
+    throw new Error('Unknown encoding: ' + encoding);
+
+  // first, stat the file, so we know the size.
+  var size;
+  var buffer; // single buffer with file data
+  var buffers; // list for when size is unknown
+  var pos = 0;
+  var handle;
+
+  // SFTPv3 does not support using -1 for read position, so we have to track
+  // read position manually
+  var bytesRead = 0;
+
+  var flag = options.flag || 'r';
+  this.open(path, flag, 438 /*=0666*/, function(er, handle_) {
+    if (er)
+      return callback && callback(er);
+    handle = handle_;
+
+    self.fstat(handle, function tryStat(er, st) {
+      if (er) {
+        // Try stat() for sftp servers that may not support fstat() for
+        // whatever reason
+        self.stat(path, function(er_, st_) {
+          if (er_) {
+            return self.close(handle, function() {
+              callback && callback(er);
+            });
+          }
+          tryStat(null, st_);
+        });
+        return;
+      }
+
+      size = st.size || 0;
+      if (size === 0) {
+        // the kernel lies about many files.
+        // Go ahead and try to read some bytes.
+        buffers = [];
+        return read();
+      }
+
+      buffer = Buffer.allocUnsafe(size);
+      read();
+    });
+  });
+
+  function read() {
+    if (size === 0) {
+      buffer = Buffer.allocUnsafe(8192);
+      self.readData(handle, buffer, 0, 8192, bytesRead, afterRead);
+    } else {
+      self.readData(handle, buffer, pos, size - pos, bytesRead, afterRead);
+    }
+  }
+
+  function afterRead(er, nbytes) {
+    var eof;
+    if (er) {
+      eof = (er.code === STATUS_CODE.EOF);
+      if (!eof) {
+        return self.close(handle, function() {
+          return callback && callback(er);
+        });
+      }
+    } else {
+      eof = false;
+    }
+
+    if (eof || (size === 0 && nbytes === 0))
+      return close();
+
+    bytesRead += nbytes;
+    pos += nbytes;
+    if (size !== 0) {
+      if (pos === size)
+        close();
+      else
+        read();
+    } else {
+      // unknown size, just read until we don't get bytes.
+      buffers.push(buffer.slice(0, nbytes));
+      read();
+    }
+  }
+  afterRead._wantEOFError = true;
+
+  function close() {
+    self.close(handle, function(er) {
+      if (size === 0) {
+        // collected the data into the buffers list.
+        buffer = Buffer.concat(buffers, pos);
+      } else if (pos < size) {
+        buffer = buffer.slice(0, pos);
+      }
+
+      if (encoding)
+        buffer = buffer.toString(encoding);
+      return callback && callback(er, buffer);
+    });
+  }
+};
+function writeAll(self, handle, buffer, offset, length, position, callback_) {
+  var callback = (typeof callback_ === 'function' ? callback_ : undefined);
+
+  self.writeData(handle,
+                 buffer,
+                 offset,
+                 length,
+                 position,
+                 function(writeErr, written) {
+    if (writeErr) {
+      return self.close(handle, function() {
+        callback && callback(writeErr);
+      });
+    }
+    if (written === length)
+      self.close(handle, callback);
+    else {
+      offset += written;
+      length -= written;
+      position += written;
+      writeAll(self, handle, buffer, offset, length, position, callback);
+    }
+  });
+}
+SFTPStream.prototype.writeFile = function(path, data, options, callback_) {
+  if (this.server)
+    throw new Error('Client-only method called in server mode');
+
+  var callback;
+  if (typeof callback_ === 'function') {
+    callback = callback_;
+  } else if (typeof options === 'function') {
+    callback = options;
+    options = undefined;
+  }
+  var self = this;
+
+  if (typeof options === 'string')
+    options = { encoding: options, mode: 438, flag: 'w' };
+  else if (!options)
+    options = { encoding: 'utf8', mode: 438 /*=0666*/, flag: 'w' };
+  else if (typeof options !== 'object')
+    throw new TypeError('Bad arguments');
+
+  if (options.encoding && !Buffer.isEncoding(options.encoding))
+    throw new Error('Unknown encoding: ' + options.encoding);
+
+  var flag = options.flag || 'w';
+  this.open(path, flag, options.mode, function(openErr, handle) {
+    if (openErr)
+      callback && callback(openErr);
+    else {
+      var buffer = (Buffer.isBuffer(data)
+                    ? data
+                    : Buffer.from('' + data, options.encoding || 'utf8'));
+      var position = (/a/.test(flag) ? null : 0);
+
+      // SFTPv3 does not support the notion of 'current position'
+      // (null position), so we just attempt to append to the end of the file
+      // instead
+      if (position === null) {
+        self.fstat(handle, function tryStat(er, st) {
+          if (er) {
+            // Try stat() for sftp servers that may not support fstat() for
+            // whatever reason
+            self.stat(path, function(er_, st_) {
+              if (er_) {
+                return self.close(handle, function() {
+                  callback && callback(er);
+                });
+              }
+              tryStat(null, st_);
+            });
+            return;
+          }
+          writeAll(self, handle, buffer, 0, buffer.length, st.size, callback);
+        });
+        return;
+      }
+      writeAll(self, handle, buffer, 0, buffer.length, position, callback);
+    }
+  });
+};
+SFTPStream.prototype.appendFile = function(path, data, options, callback_) {
+  if (this.server)
+    throw new Error('Client-only method called in server mode');
+
+  var callback;
+  if (typeof callback_ === 'function') {
+    callback = callback_;
+  } else if (typeof options === 'function') {
+    callback = options;
+    options = undefined;
+  }
+
+  if (typeof options === 'string')
+    options = { encoding: options, mode: 438, flag: 'a' };
+  else if (!options)
+    options = { encoding: 'utf8', mode: 438 /*=0666*/, flag: 'a' };
+  else if (typeof options !== 'object')
+    throw new TypeError('Bad arguments');
+
+  if (!options.flag)
+    options = util._extend({ flag: 'a' }, options);
+  this.writeFile(path, data, options, callback);
+};
+SFTPStream.prototype.exists = function(path, cb) {
+  if (this.server)
+    throw new Error('Client-only method called in server mode');
+
+  this.stat(path, function(err) {
+    cb && cb(err ? false : true);
+  });
+};
+SFTPStream.prototype.unlink = function(filename, cb) {
+  if (this.server)
+    throw new Error('Client-only method called in server mode');
+
+  var state = this._state;
+
+  /*
+    uint32     id
+    string     filename
+  */
+  var fnamelen = Buffer.byteLength(filename);
+  var p = 9;
+  var buf = Buffer.allocUnsafe(4 + 1 + 4 + 4 + fnamelen);
+
+  writeUInt32BE(buf, buf.length - 4, 0);
+  buf[4] = REQUEST.REMOVE;
+  var reqid = state.writeReqid = (state.writeReqid + 1) % MAX_REQID;
+  writeUInt32BE(buf, reqid, 5);
+
+  writeUInt32BE(buf, fnamelen, p);
+  buf.write(filename, p += 4, fnamelen, 'utf8');
+
+  state.requests[reqid] = { cb: cb };
+
+  this.debug('DEBUG[SFTP]: Outgoing: Writing REMOVE');
+  return this.push(buf);
+};
+SFTPStream.prototype.rename = function(oldPath, newPath, cb) {
+  if (this.server)
+    throw new Error('Client-only method called in server mode');
+
+  var state = this._state;
+
+  /*
+    uint32     id
+    string     oldpath
+    string     newpath
+  */
+  var oldlen = Buffer.byteLength(oldPath);
+  var newlen = Buffer.byteLength(newPath);
+  var p = 9;
+  var buf = Buffer.allocUnsafe(4 + 1 + 4 + 4 + oldlen + 4 + newlen);
+
+  writeUInt32BE(buf, buf.length - 4, 0);
+  buf[4] = REQUEST.RENAME;
+  var reqid = state.writeReqid = (state.writeReqid + 1) % MAX_REQID;
+  writeUInt32BE(buf, reqid, 5);
+
+  writeUInt32BE(buf, oldlen, p);
+  buf.write(oldPath, p += 4, oldlen, 'utf8');
+  writeUInt32BE(buf, newlen, p += oldlen);
+  buf.write(newPath, p += 4, newlen, 'utf8');
+
+  state.requests[reqid] = { cb: cb };
+
+  this.debug('DEBUG[SFTP]: Outgoing: Writing RENAME');
+  return this.push(buf);
+};
+SFTPStream.prototype.mkdir = function(path, attrs, cb) {
+  if (this.server)
+    throw new Error('Client-only method called in server mode');
+
+  var flags = 0;
+  var attrBytes = 0;
+  var state = this._state;
+
+  if (typeof attrs === 'function') {
+    cb = attrs;
+    attrs = undefined;
+  }
+  if (typeof attrs === 'object' && attrs !== null) {
+    attrs = attrsToBytes(attrs);
+    flags = attrs.flags;
+    attrBytes = attrs.nbytes;
+    attrs = attrs.bytes;
+  }
+
+  /*
+    uint32     id
+    string     path
+    ATTRS      attrs
+  */
+  var pathlen = Buffer.byteLength(path);
+  var p = 9;
+  var buf = Buffer.allocUnsafe(4 + 1 + 4 + 4 + pathlen + 4 + attrBytes);
+
+  writeUInt32BE(buf, buf.length - 4, 0);
+  buf[4] = REQUEST.MKDIR;
+  var reqid = state.writeReqid = (state.writeReqid + 1) % MAX_REQID;
+  writeUInt32BE(buf, reqid, 5);
+
+  writeUInt32BE(buf, pathlen, p);
+  buf.write(path, p += 4, pathlen, 'utf8');
+  writeUInt32BE(buf, flags, p += pathlen);
+  if (flags) {
+    p += 4;
+    for (var i = 0, len = attrs.length; i < len; ++i)
+      for (var j = 0, len2 = attrs[i].length; j < len2; ++j)
+        buf[p++] = attrs[i][j];
+  }
+
+  state.requests[reqid] = { cb: cb };
+
+  this.debug('DEBUG[SFTP]: Outgoing: Writing MKDIR');
+  return this.push(buf);
+};
+SFTPStream.prototype.rmdir = function(path, cb) {
+  if (this.server)
+    throw new Error('Client-only method called in server mode');
+
+  var state = this._state;
+
+  /*
+    uint32     id
+    string     path
+  */
+  var pathlen = Buffer.byteLength(path);
+  var p = 9;
+  var buf = Buffer.allocUnsafe(4 + 1 + 4 + 4 + pathlen);
+
+  writeUInt32BE(buf, buf.length - 4, 0);
+  buf[4] = REQUEST.RMDIR;
+  var reqid = state.writeReqid = (state.writeReqid + 1) % MAX_REQID;
+  writeUInt32BE(buf, reqid, 5);
+
+  writeUInt32BE(buf, pathlen, p);
+  buf.write(path, p += 4, pathlen, 'utf8');
+
+  state.requests[reqid] = { cb: cb };
+
+  this.debug('DEBUG[SFTP]: Outgoing: Writing RMDIR');
+  return this.push(buf);
+};
+SFTPStream.prototype.readdir = function(where, opts, cb) {
+  if (this.server)
+    throw new Error('Client-only method called in server mode');
+
+  var state = this._state;
+  var doFilter;
+
+  if (typeof opts === 'function') {
+    cb = opts;
+    opts = {};
+  }
+  if (typeof opts !== 'object' || opts === null)
+    opts = {};
+
+  doFilter = (opts && opts.full ? false : true);
+
+  if (!Buffer.isBuffer(where) && typeof where !== 'string')
+    throw new Error('missing directory handle or path');
+
+  if (typeof where === 'string') {
+    var self = this;
+    var entries = [];
+    var e = 0;
+
+    return this.opendir(where, function reread(err, handle) {
+      if (err)
+        return cb(err);
+
+      self.readdir(handle, opts, function(err, list) {
+        var eof = (err && err.code === STATUS_CODE.EOF);
+
+        if (err && !eof) {
+          return self.close(handle, function() {
+            cb(err);
+          });
+        } else if (eof) {
+          return self.close(handle, function(err) {
+            if (err)
+              return cb(err);
+            cb(undefined, entries);
+          });
+        }
+
+        for (var i = 0, len = list.length; i < len; ++i, ++e)
+          entries[e] = list[i];
+
+        reread(undefined, handle);
+      });
+    });
+  }
+
+  /*
+    uint32     id
+    string     handle
+  */
+  var handlelen = where.length;
+  var p = 9;
+  var buf = Buffer.allocUnsafe(4 + 1 + 4 + 4 + handlelen);
+
+  writeUInt32BE(buf, buf.length - 4, 0);
+  buf[4] = REQUEST.READDIR;
+  var reqid = state.writeReqid = (state.writeReqid + 1) % MAX_REQID;
+  writeUInt32BE(buf, reqid, 5);
+
+  writeUInt32BE(buf, handlelen, p);
+  where.copy(buf, p += 4);
+
+  state.requests[reqid] = {
+    cb: (doFilter
+         ? function(err, list) {
+             if (err)
+               return cb(err);
+
+             for (var i = list.length - 1; i >= 0; --i) {
+               if (list[i].filename === '.' || list[i].filename === '..')
+                 list.splice(i, 1);
+             }
+
+             cb(undefined, list);
+           }
+         : cb)
+  };
+
+  this.debug('DEBUG[SFTP]: Outgoing: Writing READDIR');
+  return this.push(buf);
+};
+SFTPStream.prototype.fstat = function(handle, cb) {
+  if (this.server)
+    throw new Error('Client-only method called in server mode');
+  else if (!Buffer.isBuffer(handle))
+    throw new Error('handle is not a Buffer');
+
+  var state = this._state;
+
+  /*
+    uint32     id
+    string     handle
+  */
+  var handlelen = handle.length;
+  var p = 9;
+  var buf = Buffer.allocUnsafe(4 + 1 + 4 + 4 + handlelen);
+
+  writeUInt32BE(buf, buf.length - 4, 0);
+  buf[4] = REQUEST.FSTAT;
+  var reqid = state.writeReqid = (state.writeReqid + 1) % MAX_REQID;
+  writeUInt32BE(buf, reqid, 5);
+
+  writeUInt32BE(buf, handlelen, p);
+  handle.copy(buf, p += 4);
+
+  state.requests[reqid] = { cb: cb };
+
+  this.debug('DEBUG[SFTP]: Outgoing: Writing FSTAT');
+  return this.push(buf);
+};
+SFTPStream.prototype.stat = function(path, cb) {
+  if (this.server)
+    throw new Error('Client-only method called in server mode');
+
+  var state = this._state;
+
+  /*
+    uint32     id
+    string     path
+  */
+  var pathlen = Buffer.byteLength(path);
+  var p = 9;
+  var buf = Buffer.allocUnsafe(4 + 1 + 4 + 4 + pathlen);
+
+  writeUInt32BE(buf, buf.length - 4, 0);
+  buf[4] = REQUEST.STAT;
+  var reqid = state.writeReqid = (state.writeReqid + 1) % MAX_REQID;
+  writeUInt32BE(buf, reqid, 5);
+
+  writeUInt32BE(buf, pathlen, p);
+  buf.write(path, p += 4, pathlen, 'utf8');
+
+  state.requests[reqid] = { cb: cb };
+
+  this.debug('DEBUG[SFTP]: Outgoing: Writing STAT');
+  return this.push(buf);
+};
+SFTPStream.prototype.lstat = function(path, cb) {
+  if (this.server)
+    throw new Error('Client-only method called in server mode');
+
+  var state = this._state;
+
+  /*
+    uint32     id
+    string     path
+  */
+  var pathlen = Buffer.byteLength(path);
+  var p = 9;
+  var buf = Buffer.allocUnsafe(4 + 1 + 4 + 4 + pathlen);
+
+  writeUInt32BE(buf, buf.length - 4, 0);
+  buf[4] = REQUEST.LSTAT;
+  var reqid = state.writeReqid = (state.writeReqid + 1) % MAX_REQID;
+  writeUInt32BE(buf, reqid, 5);
+
+  writeUInt32BE(buf, pathlen, p);
+  buf.write(path, p += 4, pathlen, 'utf8');
+
+  state.requests[reqid] = { cb: cb };
+
+  this.debug('DEBUG[SFTP]: Outgoing: Writing LSTAT');
+  return this.push(buf);
+};
+SFTPStream.prototype.opendir = function(path, cb) {
+  if (this.server)
+    throw new Error('Client-only method called in server mode');
+
+  var state = this._state;
+
+  /*
+    uint32     id
+    string     path
+  */
+  var pathlen = Buffer.byteLength(path);
+  var p = 9;
+  var buf = Buffer.allocUnsafe(4 + 1 + 4 + 4 + pathlen);
+
+  writeUInt32BE(buf, buf.length - 4, 0);
+  buf[4] = REQUEST.OPENDIR;
+  var reqid = state.writeReqid = (state.writeReqid + 1) % MAX_REQID;
+  writeUInt32BE(buf, reqid, 5);
+
+  writeUInt32BE(buf, pathlen, p);
+  buf.write(path, p += 4, pathlen, 'utf8');
+
+  state.requests[reqid] = { cb: cb };
+
+  this.debug('DEBUG[SFTP]: Outgoing: Writing OPENDIR');
+  return this.push(buf);
+};
+SFTPStream.prototype.setstat = function(path, attrs, cb) {
+  if (this.server)
+    throw new Error('Client-only method called in server mode');
+
+  var flags = 0;
+  var attrBytes = 0;
+  var state = this._state;
+
+  if (typeof attrs === 'object' && attrs !== null) {
+    attrs = attrsToBytes(attrs);
+    flags = attrs.flags;
+    attrBytes = attrs.nbytes;
+    attrs = attrs.bytes;
+  } else if (typeof attrs === 'function')
+    cb = attrs;
+
+  /*
+    uint32     id
+    string     path
+    ATTRS      attrs
+  */
+  var pathlen = Buffer.byteLength(path);
+  var p = 9;
+  var buf = Buffer.allocUnsafe(4 + 1 + 4 + 4 + pathlen + 4 + attrBytes);
+
+  writeUInt32BE(buf, buf.length - 4, 0);
+  buf[4] = REQUEST.SETSTAT;
+  var reqid = state.writeReqid = (state.writeReqid + 1) % MAX_REQID;
+  writeUInt32BE(buf, reqid, 5);
+
+  writeUInt32BE(buf, pathlen, p);
+  buf.write(path, p += 4, pathlen, 'utf8');
+  writeUInt32BE(buf, flags, p += pathlen);
+  if (flags) {
+    p += 4;
+    for (var i = 0, len = attrs.length; i < len; ++i)
+      for (var j = 0, len2 = attrs[i].length; j < len2; ++j)
+        buf[p++] = attrs[i][j];
+  }
+
+  state.requests[reqid] = { cb: cb };
+
+  this.debug('DEBUG[SFTP]: Outgoing: Writing SETSTAT');
+  return this.push(buf);
+};
+SFTPStream.prototype.fsetstat = function(handle, attrs, cb) {
+  if (this.server)
+    throw new Error('Client-only method called in server mode');
+  else if (!Buffer.isBuffer(handle))
+    throw new Error('handle is not a Buffer');
+
+  var flags = 0;
+  var attrBytes = 0;
+  var state = this._state;
+
+  if (typeof attrs === 'object' && attrs !== null) {
+    attrs = attrsToBytes(attrs);
+    flags = attrs.flags;
+    attrBytes = attrs.nbytes;
+    attrs = attrs.bytes;
+  } else if (typeof attrs === 'function')
+    cb = attrs;
+
+  /*
+    uint32     id
+    string     handle
+    ATTRS      attrs
+  */
+  var handlelen = handle.length;
+  var p = 9;
+  var buf = Buffer.allocUnsafe(4 + 1 + 4 + 4 + handlelen + 4 + attrBytes);
+
+  writeUInt32BE(buf, buf.length - 4, 0);
+  buf[4] = REQUEST.FSETSTAT;
+  var reqid = state.writeReqid = (state.writeReqid + 1) % MAX_REQID;
+  writeUInt32BE(buf, reqid, 5);
+
+  writeUInt32BE(buf, handlelen, p);
+  handle.copy(buf, p += 4);
+  writeUInt32BE(buf, flags, p += handlelen);
+  if (flags) {
+    p += 4;
+    for (var i = 0, len = attrs.length; i < len; ++i)
+      for (var j = 0, len2 = attrs[i].length; j < len2; ++j)
+        buf[p++] = attrs[i][j];
+  }
+
+  state.requests[reqid] = { cb: cb };
+
+  this.debug('DEBUG[SFTP]: Outgoing: Writing FSETSTAT');
+  return this.push(buf);
+};
+SFTPStream.prototype.futimes = function(handle, atime, mtime, cb) {
+  return this.fsetstat(handle, {
+    atime: toUnixTimestamp(atime),
+    mtime: toUnixTimestamp(mtime)
+  }, cb);
+};
+SFTPStream.prototype.utimes = function(path, atime, mtime, cb) {
+  return this.setstat(path, {
+    atime: toUnixTimestamp(atime),
+    mtime: toUnixTimestamp(mtime)
+  }, cb);
+};
+SFTPStream.prototype.fchown = function(handle, uid, gid, cb) {
+  return this.fsetstat(handle, {
+    uid: uid,
+    gid: gid
+  }, cb);
+};
+SFTPStream.prototype.chown = function(path, uid, gid, cb) {
+  return this.setstat(path, {
+    uid: uid,
+    gid: gid
+  }, cb);
+};
+SFTPStream.prototype.fchmod = function(handle, mode, cb) {
+  return this.fsetstat(handle, {
+    mode: mode
+  }, cb);
+};
+SFTPStream.prototype.chmod = function(path, mode, cb) {
+  return this.setstat(path, {
+    mode: mode
+  }, cb);
+};
+SFTPStream.prototype.readlink = function(path, cb) {
+  if (this.server)
+    throw new Error('Client-only method called in server mode');
+
+  var state = this._state;
+
+  /*
+    uint32     id
+    string     path
+  */
+  var pathlen = Buffer.byteLength(path);
+  var p = 9;
+  var buf = Buffer.allocUnsafe(4 + 1 + 4 + 4 + pathlen);
+
+  writeUInt32BE(buf, buf.length - 4, 0);
+  buf[4] = REQUEST.READLINK;
+  var reqid = state.writeReqid = (state.writeReqid + 1) % MAX_REQID;
+  writeUInt32BE(buf, reqid, 5);
+
+  writeUInt32BE(buf, pathlen, p);
+  buf.write(path, p += 4, pathlen, 'utf8');
+
+  state.requests[reqid] = {
+    cb: function(err, names) {
+      if (err)
+        return cb(err);
+      else if (!names || !names.length)
+        return cb(new Error('Response missing link info'));
+      cb(undefined, names[0].filename);
+    }
+  };
+
+  this.debug('DEBUG[SFTP]: Outgoing: Writing READLINK');
+  return this.push(buf);
+};
+SFTPStream.prototype.symlink = function(targetPath, linkPath, cb) {
+  if (this.server)
+    throw new Error('Client-only method called in server mode');
+
+  var state = this._state;
+
+  /*
+    uint32     id
+    string     linkpath
+    string     targetpath
+  */
+  var linklen = Buffer.byteLength(linkPath);
+  var targetlen = Buffer.byteLength(targetPath);
+  var p = 9;
+  var buf = Buffer.allocUnsafe(4 + 1 + 4 + 4 + linklen + 4 + targetlen);
+
+  writeUInt32BE(buf, buf.length - 4, 0);
+  buf[4] = REQUEST.SYMLINK;
+  var reqid = state.writeReqid = (state.writeReqid + 1) % MAX_REQID;
+  writeUInt32BE(buf, reqid, 5);
+
+  if (this._isOpenSSH) {
+    // OpenSSH has linkpath and targetpath positions switched
+    writeUInt32BE(buf, targetlen, p);
+    buf.write(targetPath, p += 4, targetlen, 'utf8');
+    writeUInt32BE(buf, linklen, p += targetlen);
+    buf.write(linkPath, p += 4, linklen, 'utf8');
+  } else {
+    writeUInt32BE(buf, linklen, p);
+    buf.write(linkPath, p += 4, linklen, 'utf8');
+    writeUInt32BE(buf, targetlen, p += linklen);
+    buf.write(targetPath, p += 4, targetlen, 'utf8');
+  }
+
+  state.requests[reqid] = { cb: cb };
+
+  this.debug('DEBUG[SFTP]: Outgoing: Writing SYMLINK');
+  return this.push(buf);
+};
+SFTPStream.prototype.realpath = function(path, cb) {
+  if (this.server)
+    throw new Error('Client-only method called in server mode');
+
+  var state = this._state;
+
+  /*
+    uint32     id
+    string     path
+  */
+  var pathlen = Buffer.byteLength(path);
+  var p = 9;
+  var buf = Buffer.allocUnsafe(4 + 1 + 4 + 4 + pathlen);
+
+  writeUInt32BE(buf, buf.length - 4, 0);
+  buf[4] = REQUEST.REALPATH;
+  var reqid = state.writeReqid = (state.writeReqid + 1) % MAX_REQID;
+  writeUInt32BE(buf, reqid, 5);
+
+  writeUInt32BE(buf, pathlen, p);
+  buf.write(path, p += 4, pathlen, 'utf8');
+
+  state.requests[reqid] = {
+    cb: function(err, names) {
+      if (err)
+        return cb(err);
+      else if (!names || !names.length)
+        return cb(new Error('Response missing path info'));
+      cb(undefined, names[0].filename);
+    }
+  };
+
+  this.debug('DEBUG[SFTP]: Outgoing: Writing REALPATH');
+  return this.push(buf);
+};
+// extended requests
+SFTPStream.prototype.ext_openssh_rename = function(oldPath, newPath, cb) {
+  var state = this._state;
+
+  if (this.server)
+    throw new Error('Client-only method called in server mode');
+  else if (!state.extensions['posix-rename@openssh.com']
+           || state.extensions['posix-rename@openssh.com'].indexOf('1') === -1)
+    throw new Error('Server does not support this extended request');
+
+  /*
+    uint32    id
+    string    "posix-rename@openssh.com"
+    string    oldpath
+    string    newpath
+  */
+  var oldlen = Buffer.byteLength(oldPath);
+  var newlen = Buffer.byteLength(newPath);
+  var p = 9;
+  var buf = Buffer.allocUnsafe(4 + 1 + 4 + 4 + 24 + 4 + oldlen + 4 + newlen);
+
+  writeUInt32BE(buf, buf.length - 4, 0);
+  buf[4] = REQUEST.EXTENDED;
+  var reqid = state.writeReqid = (state.writeReqid + 1) % MAX_REQID;
+  writeUInt32BE(buf, reqid, 5);
+  writeUInt32BE(buf, 24, p);
+  buf.write('posix-rename@openssh.com', p += 4, 24, 'ascii');
+
+  writeUInt32BE(buf, oldlen, p += 24);
+  buf.write(oldPath, p += 4, oldlen, 'utf8');
+  writeUInt32BE(buf, newlen, p += oldlen);
+  buf.write(newPath, p += 4, newlen, 'utf8');
+
+  state.requests[reqid] = { cb: cb };
+
+  this.debug('DEBUG[SFTP]: Outgoing: Writing posix-rename@openssh.com');
+  return this.push(buf);
+};
+SFTPStream.prototype.ext_openssh_statvfs = function(path, cb) {
+  var state = this._state;
+
+  if (this.server)
+    throw new Error('Client-only method called in server mode');
+  else if (!state.extensions['statvfs@openssh.com']
+           || state.extensions['statvfs@openssh.com'].indexOf('2') === -1)
+    throw new Error('Server does not support this extended request');
+
+  /*
+    uint32    id
+    string    "statvfs@openssh.com"
+    string    path
+  */
+  var pathlen = Buffer.byteLength(path);
+  var p = 9;
+  var buf = Buffer.allocUnsafe(4 + 1 + 4 + 4 + 19 + 4 + pathlen);
+
+  writeUInt32BE(buf, buf.length - 4, 0);
+  buf[4] = REQUEST.EXTENDED;
+  var reqid = state.writeReqid = (state.writeReqid + 1) % MAX_REQID;
+  writeUInt32BE(buf, reqid, 5);
+  writeUInt32BE(buf, 19, p);
+  buf.write('statvfs@openssh.com', p += 4, 19, 'ascii');
+
+  writeUInt32BE(buf, pathlen, p += 19);
+  buf.write(path, p += 4, pathlen, 'utf8');
+
+  state.requests[reqid] = {
+    extended: 'statvfs@openssh.com',
+    cb: cb
+  };
+
+  this.debug('DEBUG[SFTP]: Outgoing: Writing statvfs@openssh.com');
+  return this.push(buf);
+};
+SFTPStream.prototype.ext_openssh_fstatvfs = function(handle, cb) {
+  var state = this._state;
+
+  if (this.server)
+    throw new Error('Client-only method called in server mode');
+  else if (!state.extensions['fstatvfs@openssh.com']
+           || state.extensions['fstatvfs@openssh.com'].indexOf('2') === -1)
+    throw new Error('Server does not support this extended request');
+  else if (!Buffer.isBuffer(handle))
+    throw new Error('handle is not a Buffer');
+
+  /*
+    uint32    id
+    string    "fstatvfs@openssh.com"
+    string    handle
+  */
+  var handlelen = handle.length;
+  var p = 9;
+  var buf = Buffer.allocUnsafe(4 + 1 + 4 + 4 + 20 + 4 + handlelen);
+
+  writeUInt32BE(buf, buf.length - 4, 0);
+  buf[4] = REQUEST.EXTENDED;
+  var reqid = state.writeReqid = (state.writeReqid + 1) % MAX_REQID;
+  writeUInt32BE(buf, reqid, 5);
+  writeUInt32BE(buf, 20, p);
+  buf.write('fstatvfs@openssh.com', p += 4, 20, 'ascii');
+
+  writeUInt32BE(buf, handlelen, p += 20);
+  buf.write(handle, p += 4, handlelen, 'utf8');
+
+  state.requests[reqid] = {
+    extended: 'fstatvfs@openssh.com',
+    cb: cb
+  };
+
+  this.debug('DEBUG[SFTP]: Outgoing: Writing fstatvfs@openssh.com');
+  return this.push(buf);
+};
+SFTPStream.prototype.ext_openssh_hardlink = function(oldPath, newPath, cb) {
+  var state = this._state;
+
+  if (this.server)
+    throw new Error('Client-only method called in server mode');
+  else if (!state.extensions['hardlink@openssh.com']
+           || state.extensions['hardlink@openssh.com'].indexOf('1') === -1)
+    throw new Error('Server does not support this extended request');
+
+  /*
+    uint32    id
+    string    "hardlink@openssh.com"
+    string    oldpath
+    string    newpath
+  */
+  var oldlen = Buffer.byteLength(oldPath);
+  var newlen = Buffer.byteLength(newPath);
+  var p = 9;
+  var buf = Buffer.allocUnsafe(4 + 1 + 4 + 4 + 20 + 4 + oldlen + 4 + newlen);
+
+  writeUInt32BE(buf, buf.length - 4, 0);
+  buf[4] = REQUEST.EXTENDED;
+  var reqid = state.writeReqid = (state.writeReqid + 1) % MAX_REQID;
+  writeUInt32BE(buf, reqid, 5);
+  writeUInt32BE(buf, 20, p);
+  buf.write('hardlink@openssh.com', p += 4, 20, 'ascii');
+
+  writeUInt32BE(buf, oldlen, p += 20);
+  buf.write(oldPath, p += 4, oldlen, 'utf8');
+  writeUInt32BE(buf, newlen, p += oldlen);
+  buf.write(newPath, p += 4, newlen, 'utf8');
+
+  state.requests[reqid] = { cb: cb };
+
+  this.debug('DEBUG[SFTP]: Outgoing: Writing hardlink@openssh.com');
+  return this.push(buf);
+};
+SFTPStream.prototype.ext_openssh_fsync = function(handle, cb) {
+  var state = this._state;
+
+  if (this.server)
+    throw new Error('Client-only method called in server mode');
+  else if (!state.extensions['fsync@openssh.com']
+           || state.extensions['fsync@openssh.com'].indexOf('1') === -1)
+    throw new Error('Server does not support this extended request');
+  else if (!Buffer.isBuffer(handle))
+    throw new Error('handle is not a Buffer');
+
+  /*
+    uint32    id
+    string    "fsync@openssh.com"
+    string    handle
+  */
+  var handlelen = handle.length;
+  var p = 9;
+  var buf = Buffer.allocUnsafe(4 + 1 + 4 + 4 + 17 + 4 + handlelen);
+
+  writeUInt32BE(buf, buf.length - 4, 0);
+  buf[4] = REQUEST.EXTENDED;
+  var reqid = state.writeReqid = (state.writeReqid + 1) % MAX_REQID;
+  writeUInt32BE(buf, reqid, 5);
+  writeUInt32BE(buf, 17, p);
+  buf.write('fsync@openssh.com', p += 4, 17, 'ascii');
+
+  writeUInt32BE(buf, handlelen, p += 17);
+  buf.write(handle, p += 4, handlelen, 'utf8');
+
+  state.requests[reqid] = { cb: cb };
+
+  this.debug('DEBUG[SFTP]: Outgoing: Writing fsync@openssh.com');
+  return this.push(buf);
+};
+
+// server
+SFTPStream.prototype.status = function(id, code, message, lang) {
+  if (!this.server)
+    throw new Error('Server-only method called in client mode');
+
+  if (!STATUS_CODE[code] || typeof code !== 'number')
+    throw new Error('Bad status code: ' + code);
+
+  message || (message = '');
+  lang || (lang = '');
+
+  var msgLen = Buffer.byteLength(message);
+  var langLen = Buffer.byteLength(lang);
+  var buf = Buffer.allocUnsafe(4 + 1 + 4 + 4 + 4 + msgLen + 4 + langLen);
+
+  writeUInt32BE(buf, buf.length - 4, 0);
+  buf[4] = RESPONSE.STATUS;
+  writeUInt32BE(buf, id, 5);
+
+  writeUInt32BE(buf, code, 9);
+
+  writeUInt32BE(buf, msgLen, 13);
+  if (msgLen)
+    buf.write(message, 17, msgLen, 'utf8');
+
+  writeUInt32BE(buf, langLen, 17 + msgLen);
+  if (langLen)
+    buf.write(lang, 17 + msgLen + 4, langLen, 'ascii');
+
+  this.debug('DEBUG[SFTP]: Outgoing: Writing STATUS');
+  return this.push(buf);
+};
+SFTPStream.prototype.handle = function(id, handle) {
+  if (!this.server)
+    throw new Error('Server-only method called in client mode');
+
+  if (!Buffer.isBuffer(handle))
+    throw new Error('handle is not a Buffer');
+
+  var handleLen = handle.length;
+
+  if (handleLen > 256)
+    throw new Error('handle too large (> 256 bytes)');
+
+  var buf = Buffer.allocUnsafe(4 + 1 + 4 + 4 + handleLen);
+
+  writeUInt32BE(buf, buf.length - 4, 0);
+  buf[4] = RESPONSE.HANDLE;
+  writeUInt32BE(buf, id, 5);
+
+  writeUInt32BE(buf, handleLen, 9);
+  if (handleLen)
+    handle.copy(buf, 13);
+
+  this.debug('DEBUG[SFTP]: Outgoing: Writing HANDLE');
+  return this.push(buf);
+};
+SFTPStream.prototype.data = function(id, data, encoding) {
+  if (!this.server)
+    throw new Error('Server-only method called in client mode');
+
+  var isBuffer = Buffer.isBuffer(data);
+
+  if (!isBuffer && typeof data !== 'string')
+    throw new Error('data is not a Buffer or string');
+
+  if (!isBuffer)
+    encoding || (encoding = 'utf8');
+
+  var dataLen = (isBuffer ? data.length : Buffer.byteLength(data, encoding));
+  var buf = Buffer.allocUnsafe(4 + 1 + 4 + 4 + dataLen);
+
+  writeUInt32BE(buf, buf.length - 4, 0);
+  buf[4] = RESPONSE.DATA;
+  writeUInt32BE(buf, id, 5);
+
+  writeUInt32BE(buf, dataLen, 9);
+  if (dataLen) {
+    if (isBuffer)
+      data.copy(buf, 13);
+    else
+      buf.write(data, 13, dataLen, encoding);
+  }
+
+  this.debug('DEBUG[SFTP]: Outgoing: Writing DATA');
+  return this.push(buf);
+};
+SFTPStream.prototype.name = function(id, names) {
+  if (!this.server)
+    throw new Error('Server-only method called in client mode');
+
+  if (!Array.isArray(names)) {
+    if (typeof names !== 'object' || names === null)
+      throw new Error('names is not an object or array');
+    names = [ names ];
+  }
+
+  var count = names.length;
+  var namesLen = 0;
+  var nameAttrs;
+  var attrs = [];
+  var name;
+  var filename;
+  var longname;
+  var attr;
+  var len;
+  var len2;
+  var buf;
+  var p;
+  var i;
+  var j;
+  var k;
+
+  for (i = 0; i < count; ++i) {
+    name = names[i];
+    filename = (!name || !name.filename || typeof name.filename !== 'string'
+                ? ''
+                : name.filename);
+    namesLen += 4 + Buffer.byteLength(filename);
+    longname = (!name || !name.longname || typeof name.longname !== 'string'
+                ? ''
+                : name.longname);
+    namesLen += 4 + Buffer.byteLength(longname);
+
+    if (typeof name.attrs === 'object' && name.attrs !== null) {
+      nameAttrs = attrsToBytes(name.attrs);
+      namesLen += 4 + nameAttrs.nbytes;
+      attrs.push(nameAttrs);
+    } else {
+      namesLen += 4;
+      attrs.push(null);
+    }
+  }
+
+  buf = Buffer.allocUnsafe(4 + 1 + 4 + 4 + namesLen);
+
+  writeUInt32BE(buf, buf.length - 4, 0);
+  buf[4] = RESPONSE.NAME;
+  writeUInt32BE(buf, id, 5);
+
+  writeUInt32BE(buf, count, 9);
+
+  p = 13;
+
+  for (i = 0; i < count; ++i) {
+    name = names[i];
+
+    filename = (!name || !name.filename || typeof name.filename !== 'string'
+                ? ''
+                : name.filename);
+    len = Buffer.byteLength(filename);
+    writeUInt32BE(buf, len, p);
+    p += 4;
+    if (len) {
+      buf.write(filename, p, len, 'utf8');
+      p += len;
+    }
+
+    longname = (!name || !name.longname || typeof name.longname !== 'string'
+                ? ''
+                : name.longname);
+    len = Buffer.byteLength(longname);
+    writeUInt32BE(buf, len, p);
+    p += 4;
+    if (len) {
+      buf.write(longname, p, len, 'utf8');
+      p += len;
+    }
+
+    attr = attrs[i];
+    if (attr) {
+      writeUInt32BE(buf, attr.flags, p);
+      p += 4;
+      if (attr.flags && attr.bytes) {
+        var bytes = attr.bytes;
+        for (j = 0, len = bytes.length; j < len; ++j)
+          for (k = 0, len2 = bytes[j].length; k < len2; ++k)
+            buf[p++] = bytes[j][k];
+      }
+    } else {
+      writeUInt32BE(buf, 0, p);
+      p += 4;
+    }
+  }
+
+  this.debug('DEBUG[SFTP]: Outgoing: Writing NAME');
+  return this.push(buf);
+};
+SFTPStream.prototype.attrs = function(id, attrs) {
+  if (!this.server)
+    throw new Error('Server-only method called in client mode');
+
+  if (typeof attrs !== 'object' || attrs === null)
+    throw new Error('attrs is not an object');
+
+  var info = attrsToBytes(attrs);
+  var buf = Buffer.allocUnsafe(4 + 1 + 4 + 4 + info.nbytes);
+  var p = 13;
+
+  writeUInt32BE(buf, buf.length - 4, 0);
+  buf[4] = RESPONSE.ATTRS;
+  writeUInt32BE(buf, id, 5);
+
+  writeUInt32BE(buf, info.flags, 9);
+
+  if (info.flags && info.bytes) {
+    var bytes = info.bytes;
+    for (var j = 0, len = bytes.length; j < len; ++j)
+      for (var k = 0, len2 = bytes[j].length; k < len2; ++k)
+        buf[p++] = bytes[j][k];
+  }
+
+  this.debug('DEBUG[SFTP]: Outgoing: Writing ATTRS');
+  return this.push(buf);
+};
+
+function readAttrs(buf, p, stream, callback) {
+  /*
+    uint32   flags
+    uint64   size           present only if flag SSH_FILEXFER_ATTR_SIZE
+    uint32   uid            present only if flag SSH_FILEXFER_ATTR_UIDGID
+    uint32   gid            present only if flag SSH_FILEXFER_ATTR_UIDGID
+    uint32   permissions    present only if flag SSH_FILEXFER_ATTR_PERMISSIONS
+    uint32   atime          present only if flag SSH_FILEXFER_ACMODTIME
+    uint32   mtime          present only if flag SSH_FILEXFER_ACMODTIME
+    uint32   extended_count present only if flag SSH_FILEXFER_ATTR_EXTENDED
+    string   extended_type
+    string   extended_data
+    ...      more extended data (extended_type - extended_data pairs),
+               so that number of pairs equals extended_count
+  */
+  var flags = readUInt32BE(buf, p);
+  var attrs = new Stats();
+
+  p += 4;
+
+  if (flags & ATTR.SIZE) {
+    var size = readUInt64BE(buf, p, stream, callback);
+    if (size === false)
+      return false;
+    attrs.size = size;
+    p += 8;
+  }
+  if (flags & ATTR.UIDGID) {
+    var uid;
+    var gid;
+    uid = readInt(buf, p, this, callback);
+    if (uid === false)
+      return false;
+    attrs.uid = uid;
+    p += 4;
+    gid = readInt(buf, p, this, callback);
+    if (gid === false)
+      return false;
+    attrs.gid = gid;
+    p += 4;
+  }
+  if (flags & ATTR.PERMISSIONS) {
+    var mode = readInt(buf, p, this, callback);
+    if (mode === false)
+      return false;
+    attrs.mode = mode;
+    // backwards compatibility
+    attrs.permissions = mode;
+    p += 4;
+  }
+  if (flags & ATTR.ACMODTIME) {
+    var atime;
+    var mtime;
+    atime = readInt(buf, p, this, callback);
+    if (atime === false)
+      return false;
+    attrs.atime = atime;
+    p += 4;
+    mtime = readInt(buf, p, this, callback);
+    if (mtime === false)
+      return false;
+    attrs.mtime = mtime;
+    p += 4;
+  }
+  if (flags & ATTR.EXTENDED) {
+    // TODO: read/parse extended data
+    var extcount = readInt(buf, p, this, callback);
+    if (extcount === false)
+      return false;
+    p += 4;
+    for (var i = 0, len; i < extcount; ++i) {
+      len = readInt(buf, p, this, callback);
+      if (len === false)
+        return false;
+      p += 4 + len;
+    }
+  }
+
+  buf._pos = p;
+
+  return attrs;
+}
+
+function readUInt64BE(buffer, p, stream, callback) {
+  if ((buffer.length - p) < 8) {
+    stream && stream._cleanup(callback);
+    return false;
+  }
+
+  var val = 0;
+
+  for (var len = p + 8; p < len; ++p) {
+    val *= 256;
+    val += buffer[p];
+  }
+
+  buffer._pos = p;
+
+  return val;
+}
+
+function attrsToBytes(attrs) {
+  var flags = 0;
+  var attrBytes = 0;
+  var ret = [];
+  var i = 0;
+
+  if (typeof attrs !== 'object' || attrs === null)
+    return { flags: flags, nbytes: attrBytes, bytes: ret };
+
+  if (typeof attrs.size === 'number') {
+    flags |= ATTR.SIZE;
+    attrBytes += 8;
+    var sizeBytes = new Array(8);
+    var val = attrs.size;
+    for (i = 7; i >= 0; --i) {
+      sizeBytes[i] = val & 0xFF;
+      val /= 256;
+    }
+    ret.push(sizeBytes);
+  }
+  if (typeof attrs.uid === 'number' && typeof attrs.gid === 'number') {
+    flags |= ATTR.UIDGID;
+    attrBytes += 8;
+    ret.push([(attrs.uid >> 24) & 0xFF, (attrs.uid >> 16) & 0xFF,
+              (attrs.uid >> 8) & 0xFF, attrs.uid & 0xFF]);
+    ret.push([(attrs.gid >> 24) & 0xFF, (attrs.gid >> 16) & 0xFF,
+              (attrs.gid >> 8) & 0xFF, attrs.gid & 0xFF]);
+  }
+  if (typeof attrs.permissions === 'number'
+      || typeof attrs.permissions === 'string'
+      || typeof attrs.mode === 'number'
+      || typeof attrs.mode === 'string') {
+    var mode = modeNum(attrs.mode || attrs.permissions);
+    flags |= ATTR.PERMISSIONS;
+    attrBytes += 4;
+    ret.push([(mode >> 24) & 0xFF,
+              (mode >> 16) & 0xFF,
+              (mode >> 8) & 0xFF,
+              mode & 0xFF]);
+  }
+  if ((typeof attrs.atime === 'number' || isDate(attrs.atime))
+      && (typeof attrs.mtime === 'number' || isDate(attrs.mtime))) {
+    var atime = toUnixTimestamp(attrs.atime);
+    var mtime = toUnixTimestamp(attrs.mtime);
+
+    flags |= ATTR.ACMODTIME;
+    attrBytes += 8;
+    ret.push([(atime >> 24) & 0xFF, (atime >> 16) & 0xFF,
+              (atime >> 8) & 0xFF, atime & 0xFF]);
+    ret.push([(mtime >> 24) & 0xFF, (mtime >> 16) & 0xFF,
+              (mtime >> 8) & 0xFF, mtime & 0xFF]);
+  }
+  // TODO: extended attributes
+
+  return { flags: flags, nbytes: attrBytes, bytes: ret };
+}
+
+function toUnixTimestamp(time) {
+  if (typeof time === 'number' && !isNaN(time))
+    return time;
+  else if (isDate(time))
+    return parseInt(time.getTime() / 1000, 10);
+  throw new Error('Cannot parse time: ' + time);
+}
+
+function modeNum(mode) {
+  if (typeof mode === 'number' && !isNaN(mode))
+    return mode;
+  else if (typeof mode === 'string')
+    return modeNum(parseInt(mode, 8));
+  throw new Error('Cannot parse mode: ' + mode);
+}
+
+var stringFlagMap = {
+  'r': OPEN_MODE.READ,
+  'r+': OPEN_MODE.READ | OPEN_MODE.WRITE,
+  'w': OPEN_MODE.TRUNC | OPEN_MODE.CREAT | OPEN_MODE.WRITE,
+  'wx': OPEN_MODE.TRUNC | OPEN_MODE.CREAT | OPEN_MODE.WRITE | OPEN_MODE.EXCL,
+  'xw': OPEN_MODE.TRUNC | OPEN_MODE.CREAT | OPEN_MODE.WRITE | OPEN_MODE.EXCL,
+  'w+': OPEN_MODE.TRUNC | OPEN_MODE.CREAT | OPEN_MODE.READ | OPEN_MODE.WRITE,
+  'wx+': OPEN_MODE.TRUNC | OPEN_MODE.CREAT | OPEN_MODE.READ | OPEN_MODE.WRITE
+         | OPEN_MODE.EXCL,
+  'xw+': OPEN_MODE.TRUNC | OPEN_MODE.CREAT | OPEN_MODE.READ | OPEN_MODE.WRITE
+         | OPEN_MODE.EXCL,
+  'a': OPEN_MODE.APPEND | OPEN_MODE.CREAT | OPEN_MODE.WRITE,
+  'ax': OPEN_MODE.APPEND | OPEN_MODE.CREAT | OPEN_MODE.WRITE | OPEN_MODE.EXCL,
+  'xa': OPEN_MODE.APPEND | OPEN_MODE.CREAT | OPEN_MODE.WRITE | OPEN_MODE.EXCL,
+  'a+': OPEN_MODE.APPEND | OPEN_MODE.CREAT | OPEN_MODE.READ | OPEN_MODE.WRITE,
+  'ax+': OPEN_MODE.APPEND | OPEN_MODE.CREAT | OPEN_MODE.READ | OPEN_MODE.WRITE
+         | OPEN_MODE.EXCL,
+  'xa+': OPEN_MODE.APPEND | OPEN_MODE.CREAT | OPEN_MODE.READ | OPEN_MODE.WRITE
+         | OPEN_MODE.EXCL
+};
+var stringFlagMapKeys = Object.keys(stringFlagMap);
+
+function stringToFlags(str) {
+  var flags = stringFlagMap[str];
+  if (flags !== undefined)
+    return flags;
+  return null;
+}
+SFTPStream.stringToFlags = stringToFlags;
+
+function flagsToString(flags) {
+  for (var i = 0; i < stringFlagMapKeys.length; ++i) {
+    var key = stringFlagMapKeys[i];
+    if (stringFlagMap[key] === flags)
+      return key;
+  }
+  return null;
+}
+SFTPStream.flagsToString = flagsToString;
+
+function Stats(initial) {
+  this.mode = (initial && initial.mode);
+  this.permissions = this.mode; // backwards compatiblity
+  this.uid = (initial && initial.uid);
+  this.gid = (initial && initial.gid);
+  this.size = (initial && initial.size);
+  this.atime = (initial && initial.atime);
+  this.mtime = (initial && initial.mtime);
+}
+Stats.prototype._checkModeProperty = function(property) {
+  return ((this.mode & constants.S_IFMT) === property);
+};
+Stats.prototype.isDirectory = function() {
+  return this._checkModeProperty(constants.S_IFDIR);
+};
+Stats.prototype.isFile = function() {
+  return this._checkModeProperty(constants.S_IFREG);
+};
+Stats.prototype.isBlockDevice = function() {
+  return this._checkModeProperty(constants.S_IFBLK);
+};
+Stats.prototype.isCharacterDevice = function() {
+  return this._checkModeProperty(constants.S_IFCHR);
+};
+Stats.prototype.isSymbolicLink = function() {
+  return this._checkModeProperty(constants.S_IFLNK);
+};
+Stats.prototype.isFIFO = function() {
+  return this._checkModeProperty(constants.S_IFIFO);
+};
+Stats.prototype.isSocket = function() {
+  return this._checkModeProperty(constants.S_IFSOCK);
+};
+SFTPStream.Stats = Stats;
+
+// =============================================================================
+// ReadStream/WriteStream-related
+var fsCompat = __nccwpck_require__(5265);
+var validateNumber = fsCompat.validateNumber;
+var destroyImpl = fsCompat.destroyImpl;
+var ERR_OUT_OF_RANGE = fsCompat.ERR_OUT_OF_RANGE;
+var ERR_INVALID_ARG_TYPE = fsCompat.ERR_INVALID_ARG_TYPE;
+
+var kMinPoolSpace = 128;
+
+var pool;
+// It can happen that we expect to read a large chunk of data, and reserve
+// a large chunk of the pool accordingly, but the read() call only filled
+// a portion of it. If a concurrently executing read() then uses the same pool,
+// the "reserved" portion cannot be used, so we allow it to be re-used as a
+// new pool later.
+var poolFragments = [];
+
+function allocNewPool(poolSize) {
+  if (poolFragments.length > 0)
+    pool = poolFragments.pop();
+  else
+    pool = Buffer.allocUnsafe(poolSize);
+  pool.used = 0;
+}
+
+// Check the `this.start` and `this.end` of stream.
+function checkPosition(pos, name) {
+  if (!Number.isSafeInteger(pos)) {
+    validateNumber(pos, name);
+    if (!Number.isInteger(pos))
+      throw new ERR_OUT_OF_RANGE(name, 'an integer', pos);
+    throw new ERR_OUT_OF_RANGE(name, '>= 0 and <= 2 ** 53 - 1', pos);
+  }
+  if (pos < 0)
+    throw new ERR_OUT_OF_RANGE(name, '>= 0 and <= 2 ** 53 - 1', pos);
+}
+
+function roundUpToMultipleOf8(n) {
+  return (n + 7) & ~7;  // Align to 8 byte boundary.
+}
+
+function ReadStream(sftp, path, options) {
+  if (options === undefined)
+    options = {};
+  else if (typeof options === 'string')
+    options = { encoding: options };
+  else if (options === null || typeof options !== 'object')
+    throw new TypeError('"options" argument must be a string or an object');
+  else
+    options = Object.create(options);
+
+  // A little bit bigger buffer and water marks by default
+  if (options.highWaterMark === undefined)
+    options.highWaterMark = 64 * 1024;
+
+  // For backwards compat do not emit close on destroy.
+  options.emitClose = false;
+
+  ReadableStream.call(this, options);
+
+  this.path = path;
+  this.flags = options.flags === undefined ? 'r' : options.flags;
+  this.mode = options.mode === undefined ? 0o666 : options.mode;
+
+  this.start = options.start;
+  this.end = options.end;
+  this.autoClose = options.autoClose === undefined ? true : options.autoClose;
+  this.pos = 0;
+  this.bytesRead = 0;
+  this.closed = false;
+
+  this.handle = options.handle === undefined ? null : options.handle;
+  this.sftp = sftp;
+  this._opening = false;
+
+  if (this.start !== undefined) {
+    checkPosition(this.start, 'start');
+
+    this.pos = this.start;
+  }
+
+  if (this.end === undefined) {
+    this.end = Infinity;
+  } else if (this.end !== Infinity) {
+    checkPosition(this.end, 'end');
+
+    if (this.start !== undefined && this.start > this.end) {
+      throw new ERR_OUT_OF_RANGE(
+        'start',
+        `<= "end" (here: ${this.end})`,
+        this.start
+      );
+    }
+  }
+
+  this.on('end', function() {
+    if (this.autoClose)
+      this.destroy();
+  });
+
+  if (!Buffer.isBuffer(this.handle))
+    this.open();
+}
+inherits(ReadStream, ReadableStream);
+
+ReadStream.prototype.open = function() {
+  if (this._opening)
+    return;
+
+  this._opening = true;
+
+  this.sftp.open(this.path, this.flags, this.mode, (er, handle) => {
+    this._opening = false;
+
+    if (er) {
+      this.emit('error', er);
+      if (this.autoClose)
+        this.destroy();
+      return;
+    }
+
+    this.handle = handle;
+    this.emit('open', handle);
+    this.emit('ready');
+    // start the flow of data.
+    this.read();
+  });
+};
+
+ReadStream.prototype._read = function(n) {
+  if (!Buffer.isBuffer(this.handle)) {
+    return this.once('open', function() {
+      this._read(n);
+    });
+  }
+
+  // XXX: safe to remove this?
+  if (this.destroyed)
+    return;
+
+  if (!pool || pool.length - pool.used < kMinPoolSpace) {
+    // discard the old pool.
+    allocNewPool(this.readableHighWaterMark
+                 || this._readableState.highWaterMark);
+  }
+
+  // Grab another reference to the pool in the case that while we're
+  // in the thread pool another read() finishes up the pool, and
+  // allocates a new one.
+  var thisPool = pool;
+  var toRead = Math.min(pool.length - pool.used, n);
+  var start = pool.used;
+
+  if (this.end !== undefined)
+    toRead = Math.min(this.end - this.pos + 1, toRead);
+
+  // Already read everything we were supposed to read!
+  // treat as EOF.
+  if (toRead <= 0)
+    return this.push(null);
+
+  // the actual read.
+  this.sftp.readData(this.handle,
+                     pool,
+                     pool.used,
+                     toRead,
+                     this.pos,
+                     (er, bytesRead) => {
+    if (er) {
+      this.emit('error', er);
+      if (this.autoClose)
+        this.destroy();
+      return;
+    }
+    var b = null;
+
+    // Now that we know how much data we have actually read, re-wind the
+    // 'used' field if we can, and otherwise allow the remainder of our
+    // reservation to be used as a new pool later.
+    if (start + toRead === thisPool.used && thisPool === pool) {
+      var newUsed = thisPool.used + bytesRead - toRead;
+      thisPool.used = roundUpToMultipleOf8(newUsed);
+    } else {
+      // Round down to the next lowest multiple of 8 to ensure the new pool
+      // fragment start and end positions are aligned to an 8 byte boundary.
+      var alignedEnd = (start + toRead) & ~7;
+      var alignedStart = roundUpToMultipleOf8(start + bytesRead);
+      if (alignedEnd - alignedStart >= kMinPoolSpace)
+        poolFragments.push(thisPool.slice(alignedStart, alignedEnd));
+    }
+
+    if (bytesRead > 0) {
+      this.bytesRead += bytesRead;
+      b = thisPool.slice(start, start + bytesRead);
+    }
+
+    // Move the pool positions, and internal position for reading.
+    this.pos += bytesRead;
+
+    this.push(b);
+  });
+
+  pool.used = roundUpToMultipleOf8(pool.used + toRead);
+};
+
+if (typeof ReadableStream.prototype.destroy !== 'function')
+  ReadStream.prototype.destroy = destroyImpl;
+
+ReadStream.prototype._destroy = function(err, cb) {
+  if (this._opening && !Buffer.isBuffer(this.handle)) {
+    this.once('open', closeStream.bind(null, this, cb, err));
+    return;
+  }
+
+  closeStream(this, cb, err);
+  this.handle = null;
+  this._opening = false;
+};
+
+function closeStream(stream, cb, err) {
+  if (!stream.handle)
+    return onclose();
+
+  stream.sftp.close(stream.handle, onclose);
+
+  function onclose(er) {
+    er = er || err;
+    cb(er);
+    stream.closed = true;
+    if (!er)
+      stream.emit('close');
+  }
+}
+
+ReadStream.prototype.close = function(cb) {
+  this.destroy(null, cb);
+};
+
+Object.defineProperty(ReadStream.prototype, 'pending', {
+  get() { return this.handle === null; },
+  configurable: true
+});
+
+function WriteStream(sftp, path, options) {
+  if (options === undefined)
+    options = {};
+  else if (typeof options === 'string')
+    options = { encoding: options };
+  else if (options === null || typeof options !== 'object')
+    throw new TypeError('"options" argument must be a string or an object');
+  else
+    options = Object.create(options);
+
+  // For backwards compat do not emit close on destroy.
+  options.emitClose = false;
+
+  WritableStream.call(this, options);
+
+  this.path = path;
+  this.flags = options.flags === undefined ? 'w' : options.flags;
+  this.mode = options.mode === undefined ? 0o666 : options.mode;
+
+  this.start = options.start;
+  this.autoClose = options.autoClose === undefined ? true : options.autoClose;
+  this.pos = 0;
+  this.bytesWritten = 0;
+  this.closed = false;
+
+  this.handle = options.handle === undefined ? null : options.handle;
+  this.sftp = sftp;
+  this._opening = false;
+
+  if (this.start !== undefined) {
+    checkPosition(this.start, 'start');
+
+    this.pos = this.start;
+  }
+
+  if (options.encoding)
+    this.setDefaultEncoding(options.encoding);
+
+  // Node v6.x only
+  this.on('finish', function() {
+    if (this._writableState.finalCalled)
+      return;
+    if (this.autoClose)
+      this.destroy();
+  });
+
+  if (!Buffer.isBuffer(this.handle))
+    this.open();
+}
+inherits(WriteStream, WritableStream);
+
+WriteStream.prototype._final = function(cb) {
+  if (this.autoClose)
+    this.destroy();
+  cb();
+};
+
+WriteStream.prototype.open = function() {
+  if (this._opening)
+    return;
+
+  this._opening = true;
+
+  this.sftp.open(this.path, this.flags, this.mode, (er, handle) => {
+    this._opening = false;
+
+    if (er) {
+      this.emit('error', er);
+      if (this.autoClose)
+        this.destroy();
+      return;
+    }
+
+    this.handle = handle;
+
+    var tryAgain = (err) => {
+      if (err) {
+        // Try chmod() for sftp servers that may not support fchmod() for
+        // whatever reason
+        this.sftp.chmod(this.path, this.mode, (err_) => {
+          tryAgain();
+        });
+        return;
+      }
+
+      // SFTPv3 requires absolute offsets, no matter the open flag used
+      if (this.flags[0] === 'a') {
+        var tryStat = (err, st) => {
+          if (err) {
+            // Try stat() for sftp servers that may not support fstat() for
+            // whatever reason
+            this.sftp.stat(this.path, (err_, st_) => {
+              if (err_) {
+                this.destroy();
+                this.emit('error', err);
+                return;
+              }
+              tryStat(null, st_);
+            });
+            return;
+          }
+
+          this.pos = st.size;
+          this.emit('open', handle);
+          this.emit('ready');
+        };
+
+        this.sftp.fstat(handle, tryStat);
+        return;
+      }
+
+      this.emit('open', handle);
+      this.emit('ready');
+    };
+
+    this.sftp.fchmod(handle, this.mode, tryAgain);
+  });
+};
+
+WriteStream.prototype._write = function(data, encoding, cb) {
+  if (!Buffer.isBuffer(data)) {
+    const err = new ERR_INVALID_ARG_TYPE('data', 'Buffer', data);
+    return this.emit('error', err);
+  }
+
+  if (!Buffer.isBuffer(this.handle)) {
+    return this.once('open', function() {
+      this._write(data, encoding, cb);
+    });
+  }
+
+  this.sftp.writeData(this.handle,
+                      data,
+                      0,
+                      data.length,
+                      this.pos,
+                      (er, bytes) => {
+    if (er) {
+      if (this.autoClose)
+        this.destroy();
+      return cb(er);
+    }
+    this.bytesWritten += bytes;
+    cb();
+  });
+
+  this.pos += data.length;
+};
+
+WriteStream.prototype._writev = function(data, cb) {
+  if (!Buffer.isBuffer(this.handle)) {
+    return this.once('open', function() {
+      this._writev(data, cb);
+    });
+  }
+
+  var sftp = this.sftp;
+  var handle = this.handle;
+  var writesLeft = data.length;
+
+  var onwrite = (er, bytes) => {
+    if (er) {
+      this.destroy();
+      return cb(er);
+    }
+    this.bytesWritten += bytes;
+    if (--writesLeft === 0)
+      cb();
+  };
+
+  // TODO: try to combine chunks to reduce number of requests to the server
+  for (var i = 0; i < data.length; ++i) {
+    var chunk = data[i].chunk;
+
+    sftp.writeData(handle, chunk, 0, chunk.length, this.pos, onwrite);
+    this.pos += chunk.length;
+  }
+};
+
+if (typeof WritableStream.prototype.destroy !== 'function')
+  WriteStream.prototype.destroy = ReadStream.prototype.destroy;
+
+WriteStream.prototype._destroy = ReadStream.prototype._destroy;
+WriteStream.prototype.close = function(cb) {
+  if (cb) {
+    if (this.closed) {
+      process.nextTick(cb);
+      return;
+    } else {
+      this.on('close', cb);
+    }
+  }
+
+  // If we are not autoClosing, we should call
+  // destroy on 'finish'.
+  if (!this.autoClose)
+    this.on('finish', this.destroy.bind(this));
+
+  this.end();
+};
+
+// There is no shutdown() for files.
+WriteStream.prototype.destroySoon = WriteStream.prototype.end;
+
+Object.defineProperty(WriteStream.prototype, 'pending', {
+  get() { return this.handle === null; },
+  configurable: true
+});
+
+module.exports = SFTPStream;
+
+
+
+/***/ }),
+
+/***/ 1788:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+// TODO: * Automatic re-key every (configurable) n bytes or length of time
+//         - RFC suggests every 1GB of transmitted data or 1 hour, whichever
+//           comes sooner
+//       * Filter control codes from strings
+//         (as per http://tools.ietf.org/html/rfc4251#section-9.2)
+
+var crypto = __nccwpck_require__(6113);
+var zlib = __nccwpck_require__(9796);
+var TransformStream = (__nccwpck_require__(2781).Transform);
+var inherits = (__nccwpck_require__(3837).inherits);
+var inspect = (__nccwpck_require__(3837).inspect);
+
+var StreamSearch = __nccwpck_require__(2405);
+var Ber = (__nccwpck_require__(970).Ber);
+
+var readUInt32BE = (__nccwpck_require__(9419).readUInt32BE);
+var writeUInt32BE = (__nccwpck_require__(9419).writeUInt32BE);
+var consts = __nccwpck_require__(4617);
+var utils = __nccwpck_require__(4928);
+var iv_inc = utils.iv_inc;
+var readString = utils.readString;
+var readInt = utils.readInt;
+var DSASigBERToBare = utils.DSASigBERToBare;
+var ECDSASigASN1ToSSH = utils.ECDSASigASN1ToSSH;
+var sigSSHToASN1 = utils.sigSSHToASN1;
+var parseDERKey = (__nccwpck_require__(8820).parseDERKey);
+
+var CIPHER_INFO = consts.CIPHER_INFO;
+var HMAC_INFO = consts.HMAC_INFO;
+var MESSAGE = consts.MESSAGE;
+var DYNAMIC_KEXDH_MESSAGE = consts.DYNAMIC_KEXDH_MESSAGE;
+var KEXDH_MESSAGE = consts.KEXDH_MESSAGE;
+var ALGORITHMS = consts.ALGORITHMS;
+var DISCONNECT_REASON = consts.DISCONNECT_REASON;
+var CHANNEL_OPEN_FAILURE = consts.CHANNEL_OPEN_FAILURE;
+var SSH_TO_OPENSSL = consts.SSH_TO_OPENSSL;
+var TERMINAL_MODE = consts.TERMINAL_MODE;
+var SIGNALS = consts.SIGNALS;
+var EDDSA_SUPPORTED = consts.EDDSA_SUPPORTED;
+var CURVE25519_SUPPORTED = consts.CURVE25519_SUPPORTED;
+var BUGS = consts.BUGS;
+var BUGGY_IMPLS = consts.BUGGY_IMPLS;
+var BUGGY_IMPLS_LEN = BUGGY_IMPLS.length;
+var MODULE_VER = (__nccwpck_require__(9186)/* .version */ .i8);
+var I = 0;
+var IN_INIT = I++;
+var IN_GREETING = I++;
+var IN_HEADER = I++;
+var IN_PACKETBEFORE = I++;
+var IN_PACKET = I++;
+var IN_PACKETDATA = I++;
+var IN_PACKETDATAVERIFY = I++;
+var IN_PACKETDATAAFTER = I++;
+var OUT_INIT = I++;
+var OUT_READY = I++;
+var OUT_REKEYING = I++;
+var MAX_SEQNO = 4294967295;
+var MAX_PACKET_SIZE = 35000;
+var MAX_PACKETS_REKEYING = 50;
+var EXP_TYPE_HEADER = 0;
+var EXP_TYPE_LF = 1;
+var EXP_TYPE_BYTES = 2; // Waits until n bytes have been seen
+var Z_PARTIAL_FLUSH = zlib.Z_PARTIAL_FLUSH;
+var ZLIB_OPTS = { flush: Z_PARTIAL_FLUSH };
+
+var RE_NULL = /\x00/g;
+
+var IDENT_PREFIX_BUFFER = Buffer.from('SSH-');
+var EMPTY_BUFFER = Buffer.allocUnsafe(0);
+var HMAC_COMPUTE = Buffer.allocUnsafe(9);
+var PING_PACKET = Buffer.from([
+  MESSAGE.GLOBAL_REQUEST,
+  // "keepalive@openssh.com"
+  0, 0, 0, 21,
+    107, 101, 101, 112, 97, 108, 105, 118, 101, 64, 111, 112, 101, 110, 115,
+    115, 104, 46, 99, 111, 109,
+  // Request a reply
+  1
+]);
+var NEWKEYS_PACKET = Buffer.from([MESSAGE.NEWKEYS]);
+var USERAUTH_SUCCESS_PACKET = Buffer.from([MESSAGE.USERAUTH_SUCCESS]);
+var REQUEST_SUCCESS_PACKET = Buffer.from([MESSAGE.REQUEST_SUCCESS]);
+var REQUEST_FAILURE_PACKET = Buffer.from([MESSAGE.REQUEST_FAILURE]);
+var NO_TERMINAL_MODES_BUFFER = Buffer.from([TERMINAL_MODE.TTY_OP_END]);
+var KEXDH_GEX_REQ_PACKET = Buffer.from([
+  MESSAGE.KEXDH_GEX_REQUEST,
+  // Minimal size in bits of an acceptable group
+  0, 0, 4, 0, // 1024, modp2
+  // Preferred size in bits of the group the server will send
+  0, 0, 16, 0, // 4096, modp16
+  // Maximal size in bits of an acceptable group
+  0, 0, 32, 0 // 8192, modp18
+]);
+
+function DEBUG_NOOP(msg) {}
+
+function SSH2Stream(cfg) {
+  if (typeof cfg !== 'object' || cfg === null)
+    cfg = {};
+
+  TransformStream.call(this, {
+    highWaterMark: (typeof cfg.highWaterMark === 'number'
+                    ? cfg.highWaterMark
+                    : 32 * 1024)
+  });
+
+  this._needContinue = false;
+  this.bytesSent = this.bytesReceived = 0;
+  this.debug = (typeof cfg.debug === 'function' ? cfg.debug : DEBUG_NOOP);
+  this.server = (cfg.server === true);
+  this.maxPacketSize = (typeof cfg.maxPacketSize === 'number'
+                        ? cfg.maxPacketSize
+                        : MAX_PACKET_SIZE);
+  // Bitmap that indicates any bugs the remote side has. This is determined
+  // by the reported software version.
+  this.remoteBugs = 0;
+
+  if (this.server) {
+    // TODO: Remove when we support group exchange for server implementation
+    this.remoteBugs = BUGS.BAD_DHGEX;
+  }
+
+  this.readable = true;
+
+  var self = this;
+
+  var hostKeys = cfg.hostKeys;
+  if (this.server && (typeof hostKeys !== 'object' || hostKeys === null))
+    throw new Error('hostKeys must be an object keyed on host key type');
+
+  this.config = {
+    // Server
+    hostKeys: hostKeys, // All keys supported by server
+
+    // Client/Server
+    ident: 'SSH-2.0-'
+           + (cfg.ident
+              || ('ssh2js' + MODULE_VER + (this.server ? 'srv' : ''))),
+    algorithms: {
+      kex: ALGORITHMS.KEX,
+      kexBuf: ALGORITHMS.KEX_BUF,
+      serverHostKey: ALGORITHMS.SERVER_HOST_KEY,
+      serverHostKeyBuf: ALGORITHMS.SERVER_HOST_KEY_BUF,
+      cipher: ALGORITHMS.CIPHER,
+      cipherBuf: ALGORITHMS.CIPHER_BUF,
+      hmac: ALGORITHMS.HMAC,
+      hmacBuf: ALGORITHMS.HMAC_BUF,
+      compress: ALGORITHMS.COMPRESS,
+      compressBuf: ALGORITHMS.COMPRESS_BUF
+    }
+  };
+  // RFC 4253 states the identification string must not contain NULL
+  this.config.ident.replace(RE_NULL, '');
+
+  if (this.config.ident.length + 2 /* Account for "\r\n" */ > 255)
+    throw new Error('ident too long');
+
+  if (typeof cfg.algorithms === 'object' && cfg.algorithms !== null) {
+    var algos = cfg.algorithms;
+    if (Array.isArray(algos.kex) && algos.kex.length > 0) {
+      this.config.algorithms.kex = algos.kex;
+      if (!Buffer.isBuffer(algos.kexBuf))
+        algos.kexBuf = Buffer.from(algos.kex.join(','), 'ascii');
+      this.config.algorithms.kexBuf = algos.kexBuf;
+    }
+    if (Array.isArray(algos.serverHostKey) && algos.serverHostKey.length > 0) {
+      this.config.algorithms.serverHostKey = algos.serverHostKey;
+      if (!Buffer.isBuffer(algos.serverHostKeyBuf)) {
+        algos.serverHostKeyBuf = Buffer.from(algos.serverHostKey.join(','),
+                                             'ascii');
+      }
+      this.config.algorithms.serverHostKeyBuf = algos.serverHostKeyBuf;
+    }
+    if (Array.isArray(algos.cipher) && algos.cipher.length > 0) {
+      this.config.algorithms.cipher = algos.cipher;
+      if (!Buffer.isBuffer(algos.cipherBuf))
+        algos.cipherBuf = Buffer.from(algos.cipher.join(','), 'ascii');
+      this.config.algorithms.cipherBuf = algos.cipherBuf;
+    }
+    if (Array.isArray(algos.hmac) && algos.hmac.length > 0) {
+      this.config.algorithms.hmac = algos.hmac;
+      if (!Buffer.isBuffer(algos.hmacBuf))
+        algos.hmacBuf = Buffer.from(algos.hmac.join(','), 'ascii');
+      this.config.algorithms.hmacBuf = algos.hmacBuf;
+    }
+    if (Array.isArray(algos.compress) && algos.compress.length > 0) {
+      this.config.algorithms.compress = algos.compress;
+      if (!Buffer.isBuffer(algos.compressBuf))
+        algos.compressBuf = Buffer.from(algos.compress.join(','), 'ascii');
+      this.config.algorithms.compressBuf = algos.compressBuf;
+    }
+  }
+
+  this.reset(true);
+
+  // Common events
+  this.on('end', function() {
+    // Let GC collect any Buffers we were previously storing
+    self.readable = false;
+    self._state = undefined;
+    self.reset();
+    self._state.outgoing.bufSeqno = undefined;
+  });
+  this.on('DISCONNECT', function(reason, code, desc, lang) {
+    onDISCONNECT(self, reason, code, desc, lang);
+  });
+  this.on('KEXINIT', function(init, firstFollows) {
+    onKEXINIT(self, init, firstFollows);
+  });
+  this.on('NEWKEYS', function() { onNEWKEYS(self); });
+
+  if (this.server) {
+    // Server-specific events
+    this.on('KEXDH_INIT', function(e) { onKEXDH_INIT(self, e); });
+  } else {
+    // Client-specific events
+    this.on('KEXDH_REPLY', function(info) { onKEXDH_REPLY(self, info); })
+        .on('KEXDH_GEX_GROUP',
+            function(prime, gen) { onKEXDH_GEX_GROUP(self, prime, gen); });
+  }
+
+  if (this.server) {
+    // Greeting displayed before the ssh identification string is sent, this is
+    // usually ignored by most clients
+    if (typeof cfg.greeting === 'string' && cfg.greeting.length) {
+      if (cfg.greeting.slice(-2) === '\r\n')
+        this.push(cfg.greeting);
+      else
+        this.push(cfg.greeting + '\r\n');
+    }
+    // Banner shown after the handshake completes, but before user
+    // authentication begins
+    if (typeof cfg.banner === 'string' && cfg.banner.length) {
+      if (cfg.banner.slice(-2) === '\r\n')
+        this.banner = cfg.banner;
+      else
+        this.banner = cfg.banner + '\r\n';
+    }
+  }
+  this.debug('DEBUG: Local ident: ' + inspect(this.config.ident));
+  this.push(this.config.ident + '\r\n');
+
+  this._state.incoming.expectedPacket = 'KEXINIT';
+}
+inherits(SSH2Stream, TransformStream);
+
+SSH2Stream.prototype.__read = TransformStream.prototype._read;
+SSH2Stream.prototype._read = function(n) {
+  if (this._needContinue) {
+    this._needContinue = false;
+    this.emit('continue');
+  }
+  return this.__read(n);
+};
+SSH2Stream.prototype.__push = TransformStream.prototype.push;
+SSH2Stream.prototype.push = function(chunk, encoding) {
+  var ret = this.__push(chunk, encoding);
+  this._needContinue = (ret === false);
+  return ret;
+};
+
+SSH2Stream.prototype._cleanup = function(callback) {
+  this.reset();
+  this.debug('DEBUG: Parser: Malformed packet');
+  callback && callback(new Error('Malformed packet'));
+};
+
+SSH2Stream.prototype._transform = function(chunk, encoding, callback, decomp) {
+  var skipDecrypt = false;
+  var decryptAuthMode = false;
+  var state = this._state;
+  var instate = state.incoming;
+  var outstate = state.outgoing;
+  var expect = instate.expect;
+  var decrypt = instate.decrypt;
+  var decompress = instate.decompress;
+  var chlen = chunk.length;
+  var chleft = 0;
+  var debug = this.debug;
+  var self = this;
+  var i = 0;
+  var p = i;
+  var blockLen;
+  var buffer;
+  var buf;
+  var r;
+
+  this.bytesReceived += chlen;
+
+  while (true) {
+    if (expect.type !== undefined) {
+      if (i >= chlen)
+        break;
+      if (expect.type === EXP_TYPE_BYTES) {
+        chleft = (chlen - i);
+        var pktLeft = (expect.buf.length - expect.ptr);
+        if (pktLeft <= chleft) {
+          chunk.copy(expect.buf, expect.ptr, i, i + pktLeft);
+          i += pktLeft;
+          buffer = expect.buf;
+          expect.buf = undefined;
+          expect.ptr = 0;
+          expect.type = undefined;
+        } else {
+          chunk.copy(expect.buf, expect.ptr, i);
+          expect.ptr += chleft;
+          i += chleft;
+        }
+        continue;
+      } else if (expect.type === EXP_TYPE_HEADER) {
+        i += instate.search.push(chunk);
+        if (expect.type !== undefined)
+          continue;
+      } else if (expect.type === EXP_TYPE_LF) {
+        if (++expect.ptr + 4 /* Account for "SSH-" */ > 255) {
+          this.reset();
+          debug('DEBUG: Parser: Identification string exceeded 255 characters');
+          return callback(new Error('Max identification string size exceeded'));
+        }
+        if (chunk[i] === 0x0A) {
+          expect.type = undefined;
+          if (p < i) {
+            if (expect.buf === undefined)
+              expect.buf = chunk.toString('ascii', p, i);
+            else
+              expect.buf += chunk.toString('ascii', p, i);
+          }
+          buffer = expect.buf;
+          expect.buf = undefined;
+          ++i;
+        } else {
+          if (++i === chlen && p < i) {
+            if (expect.buf === undefined)
+              expect.buf = chunk.toString('ascii', p, i);
+            else
+              expect.buf += chunk.toString('ascii', p, i);
+          }
+          continue;
+        }
+      }
+    }
+
+    if (instate.status === IN_INIT) {
+      if (!this.readable)
+        return callback();
+      if (this.server) {
+        // Retrieve what should be the start of the protocol version exchange
+        if (!buffer) {
+          debug('DEBUG: Parser: IN_INIT (waiting for identification begin)');
+          expectData(this, EXP_TYPE_BYTES, 4);
+        } else {
+          if (buffer[0] === 0x53       // S
+              && buffer[1] === 0x53    // S
+              && buffer[2] === 0x48    // H
+              && buffer[3] === 0x2D) { // -
+            instate.status = IN_GREETING;
+            debug('DEBUG: Parser: IN_INIT (waiting for rest of identification)');
+          } else {
+            this.reset();
+            debug('DEBUG: Parser: Bad identification start');
+            return callback(new Error('Bad identification start'));
+          }
+        }
+      } else {
+        debug('DEBUG: Parser: IN_INIT');
+        // Retrieve any bytes that may come before the protocol version exchange
+        var ss = instate.search = new StreamSearch(IDENT_PREFIX_BUFFER);
+        ss.on('info', function onInfo(matched, data, start, end) {
+          if (data) {
+            if (instate.greeting === undefined)
+              instate.greeting = data.toString('binary', start, end);
+            else
+              instate.greeting += data.toString('binary', start, end);
+          }
+          if (matched) {
+            expect.type = undefined;
+            instate.search.removeListener('info', onInfo);
+          }
+        });
+        ss.maxMatches = 1;
+        expectData(this, EXP_TYPE_HEADER);
+        instate.status = IN_GREETING;
+      }
+    } else if (instate.status === IN_GREETING) {
+      debug('DEBUG: Parser: IN_GREETING');
+      instate.search = undefined;
+      // Retrieve the identification bytes after the "SSH-" header
+      p = i;
+      expectData(this, EXP_TYPE_LF);
+      instate.status = IN_HEADER;
+    } else if (instate.status === IN_HEADER) {
+      debug('DEBUG: Parser: IN_HEADER');
+      if (buffer.charCodeAt(buffer.length - 1) === 13)
+        buffer = buffer.slice(0, -1);
+      var idxDash = buffer.indexOf('-');
+      var idxSpace = buffer.indexOf(' ');
+      var header = {
+        // RFC says greeting SHOULD be utf8
+        greeting: instate.greeting,
+        identRaw: 'SSH-' + buffer,
+        versions: {
+          protocol: buffer.substr(0, idxDash),
+          software: (idxSpace === -1
+                     ? buffer.substring(idxDash + 1)
+                     : buffer.substring(idxDash + 1, idxSpace))
+        },
+        comments: (idxSpace > -1 ? buffer.substring(idxSpace + 1) : undefined)
+      };
+      instate.greeting = undefined;
+
+      if (header.versions.protocol !== '1.99'
+          && header.versions.protocol !== '2.0') {
+        this.reset();
+        debug('DEBUG: Parser: protocol version not supported: '
+              + header.versions.protocol);
+        return callback(new Error('Protocol version not supported'));
+      } else
+        this.emit('header', header);
+
+      if (instate.status === IN_INIT) {
+        // We reset from an event handler, possibly due to an unsupported SSH
+        // protocol version?
+        return;
+      }
+
+      var identRaw = header.identRaw;
+      var software = header.versions.software;
+      this.debug('DEBUG: Remote ident: ' + inspect(identRaw));
+      for (var j = 0, rule; j < BUGGY_IMPLS_LEN; ++j) {
+        rule = BUGGY_IMPLS[j];
+        if (typeof rule[0] === 'string') {
+          if (software === rule[0])
+            this.remoteBugs |= rule[1];
+        } else if (rule[0].test(software))
+          this.remoteBugs |= rule[1];
+      }
+      instate.identRaw = identRaw;
+      // Adjust bytesReceived first otherwise it will have an incorrectly larger
+      // total when we call back into this function after completing KEXINIT
+      this.bytesReceived -= (chlen - i);
+      KEXINIT(this, function() {
+        if (i === chlen)
+          callback();
+        else
+          self._transform(chunk.slice(i), encoding, callback);
+      });
+      instate.status = IN_PACKETBEFORE;
+      return;
+    } else if (instate.status === IN_PACKETBEFORE) {
+      blockLen = (decrypt.instance ? decrypt.info.blockLen : 8);
+      debug('DEBUG: Parser: IN_PACKETBEFORE (expecting ' + blockLen + ')');
+      // Wait for the right number of bytes so we can determine the incoming
+      // packet length
+      expectData(this, EXP_TYPE_BYTES, blockLen, decrypt.buf);
+      instate.status = IN_PACKET;
+    } else if (instate.status === IN_PACKET) {
+      debug('DEBUG: Parser: IN_PACKET');
+      if (decrypt.instance) {
+        decryptAuthMode = (decrypt.info.authLen > 0);
+        if (!decryptAuthMode)
+          buffer = decryptData(this, buffer);
+        blockLen = decrypt.info.blockLen;
+      } else {
+        decryptAuthMode = false;
+        blockLen = 8;
+      }
+
+      r = readInt(buffer, 0, this, callback);
+      if (r === false)
+        return;
+      var hmacInfo = instate.hmac.info;
+      var macSize;
+      if (hmacInfo)
+        macSize = hmacInfo.actualLen;
+      else
+        macSize = 0;
+      var fullPacketLen = r + 4 + macSize;
+      var maxPayloadLen = this.maxPacketSize;
+      if (decompress.instance) {
+        // Account for compressed payloads
+        // This formula is taken from dropbear which derives it from zlib's
+        // documentation. Explanation from dropbear:
+        /* For exact details see http://www.zlib.net/zlib_tech.html
+         * 5 bytes per 16kB block, plus 6 bytes for the stream.
+         * We might allocate 5 unnecessary bytes here if it's an
+         * exact multiple. */
+        maxPayloadLen += (((this.maxPacketSize / 16384) + 1) * 5 + 6);
+      }
+      if (r > maxPayloadLen
+          // TODO: Change 16 to "MAX(16, decrypt.info.blockLen)" when/if SSH2
+          // adopts 512-bit ciphers
+          || fullPacketLen < (16 + macSize)
+          || ((r + (decryptAuthMode ? 0 : 4)) % blockLen) !== 0) {
+        this.disconnect(DISCONNECT_REASON.PROTOCOL_ERROR);
+        debug('DEBUG: Parser: Bad packet length (' + fullPacketLen + ')');
+        return callback(new Error('Bad packet length'));
+      }
+
+      instate.pktLen = r;
+      var remainLen = instate.pktLen + 4 - blockLen;
+      if (decryptAuthMode) {
+        decrypt.instance.setAAD(buffer.slice(0, 4));
+        debug('DEBUG: Parser: pktLen:'
+              + instate.pktLen
+              + ',remainLen:'
+              + remainLen);
+      } else {
+        instate.padLen = buffer[4];
+        debug('DEBUG: Parser: pktLen:'
+              + instate.pktLen
+              + ',padLen:'
+              + instate.padLen
+              + ',remainLen:'
+              + remainLen);
+      }
+      if (remainLen > 0) {
+        if (decryptAuthMode)
+          instate.pktExtra = buffer.slice(4);
+        else
+          instate.pktExtra = buffer.slice(5);
+        // Grab the rest of the packet
+        expectData(this, EXP_TYPE_BYTES, remainLen);
+        instate.status = IN_PACKETDATA;
+      } else if (remainLen < 0)
+        instate.status = IN_PACKETBEFORE;
+      else {
+        // Entire message fit into one block
+        skipDecrypt = true;
+        instate.status = IN_PACKETDATA;
+        continue;
+      }
+    } else if (instate.status === IN_PACKETDATA) {
+      debug('DEBUG: Parser: IN_PACKETDATA');
+      if (decrypt.instance) {
+        decryptAuthMode = (decrypt.info.authLen > 0);
+        if (!skipDecrypt) {
+          if (!decryptAuthMode)
+            buffer = decryptData(this, buffer);
+        } else {
+          skipDecrypt = false;
+        }
+      } else {
+        decryptAuthMode = false;
+        skipDecrypt = false;
+      }
+      var padStart = instate.pktLen - instate.padLen - 1;
+      // TODO: Allocate a Buffer once that is slightly larger than maxPacketSize
+      // (to accommodate for packet length field and MAC) and re-use that
+      // instead
+      if (instate.pktExtra) {
+        buf = Buffer.allocUnsafe(instate.pktExtra.length + buffer.length);
+        instate.pktExtra.copy(buf);
+        buffer.copy(buf, instate.pktExtra.length);
+        instate.payload = buf.slice(0, padStart);
+      } else {
+        // Entire message fit into one block
+        if (decryptAuthMode)
+          buf = buffer.slice(4);
+        else
+          buf = buffer.slice(5);
+        instate.payload = buffer.slice(5, 5 + padStart);
+      }
+      if (instate.hmac.info !== undefined) {
+        // Wait for hmac hash
+        var inHMACSize = decrypt.info.authLen || instate.hmac.info.actualLen;
+        debug('DEBUG: Parser: HMAC size:' + inHMACSize);
+        expectData(this, EXP_TYPE_BYTES, inHMACSize, instate.hmac.buf);
+        instate.status = IN_PACKETDATAVERIFY;
+        instate.packet = buf;
+      } else
+        instate.status = IN_PACKETDATAAFTER;
+      instate.pktExtra = undefined;
+      buf = undefined;
+    } else if (instate.status === IN_PACKETDATAVERIFY) {
+      debug('DEBUG: Parser: IN_PACKETDATAVERIFY');
+      // Verify packet data integrity
+      if (hmacVerify(this, buffer)) {
+        debug('DEBUG: Parser: IN_PACKETDATAVERIFY (Valid HMAC)');
+        instate.status = IN_PACKETDATAAFTER;
+        instate.packet = undefined;
+      } else {
+        this.reset();
+        debug('DEBUG: Parser: IN_PACKETDATAVERIFY (Invalid HMAC)');
+        return callback(new Error('Invalid HMAC'));
+      }
+    } else if (instate.status === IN_PACKETDATAAFTER) {
+      if (decompress.instance) {
+        if (!decomp) {
+          debug('DEBUG: Parser: Decompressing');
+          decompress.instance.write(instate.payload);
+          var decompBuf = [];
+          var decompBufLen = 0;
+          decompress.instance.on('readable', function() {
+            var buf;
+            while (buf = this.read()) {
+              decompBuf.push(buf);
+              decompBufLen += buf.length;
+            }
+          }).flush(Z_PARTIAL_FLUSH, function() {
+            decompress.instance.removeAllListeners('readable');
+            if (decompBuf.length === 1)
+              instate.payload = decompBuf[0];
+            else
+              instate.payload = Buffer.concat(decompBuf, decompBufLen);
+            decompBuf = null;
+            var nextSlice;
+            if (i === chlen)
+              nextSlice = EMPTY_BUFFER; // Avoid slicing a zero-length buffer
+            else
+              nextSlice = chunk.slice(i);
+            self._transform(nextSlice, encoding, callback, true);
+          });
+          return;
+        } else {
+          // Make sure we reset this after this first time in the loop,
+          // otherwise we could end up trying to interpret as-is another
+          // compressed packet that is within the same chunk
+          decomp = false;
+        }
+      }
+
+      this.emit('packet');
+
+      var ptype = instate.payload[0];
+
+      if (debug !== DEBUG_NOOP) {
+        var msgPacket = 'DEBUG: Parser: IN_PACKETDATAAFTER, packet: ';
+        var authMethod = state.authsQueue[0];
+        var msgPktType = null;
+
+        if (outstate.status === OUT_REKEYING
+            && !(ptype <= 4 || (ptype >= 20 && ptype <= 49)))
+          msgPacket += '(enqueued) ';
+
+        if (ptype === MESSAGE.KEXDH_INIT) {
+          switch (state.kex.type) {
+            case 'group':
+              msgPktType = 'KEXDH_INIT';
+              break;
+            case 'groupex':
+              msgPktType = 'KEXDH_GEX_REQUEST';
+              break;
+            default:
+              msgPktType = 'KEXECDH_INIT';
+          }
+        } else if (ptype === MESSAGE.KEXDH_REPLY) {
+          switch (state.kex.type) {
+            case 'group':
+              msgPktType = 'KEXDH_REPLY';
+              break;
+            case 'groupex':
+              msgPktType = 'KEXDH_GEX_GROUP';
+              break;
+            default:
+              msgPktType = 'KEXECDH_REPLY';
+          }
+        } else if (ptype === MESSAGE.KEXDH_GEX_GROUP) {
+          msgPktType = 'KEXDH_GEX_GROUP';
+        } else if (ptype === MESSAGE.KEXDH_GEX_REPLY) {
+          msgPktType = 'KEXDH_GEX_REPLY';
+        } else if (ptype === 60) {
+          if (authMethod === 'password')
+            msgPktType = 'USERAUTH_PASSWD_CHANGEREQ';
+          else if (authMethod === 'keyboard-interactive')
+            msgPktType = 'USERAUTH_INFO_REQUEST';
+          else if (authMethod === 'publickey')
+            msgPktType = 'USERAUTH_PK_OK';
+          else
+            msgPktType = 'UNKNOWN PACKET 60';
+        } else if (ptype === 61) {
+          if (authMethod === 'keyboard-interactive')
+            msgPktType = 'USERAUTH_INFO_RESPONSE';
+          else
+            msgPktType = 'UNKNOWN PACKET 61';
+        }
+
+        if (msgPktType === null)
+          msgPktType = MESSAGE[ptype];
+
+        // Don't write debug output for messages we custom make in parsePacket()
+        if (ptype !== MESSAGE.CHANNEL_OPEN
+            && ptype !== MESSAGE.CHANNEL_REQUEST
+            && ptype !== MESSAGE.CHANNEL_SUCCESS
+            && ptype !== MESSAGE.CHANNEL_FAILURE
+            && ptype !== MESSAGE.CHANNEL_EOF
+            && ptype !== MESSAGE.CHANNEL_CLOSE
+            && ptype !== MESSAGE.CHANNEL_DATA
+            && ptype !== MESSAGE.CHANNEL_EXTENDED_DATA
+            && ptype !== MESSAGE.CHANNEL_WINDOW_ADJUST
+            && ptype !== MESSAGE.DISCONNECT
+            && ptype !== MESSAGE.USERAUTH_REQUEST
+            && ptype !== MESSAGE.GLOBAL_REQUEST)
+          debug(msgPacket + msgPktType);
+      }
+
+      // Only parse packet if we are not re-keying or the packet is not a
+      // transport layer packet needed for re-keying
+      if (outstate.status === OUT_READY
+          || ptype <= 4
+          || (ptype >= 20 && ptype <= 49)) {
+        if (parsePacket(this, callback) === false)
+          return;
+
+        if (instate.status === IN_INIT) {
+          // We were reset due to some error/disagreement ?
+          return;
+        }
+      } else if (outstate.status === OUT_REKEYING) {
+        if (instate.rekeyQueue.length === MAX_PACKETS_REKEYING) {
+          debug('DEBUG: Parser: Max incoming re-key queue length reached');
+          this.disconnect(DISCONNECT_REASON.PROTOCOL_ERROR);
+          return callback(
+            new Error('Incoming re-key queue length limit reached')
+          );
+        }
+
+        // Make sure to record the sequence number in case we need it later on
+        // when we drain the queue (e.g. unknown packet)
+        var seqno = instate.seqno;
+        if (++instate.seqno > MAX_SEQNO)
+          instate.seqno = 0;
+
+        instate.rekeyQueue.push([seqno, instate.payload]);
+      }
+
+      instate.status = IN_PACKETBEFORE;
+      instate.payload = undefined;
+    }
+    if (buffer !== undefined)
+      buffer = undefined;
+  }
+
+  callback();
+};
+
+SSH2Stream.prototype.reset = function(noend) {
+  if (this._state) {
+    var state = this._state;
+    state.incoming.status = IN_INIT;
+    state.outgoing.status = OUT_INIT;
+  } else {
+    this._state = {
+      authsQueue: [],
+      hostkeyFormat: undefined,
+      kex: undefined,
+
+      incoming: {
+        status: IN_INIT,
+        expectedPacket: undefined,
+        search: undefined,
+        greeting: undefined,
+        seqno: 0,
+        pktLen: undefined,
+        padLen: undefined,
+        pktExtra: undefined,
+        payload: undefined,
+        packet: undefined,
+        kexinit: undefined,
+        identRaw: undefined,
+        rekeyQueue: [],
+        ignoreNext: false,
+
+        expect: {
+          amount: undefined,
+          type: undefined,
+          ptr: 0,
+          buf: undefined
+        },
+
+        decrypt: {
+          instance: false,
+          info: undefined,
+          iv: undefined,
+          key: undefined,
+          buf: undefined,
+          type: undefined
+        },
+
+        hmac: {
+          info: undefined,
+          key: undefined,
+          buf: undefined,
+          type: false
+        },
+
+        decompress: {
+          instance: false,
+          type: false
+        }
+      },
+
+      outgoing: {
+        status: OUT_INIT,
+        seqno: 0,
+        bufSeqno: Buffer.allocUnsafe(4),
+        rekeyQueue: [],
+        kexinit: undefined,
+        kexsecret: undefined,
+        pubkey: undefined,
+        exchangeHash: undefined,
+        sessionId: undefined,
+        sentNEWKEYS: false,
+
+        encrypt: {
+          instance: false,
+          info: undefined,
+          iv: undefined,
+          key: undefined,
+          type: undefined
+        },
+
+        hmac: {
+          info: undefined,
+          key: undefined,
+          buf: undefined,
+          type: false
+        },
+
+        compress: {
+          instance: false,
+          type: false,
+          queue: null
+        }
+      }
+    };
+  }
+  if (!noend) {
+    if (this.readable)
+      this.push(null);
+  }
+};
+
+// Common methods
+// Global
+SSH2Stream.prototype.disconnect = function(reason) {
+  /*
+    byte      SSH_MSG_DISCONNECT
+    uint32    reason code
+    string    description in ISO-10646 UTF-8 encoding
+    string    language tag
+  */
+  var buf = Buffer.alloc(1 + 4 + 4 + 4);
+
+  buf[0] = MESSAGE.DISCONNECT;
+
+  if (DISCONNECT_REASON[reason] === undefined)
+    reason = DISCONNECT_REASON.BY_APPLICATION;
+  writeUInt32BE(buf, reason, 1);
+
+  this.debug('DEBUG: Outgoing: Writing DISCONNECT ('
+             + DISCONNECT_REASON[reason]
+             + ')');
+  send(this, buf);
+  this.reset();
+
+  return false;
+};
+SSH2Stream.prototype.ping = function() {
+  this.debug('DEBUG: Outgoing: Writing ping (GLOBAL_REQUEST: keepalive@openssh.com)');
+  return send(this, PING_PACKET);
+};
+SSH2Stream.prototype.rekey = function() {
+  var status = this._state.outgoing.status;
+  if (status === OUT_REKEYING)
+    throw new Error('A re-key is already in progress');
+  else if (status !== OUT_READY)
+    throw new Error('Cannot re-key yet');
+
+  this.debug('DEBUG: Outgoing: Starting re-key');
+  return KEXINIT(this);
+};
+
+// 'ssh-connection' service-specific
+SSH2Stream.prototype.requestSuccess = function(data) {
+  var buf;
+  if (Buffer.isBuffer(data)) {
+    buf = Buffer.allocUnsafe(1 + data.length);
+
+    buf[0] = MESSAGE.REQUEST_SUCCESS;
+
+    data.copy(buf, 1);
+  } else
+    buf = REQUEST_SUCCESS_PACKET;
+
+  this.debug('DEBUG: Outgoing: Writing REQUEST_SUCCESS');
+  return send(this, buf);
+};
+SSH2Stream.prototype.requestFailure = function() {
+  this.debug('DEBUG: Outgoing: Writing REQUEST_FAILURE');
+  return send(this, REQUEST_FAILURE_PACKET);
+};
+SSH2Stream.prototype.channelSuccess = function(chan) {
+  // Does not consume window space
+  var buf = Buffer.allocUnsafe(1 + 4);
+
+  buf[0] = MESSAGE.CHANNEL_SUCCESS;
+
+  writeUInt32BE(buf, chan, 1);
+
+  this.debug('DEBUG: Outgoing: Writing CHANNEL_SUCCESS (' + chan + ')');
+  return send(this, buf);
+};
+SSH2Stream.prototype.channelFailure = function(chan) {
+  // Does not consume window space
+  var buf = Buffer.allocUnsafe(1 + 4);
+
+  buf[0] = MESSAGE.CHANNEL_FAILURE;
+
+  writeUInt32BE(buf, chan, 1);
+
+  this.debug('DEBUG: Outgoing: Writing CHANNEL_FAILURE (' + chan + ')');
+  return send(this, buf);
+};
+SSH2Stream.prototype.channelEOF = function(chan) {
+  // Does not consume window space
+  var buf = Buffer.allocUnsafe(1 + 4);
+
+  buf[0] = MESSAGE.CHANNEL_EOF;
+
+  writeUInt32BE(buf, chan, 1);
+
+  this.debug('DEBUG: Outgoing: Writing CHANNEL_EOF (' + chan + ')');
+  return send(this, buf);
+};
+SSH2Stream.prototype.channelClose = function(chan) {
+  // Does not consume window space
+  var buf = Buffer.allocUnsafe(1 + 4);
+
+  buf[0] = MESSAGE.CHANNEL_CLOSE;
+
+  writeUInt32BE(buf, chan, 1);
+
+  this.debug('DEBUG: Outgoing: Writing CHANNEL_CLOSE (' + chan + ')');
+  return send(this, buf);
+};
+SSH2Stream.prototype.channelWindowAdjust = function(chan, amount) {
+  // Does not consume window space
+  var buf = Buffer.allocUnsafe(1 + 4 + 4);
+
+  buf[0] = MESSAGE.CHANNEL_WINDOW_ADJUST;
+
+  writeUInt32BE(buf, chan, 1);
+
+  writeUInt32BE(buf, amount, 5);
+
+  this.debug('DEBUG: Outgoing: Writing CHANNEL_WINDOW_ADJUST ('
+             + chan
+             + ', '
+             + amount
+             + ')');
+  return send(this, buf);
+};
+SSH2Stream.prototype.channelData = function(chan, data) {
+  var dataIsBuffer = Buffer.isBuffer(data);
+  var dataLen = (dataIsBuffer ? data.length : Buffer.byteLength(data));
+  var buf = Buffer.allocUnsafe(1 + 4 + 4 + dataLen);
+
+  buf[0] = MESSAGE.CHANNEL_DATA;
+
+  writeUInt32BE(buf, chan, 1);
+
+  writeUInt32BE(buf, dataLen, 5);
+  if (dataIsBuffer)
+    data.copy(buf, 9);
+  else
+    buf.write(data, 9, dataLen, 'utf8');
+
+  this.debug('DEBUG: Outgoing: Writing CHANNEL_DATA (' + chan + ')');
+  return send(this, buf);
+};
+SSH2Stream.prototype.channelExtData = function(chan, data, type) {
+  var dataIsBuffer = Buffer.isBuffer(data);
+  var dataLen = (dataIsBuffer ? data.length : Buffer.byteLength(data));
+  var buf = Buffer.allocUnsafe(1 + 4 + 4 + 4 + dataLen);
+
+  buf[0] = MESSAGE.CHANNEL_EXTENDED_DATA;
+
+  writeUInt32BE(buf, chan, 1);
+
+  writeUInt32BE(buf, type, 5);
+
+  writeUInt32BE(buf, dataLen, 9);
+  if (dataIsBuffer)
+    data.copy(buf, 13);
+  else
+    buf.write(data, 13, dataLen, 'utf8');
+
+  this.debug('DEBUG: Outgoing: Writing CHANNEL_EXTENDED_DATA (' + chan + ')');
+  return send(this, buf);
+};
+SSH2Stream.prototype.channelOpenConfirm = function(remoteChan, localChan,
+                                                   initWindow, maxPacket) {
+  var buf = Buffer.allocUnsafe(1 + 4 + 4 + 4 + 4);
+
+  buf[0] = MESSAGE.CHANNEL_OPEN_CONFIRMATION;
+
+  writeUInt32BE(buf, remoteChan, 1);
+
+  writeUInt32BE(buf, localChan, 5);
+
+  writeUInt32BE(buf, initWindow, 9);
+
+  writeUInt32BE(buf, maxPacket, 13);
+
+  this.debug('DEBUG: Outgoing: Writing CHANNEL_OPEN_CONFIRMATION (r:'
+             + remoteChan
+             + ', l:'
+             + localChan
+             + ')');
+  return send(this, buf);
+};
+SSH2Stream.prototype.channelOpenFail = function(remoteChan, reason, desc,
+                                                lang) {
+  if (typeof desc !== 'string')
+    desc = '';
+  if (typeof lang !== 'string')
+    lang = '';
+
+  var descLen = Buffer.byteLength(desc);
+  var langLen = Buffer.byteLength(lang);
+  var p = 9;
+  var buf = Buffer.allocUnsafe(1 + 4 + 4 + 4 + descLen + 4 + langLen);
+
+  buf[0] = MESSAGE.CHANNEL_OPEN_FAILURE;
+
+  writeUInt32BE(buf, remoteChan, 1);
+
+  writeUInt32BE(buf, reason, 5);
+
+  writeUInt32BE(buf, descLen, p);
+  p += 4;
+  if (descLen) {
+    buf.write(desc, p, descLen, 'utf8');
+    p += descLen;
+  }
+
+  writeUInt32BE(buf, langLen, p);
+  if (langLen)
+    buf.write(lang, p += 4, langLen, 'ascii');
+
+  this.debug('DEBUG: Outgoing: Writing CHANNEL_OPEN_FAILURE ('
+             + remoteChan
+             + ')');
+  return send(this, buf);
+};
+
+// Client-specific methods
+// Global
+SSH2Stream.prototype.service = function(svcName) {
+  if (this.server)
+    throw new Error('Client-only method called in server mode');
+
+  var svcNameLen = Buffer.byteLength(svcName);
+  var buf = Buffer.allocUnsafe(1 + 4 + svcNameLen);
+
+  buf[0] = MESSAGE.SERVICE_REQUEST;
+
+  writeUInt32BE(buf, svcNameLen, 1);
+  buf.write(svcName, 5, svcNameLen, 'ascii');
+
+  this.debug('DEBUG: Outgoing: Writing SERVICE_REQUEST (' + svcName + ')');
+  return send(this, buf);
+};
+// 'ssh-connection' service-specific
+SSH2Stream.prototype.tcpipForward = function(bindAddr, bindPort, wantReply) {
+  if (this.server)
+    throw new Error('Client-only method called in server mode');
+
+  var addrlen = Buffer.byteLength(bindAddr);
+  var buf = Buffer.allocUnsafe(1 + 4 + 13 + 1 + 4 + addrlen + 4);
+
+  buf[0] = MESSAGE.GLOBAL_REQUEST;
+
+  writeUInt32BE(buf, 13, 1);
+  buf.write('tcpip-forward', 5, 13, 'ascii');
+
+  buf[18] = (wantReply === undefined || wantReply === true ? 1 : 0);
+
+  writeUInt32BE(buf, addrlen, 19);
+  buf.write(bindAddr, 23, addrlen, 'ascii');
+
+  writeUInt32BE(buf, bindPort, 23 + addrlen);
+
+  this.debug('DEBUG: Outgoing: Writing GLOBAL_REQUEST (tcpip-forward)');
+  return send(this, buf);
+};
+SSH2Stream.prototype.cancelTcpipForward = function(bindAddr, bindPort,
+                                                   wantReply) {
+  if (this.server)
+    throw new Error('Client-only method called in server mode');
+
+  var addrlen = Buffer.byteLength(bindAddr);
+  var buf = Buffer.allocUnsafe(1 + 4 + 20 + 1 + 4 + addrlen + 4);
+
+  buf[0] = MESSAGE.GLOBAL_REQUEST;
+
+  writeUInt32BE(buf, 20, 1);
+  buf.write('cancel-tcpip-forward', 5, 20, 'ascii');
+
+  buf[25] = (wantReply === undefined || wantReply === true ? 1 : 0);
+
+  writeUInt32BE(buf, addrlen, 26);
+  buf.write(bindAddr, 30, addrlen, 'ascii');
+
+  writeUInt32BE(buf, bindPort, 30 + addrlen);
+
+  this.debug('DEBUG: Outgoing: Writing GLOBAL_REQUEST (cancel-tcpip-forward)');
+  return send(this, buf);
+};
+SSH2Stream.prototype.openssh_streamLocalForward = function(socketPath,
+                                                           wantReply) {
+  if (this.server)
+    throw new Error('Client-only method called in server mode');
+
+  var pathlen = Buffer.byteLength(socketPath);
+  var buf = Buffer.allocUnsafe(1 + 4 + 31 + 1 + 4 + pathlen);
+
+  buf[0] = MESSAGE.GLOBAL_REQUEST;
+
+  writeUInt32BE(buf, 31, 1);
+  buf.write('streamlocal-forward@openssh.com', 5, 31, 'ascii');
+
+  buf[36] = (wantReply === undefined || wantReply === true ? 1 : 0);
+
+  writeUInt32BE(buf, pathlen, 37);
+  buf.write(socketPath, 41, pathlen, 'utf8');
+
+  this.debug('DEBUG: Outgoing: Writing GLOBAL_REQUEST (streamlocal-forward@openssh.com)');
+  return send(this, buf);
+};
+SSH2Stream.prototype.openssh_cancelStreamLocalForward = function(socketPath,
+                                                                 wantReply) {
+  if (this.server)
+    throw new Error('Client-only method called in server mode');
+
+  var pathlen = Buffer.byteLength(socketPath);
+  var buf = Buffer.allocUnsafe(1 + 4 + 38 + 1 + 4 + pathlen);
+
+  buf[0] = MESSAGE.GLOBAL_REQUEST;
+
+  writeUInt32BE(buf, 38, 1);
+  buf.write('cancel-streamlocal-forward@openssh.com', 5, 38, 'ascii');
+
+  buf[43] = (wantReply === undefined || wantReply === true ? 1 : 0);
+
+  writeUInt32BE(buf, pathlen, 44);
+  buf.write(socketPath, 48, pathlen, 'utf8');
+
+  this.debug('DEBUG: Outgoing: Writing GLOBAL_REQUEST (cancel-streamlocal-forward@openssh.com)');
+  return send(this, buf);
+};
+SSH2Stream.prototype.directTcpip = function(chan, initWindow, maxPacket, cfg) {
+  if (this.server)
+    throw new Error('Client-only method called in server mode');
+
+  var srclen = Buffer.byteLength(cfg.srcIP);
+  var dstlen = Buffer.byteLength(cfg.dstIP);
+  var p = 29;
+  var buf = Buffer.allocUnsafe(1 + 4 + 12 + 4 + 4 + 4 + 4 + srclen + 4 + 4
+                               + dstlen + 4);
+
+  buf[0] = MESSAGE.CHANNEL_OPEN;
+
+  writeUInt32BE(buf, 12, 1);
+  buf.write('direct-tcpip', 5, 12, 'ascii');
+
+  writeUInt32BE(buf, chan, 17);
+
+  writeUInt32BE(buf, initWindow, 21);
+
+  writeUInt32BE(buf, maxPacket, 25);
+
+  writeUInt32BE(buf, dstlen, p);
+  buf.write(cfg.dstIP, p += 4, dstlen, 'ascii');
+
+  writeUInt32BE(buf, cfg.dstPort, p += dstlen);
+
+  writeUInt32BE(buf, srclen, p += 4);
+  buf.write(cfg.srcIP, p += 4, srclen, 'ascii');
+
+  writeUInt32BE(buf, cfg.srcPort, p += srclen);
+
+  this.debug('DEBUG: Outgoing: Writing CHANNEL_OPEN ('
+             + chan
+             + ', direct-tcpip)');
+  return send(this, buf);
+};
+SSH2Stream.prototype.openssh_directStreamLocal = function(chan, initWindow,
+                                                          maxPacket, cfg) {
+  if (this.server)
+    throw new Error('Client-only method called in server mode');
+
+  var pathlen = Buffer.byteLength(cfg.socketPath);
+  var p = 47;
+  var buf = Buffer.allocUnsafe(1 + 4 + 30 + 4 + 4 + 4 + 4 + pathlen + 4 + 4);
+
+  buf[0] = MESSAGE.CHANNEL_OPEN;
+
+  writeUInt32BE(buf, 30, 1);
+  buf.write('direct-streamlocal@openssh.com', 5, 30, 'ascii');
+
+  writeUInt32BE(buf, chan, 35);
+
+  writeUInt32BE(buf, initWindow, 39);
+
+  writeUInt32BE(buf, maxPacket, 43);
+
+  writeUInt32BE(buf, pathlen, p);
+  buf.write(cfg.socketPath, p += 4, pathlen, 'utf8');
+
+  // reserved fields (string and uint32)
+  buf.fill(0, buf.length - 8);
+
+  this.debug('DEBUG: Outgoing: Writing CHANNEL_OPEN ('
+             + chan
+             + ', direct-streamlocal@openssh.com)');
+  return send(this, buf);
+};
+SSH2Stream.prototype.openssh_noMoreSessions = function(wantReply) {
+  if (this.server)
+    throw new Error('Client-only method called in server mode');
+
+  var buf = Buffer.allocUnsafe(1 + 4 + 28 + 1);
+
+  buf[0] = MESSAGE.GLOBAL_REQUEST;
+
+  writeUInt32BE(buf, 28, 1);
+  buf.write('no-more-sessions@openssh.com', 5, 28, 'ascii');
+
+  buf[33] = (wantReply === undefined || wantReply === true ? 1 : 0);
+
+  this.debug('DEBUG: Outgoing: Writing GLOBAL_REQUEST (no-more-sessions@openssh.com)');
+  return send(this, buf);
+};
+SSH2Stream.prototype.session = function(chan, initWindow, maxPacket) {
+  if (this.server)
+    throw new Error('Client-only method called in server mode');
+
+  // Does not consume window space
+  var buf = Buffer.allocUnsafe(1 + 4 + 7 + 4 + 4 + 4);
+
+  buf[0] = MESSAGE.CHANNEL_OPEN;
+
+  writeUInt32BE(buf, 7, 1);
+  buf.write('session', 5, 7, 'ascii');
+
+  writeUInt32BE(buf, chan, 12);
+
+  writeUInt32BE(buf, initWindow, 16);
+
+  writeUInt32BE(buf, maxPacket, 20);
+
+  this.debug('DEBUG: Outgoing: Writing CHANNEL_OPEN ('
+             + chan
+             + ', session)');
+  return send(this, buf);
+};
+SSH2Stream.prototype.windowChange = function(chan, rows, cols, height, width) {
+  if (this.server)
+    throw new Error('Client-only method called in server mode');
+
+  // Does not consume window space
+  var buf = Buffer.allocUnsafe(1 + 4 + 4 + 13 + 1 + 4 + 4 + 4 + 4);
+
+  buf[0] = MESSAGE.CHANNEL_REQUEST;
+
+  writeUInt32BE(buf, chan, 1);
+
+  writeUInt32BE(buf, 13, 5);
+  buf.write('window-change', 9, 13, 'ascii');
+
+  buf[22] = 0;
+
+  writeUInt32BE(buf, cols, 23);
+
+  writeUInt32BE(buf, rows, 27);
+
+  writeUInt32BE(buf, width, 31);
+
+  writeUInt32BE(buf, height, 35);
+
+  this.debug('DEBUG: Outgoing: Writing CHANNEL_REQUEST ('
+             + chan
+             + ', window-change)');
+  return send(this, buf);
+};
+SSH2Stream.prototype.pty = function(chan, rows, cols, height,
+                                    width, term, modes, wantReply) {
+  if (this.server)
+    throw new Error('Client-only method called in server mode');
+
+  // Does not consume window space
+  if (!term || !term.length)
+    term = 'vt100';
+  if (modes
+      && !Buffer.isBuffer(modes)
+      && !Array.isArray(modes)
+      && typeof modes === 'object')
+    modes = modesToBytes(modes);
+  if (!modes || !modes.length)
+    modes = NO_TERMINAL_MODES_BUFFER;
+
+  var termLen = term.length;
+  var modesLen = modes.length;
+  var p = 21;
+  var buf = Buffer.allocUnsafe(1 + 4 + 4 + 7 + 1 + 4 + termLen + 4 + 4 + 4 + 4
+                               + 4 + modesLen);
+
+  buf[0] = MESSAGE.CHANNEL_REQUEST;
+
+  writeUInt32BE(buf, chan, 1);
+
+  writeUInt32BE(buf, 7, 5);
+  buf.write('pty-req', 9, 7, 'ascii');
+
+  buf[16] = (wantReply === undefined || wantReply === true ? 1 : 0);
+
+  writeUInt32BE(buf, termLen, 17);
+  buf.write(term, 21, termLen, 'utf8');
+
+  writeUInt32BE(buf, cols, p += termLen);
+
+  writeUInt32BE(buf, rows, p += 4);
+
+  writeUInt32BE(buf, width, p += 4);
+
+  writeUInt32BE(buf, height, p += 4);
+
+  writeUInt32BE(buf, modesLen, p += 4);
+  p += 4;
+  if (Array.isArray(modes)) {
+    for (var i = 0; i < modesLen; ++i)
+      buf[p++] = modes[i];
+  } else if (Buffer.isBuffer(modes)) {
+    modes.copy(buf, p);
+  }
+
+  this.debug('DEBUG: Outgoing: Writing CHANNEL_REQUEST ('
+             + chan
+             + ', pty-req)');
+  return send(this, buf);
+};
+SSH2Stream.prototype.shell = function(chan, wantReply) {
+  if (this.server)
+    throw new Error('Client-only method called in server mode');
+
+  // Does not consume window space
+  var buf = Buffer.allocUnsafe(1 + 4 + 4 + 5 + 1);
+
+  buf[0] = MESSAGE.CHANNEL_REQUEST;
+
+  writeUInt32BE(buf, chan, 1);
+
+  writeUInt32BE(buf, 5, 5);
+  buf.write('shell', 9, 5, 'ascii');
+
+  buf[14] = (wantReply === undefined || wantReply === true ? 1 : 0);
+
+  this.debug('DEBUG: Outgoing: Writing CHANNEL_REQUEST ('
+             + chan
+             + ', shell)');
+  return send(this, buf);
+};
+SSH2Stream.prototype.exec = function(chan, cmd, wantReply) {
+  if (this.server)
+    throw new Error('Client-only method called in server mode');
+
+  // Does not consume window space
+  var cmdlen = (Buffer.isBuffer(cmd) ? cmd.length : Buffer.byteLength(cmd));
+  var buf = Buffer.allocUnsafe(1 + 4 + 4 + 4 + 1 + 4 + cmdlen);
+
+  buf[0] = MESSAGE.CHANNEL_REQUEST;
+
+  writeUInt32BE(buf, chan, 1);
+
+  writeUInt32BE(buf, 4, 5);
+  buf.write('exec', 9, 4, 'ascii');
+
+  buf[13] = (wantReply === undefined || wantReply === true ? 1 : 0);
+
+  writeUInt32BE(buf, cmdlen, 14);
+  if (Buffer.isBuffer(cmd))
+    cmd.copy(buf, 18);
+  else
+    buf.write(cmd, 18, cmdlen, 'utf8');
+
+  this.debug('DEBUG: Outgoing: Writing CHANNEL_REQUEST ('
+             + chan
+             + ', exec)');
+  return send(this, buf);
+};
+SSH2Stream.prototype.signal = function(chan, signal) {
+  if (this.server)
+    throw new Error('Client-only method called in server mode');
+
+  // Does not consume window space
+  signal = signal.toUpperCase();
+  if (signal.slice(0, 3) === 'SIG')
+    signal = signal.substring(3);
+
+  if (SIGNALS.indexOf(signal) === -1)
+    throw new Error('Invalid signal: ' + signal);
+
+  var signalLen = signal.length;
+  var buf = Buffer.allocUnsafe(1 + 4 + 4 + 6 + 1 + 4 + signalLen);
+
+  buf[0] = MESSAGE.CHANNEL_REQUEST;
+
+  writeUInt32BE(buf, chan, 1);
+
+  writeUInt32BE(buf, 6, 5);
+  buf.write('signal', 9, 6, 'ascii');
+
+  buf[15] = 0;
+
+  writeUInt32BE(buf, signalLen, 16);
+  buf.write(signal, 20, signalLen, 'ascii');
+
+  this.debug('DEBUG: Outgoing: Writing CHANNEL_REQUEST ('
+             + chan
+             + ', signal)');
+  return send(this, buf);
+};
+SSH2Stream.prototype.env = function(chan, key, val, wantReply) {
+  if (this.server)
+    throw new Error('Client-only method called in server mode');
+
+  // Does not consume window space
+  var keyLen = Buffer.byteLength(key);
+  var valLen = (Buffer.isBuffer(val) ? val.length : Buffer.byteLength(val));
+  var buf = Buffer.allocUnsafe(1 + 4 + 4 + 3 + 1 + 4 + keyLen + 4 + valLen);
+
+  buf[0] = MESSAGE.CHANNEL_REQUEST;
+
+  writeUInt32BE(buf, chan, 1);
+
+  writeUInt32BE(buf, 3, 5);
+  buf.write('env', 9, 3, 'ascii');
+
+  buf[12] = (wantReply === undefined || wantReply === true ? 1 : 0);
+
+  writeUInt32BE(buf, keyLen, 13);
+  buf.write(key, 17, keyLen, 'ascii');
+
+  writeUInt32BE(buf, valLen, 17 + keyLen);
+  if (Buffer.isBuffer(val))
+    val.copy(buf, 17 + keyLen + 4);
+  else
+    buf.write(val, 17 + keyLen + 4, valLen, 'utf8');
+
+  this.debug('DEBUG: Outgoing: Writing CHANNEL_REQUEST ('
+             + chan
+             + ', env)');
+  return send(this, buf);
+};
+SSH2Stream.prototype.x11Forward = function(chan, cfg, wantReply) {
+  if (this.server)
+    throw new Error('Client-only method called in server mode');
+
+  // Does not consume window space
+  var protolen = Buffer.byteLength(cfg.protocol);
+  var cookielen = Buffer.byteLength(cfg.cookie);
+  var buf = Buffer.allocUnsafe(1 + 4 + 4 + 7 + 1 + 1 + 4 + protolen + 4
+                               + cookielen + 4);
+
+  buf[0] = MESSAGE.CHANNEL_REQUEST;
+
+  writeUInt32BE(buf, chan, 1);
+
+  writeUInt32BE(buf, 7, 5);
+  buf.write('x11-req', 9, 7, 'ascii');
+
+  buf[16] = (wantReply === undefined || wantReply === true ? 1 : 0);
+
+  buf[17] = (cfg.single ? 1 : 0);
+
+  writeUInt32BE(buf, protolen, 18);
+  var bp = 22;
+  if (Buffer.isBuffer(cfg.protocol))
+    cfg.protocol.copy(buf, bp);
+  else
+    buf.write(cfg.protocol, bp, protolen, 'utf8');
+  bp += protolen;
+
+  writeUInt32BE(buf, cookielen, bp);
+  bp += 4;
+  if (Buffer.isBuffer(cfg.cookie))
+    cfg.cookie.copy(buf, bp);
+  else
+    buf.write(cfg.cookie, bp, cookielen, 'binary');
+  bp += cookielen;
+
+  writeUInt32BE(buf, (cfg.screen || 0), bp);
+
+  this.debug('DEBUG: Outgoing: Writing CHANNEL_REQUEST ('
+             + chan
+             + ', x11-req)');
+  return send(this, buf);
+};
+SSH2Stream.prototype.subsystem = function(chan, name, wantReply) {
+  if (this.server)
+    throw new Error('Client-only method called in server mode');
+
+  // Does not consume window space
+  var nameLen = Buffer.byteLength(name);
+  var buf = Buffer.allocUnsafe(1 + 4 + 4 + 9 + 1 + 4 + nameLen);
+
+  buf[0] = MESSAGE.CHANNEL_REQUEST;
+
+  writeUInt32BE(buf, chan, 1);
+
+  writeUInt32BE(buf, 9, 5);
+  buf.write('subsystem', 9, 9, 'ascii');
+
+  buf[18] = (wantReply === undefined || wantReply === true ? 1 : 0);
+
+  writeUInt32BE(buf, nameLen, 19);
+  buf.write(name, 23, nameLen, 'ascii');
+
+  this.debug('DEBUG: Outgoing: Writing CHANNEL_REQUEST ('
+             + chan
+             + ', subsystem: '
+             + name
+             + ')');
+  return send(this, buf);
+};
+SSH2Stream.prototype.openssh_agentForward = function(chan, wantReply) {
+  if (this.server)
+    throw new Error('Client-only method called in server mode');
+
+  // Does not consume window space
+  var buf = Buffer.allocUnsafe(1 + 4 + 4 + 26 + 1);
+
+  buf[0] = MESSAGE.CHANNEL_REQUEST;
+
+  writeUInt32BE(buf, chan, 1);
+
+  writeUInt32BE(buf, 26, 5);
+  buf.write('auth-agent-req@openssh.com', 9, 26, 'ascii');
+
+  buf[35] = (wantReply === undefined || wantReply === true ? 1 : 0);
+
+  this.debug('DEBUG: Outgoing: Writing CHANNEL_REQUEST ('
+             + chan
+             + ', auth-agent-req@openssh.com)');
+  return send(this, buf);
+};
+// 'ssh-userauth' service-specific
+SSH2Stream.prototype.authPassword = function(username, password) {
+  if (this.server)
+    throw new Error('Client-only method called in server mode');
+
+  var userLen = Buffer.byteLength(username);
+  var passLen = Buffer.byteLength(password);
+  var p = 0;
+  var buf = Buffer.allocUnsafe(1
+                               + 4 + userLen
+                               + 4 + 14 // "ssh-connection"
+                               + 4 + 8 // "password"
+                               + 1
+                               + 4 + passLen);
+
+  buf[p] = MESSAGE.USERAUTH_REQUEST;
+
+  writeUInt32BE(buf, userLen, ++p);
+  buf.write(username, p += 4, userLen, 'utf8');
+
+  writeUInt32BE(buf, 14, p += userLen);
+  buf.write('ssh-connection', p += 4, 14, 'ascii');
+
+  writeUInt32BE(buf, 8, p += 14);
+  buf.write('password', p += 4, 8, 'ascii');
+
+  buf[p += 8] = 0;
+
+  writeUInt32BE(buf, passLen, ++p);
+  buf.write(password, p += 4, passLen, 'utf8');
+
+  this._state.authsQueue.push('password');
+  this.debug('DEBUG: Outgoing: Writing USERAUTH_REQUEST (password)');
+  return send(this, buf);
+};
+SSH2Stream.prototype.authPK = function(username, pubKey, cbSign) {
+  if (this.server)
+    throw new Error('Client-only method called in server mode');
+
+  var self = this;
+  var outstate = this._state.outgoing;
+  var keyType;
+
+  if (typeof pubKey.getPublicSSH === 'function') {
+    keyType = pubKey.type;
+    pubKey = pubKey.getPublicSSH();
+  } else {
+    keyType = pubKey.toString('ascii',
+                              4,
+                              4 + readUInt32BE(pubKey, 0));
+  }
+
+  var userLen = Buffer.byteLength(username);
+  var algoLen = Buffer.byteLength(keyType);
+  var pubKeyLen = pubKey.length;
+  var sesLen = outstate.sessionId.length;
+  var p = 0;
+  var buf = Buffer.allocUnsafe((cbSign ? 4 + sesLen : 0)
+                               + 1
+                               + 4 + userLen
+                               + 4 + 14 // "ssh-connection"
+                               + 4 + 9 // "publickey"
+                               + 1
+                               + 4 + algoLen
+                               + 4 + pubKeyLen
+                              );
+
+  if (cbSign) {
+    writeUInt32BE(buf, sesLen, p);
+    outstate.sessionId.copy(buf, p += 4);
+    buf[p += sesLen] = MESSAGE.USERAUTH_REQUEST;
+  } else {
+    buf[p] = MESSAGE.USERAUTH_REQUEST;
+  }
+
+  writeUInt32BE(buf, userLen, ++p);
+  buf.write(username, p += 4, userLen, 'utf8');
+
+  writeUInt32BE(buf, 14, p += userLen);
+  buf.write('ssh-connection', p += 4, 14, 'ascii');
+
+  writeUInt32BE(buf, 9, p += 14);
+  buf.write('publickey', p += 4, 9, 'ascii');
+
+  buf[p += 9] = (cbSign ? 1 : 0);
+
+  writeUInt32BE(buf, algoLen, ++p);
+  buf.write(keyType, p += 4, algoLen, 'ascii');
+
+  writeUInt32BE(buf, pubKeyLen, p += algoLen);
+  pubKey.copy(buf, p += 4);
+
+  if (!cbSign) {
+    this._state.authsQueue.push('publickey');
+    this.debug('DEBUG: Outgoing: Writing USERAUTH_REQUEST (publickey -- check)');
+    return send(this, buf);
+  }
+
+  cbSign(buf, function(signature) {
+    signature = convertSignature(signature, keyType);
+    if (signature === false)
+      throw new Error('Error while converting handshake signature');
+
+    var sigLen = signature.length;
+    var sigbuf = Buffer.allocUnsafe(1
+                                    + 4 + userLen
+                                    + 4 + 14 // "ssh-connection"
+                                    + 4 + 9 // "publickey"
+                                    + 1
+                                    + 4 + algoLen
+                                    + 4 + pubKeyLen
+                                    + 4 // 4 + algoLen + 4 + sigLen
+                                    + 4 + algoLen
+                                    + 4 + sigLen);
+
+    p = 0;
+
+    sigbuf[p] = MESSAGE.USERAUTH_REQUEST;
+
+    writeUInt32BE(sigbuf, userLen, ++p);
+    sigbuf.write(username, p += 4, userLen, 'utf8');
+
+    writeUInt32BE(sigbuf, 14, p += userLen);
+    sigbuf.write('ssh-connection', p += 4, 14, 'ascii');
+
+    writeUInt32BE(sigbuf, 9, p += 14);
+    sigbuf.write('publickey', p += 4, 9, 'ascii');
+
+    sigbuf[p += 9] = 1;
+
+    writeUInt32BE(sigbuf, algoLen, ++p);
+    sigbuf.write(keyType, p += 4, algoLen, 'ascii');
+
+    writeUInt32BE(sigbuf, pubKeyLen, p += algoLen);
+    pubKey.copy(sigbuf, p += 4);
+    writeUInt32BE(sigbuf, 4 + algoLen + 4 + sigLen, p += pubKeyLen);
+    writeUInt32BE(sigbuf, algoLen, p += 4);
+    sigbuf.write(keyType, p += 4, algoLen, 'ascii');
+    writeUInt32BE(sigbuf, sigLen, p += algoLen);
+    signature.copy(sigbuf, p += 4);
+
+    // Servers shouldn't send packet type 60 in response to signed publickey
+    // attempts, but if they do, interpret as type 60.
+    self._state.authsQueue.push('publickey');
+    self.debug('DEBUG: Outgoing: Writing USERAUTH_REQUEST (publickey)');
+    return send(self, sigbuf);
+  });
+  return true;
+};
+SSH2Stream.prototype.authHostbased = function(username, pubKey, hostname,
+                                              userlocal, cbSign) {
+  // TODO: Make DRY by sharing similar code with authPK()
+
+  if (this.server)
+    throw new Error('Client-only method called in server mode');
+
+  var self = this;
+  var outstate = this._state.outgoing;
+  var keyType;
+
+  if (typeof pubKey.getPublicSSH === 'function') {
+    keyType = pubKey.type;
+    pubKey = pubKey.getPublicSSH();
+  } else {
+    keyType = pubKey.toString('ascii',
+                              4,
+                              4 + readUInt32BE(pubKey, 0));
+  }
+
+  var userLen = Buffer.byteLength(username);
+  var algoLen = Buffer.byteLength(keyType);
+  var pubKeyLen = pubKey.length;
+  var sesLen = outstate.sessionId.length;
+  var hostnameLen = Buffer.byteLength(hostname);
+  var userlocalLen = Buffer.byteLength(userlocal);
+  var p = 0;
+  var buf = Buffer.allocUnsafe(4 + sesLen
+                               + 1
+                               + 4 + userLen
+                               + 4 + 14 // "ssh-connection"
+                               + 4 + 9 // "hostbased"
+                               + 4 + algoLen
+                               + 4 + pubKeyLen
+                               + 4 + hostnameLen
+                               + 4 + userlocalLen
+                              );
+
+  writeUInt32BE(buf, sesLen, p);
+  outstate.sessionId.copy(buf, p += 4);
+
+  buf[p += sesLen] = MESSAGE.USERAUTH_REQUEST;
+
+  writeUInt32BE(buf, userLen, ++p);
+  buf.write(username, p += 4, userLen, 'utf8');
+
+  writeUInt32BE(buf, 14, p += userLen);
+  buf.write('ssh-connection', p += 4, 14, 'ascii');
+
+  writeUInt32BE(buf, 9, p += 14);
+  buf.write('hostbased', p += 4, 9, 'ascii');
+
+  writeUInt32BE(buf, algoLen, p += 9);
+  buf.write(keyType, p += 4, algoLen, 'ascii');
+
+  writeUInt32BE(buf, pubKeyLen, p += algoLen);
+  pubKey.copy(buf, p += 4);
+
+  writeUInt32BE(buf, hostnameLen, p += pubKeyLen);
+  buf.write(hostname, p += 4, hostnameLen, 'ascii');
+
+  writeUInt32BE(buf, userlocalLen, p += hostnameLen);
+  buf.write(userlocal, p += 4, userlocalLen, 'utf8');
+
+  cbSign(buf, function(signature) {
+    signature = convertSignature(signature, keyType);
+    if (signature === false)
+      throw new Error('Error while converting handshake signature');
+
+    var sigLen = signature.length;
+    var sigbuf = Buffer.allocUnsafe((buf.length - sesLen) + sigLen);
+
+    buf.copy(sigbuf, 0, 4 + sesLen);
+    writeUInt32BE(sigbuf, sigLen, sigbuf.length - sigLen - 4);
+    signature.copy(sigbuf, sigbuf.length - sigLen);
+
+    self._state.authsQueue.push('hostbased');
+    self.debug('DEBUG: Outgoing: Writing USERAUTH_REQUEST (hostbased)');
+    return send(self, sigbuf);
+  });
+  return true;
+};
+SSH2Stream.prototype.authKeyboard = function(username) {
+  if (this.server)
+    throw new Error('Client-only method called in server mode');
+
+  var userLen = Buffer.byteLength(username);
+  var p = 0;
+  var buf = Buffer.allocUnsafe(1
+                               + 4 + userLen
+                               + 4 + 14 // "ssh-connection"
+                               + 4 + 20 // "keyboard-interactive"
+                               + 4 // no language set
+                               + 4 // no submethods
+                              );
+
+  buf[p] = MESSAGE.USERAUTH_REQUEST;
+
+  writeUInt32BE(buf, userLen, ++p);
+  buf.write(username, p += 4, userLen, 'utf8');
+
+  writeUInt32BE(buf, 14, p += userLen);
+  buf.write('ssh-connection', p += 4, 14, 'ascii');
+
+  writeUInt32BE(buf, 20, p += 14);
+  buf.write('keyboard-interactive', p += 4, 20, 'ascii');
+
+  writeUInt32BE(buf, 0, p += 20);
+
+  writeUInt32BE(buf, 0, p += 4);
+
+  this._state.authsQueue.push('keyboard-interactive');
+  this.debug('DEBUG: Outgoing: Writing USERAUTH_REQUEST (keyboard-interactive)');
+  return send(this, buf);
+};
+SSH2Stream.prototype.authNone = function(username) {
+  if (this.server)
+    throw new Error('Client-only method called in server mode');
+
+  var userLen = Buffer.byteLength(username);
+  var p = 0;
+  var buf = Buffer.allocUnsafe(1
+                               + 4 + userLen
+                               + 4 + 14 // "ssh-connection"
+                               + 4 + 4 // "none"
+                              );
+
+  buf[p] = MESSAGE.USERAUTH_REQUEST;
+
+  writeUInt32BE(buf, userLen, ++p);
+  buf.write(username, p += 4, userLen, 'utf8');
+
+  writeUInt32BE(buf, 14, p += userLen);
+  buf.write('ssh-connection', p += 4, 14, 'ascii');
+
+  writeUInt32BE(buf, 4, p += 14);
+  buf.write('none', p += 4, 4, 'ascii');
+
+  this._state.authsQueue.push('none');
+  this.debug('DEBUG: Outgoing: Writing USERAUTH_REQUEST (none)');
+  return send(this, buf);
+};
+SSH2Stream.prototype.authInfoRes = function(responses) {
+  if (this.server)
+    throw new Error('Client-only method called in server mode');
+
+  var responsesLen = 0;
+  var p = 0;
+  var resLen;
+  var len;
+  var i;
+
+  if (responses) {
+    for (i = 0, len = responses.length; i < len; ++i)
+      responsesLen += 4 + Buffer.byteLength(responses[i]);
+  }
+  var buf = Buffer.allocUnsafe(1 + 4 + responsesLen);
+
+  buf[p++] = MESSAGE.USERAUTH_INFO_RESPONSE;
+
+  writeUInt32BE(buf, responses ? responses.length : 0, p);
+  if (responses) {
+    p += 4;
+    for (i = 0, len = responses.length; i < len; ++i) {
+      resLen = Buffer.byteLength(responses[i]);
+      writeUInt32BE(buf, resLen, p);
+      p += 4;
+      if (resLen) {
+        buf.write(responses[i], p, resLen, 'utf8');
+        p += resLen;
+      }
+    }
+  }
+
+  this.debug('DEBUG: Outgoing: Writing USERAUTH_INFO_RESPONSE');
+  return send(this, buf);
+};
+
+// Server-specific methods
+// Global
+SSH2Stream.prototype.serviceAccept = function(svcName) {
+  if (!this.server)
+    throw new Error('Server-only method called in client mode');
+
+  var svcNameLen = svcName.length;
+  var buf = Buffer.allocUnsafe(1 + 4 + svcNameLen);
+
+  buf[0] = MESSAGE.SERVICE_ACCEPT;
+
+  writeUInt32BE(buf, svcNameLen, 1);
+  buf.write(svcName, 5, svcNameLen, 'ascii');
+
+  this.debug('DEBUG: Outgoing: Writing SERVICE_ACCEPT (' + svcName + ')');
+  send(this, buf);
+
+  if (this.server && this.banner && svcName === 'ssh-userauth') {
+    /*
+      byte      SSH_MSG_USERAUTH_BANNER
+      string    message in ISO-10646 UTF-8 encoding
+      string    language tag
+    */
+    var bannerLen = Buffer.byteLength(this.banner);
+    var packetLen = 1 + 4 + bannerLen + 4;
+    var packet = Buffer.allocUnsafe(packetLen);
+    packet[0] = MESSAGE.USERAUTH_BANNER;
+    writeUInt32BE(packet, bannerLen, 1);
+    packet.write(this.banner, 5, bannerLen, 'utf8');
+    packet.fill(0, packetLen - 4); // Empty language tag
+    this.debug('DEBUG: Outgoing: Writing USERAUTH_BANNER');
+    send(this, packet);
+    this.banner = undefined; // Prevent banner from being displayed again
+  }
+};
+// 'ssh-connection' service-specific
+SSH2Stream.prototype.forwardedTcpip = function(chan, initWindow, maxPacket,
+                                               cfg) {
+  if (!this.server)
+    throw new Error('Server-only method called in client mode');
+
+  var boundAddrLen = Buffer.byteLength(cfg.boundAddr);
+  var remoteAddrLen = Buffer.byteLength(cfg.remoteAddr);
+  var p = 36 + boundAddrLen;
+  var buf = Buffer.allocUnsafe(1 + 4 + 15 + 4 + 4 + 4 + 4 + boundAddrLen + 4 + 4
+                               + remoteAddrLen + 4);
+
+  buf[0] = MESSAGE.CHANNEL_OPEN;
+
+  writeUInt32BE(buf, 15, 1);
+  buf.write('forwarded-tcpip', 5, 15, 'ascii');
+
+  writeUInt32BE(buf, chan, 20);
+
+  writeUInt32BE(buf, initWindow, 24);
+
+  writeUInt32BE(buf, maxPacket, 28);
+
+  writeUInt32BE(buf, boundAddrLen, 32);
+  buf.write(cfg.boundAddr, 36, boundAddrLen, 'ascii');
+
+  writeUInt32BE(buf, cfg.boundPort, p);
+
+  writeUInt32BE(buf, remoteAddrLen, p += 4);
+  buf.write(cfg.remoteAddr, p += 4, remoteAddrLen, 'ascii');
+
+  writeUInt32BE(buf, cfg.remotePort, p += remoteAddrLen);
+
+  this.debug('DEBUG: Outgoing: Writing CHANNEL_OPEN ('
+             + chan
+             + ', forwarded-tcpip)');
+  return send(this, buf);
+};
+SSH2Stream.prototype.x11 = function(chan, initWindow, maxPacket, cfg) {
+  if (!this.server)
+    throw new Error('Server-only method called in client mode');
+
+  var addrLen = Buffer.byteLength(cfg.originAddr);
+  var p = 24 + addrLen;
+  var buf = Buffer.allocUnsafe(1 + 4 + 3 + 4 + 4 + 4 + 4 + addrLen + 4);
+
+  buf[0] = MESSAGE.CHANNEL_OPEN;
+
+  writeUInt32BE(buf, 3, 1);
+  buf.write('x11', 5, 3, 'ascii');
+
+  writeUInt32BE(buf, chan, 8);
+
+  writeUInt32BE(buf, initWindow, 12);
+
+  writeUInt32BE(buf, maxPacket, 16);
+
+  writeUInt32BE(buf, addrLen, 20);
+  buf.write(cfg.originAddr, 24, addrLen, 'ascii');
+
+  writeUInt32BE(buf, cfg.originPort, p);
+
+  this.debug('DEBUG: Outgoing: Writing CHANNEL_OPEN ('
+             + chan
+             + ', x11)');
+  return send(this, buf);
+};
+SSH2Stream.prototype.openssh_authAgent = function(chan, initWindow, maxPacket) {
+  if (!this.server)
+    throw new Error('Server-only method called in client mode');
+
+  var buf = Buffer.allocUnsafe(1 + 4 + 22 + 4 + 4 + 4);
+
+  buf[0] = MESSAGE.CHANNEL_OPEN;
+
+  writeUInt32BE(buf, 22, 1);
+  buf.write('auth-agent@openssh.com', 5, 22, 'ascii');
+
+  writeUInt32BE(buf, chan, 27);
+
+  writeUInt32BE(buf, initWindow, 31);
+
+  writeUInt32BE(buf, maxPacket, 35);
+
+  this.debug('DEBUG: Outgoing: Writing CHANNEL_OPEN ('
+             + chan
+             + ', auth-agent@openssh.com)');
+  return send(this, buf);
+};
+SSH2Stream.prototype.openssh_forwardedStreamLocal = function(chan, initWindow,
+                                                             maxPacket, cfg) {
+  if (!this.server)
+    throw new Error('Server-only method called in client mode');
+
+  var pathlen = Buffer.byteLength(cfg.socketPath);
+  var buf = Buffer.allocUnsafe(1 + 4 + 33 + 4 + 4 + 4 + 4 + pathlen + 4);
+
+  buf[0] = MESSAGE.CHANNEL_OPEN;
+
+  writeUInt32BE(buf, 33, 1);
+  buf.write('forwarded-streamlocal@openssh.com', 5, 33, 'ascii');
+
+  writeUInt32BE(buf, chan, 38);
+
+  writeUInt32BE(buf, initWindow, 42);
+
+  writeUInt32BE(buf, maxPacket, 46);
+
+  writeUInt32BE(buf, pathlen, 50);
+  buf.write(cfg.socketPath, 54, pathlen, 'utf8');
+
+  writeUInt32BE(buf, 0, 54 + pathlen);
+
+  this.debug('DEBUG: Outgoing: Writing CHANNEL_OPEN ('
+             + chan
+             + ', forwarded-streamlocal@openssh.com)');
+  return send(this, buf);
+};
+SSH2Stream.prototype.exitStatus = function(chan, status) {
+  if (!this.server)
+    throw new Error('Server-only method called in client mode');
+
+  // Does not consume window space
+  var buf = Buffer.allocUnsafe(1 + 4 + 4 + 11 + 1 + 4);
+
+  buf[0] = MESSAGE.CHANNEL_REQUEST;
+
+  writeUInt32BE(buf, chan, 1);
+
+  writeUInt32BE(buf, 11, 5);
+  buf.write('exit-status', 9, 11, 'ascii');
+
+  buf[20] = 0;
+
+  writeUInt32BE(buf, status, 21);
+
+  this.debug('DEBUG: Outgoing: Writing CHANNEL_REQUEST ('
+             + chan
+             + ', exit-status)');
+  return send(this, buf);
+};
+SSH2Stream.prototype.exitSignal = function(chan, name, coreDumped, msg) {
+  if (!this.server)
+    throw new Error('Server-only method called in client mode');
+
+  // Does not consume window space
+  var nameLen = Buffer.byteLength(name);
+  var msgLen = (msg ? Buffer.byteLength(msg) : 0);
+  var p = 25 + nameLen;
+  var buf = Buffer.allocUnsafe(1 + 4 + 4 + 11 + 1 + 4 + nameLen + 1 + 4 + msgLen
+                               + 4);
+
+  buf[0] = MESSAGE.CHANNEL_REQUEST;
+
+  writeUInt32BE(buf, chan, 1);
+
+  writeUInt32BE(buf, 11, 5);
+  buf.write('exit-signal', 9, 11, 'ascii');
+
+  buf[20] = 0;
+
+  writeUInt32BE(buf, nameLen, 21);
+  buf.write(name, 25, nameLen, 'utf8');
+
+  buf[p++] = (coreDumped ? 1 : 0);
+
+  writeUInt32BE(buf, msgLen, p);
+  p += 4;
+  if (msgLen) {
+    buf.write(msg, p, msgLen, 'utf8');
+    p += msgLen;
+  }
+
+  writeUInt32BE(buf, 0, p);
+
+  this.debug('DEBUG: Outgoing: Writing CHANNEL_REQUEST ('
+             + chan
+             + ', exit-signal)');
+  return send(this, buf);
+};
+// 'ssh-userauth' service-specific
+SSH2Stream.prototype.authFailure = function(authMethods, isPartial) {
+  if (!this.server)
+    throw new Error('Server-only method called in client mode');
+
+  var authsQueue = this._state.authsQueue;
+  if (!authsQueue.length)
+    throw new Error('No auth in progress');
+
+  var methods;
+
+  if (typeof authMethods === 'boolean') {
+    isPartial = authMethods;
+    authMethods = undefined;
+  }
+
+  if (authMethods) {
+    methods = [];
+    for (var i = 0, len = authMethods.length; i < len; ++i) {
+      if (authMethods[i].toLowerCase() === 'none')
+        continue;
+      methods.push(authMethods[i]);
+    }
+    methods = methods.join(',');
+  } else
+    methods = '';
+
+  var methodsLen = methods.length;
+  var buf = Buffer.allocUnsafe(1 + 4 + methodsLen + 1);
+
+  buf[0] = MESSAGE.USERAUTH_FAILURE;
+
+  writeUInt32BE(buf, methodsLen, 1);
+  buf.write(methods, 5, methodsLen, 'ascii');
+
+  buf[5 + methodsLen] = (isPartial === true ? 1 : 0);
+
+  this._state.authsQueue.shift();
+  this.debug('DEBUG: Outgoing: Writing USERAUTH_FAILURE');
+  return send(this, buf);
+};
+SSH2Stream.prototype.authSuccess = function() {
+  if (!this.server)
+    throw new Error('Server-only method called in client mode');
+
+  var authsQueue = this._state.authsQueue;
+  if (!authsQueue.length)
+    throw new Error('No auth in progress');
+
+  var state = this._state;
+  var outstate = state.outgoing;
+  var instate = state.incoming;
+
+  state.authsQueue.shift();
+
+  this.debug('DEBUG: Outgoing: Writing USERAUTH_SUCCESS');
+  var ret = send(this, USERAUTH_SUCCESS_PACKET);
+
+  if (outstate.compress.type === 'zlib@openssh.com') {
+    outstate.compress.instance = zlib.createDeflate(ZLIB_OPTS);
+    outstate.compress.queue = [];
+  }
+  if (instate.decompress.type === 'zlib@openssh.com')
+    instate.decompress.instance = zlib.createInflate(ZLIB_OPTS);
+
+  return ret;
+};
+SSH2Stream.prototype.authPKOK = function(keyAlgo, key) {
+  if (!this.server)
+    throw new Error('Server-only method called in client mode');
+
+  var authsQueue = this._state.authsQueue;
+  if (!authsQueue.length || authsQueue[0] !== 'publickey')
+    throw new Error('"publickey" auth not in progress');
+
+  var keyAlgoLen = keyAlgo.length;
+  var keyLen = key.length;
+  var buf = Buffer.allocUnsafe(1 + 4 + keyAlgoLen + 4 + keyLen);
+
+  buf[0] = MESSAGE.USERAUTH_PK_OK;
+
+  writeUInt32BE(buf, keyAlgoLen, 1);
+  buf.write(keyAlgo, 5, keyAlgoLen, 'ascii');
+
+  writeUInt32BE(buf, keyLen, 5 + keyAlgoLen);
+  key.copy(buf, 5 + keyAlgoLen + 4);
+
+  this._state.authsQueue.shift();
+  this.debug('DEBUG: Outgoing: Writing USERAUTH_PK_OK');
+  return send(this, buf);
+};
+SSH2Stream.prototype.authPasswdChg = function(prompt, lang) {
+  if (!this.server)
+    throw new Error('Server-only method called in client mode');
+
+  var promptLen = Buffer.byteLength(prompt);
+  var langLen = lang ? lang.length : 0;
+  var p = 0;
+  var buf = Buffer.allocUnsafe(1 + 4 + promptLen + 4 + langLen);
+
+  buf[p] = MESSAGE.USERAUTH_PASSWD_CHANGEREQ;
+
+  writeUInt32BE(buf, promptLen, ++p);
+  buf.write(prompt, p += 4, promptLen, 'utf8');
+
+  writeUInt32BE(buf, langLen, p += promptLen);
+  if (langLen)
+    buf.write(lang, p += 4, langLen, 'ascii');
+
+  this.debug('DEBUG: Outgoing: Writing USERAUTH_PASSWD_CHANGEREQ');
+  return send(this, buf);
+};
+SSH2Stream.prototype.authInfoReq = function(name, instructions, prompts) {
+  if (!this.server)
+    throw new Error('Server-only method called in client mode');
+
+  var promptsLen = 0;
+  var nameLen = name ? Buffer.byteLength(name) : 0;
+  var instrLen = instructions ? Buffer.byteLength(instructions) : 0;
+  var p = 0;
+  var promptLen;
+  var prompt;
+  var len;
+  var i;
+
+  for (i = 0, len = prompts.length; i < len; ++i)
+    promptsLen += 4 + Buffer.byteLength(prompts[i].prompt) + 1;
+  var buf = Buffer.allocUnsafe(1 + 4 + nameLen + 4 + instrLen + 4 + 4
+                               + promptsLen);
+
+  buf[p++] = MESSAGE.USERAUTH_INFO_REQUEST;
+
+  writeUInt32BE(buf, nameLen, p);
+  p += 4;
+  if (name) {
+    buf.write(name, p, nameLen, 'utf8');
+    p += nameLen;
+  }
+
+  writeUInt32BE(buf, instrLen, p);
+  p += 4;
+  if (instructions) {
+    buf.write(instructions, p, instrLen, 'utf8');
+    p += instrLen;
+  }
+
+  writeUInt32BE(buf, 0, p);
+  p += 4;
+
+  writeUInt32BE(buf, prompts.length, p);
+  p += 4;
+  for (i = 0, len = prompts.length; i < len; ++i) {
+    prompt = prompts[i];
+    promptLen = Buffer.byteLength(prompt.prompt);
+    writeUInt32BE(buf, promptLen, p);
+    p += 4;
+    if (promptLen) {
+      buf.write(prompt.prompt, p, promptLen, 'utf8');
+      p += promptLen;
+    }
+    buf[p++] = (prompt.echo ? 1 : 0);
+  }
+
+  this.debug('DEBUG: Outgoing: Writing USERAUTH_INFO_REQUEST');
+  return send(this, buf);
+};
+
+// Shared incoming/parser functions
+function onDISCONNECT(self, reason, code, desc, lang) { // Client/Server
+  if (code !== DISCONNECT_REASON.BY_APPLICATION) {
+    var err = new Error(desc || reason);
+    err.code = code;
+    self.emit('error', err);
+  }
+  self.reset();
+}
+
+function onKEXINIT(self, init, firstFollows) { // Client/Server
+  var state = self._state;
+  var outstate = state.outgoing;
+
+  if (outstate.status === OUT_READY) {
+    self.debug('DEBUG: Received re-key request');
+    outstate.status = OUT_REKEYING;
+    outstate.kexinit = undefined;
+    KEXINIT(self, check);
+  } else {
+    check();
+  }
+
+  function check() {
+    if (check_KEXINIT(self, init, firstFollows) === true) {
+      if (!self.server) {
+        if (state.kex.type === 'groupex')
+          KEXDH_GEX_REQ(self);
+        else
+          KEXDH_INIT(self);
+      } else {
+        state.incoming.expectedPacket = state.kex.pktInit;
+      }
+    }
+  }
+}
+
+function check_KEXINIT(self, init, firstFollows) {
+  var state = self._state;
+  var instate = state.incoming;
+  var outstate = state.outgoing;
+  var debug = self.debug;
+  var serverList;
+  var clientList;
+  var val;
+  var len;
+  var i;
+
+  debug('DEBUG: Comparing KEXINITs ...');
+
+  var algos = self.config.algorithms;
+
+  var kexList = algos.kex;
+  if (self.remoteBugs & BUGS.BAD_DHGEX) {
+    var copied = false;
+    for (var j = kexList.length - 1; j >= 0; --j) {
+      if (kexList[j].indexOf('group-exchange') !== -1) {
+        if (!copied) {
+          kexList = kexList.slice();
+          copied = true;
+        }
+        kexList.splice(j, 1);
+      }
+    }
+  }
+
+  debug('DEBUG: (local) KEX algorithms: ' + kexList);
+  debug('DEBUG: (remote) KEX algorithms: ' + init.algorithms.kex);
+  if (self.server) {
+    serverList = kexList;
+    clientList = init.algorithms.kex;
+  } else {
+    serverList = init.algorithms.kex;
+    clientList = kexList;
+  }
+  // Check for agreeable key exchange algorithm
+  for (i = 0, len = clientList.length;
+       i < len && serverList.indexOf(clientList[i]) === -1;
+       ++i);
+  if (i === len) {
+    // No suitable match found!
+    debug('DEBUG: No matching key exchange algorithm');
+    var err = new Error('Handshake failed: no matching key exchange algorithm');
+    err.level = 'handshake';
+    self.emit('error', err);
+    self.disconnect(DISCONNECT_REASON.KEY_EXCHANGE_FAILED);
+    return false;
+  }
+
+  var kex_algorithm = clientList[i];
+  debug('DEBUG: KEX algorithm: ' + kex_algorithm);
+  if (firstFollows
+      && (!init.algorithms.kex.length
+          || kex_algorithm !== init.algorithms.kex[0])) {
+    // Ignore next incoming packet, it was a wrong first guess at KEX algorithm
+    instate.ignoreNext = true;
+  }
+
+  debug('DEBUG: (local) Host key formats: ' + algos.serverHostKey);
+  debug('DEBUG: (remote) Host key formats: ' + init.algorithms.srvHostKey);
+  if (self.server) {
+    serverList = algos.serverHostKey;
+    clientList = init.algorithms.srvHostKey;
+  } else {
+    serverList = init.algorithms.srvHostKey;
+    clientList = algos.serverHostKey;
+  }
+  // Check for agreeable server host key format
+  for (i = 0, len = clientList.length;
+       i < len && serverList.indexOf(clientList[i]) === -1;
+       ++i);
+  if (i === len) {
+    // No suitable match found!
+    debug('DEBUG: No matching host key format');
+    var err = new Error('Handshake failed: no matching host key format');
+    err.level = 'handshake';
+    self.emit('error', err);
+    self.disconnect(DISCONNECT_REASON.KEY_EXCHANGE_FAILED);
+    return false;
+  }
+
+  state.hostkeyFormat = clientList[i];
+  debug('DEBUG: Host key format: ' + state.hostkeyFormat);
+
+  debug('DEBUG: (local) Client->Server ciphers: ' + algos.cipher);
+  debug('DEBUG: (remote) Client->Server ciphers: '
+        + init.algorithms.cs.encrypt);
+  if (self.server) {
+    serverList = algos.cipher;
+    clientList = init.algorithms.cs.encrypt;
+  } else {
+    serverList = init.algorithms.cs.encrypt;
+    clientList = algos.cipher;
+  }
+  // Check for agreeable client->server cipher
+  for (i = 0, len = clientList.length;
+       i < len && serverList.indexOf(clientList[i]) === -1;
+       ++i);
+  if (i === len) {
+    // No suitable match found!
+    debug('DEBUG: No matching Client->Server cipher');
+    var err = new Error('Handshake failed: no matching client->server cipher');
+    err.level = 'handshake';
+    self.emit('error', err);
+    self.disconnect(DISCONNECT_REASON.KEY_EXCHANGE_FAILED);
+    return false;
+  }
+
+  if (self.server)
+    val = instate.decrypt.type = clientList[i];
+  else
+    val = outstate.encrypt.type = clientList[i];
+  debug('DEBUG: Client->Server Cipher: ' + val);
+
+  debug('DEBUG: (local) Server->Client ciphers: ' + algos.cipher);
+  debug('DEBUG: (remote) Server->Client ciphers: '
+        + (init.algorithms.sc.encrypt));
+  if (self.server) {
+    serverList = algos.cipher;
+    clientList = init.algorithms.sc.encrypt;
+  } else {
+    serverList = init.algorithms.sc.encrypt;
+    clientList = algos.cipher;
+  }
+  // Check for agreeable server->client cipher
+  for (i = 0, len = clientList.length;
+       i < len && serverList.indexOf(clientList[i]) === -1;
+       ++i);
+  if (i === len) {
+    // No suitable match found!
+    debug('DEBUG: No matching Server->Client cipher');
+    var err = new Error('Handshake failed: no matching server->client cipher');
+    err.level = 'handshake';
+    self.emit('error', err);
+    self.disconnect(DISCONNECT_REASON.KEY_EXCHANGE_FAILED);
+    return false;
+  }
+
+  if (self.server)
+    val = outstate.encrypt.type = clientList[i];
+  else
+    val = instate.decrypt.type = clientList[i];
+  debug('DEBUG: Server->Client Cipher: ' + val);
+
+  debug('DEBUG: (local) Client->Server HMAC algorithms: ' + algos.hmac);
+  debug('DEBUG: (remote) Client->Server HMAC algorithms: '
+        + init.algorithms.cs.mac);
+  if (self.server) {
+    serverList = algos.hmac;
+    clientList = init.algorithms.cs.mac;
+  } else {
+    serverList = init.algorithms.cs.mac;
+    clientList = algos.hmac;
+  }
+  // Check for agreeable client->server hmac algorithm
+  for (i = 0, len = clientList.length;
+       i < len && serverList.indexOf(clientList[i]) === -1;
+       ++i);
+  if (i === len) {
+    // No suitable match found!
+    debug('DEBUG: No matching Client->Server HMAC algorithm');
+    var err = new Error('Handshake failed: no matching client->server HMAC');
+    err.level = 'handshake';
+    self.emit('error', err);
+    self.disconnect(DISCONNECT_REASON.KEY_EXCHANGE_FAILED);
+    return false;
+  }
+
+  if (self.server)
+    val = instate.hmac.type = clientList[i];
+  else
+    val = outstate.hmac.type = clientList[i];
+  debug('DEBUG: Client->Server HMAC algorithm: ' + val);
+
+  debug('DEBUG: (local) Server->Client HMAC algorithms: ' + algos.hmac);
+  debug('DEBUG: (remote) Server->Client HMAC algorithms: '
+        + init.algorithms.sc.mac);
+  if (self.server) {
+    serverList = algos.hmac;
+    clientList = init.algorithms.sc.mac;
+  } else {
+    serverList = init.algorithms.sc.mac;
+    clientList = algos.hmac;
+  }
+  // Check for agreeable server->client hmac algorithm
+  for (i = 0, len = clientList.length;
+       i < len && serverList.indexOf(clientList[i]) === -1;
+       ++i);
+  if (i === len) {
+    // No suitable match found!
+    debug('DEBUG: No matching Server->Client HMAC algorithm');
+    var err = new Error('Handshake failed: no matching server->client HMAC');
+    err.level = 'handshake';
+    self.emit('error', err);
+    self.disconnect(DISCONNECT_REASON.KEY_EXCHANGE_FAILED);
+    return false;
+  }
+
+  if (self.server)
+    val = outstate.hmac.type = clientList[i];
+  else
+    val = instate.hmac.type = clientList[i];
+  debug('DEBUG: Server->Client HMAC algorithm: ' + val);
+
+  debug('DEBUG: (local) Client->Server compression algorithms: '
+        + algos.compress);
+  debug('DEBUG: (remote) Client->Server compression algorithms: '
+        + init.algorithms.cs.compress);
+  if (self.server) {
+    serverList = algos.compress;
+    clientList = init.algorithms.cs.compress;
+  } else {
+    serverList = init.algorithms.cs.compress;
+    clientList = algos.compress;
+  }
+  // Check for agreeable client->server compression algorithm
+  for (i = 0, len = clientList.length;
+       i < len && serverList.indexOf(clientList[i]) === -1;
+       ++i);
+  if (i === len) {
+    // No suitable match found!
+    debug('DEBUG: No matching Client->Server compression algorithm');
+    var err = new Error('Handshake failed: no matching client->server '
+                        + 'compression algorithm');
+    err.level = 'handshake';
+    self.emit('error', err);
+    self.disconnect(DISCONNECT_REASON.KEY_EXCHANGE_FAILED);
+    return false;
+  }
+
+  if (self.server)
+    val = instate.decompress.type = clientList[i];
+  else
+    val = outstate.compress.type = clientList[i];
+  debug('DEBUG: Client->Server compression algorithm: ' + val);
+
+  debug('DEBUG: (local) Server->Client compression algorithms: '
+        + algos.compress);
+  debug('DEBUG: (remote) Server->Client compression algorithms: '
+        + init.algorithms.sc.compress);
+  if (self.server) {
+    serverList = algos.compress;
+    clientList = init.algorithms.sc.compress;
+  } else {
+    serverList = init.algorithms.sc.compress;
+    clientList = algos.compress;
+  }
+  // Check for agreeable server->client compression algorithm
+  for (i = 0, len = clientList.length;
+       i < len && serverList.indexOf(clientList[i]) === -1;
+       ++i);
+  if (i === len) {
+    // No suitable match found!
+    debug('DEBUG: No matching Server->Client compression algorithm');
+    var err = new Error('Handshake failed: no matching server->client '
+                        + 'compression algorithm');
+    err.level = 'handshake';
+    self.emit('error', err);
+    self.disconnect(DISCONNECT_REASON.KEY_EXCHANGE_FAILED);
+    return false;
+  }
+
+  if (self.server)
+    val = outstate.compress.type = clientList[i];
+  else
+    val = instate.decompress.type = clientList[i];
+  debug('DEBUG: Server->Client compression algorithm: ' + val);
+
+  state.kex = new KeyExchange(kex_algorithm);
+  state.kex.generateKeys();
+  outstate.pubkey = state.kex.getPublicKey();
+
+  return true;
+}
+
+function onKEXDH_GEX_GROUP(self, prime, gen) {
+  var state = self._state;
+  var outstate = state.outgoing;
+
+  state.kex.setDHParams(prime, gen);
+  state.kex.generateKeys();
+  outstate.pubkey = state.kex.getPublicKey();
+
+  KEXDH_INIT(self);
+}
+
+function onKEXDH_INIT(self, e) { // Server
+  KEXDH_REPLY(self, e);
+}
+
+function onKEXDH_REPLY(self, info, verifiedHost) { // Client
+  var state = self._state;
+  var instate = state.incoming;
+  var outstate = state.outgoing;
+  var debug = self.debug;
+  var len;
+  var i;
+
+  if (verifiedHost === undefined) {
+    instate.expectedPacket = 'NEWKEYS';
+    outstate.sentNEWKEYS = false;
+
+    debug('DEBUG: Checking host key format');
+    // Ensure all host key formats agree
+    var hostkey_format = readString(info.hostkey, 0, 'ascii', self);
+    if (hostkey_format === false)
+      return false;
+    if (info.hostkey_format !== state.hostkeyFormat
+        || info.hostkey_format !== hostkey_format) {
+      // Expected and actual server host key format do not match!
+      debug('DEBUG: Host key format mismatch');
+      self.disconnect(DISCONNECT_REASON.KEY_EXCHANGE_FAILED);
+      self.reset();
+      var err = new Error('Handshake failed: host key format mismatch');
+      err.level = 'handshake';
+      self.emit('error', err);
+      return false;
+    }
+
+    debug('DEBUG: Checking signature format');
+    // Ensure signature formats agree
+    var sig_format = readString(info.sig, 0, 'ascii', self);
+    if (sig_format === false)
+      return false;
+    if (info.sig_format !== sig_format) {
+      debug('DEBUG: Signature format mismatch');
+      self.disconnect(DISCONNECT_REASON.KEY_EXCHANGE_FAILED);
+      self.reset();
+      var err = new Error('Handshake failed: signature format mismatch');
+      err.level = 'handshake';
+      self.emit('error', err);
+      return false;
+    }
+  }
+
+  // Verify the host fingerprint first if needed
+  if (outstate.status === OUT_INIT) {
+    if (verifiedHost === undefined) {
+      debug('DEBUG: Verifying host fingerprint');
+      var sync = true;
+      var emitted = self.emit('fingerprint', info.hostkey, function(permitted) {
+        // Prevent multiple calls to this callback
+        if (verifiedHost !== undefined)
+          return;
+        verifiedHost = !!permitted;
+        if (!sync) {
+          // Continue execution by re-entry
+          onKEXDH_REPLY(self, info, verifiedHost);
+        }
+      });
+      sync = false;
+      // Support async calling of verification callback
+      if (emitted && verifiedHost === undefined)
+        return;
+    }
+    if (verifiedHost === undefined)
+      debug('DEBUG: Host accepted by default (no verification)');
+    else if (verifiedHost === true)
+      debug('DEBUG: Host accepted (verified)');
+    else {
+      debug('DEBUG: Host denied via fingerprint verification');
+      self.disconnect(DISCONNECT_REASON.KEY_EXCHANGE_FAILED);
+      self.reset();
+      var err = new Error('Handshake failed: '
+                          + 'host fingerprint verification failed');
+      err.level = 'handshake';
+      self.emit('error', err);
+      return false;
+    }
+  }
+
+  info.pubkey = state.kex.convertPublicKey(info.pubkey);
+
+  info.secret = state.kex.computeSecret(info.pubkey);
+
+  if (info.secret instanceof Error) {
+    info.secret.message = 'Error while computing DH secret ('
+                          + state.kex.type + '): '
+                          + info.secret.message;
+    info.secret.level = 'handshake';
+    self.emit('error', info.secret);
+    self.disconnect(DISCONNECT_REASON.KEY_EXCHANGE_FAILED);
+    return false;
+  }
+
+  var hash = crypto.createHash(state.kex.hash);
+
+  var len_ident = Buffer.byteLength(self.config.ident);
+  var len_sident = Buffer.byteLength(instate.identRaw);
+  var len_init = outstate.kexinit.length;
+  var len_sinit = instate.kexinit.length;
+  var len_hostkey = info.hostkey.length;
+  var len_pubkey = outstate.pubkey.length;
+  var len_spubkey = info.pubkey.length;
+  var len_secret = info.secret.length;
+
+  var exchangeBufLen = len_ident
+                       + len_sident
+                       + len_init
+                       + len_sinit
+                       + len_hostkey
+                       + len_pubkey
+                       + len_spubkey
+                       + len_secret
+                       + (4 * 8); // Length fields for above values
+
+  // Group exchange-related
+  var len_gex_prime;
+  var len_gex_gen;
+  var gex_prime;
+  var gex_gen;
+  var dhParams = state.kex.getDHParams();
+  if (dhParams) {
+    gex_prime = dhParams.prime;
+    gex_gen = dhParams.generator;
+    len_gex_prime = gex_prime.length;
+    len_gex_gen = gex_gen.length;
+    exchangeBufLen += (4 * 3); // min, n, max values
+    exchangeBufLen += (4 * 2); // prime, generator length fields
+    exchangeBufLen += len_gex_prime;
+    exchangeBufLen += len_gex_gen;
+  }
+
+  var bp = 0;
+  var exchangeBuf = Buffer.allocUnsafe(exchangeBufLen);
+
+  writeUInt32BE(exchangeBuf, len_ident, bp);
+  bp += 4;
+  exchangeBuf.write(self.config.ident, bp, 'utf8'); // V_C
+  bp += len_ident;
+
+  writeUInt32BE(exchangeBuf, len_sident, bp);
+  bp += 4;
+  exchangeBuf.write(instate.identRaw, bp, 'utf8'); // V_S
+  bp += len_sident;
+
+  writeUInt32BE(exchangeBuf, len_init, bp);
+  bp += 4;
+  outstate.kexinit.copy(exchangeBuf, bp); // I_C
+  bp += len_init;
+  outstate.kexinit = undefined;
+
+  writeUInt32BE(exchangeBuf, len_sinit, bp);
+  bp += 4;
+  instate.kexinit.copy(exchangeBuf, bp); // I_S
+  bp += len_sinit;
+  instate.kexinit = undefined;
+
+  writeUInt32BE(exchangeBuf, len_hostkey, bp);
+  bp += 4;
+  info.hostkey.copy(exchangeBuf, bp); // K_S
+  bp += len_hostkey;
+
+  if (dhParams) {
+    KEXDH_GEX_REQ_PACKET.slice(1).copy(exchangeBuf, bp); // min, n, max
+    bp += (4 * 3); // Skip over bytes just copied
+
+    writeUInt32BE(exchangeBuf, len_gex_prime, bp);
+    bp += 4;
+    gex_prime.copy(exchangeBuf, bp); // p
+    bp += len_gex_prime;
+
+    writeUInt32BE(exchangeBuf, len_gex_gen, bp);
+    bp += 4;
+    gex_gen.copy(exchangeBuf, bp); // g
+    bp += len_gex_gen;
+  }
+
+  writeUInt32BE(exchangeBuf, len_pubkey, bp);
+  bp += 4;
+  outstate.pubkey.copy(exchangeBuf, bp); // e
+  bp += len_pubkey;
+
+  writeUInt32BE(exchangeBuf, len_spubkey, bp);
+  bp += 4;
+  info.pubkey.copy(exchangeBuf, bp); // f
+  bp += len_spubkey;
+
+  writeUInt32BE(exchangeBuf, len_secret, bp);
+  bp += 4;
+  info.secret.copy(exchangeBuf, bp); // K
+
+  outstate.exchangeHash = hash.update(exchangeBuf).digest(); // H
+
+  var rawsig = readString(info.sig, info.sig._pos, self); // s
+  if (rawsig === false
+      || !(rawsig = sigSSHToASN1(rawsig, info.sig_format, self))) {
+    return false;
+  }
+
+  var hostPubKey = parseDERKey(info.hostkey, info.sig_format);
+  if (hostPubKey instanceof Error)
+    return false;
+
+  debug('DEBUG: Verifying signature');
+
+  if (hostPubKey.verify(outstate.exchangeHash, rawsig) !== true) {
+    debug('DEBUG: Signature verification failed');
+    self.disconnect(DISCONNECT_REASON.KEY_EXCHANGE_FAILED);
+    self.reset();
+    var err = new Error('Handshake failed: signature verification failed');
+    err.level = 'handshake';
+    self.emit('error', err);
+    return false;
+  }
+
+  if (outstate.sessionId === undefined)
+    outstate.sessionId = outstate.exchangeHash;
+  outstate.kexsecret = info.secret;
+
+  debug('DEBUG: Outgoing: Writing NEWKEYS');
+  if (outstate.status === OUT_REKEYING)
+    send(self, NEWKEYS_PACKET, undefined, true);
+  else
+    send(self, NEWKEYS_PACKET);
+  outstate.sentNEWKEYS = true;
+
+  if (verifiedHost !== undefined && instate.expectedPacket === undefined) {
+    // We received NEWKEYS while we were waiting for the fingerprint
+    // verification callback to be called. In this case we have to re-execute
+    // onNEWKEYS to finish the handshake.
+    onNEWKEYS(self);
+  }
+}
+
+function onNEWKEYS(self) { // Client/Server
+  var state = self._state;
+  var outstate = state.outgoing;
+  var instate = state.incoming;
+
+  instate.expectedPacket = undefined;
+
+  if (!outstate.sentNEWKEYS)
+    return;
+
+  var len = outstate.kexsecret.length;
+
+  var outCipherInfo = outstate.encrypt.info = CIPHER_INFO[outstate.encrypt.type];
+  var p = 0;
+
+  var dhHashAlgo = state.kex.hash;
+
+  var secret = Buffer.allocUnsafe(4 + len);
+  var iv;
+  var key;
+
+  // Whenever the client sends a new authentication request, it is enqueued
+  // here.  Once the request is resolved (success, fail, or PK_OK),
+  // dequeue.  Whatever is at the front of the queue determines how we
+  // interpret packet type 60.
+  state.authsQueue = [];
+
+  writeUInt32BE(secret, len, p);
+  p += 4;
+  outstate.kexsecret.copy(secret, p);
+  outstate.kexsecret = undefined;
+  if (!outCipherInfo.stream) {
+    iv = crypto.createHash(dhHashAlgo)
+               .update(secret)
+               .update(outstate.exchangeHash)
+               .update(!self.server ? 'A' : 'B', 'ascii')
+               .update(outstate.sessionId)
+               .digest();
+    while (iv.length < outCipherInfo.ivLen) {
+      iv = Buffer.concat([iv,
+                          crypto.createHash(dhHashAlgo)
+                                .update(secret)
+                                .update(outstate.exchangeHash)
+                                .update(iv)
+                                .digest()]);
+    }
+    if (iv.length > outCipherInfo.ivLen)
+      iv = iv.slice(0, outCipherInfo.ivLen);
+  } else {
+    iv = EMPTY_BUFFER; // Streaming ciphers don't use an IV upfront
+  }
+
+  key = crypto.createHash(dhHashAlgo)
+              .update(secret)
+              .update(outstate.exchangeHash)
+              .update(!self.server ? 'C' : 'D', 'ascii')
+              .update(outstate.sessionId)
+              .digest();
+  while (key.length < outCipherInfo.keyLen) {
+    key = Buffer.concat([key,
+                         crypto.createHash(dhHashAlgo)
+                               .update(secret)
+                               .update(outstate.exchangeHash)
+                               .update(key)
+                               .digest()]);
+  }
+  if (key.length > outCipherInfo.keyLen)
+    key = key.slice(0, outCipherInfo.keyLen);
+
+  if (outCipherInfo.authLen > 0) {
+    outstate.encrypt.iv = iv;
+    outstate.encrypt.key = key;
+    outstate.encrypt.instance = true;
+  } else {
+    var cipherAlgo = SSH_TO_OPENSSL[outstate.encrypt.type];
+    outstate.encrypt.instance = crypto.createCipheriv(cipherAlgo, key, iv);
+    outstate.encrypt.instance.setAutoPadding(false);
+  }
+
+  // And now for decrypting ...
+
+  var inCipherInfo = instate.decrypt.info = CIPHER_INFO[instate.decrypt.type];
+  if (!inCipherInfo.stream) {
+    iv = crypto.createHash(dhHashAlgo)
+               .update(secret)
+               .update(outstate.exchangeHash)
+               .update(!self.server ? 'B' : 'A', 'ascii')
+               .update(outstate.sessionId)
+               .digest();
+    while (iv.length < inCipherInfo.ivLen) {
+      iv = Buffer.concat([iv,
+                          crypto.createHash(dhHashAlgo)
+                                .update(secret)
+                                .update(outstate.exchangeHash)
+                                .update(iv)
+                                .digest()]);
+    }
+    if (iv.length > inCipherInfo.ivLen)
+      iv = iv.slice(0, inCipherInfo.ivLen);
+  } else {
+    iv = EMPTY_BUFFER; // Streaming ciphers don't use an IV upfront
+  }
+
+  // Create a reusable buffer for decryption purposes
+  instate.decrypt.buf = Buffer.allocUnsafe(inCipherInfo.blockLen);
+
+  key = crypto.createHash(dhHashAlgo)
+              .update(secret)
+              .update(outstate.exchangeHash)
+              .update(!self.server ? 'D' : 'C', 'ascii')
+              .update(outstate.sessionId)
+              .digest();
+  while (key.length < inCipherInfo.keyLen) {
+    key = Buffer.concat([key,
+                         crypto.createHash(dhHashAlgo)
+                               .update(secret)
+                               .update(outstate.exchangeHash)
+                               .update(key)
+                               .digest()]);
+  }
+  if (key.length > inCipherInfo.keyLen)
+    key = key.slice(0, inCipherInfo.keyLen);
+
+  var decipherAlgo = SSH_TO_OPENSSL[instate.decrypt.type];
+  instate.decrypt.instance = crypto.createDecipheriv(decipherAlgo, key, iv);
+  instate.decrypt.instance.setAutoPadding(false);
+  instate.decrypt.iv = iv;
+  instate.decrypt.key = key;
+
+  var emptyBuf;
+  if (outCipherInfo.discardLen > 0) {
+    emptyBuf = Buffer.alloc(outCipherInfo.discardLen);
+    outstate.encrypt.instance.update(emptyBuf);
+  }
+  if (inCipherInfo.discardLen > 0) {
+    if (!emptyBuf || emptyBuf.length !== inCipherInfo.discardLen)
+      emptyBuf = Buffer.alloc(outCipherInfo.discardLen);
+    instate.decrypt.instance.update(emptyBuf);
+  }
+
+  var outHMACInfo = outstate.hmac.info = HMAC_INFO[outstate.hmac.type];
+  var inHMACInfo = instate.hmac.info = HMAC_INFO[instate.hmac.type];
+
+  if (outCipherInfo.authLen === 0) {
+    key = crypto.createHash(dhHashAlgo)
+                .update(secret)
+                .update(outstate.exchangeHash)
+                .update(!self.server ? 'E' : 'F', 'ascii')
+                .update(outstate.sessionId)
+                .digest();
+    while (key.length < outHMACInfo.len) {
+      key = Buffer.concat([key,
+                           crypto.createHash(dhHashAlgo)
+                                 .update(secret)
+                                 .update(outstate.exchangeHash)
+                                 .update(key)
+                                 .digest()]);
+    }
+    if (key.length > outHMACInfo.len)
+      key = key.slice(0, outHMACInfo.len);
+    outstate.hmac.key = key;
+  } else {
+    outstate.hmac.key = undefined;
+  }
+  if (inCipherInfo.authLen === 0) {
+    key = crypto.createHash(dhHashAlgo)
+                .update(secret)
+                .update(outstate.exchangeHash)
+                .update(!self.server ? 'F' : 'E', 'ascii')
+                .update(outstate.sessionId)
+                .digest();
+    while (key.length < inHMACInfo.len) {
+      key = Buffer.concat([key,
+                           crypto.createHash(dhHashAlgo)
+                                 .update(secret)
+                                 .update(outstate.exchangeHash)
+                                 .update(key)
+                                 .digest()]);
+    }
+    if (key.length > inHMACInfo.len)
+      key = key.slice(0, inHMACInfo.len);
+    instate.hmac.key = key;
+  } else {
+    instate.hmac.key = undefined;
+  }
+
+  // Create a reusable buffer for message verification purposes
+  var inHMACSize = inCipherInfo.authLen || instate.hmac.info.actualLen;
+  if (!instate.hmac.buf
+      || instate.hmac.buf.length !== inHMACSize) {
+    instate.hmac.buf = Buffer.allocUnsafe(inHMACSize);
+  }
+
+  outstate.exchangeHash = undefined;
+
+  if (outstate.compress.type === 'zlib') {
+    outstate.compress.instance = zlib.createDeflate(ZLIB_OPTS);
+    outstate.compress.queue = [];
+  } else if (outstate.compress.type === 'none') {
+    outstate.compress.instance = false;
+    outstate.compress.queue = null;
+  }
+  if (instate.decompress.type === 'zlib')
+    instate.decompress.instance = zlib.createInflate(ZLIB_OPTS);
+  else if (instate.decompress.type === 'none')
+    instate.decompress.instance = false;
+
+  self.bytesSent = self.bytesReceived = 0;
+
+  if (outstate.status === OUT_REKEYING) {
+    outstate.status = OUT_READY;
+
+    // Empty our outbound buffer of any data we tried to send during the
+    // re-keying process
+    var queue = outstate.rekeyQueue;
+    var qlen = queue.length;
+    var q = 0;
+
+    outstate.rekeyQueue = [];
+
+    for (; q < qlen; ++q) {
+      if (Buffer.isBuffer(queue[q]))
+        send(self, queue[q]);
+      else
+        send(self, queue[q][0], queue[q][1]);
+    }
+
+    // Now empty our inbound buffer of any non-transport layer packets we
+    // received during the re-keying process
+    queue = instate.rekeyQueue;
+    qlen = queue.length;
+    q = 0;
+
+    instate.rekeyQueue = [];
+
+    var curSeqno = instate.seqno;
+    for (; q < qlen; ++q) {
+      instate.seqno = queue[q][0];
+      instate.payload = queue[q][1];
+      if (parsePacket(self) === false)
+        return;
+
+      if (instate.status === IN_INIT) {
+        // We were reset due to some error/disagreement ?
+        return;
+      }
+    }
+    instate.seqno = curSeqno;
+  } else {
+    outstate.status = OUT_READY;
+    if (instate.status === IN_PACKET) {
+      // Explicitly update incoming packet parser status in order to get the
+      // correct decipher, hmac, etc. states.
+
+      // We only get here if the host fingerprint callback was called
+      // asynchronously and the incoming packet parser is still expecting an
+      // unencrypted packet, etc.
+
+      self.debug('DEBUG: Parser: IN_PACKETBEFORE (update) (expecting '
+                 + inCipherInfo.blockLen + ')');
+      // Wait for the right number of bytes so we can determine the incoming
+      // packet length
+      expectData(self,
+                 EXP_TYPE_BYTES,
+                 inCipherInfo.blockLen,
+                 instate.decrypt.buf);
+    }
+    self.emit('ready');
+  }
+}
+
+function getPacketType(self, pktType) {
+  var kex = self._state.kex;
+  if (kex) {
+    // Disambiguate
+    switch (pktType) {
+      case 30:
+        return kex.pktInit;
+      case 31:
+        switch (kex.type) {
+          case 'group':
+            return 'KEXDH_REPLY';
+          case 'groupex':
+            return 'KEXDH_GEX_GROUP';
+          default:
+            return 'KEXECDH_REPLY';
+        }
+        break;
+      case 33:
+        if (kex.type === 'groupex')
+          return 'KEXDH_GEX_REPLY';
+    }
+  }
+  return MESSAGE[pktType];
+}
+
+function parsePacket(self, callback) {
+  var instate = self._state.incoming;
+  var outstate = self._state.outgoing;
+  var payload = instate.payload;
+  var seqno = instate.seqno;
+  var serviceName;
+  var lang;
+  var message;
+  var info;
+  var chan;
+  var data;
+  var srcIP;
+  var srcPort;
+  var sender;
+  var window;
+  var packetSize;
+  var recipient;
+  var description;
+  var socketPath;
+
+  if (++instate.seqno > MAX_SEQNO)
+    instate.seqno = 0;
+
+  if (instate.ignoreNext) {
+    self.debug('DEBUG: Parser: Packet ignored');
+    instate.ignoreNext = false;
+    return;
+  }
+
+  var type = payload[0];
+  if (type === undefined)
+    return false;
+
+  // If we receive a packet during handshake that is not the expected packet
+  // and it is not one of: DISCONNECT, IGNORE, UNIMPLEMENTED, or DEBUG, then we
+  // close the stream
+  if (outstate.status !== OUT_READY
+      && getPacketType(self, type) !== instate.expectedPacket
+      && type < 1
+      && type > 4) {
+    self.debug('DEBUG: Parser: IN_PACKETDATAAFTER, expected: '
+               + instate.expectedPacket
+               + ' but got: '
+               + getPacketType(self, type));
+    // XXX: Potential issue where the module user decides to initiate a rekey
+    // via KEXINIT() (which sets `expectedPacket`) after receiving a packet
+    // and there is still another packet already waiting to be parsed at the
+    // time the KEXINIT is written. this will cause an unexpected disconnect...
+    self.disconnect(DISCONNECT_REASON.PROTOCOL_ERROR);
+    var err = new Error('Received unexpected packet');
+    err.level = 'protocol';
+    self.emit('error', err);
+    return false;
+  }
+
+  if (type === MESSAGE.CHANNEL_DATA) {
+    /*
+      byte      SSH_MSG_CHANNEL_DATA
+      uint32    recipient channel
+      string    data
+    */
+    chan = readInt(payload, 1, self, callback);
+    if (chan === false)
+      return false;
+    // TODO: MAX_CHAN_DATA_LEN here should really be dependent upon the
+    //       channel's packet size. The ssh2 module uses 32KB, so we'll hard
+    //       code this for now ...
+    data = readString(payload, 5, self, callback, 32768);
+    if (data === false)
+      return false;
+    self.debug('DEBUG: Parser: IN_PACKETDATAAFTER, packet: CHANNEL_DATA ('
+               + chan
+               + ')');
+    self.emit('CHANNEL_DATA:' + chan, data);
+  } else if (type === MESSAGE.CHANNEL_EXTENDED_DATA) {
+    /*
+      byte      SSH_MSG_CHANNEL_EXTENDED_DATA
+      uint32    recipient channel
+      uint32    data_type_code
+      string    data
+    */
+    chan = readInt(payload, 1, self, callback);
+    if (chan === false)
+      return false;
+    var dataType = readInt(payload, 5, self, callback);
+    if (dataType === false)
+      return false;
+    data = readString(payload, 9, self, callback);
+    if (data === false)
+      return false;
+    self.debug('DEBUG: Parser: IN_PACKETDATAAFTER, packet: '
+               + 'CHANNEL_EXTENDED_DATA ('
+               + chan
+               + ')');
+    self.emit('CHANNEL_EXTENDED_DATA:' + chan, dataType, data);
+  } else if (type === MESSAGE.CHANNEL_WINDOW_ADJUST) {
+    /*
+      byte      SSH_MSG_CHANNEL_WINDOW_ADJUST
+      uint32    recipient channel
+      uint32    bytes to add
+    */
+    chan = readInt(payload, 1, self, callback);
+    if (chan === false)
+      return false;
+    var bytesToAdd = readInt(payload, 5, self, callback);
+    if (bytesToAdd === false)
+      return false;
+    self.debug('DEBUG: Parser: IN_PACKETDATAAFTER, packet: '
+               + 'CHANNEL_WINDOW_ADJUST ('
+               + chan
+               + ', '
+               + bytesToAdd
+               + ')');
+    self.emit('CHANNEL_WINDOW_ADJUST:' + chan, bytesToAdd);
+  } else if (type === MESSAGE.CHANNEL_SUCCESS) {
+    /*
+      byte      SSH_MSG_CHANNEL_SUCCESS
+      uint32    recipient channel
+    */
+    chan = readInt(payload, 1, self, callback);
+    if (chan === false)
+      return false;
+    self.debug('DEBUG: Parser: IN_PACKETDATAAFTER, packet: CHANNEL_SUCCESS ('
+               + chan
+               + ')');
+    self.emit('CHANNEL_SUCCESS:' + chan);
+  } else if (type === MESSAGE.CHANNEL_FAILURE) {
+    /*
+      byte      SSH_MSG_CHANNEL_FAILURE
+      uint32    recipient channel
+    */
+    chan = readInt(payload, 1, self, callback);
+    if (chan === false)
+      return false;
+    self.debug('DEBUG: Parser: IN_PACKETDATAAFTER, packet: CHANNEL_FAILURE ('
+               + chan
+               + ')');
+    self.emit('CHANNEL_FAILURE:' + chan);
+  } else if (type === MESSAGE.CHANNEL_EOF) {
+    /*
+      byte      SSH_MSG_CHANNEL_EOF
+      uint32    recipient channel
+    */
+    chan = readInt(payload, 1, self, callback);
+    if (chan === false)
+      return false;
+    self.debug('DEBUG: Parser: IN_PACKETDATAAFTER, packet: CHANNEL_EOF ('
+               + chan
+               + ')');
+    self.emit('CHANNEL_EOF:' + chan);
+  } else if (type === MESSAGE.CHANNEL_OPEN) {
+    /*
+      byte      SSH_MSG_CHANNEL_OPEN
+      string    channel type in US-ASCII only
+      uint32    sender channel
+      uint32    initial window size
+      uint32    maximum packet size
+      ....      channel type specific data follows
+    */
+    var chanType = readString(payload, 1, 'ascii', self, callback);
+    if (chanType === false)
+      return false;
+    sender = readInt(payload, payload._pos, self, callback);
+    if (sender === false)
+      return false;
+    window = readInt(payload, payload._pos += 4, self, callback);
+    if (window === false)
+      return false;
+    packetSize = readInt(payload, payload._pos += 4, self, callback);
+    if (packetSize === false)
+      return false;
+    var channel;
+
+    self.debug('DEBUG: Parser: IN_PACKETDATAAFTER, packet: CHANNEL_OPEN ('
+               + sender
+               + ', '
+               + chanType
+               + ')');
+
+    if (chanType === 'forwarded-tcpip' // Server->Client
+        || chanType === 'direct-tcpip') { // Client->Server
+      /*
+        string    address that was connected / host to connect
+        uint32    port that was connected / port to connect
+        string    originator IP address
+        uint32    originator port
+      */
+      var destIP = readString(payload,
+                              payload._pos += 4,
+                              'ascii',
+                              self,
+                              callback);
+      if (destIP === false)
+        return false;
+      var destPort = readInt(payload, payload._pos, self, callback);
+      if (destPort === false)
+        return false;
+      srcIP = readString(payload, payload._pos += 4, 'ascii', self, callback);
+      if (srcIP === false)
+        return false;
+      srcPort = readInt(payload, payload._pos, self, callback);
+      if (srcPort === false)
+        return false;
+      channel = {
+        type: chanType,
+        sender: sender,
+        window: window,
+        packetSize: packetSize,
+        data: {
+          destIP: destIP,
+          destPort: destPort,
+          srcIP: srcIP,
+          srcPort: srcPort
+        }
+      };
+    } else if (// Server->Client
+               chanType === 'forwarded-streamlocal@openssh.com'
+               // Client->Server
+               || chanType === 'direct-streamlocal@openssh.com') {
+      /*
+        string    socket path
+        string    reserved for future use
+      */
+      socketPath = readString(payload,
+                              payload._pos += 4,
+                              'utf8',
+                              self,
+                              callback);
+      if (socketPath === false)
+        return false;
+      channel = {
+        type: chanType,
+        sender: sender,
+        window: window,
+        packetSize: packetSize,
+        data: {
+          socketPath: socketPath,
+        }
+      };
+    } else if (chanType === 'x11') { // Server->Client
+      /*
+        string    originator address (e.g., "192.168.7.38")
+        uint32    originator port
+      */
+      srcIP = readString(payload, payload._pos += 4, 'ascii', self, callback);
+      if (srcIP === false)
+        return false;
+      srcPort = readInt(payload, payload._pos, self, callback);
+      if (srcPort === false)
+        return false;
+      channel = {
+        type: chanType,
+        sender: sender,
+        window: window,
+        packetSize: packetSize,
+        data: {
+          srcIP: srcIP,
+          srcPort: srcPort
+        }
+      };
+    } else {
+      // 'session' (Client->Server), 'auth-agent@openssh.com' (Server->Client)
+      channel = {
+        type: chanType,
+        sender: sender,
+        window: window,
+        packetSize: packetSize,
+        data: {}
+      };
+    }
+
+    self.emit('CHANNEL_OPEN', channel);
+  } else if (type === MESSAGE.CHANNEL_OPEN_CONFIRMATION) {
+    /*
+      byte      SSH_MSG_CHANNEL_OPEN_CONFIRMATION
+      uint32    recipient channel
+      uint32    sender channel
+      uint32    initial window size
+      uint32    maximum packet size
+      ....      channel type specific data follows
+    */
+    // "The 'recipient channel' is the channel number given in the
+    // original open request, and 'sender channel' is the channel number
+    // allocated by the other side."
+    recipient = readInt(payload, 1, self, callback);
+    if (recipient === false)
+      return false;
+    sender = readInt(payload, 5, self, callback);
+    if (sender === false)
+      return false;
+    window = readInt(payload, 9, self, callback);
+    if (window === false)
+      return false;
+    packetSize = readInt(payload, 13, self, callback);
+    if (packetSize === false)
+      return false;
+
+    info = {
+      recipient: recipient,
+      sender: sender,
+      window: window,
+      packetSize: packetSize
+    };
+
+    if (payload.length > 17)
+      info.data = payload.slice(17);
+
+    self.emit('CHANNEL_OPEN_CONFIRMATION:' + info.recipient, info);
+  } else if (type === MESSAGE.CHANNEL_OPEN_FAILURE) {
+    /*
+      byte      SSH_MSG_CHANNEL_OPEN_FAILURE
+      uint32    recipient channel
+      uint32    reason code
+      string    description in ISO-10646 UTF-8 encoding
+      string    language tag
+    */
+    recipient = readInt(payload, 1, self, callback);
+    if (recipient === false)
+      return false;
+    var reasonCode = readInt(payload, 5, self, callback);
+    if (reasonCode === false)
+      return false;
+    description = readString(payload, 9, 'utf8', self, callback);
+    if (description === false)
+      return false;
+    lang = readString(payload, payload._pos, 'utf8', self, callback);
+    if (lang === false)
+      return false;
+    payload._pos = 9;
+    info = {
+      recipient: recipient,
+      reasonCode: reasonCode,
+      reason: CHANNEL_OPEN_FAILURE[reasonCode],
+      description: description,
+      lang: lang
+    };
+
+    self.emit('CHANNEL_OPEN_FAILURE:' + info.recipient, info);
+  } else if (type === MESSAGE.CHANNEL_CLOSE) {
+    /*
+      byte      SSH_MSG_CHANNEL_CLOSE
+      uint32    recipient channel
+    */
+    chan = readInt(payload, 1, self, callback);
+    if (chan === false)
+      return false;
+    self.debug('DEBUG: Parser: IN_PACKETDATAAFTER, packet: CHANNEL_CLOSE ('
+               + chan
+               + ')');
+    self.emit('CHANNEL_CLOSE:' + chan);
+  } else if (type === MESSAGE.IGNORE) {
+    /*
+      byte      SSH_MSG_IGNORE
+      string    data
+    */
+  } else if (type === MESSAGE.DISCONNECT) {
+    /*
+      byte      SSH_MSG_DISCONNECT
+      uint32    reason code
+      string    description in ISO-10646 UTF-8 encoding
+      string    language tag
+    */
+    var reason = readInt(payload, 1, self, callback);
+    if (reason === false)
+      return false;
+    var reasonText = DISCONNECT_REASON[reason];
+    description = readString(payload, 5, 'utf8', self, callback);
+    if (description === false)
+      return false;
+
+    if (payload._pos < payload.length)
+      lang = readString(payload, payload._pos, 'ascii', self, callback);
+
+    self.debug('DEBUG: Parser: IN_PACKETDATAAFTER, packet: DISCONNECT ('
+               + reasonText
+               + ')');
+
+    self.emit('DISCONNECT', reasonText, reason, description, lang);
+  } else if (type === MESSAGE.DEBUG) {
+    /*
+      byte      SSH_MSG_DEBUG
+      boolean   always_display
+      string    message in ISO-10646 UTF-8 encoding
+      string    language tag
+    */
+    message = readString(payload, 2, 'utf8', self, callback);
+    if (message === false)
+      return false;
+    lang = readString(payload, payload._pos, 'ascii', self, callback);
+    if (lang === false)
+      return false;
+
+    self.emit('DEBUG', message, lang);
+  } else if (type === MESSAGE.NEWKEYS) {
+    /*
+      byte      SSH_MSG_NEW_KEYS
+    */
+    self.emit('NEWKEYS');
+  } else if (type === MESSAGE.SERVICE_REQUEST) {
+    /*
+      byte      SSH_MSG_SERVICE_REQUEST
+      string    service name
+    */
+    serviceName = readString(payload, 1, 'ascii', self, callback);
+    if (serviceName === false)
+      return false;
+
+    self.emit('SERVICE_REQUEST', serviceName);
+  } else if (type === MESSAGE.SERVICE_ACCEPT) {
+    /*
+      byte      SSH_MSG_SERVICE_ACCEPT
+      string    service name
+    */
+    serviceName = readString(payload, 1, 'ascii', self, callback);
+    if (serviceName === false)
+      return false;
+
+    self.emit('SERVICE_ACCEPT', serviceName);
+  } else if (type === MESSAGE.USERAUTH_REQUEST) {
+    /*
+      byte      SSH_MSG_USERAUTH_REQUEST
+      string    user name in ISO-10646 UTF-8 encoding [RFC3629]
+      string    service name in US-ASCII
+      string    method name in US-ASCII
+      ....      method specific fields
+    */
+    var username = readString(payload, 1, 'utf8', self, callback);
+    if (username === false)
+      return false;
+    var svcName = readString(payload, payload._pos, 'ascii', self, callback);
+    if (svcName === false)
+      return false;
+    var method = readString(payload, payload._pos, 'ascii', self, callback);
+    if (method === false)
+      return false;
+
+    var methodData;
+    var methodDesc;
+
+    if (method === 'password') {
+      methodData = readString(payload,
+                              payload._pos + 1,
+                              'utf8',
+                              self,
+                              callback);
+      if (methodData === false)
+        return false;
+    } else if (method === 'publickey' || method === 'hostbased') {
+      var pkSigned;
+      var keyAlgo;
+      var key;
+      var signature;
+      var blob;
+      var hostname;
+      var userlocal;
+      if (method === 'publickey') {
+        pkSigned = payload[payload._pos++];
+        if (pkSigned === undefined)
+          return false;
+        pkSigned = (pkSigned !== 0);
+      }
+      keyAlgo = readString(payload, payload._pos, 'ascii', self, callback);
+      if (keyAlgo === false)
+        return false;
+      key = readString(payload, payload._pos, self, callback);
+      if (key === false)
+        return false;
+
+      if (pkSigned || method === 'hostbased') {
+        if (method === 'hostbased') {
+          hostname = readString(payload, payload._pos, 'ascii', self, callback);
+          if (hostname === false)
+            return false;
+          userlocal = readString(payload, payload._pos, 'utf8', self, callback);
+          if (userlocal === false)
+            return false;
+        }
+
+        var blobEnd = payload._pos;
+        signature = readString(payload, blobEnd, self, callback);
+        if (signature === false)
+          return false;
+
+        if (signature.length > (4 + keyAlgo.length + 4)
+            && signature.toString('ascii', 4, 4 + keyAlgo.length) === keyAlgo) {
+          // Skip algoLen + algo + sigLen
+          signature = signature.slice(4 + keyAlgo.length + 4);
+        }
+
+        signature = sigSSHToASN1(signature, keyAlgo, self, callback);
+        if (signature === false)
+          return false;
+
+        blob = Buffer.allocUnsafe(4 + outstate.sessionId.length + blobEnd);
+        writeUInt32BE(blob, outstate.sessionId.length, 0);
+        outstate.sessionId.copy(blob, 4);
+        payload.copy(blob, 4 + outstate.sessionId.length, 0, blobEnd);
+      } else {
+        methodDesc = 'publickey -- check';
+      }
+
+      methodData = {
+        keyAlgo: keyAlgo,
+        key: key,
+        signature: signature,
+        blob: blob,
+        localHostname: hostname,
+        localUsername: userlocal
+      };
+    } else if (method === 'keyboard-interactive') {
+      // Skip language, it's deprecated
+      var skipLen = readInt(payload, payload._pos, self, callback);
+      if (skipLen === false)
+        return false;
+      methodData = readString(payload,
+                              payload._pos + 4 + skipLen,
+                              'utf8',
+                              self,
+                              callback);
+      if (methodData === false)
+        return false;
+    } else if (method !== 'none')
+      methodData = payload.slice(payload._pos);
+
+    if (methodDesc === undefined)
+      methodDesc = method;
+
+    self.debug('DEBUG: Parser: IN_PACKETDATAAFTER, packet: USERAUTH_REQUEST ('
+               + methodDesc
+               + ')');
+
+    self._state.authsQueue.push(method);
+    self.emit('USERAUTH_REQUEST', username, svcName, method, methodData);
+  } else if (type === MESSAGE.USERAUTH_SUCCESS) {
+    /*
+      byte      SSH_MSG_USERAUTH_SUCCESS
+    */
+    if (outstate.compress.type === 'zlib@openssh.com') {
+      outstate.compress.instance = zlib.createDeflate(ZLIB_OPTS);
+      outstate.compress.queue = [];
+    }
+    if (instate.decompress.type === 'zlib@openssh.com')
+      instate.decompress.instance = zlib.createInflate(ZLIB_OPTS);
+
+    self._state.authsQueue.shift();
+
+    self.emit('USERAUTH_SUCCESS');
+  } else if (type === MESSAGE.USERAUTH_FAILURE) {
+    /*
+      byte      SSH_MSG_USERAUTH_FAILURE
+      name-list    authentications that can continue
+      boolean      partial success
+    */
+    var auths = readString(payload, 1, 'ascii', self, callback);
+    if (auths === false)
+      return false;
+    var partSuccess = payload[payload._pos];
+    if (partSuccess === undefined)
+      return false;
+
+    partSuccess = (partSuccess !== 0);
+    auths = auths.split(',');
+
+    self._state.authsQueue.shift();
+    self.emit('USERAUTH_FAILURE', auths, partSuccess);
+  } else if (type === MESSAGE.USERAUTH_BANNER) {
+    /*
+      byte      SSH_MSG_USERAUTH_BANNER
+      string    message in ISO-10646 UTF-8 encoding
+      string    language tag
+    */
+    message = readString(payload, 1, 'utf8', self, callback);
+    if (message === false)
+      return false;
+    lang = readString(payload, payload._pos, 'utf8', self, callback);
+    if (lang === false)
+      return false;
+
+    self.emit('USERAUTH_BANNER', message, lang);
+  } else if (type === MESSAGE.GLOBAL_REQUEST) {
+    /*
+      byte      SSH_MSG_GLOBAL_REQUEST
+      string    request name in US-ASCII only
+      boolean   want reply
+      ....      request-specific data follows
+    */
+    var request = readString(payload, 1, 'ascii', self, callback);
+    if (request === false) {
+      self.debug('DEBUG: Parser: IN_PACKETDATAAFTER, packet: GLOBAL_REQUEST');
+      return false;
+    }
+    self.debug('DEBUG: Parser: IN_PACKETDATAAFTER, packet: GLOBAL_REQUEST ('
+               + request
+               + ')');
+
+    var wantReply = payload[payload._pos++];
+    if (wantReply === undefined)
+      return false;
+    wantReply = (wantReply !== 0);
+
+    var reqData;
+    if (request === 'tcpip-forward' || request === 'cancel-tcpip-forward') {
+      var bindAddr = readString(payload, payload._pos, 'ascii', self, callback);
+      if (bindAddr === false)
+        return false;
+      var bindPort = readInt(payload, payload._pos, self, callback);
+      if (bindPort === false)
+        return false;
+      reqData = {
+        bindAddr: bindAddr,
+        bindPort: bindPort
+      };
+    } else if (request === 'streamlocal-forward@openssh.com'
+               || request === 'cancel-streamlocal-forward@openssh.com') {
+      socketPath = readString(payload, payload._pos, 'utf8', self, callback);
+      if (socketPath === false)
+        return false;
+      reqData = {
+        socketPath: socketPath
+      };
+    } else if (request === 'no-more-sessions@openssh.com') {
+      // No data
+    } else {
+      reqData = payload.slice(payload._pos);
+    }
+
+    self.emit('GLOBAL_REQUEST', request, wantReply, reqData);
+  } else if (type === MESSAGE.REQUEST_SUCCESS) {
+    /*
+      byte      SSH_MSG_REQUEST_SUCCESS
+      ....      response specific data
+    */
+    if (payload.length > 1)
+      self.emit('REQUEST_SUCCESS', payload.slice(1));
+    else
+      self.emit('REQUEST_SUCCESS');
+  } else if (type === MESSAGE.REQUEST_FAILURE) {
+    /*
+      byte      SSH_MSG_REQUEST_FAILURE
+    */
+    self.emit('REQUEST_FAILURE');
+  } else if (type === MESSAGE.UNIMPLEMENTED) {
+    /*
+      byte      SSH_MSG_UNIMPLEMENTED
+      uint32    packet sequence number of rejected message
+    */
+    // TODO
+  } else if (type === MESSAGE.KEXINIT)
+    return parse_KEXINIT(self, callback);
+  else if (type === MESSAGE.CHANNEL_REQUEST)
+    return parse_CHANNEL_REQUEST(self, callback);
+  else if (type >= 30 && type <= 49) // Key exchange method-specific messages
+    return parse_KEX(self, type, callback);
+  else if (type >= 60 && type <= 70) // User auth context-specific messages
+    return parse_USERAUTH(self, type, callback);
+  else {
+    // Unknown packet type
+    var unimpl = Buffer.allocUnsafe(1 + 4);
+    unimpl[0] = MESSAGE.UNIMPLEMENTED;
+    writeUInt32BE(unimpl, seqno, 1);
+    send(self, unimpl);
+  }
+}
+
+function parse_KEXINIT(self, callback) {
+  var instate = self._state.incoming;
+  var payload = instate.payload;
+
+  /*
+    byte         SSH_MSG_KEXINIT
+    byte[16]     cookie (random bytes)
+    name-list    kex_algorithms
+    name-list    server_host_key_algorithms
+    name-list    encryption_algorithms_client_to_server
+    name-list    encryption_algorithms_server_to_client
+    name-list    mac_algorithms_client_to_server
+    name-list    mac_algorithms_server_to_client
+    name-list    compression_algorithms_client_to_server
+    name-list    compression_algorithms_server_to_client
+    name-list    languages_client_to_server
+    name-list    languages_server_to_client
+    boolean      first_kex_packet_follows
+    uint32       0 (reserved for future extension)
+  */
+  var init = {
+    algorithms: {
+      kex: undefined,
+      srvHostKey: undefined,
+      cs: {
+        encrypt: undefined,
+        mac: undefined,
+        compress: undefined
+      },
+      sc: {
+        encrypt: undefined,
+        mac: undefined,
+        compress: undefined
+      }
+    },
+    languages: {
+      cs: undefined,
+      sc: undefined
+    }
+  };
+  var val;
+
+  val = readList(payload, 17, self, callback);
+  if (val === false)
+    return false;
+  init.algorithms.kex = val;
+  val = readList(payload, payload._pos, self, callback);
+  if (val === false)
+    return false;
+  init.algorithms.srvHostKey = val;
+  val = readList(payload, payload._pos, self, callback);
+  if (val === false)
+    return false;
+  init.algorithms.cs.encrypt = val;
+  val = readList(payload, payload._pos, self, callback);
+  if (val === false)
+    return false;
+  init.algorithms.sc.encrypt = val;
+  val = readList(payload, payload._pos, self, callback);
+  if (val === false)
+    return false;
+  init.algorithms.cs.mac = val;
+  val = readList(payload, payload._pos, self, callback);
+  if (val === false)
+    return false;
+  init.algorithms.sc.mac = val;
+  val = readList(payload, payload._pos, self, callback);
+  if (val === false)
+    return false;
+  init.algorithms.cs.compress = val;
+  val = readList(payload, payload._pos, self, callback);
+  if (val === false)
+    return false;
+  init.algorithms.sc.compress = val;
+  val = readList(payload, payload._pos, self, callback);
+  if (val === false)
+    return false;
+  init.languages.cs = val;
+  val = readList(payload, payload._pos, self, callback);
+  if (val === false)
+    return false;
+  init.languages.sc = val;
+
+  var firstFollows = (payload._pos < payload.length
+                      && payload[payload._pos] === 1);
+
+  instate.kexinit = payload;
+
+  self.emit('KEXINIT', init, firstFollows);
+}
+
+function parse_KEX(self, type, callback) {
+  var state = self._state;
+  var instate = state.incoming;
+  var payload = instate.payload;
+
+  if (state.outgoing.status === OUT_READY
+      || getPacketType(self, type) !== instate.expectedPacket) {
+    self.debug('DEBUG: Parser: IN_PACKETDATAAFTER, expected: '
+               + instate.expectedPacket
+               + ' but got: '
+               + getPacketType(self, type));
+    self.disconnect(DISCONNECT_REASON.PROTOCOL_ERROR);
+    var err = new Error('Received unexpected packet');
+    err.level = 'protocol';
+    self.emit('error', err);
+    return false;
+  }
+
+  if (state.kex.type === 'groupex') {
+    // Dynamic group exchange-related
+
+    if (self.server) {
+      // TODO: Support group exchange server-side
+      self.disconnect(DISCONNECT_REASON.PROTOCOL_ERROR);
+      var err = new Error('DH group exchange not supported by server');
+      err.level = 'handshake';
+      self.emit('error', err);
+      return false;
+    } else {
+      if (type === MESSAGE.KEXDH_GEX_GROUP) {
+        /*
+          byte    SSH_MSG_KEX_DH_GEX_GROUP
+          mpint   p, safe prime
+          mpint   g, generator for subgroup in GF(p)
+        */
+        var prime = readString(payload, 1, self, callback);
+        if (prime === false)
+          return false;
+        var gen = readString(payload, payload._pos, self, callback);
+        if (gen === false)
+          return false;
+        self.emit('KEXDH_GEX_GROUP', prime, gen);
+      } else if (type === MESSAGE.KEXDH_GEX_REPLY)
+        return parse_KEXDH_REPLY(self, callback);
+    }
+  } else {
+    // Static group or ECDH-related
+
+    if (type === MESSAGE.KEXDH_INIT) {
+      /*
+        byte      SSH_MSG_KEXDH_INIT
+        mpint     e
+      */
+      var e = readString(payload, 1, self, callback);
+      if (e === false)
+        return false;
+
+      self.emit('KEXDH_INIT', e);
+    } else if (type === MESSAGE.KEXDH_REPLY)
+      return parse_KEXDH_REPLY(self, callback);
+  }
+}
+
+function parse_KEXDH_REPLY(self, callback) {
+  var payload = self._state.incoming.payload;
+  /*
+    byte      SSH_MSG_KEXDH_REPLY
+                / SSH_MSG_KEX_DH_GEX_REPLY
+                / SSH_MSG_KEX_ECDH_REPLY
+    string    server public host key and certificates (K_S)
+    mpint     f
+    string    signature of H
+  */
+  var hostkey = readString(payload, 1, self, callback);
+  if (hostkey === false)
+    return false;
+  var pubkey = readString(payload, payload._pos, self, callback);
+  if (pubkey === false)
+    return false;
+  var sig = readString(payload, payload._pos, self, callback);
+  if (sig === false)
+    return false;
+  var info = {
+    hostkey: hostkey,
+    hostkey_format: undefined,
+    pubkey: pubkey,
+    sig: sig,
+    sig_format: undefined
+  };
+  var hostkey_format = readString(hostkey, 0, 'ascii', self, callback);
+  if (hostkey_format === false)
+    return false;
+  info.hostkey_format = hostkey_format;
+  var sig_format = readString(sig, 0, 'ascii', self, callback);
+  if (sig_format === false)
+    return false;
+  info.sig_format = sig_format;
+  self.emit('KEXDH_REPLY', info);
+}
+
+function parse_USERAUTH(self, type, callback) {
+  var state = self._state;
+  var authMethod = state.authsQueue[0];
+  var payload = state.incoming.payload;
+  var message;
+  var lang;
+  var text;
+
+  if (authMethod === 'password') {
+    if (type === MESSAGE.USERAUTH_PASSWD_CHANGEREQ) {
+      /*
+        byte      SSH_MSG_USERAUTH_PASSWD_CHANGEREQ
+        string    prompt in ISO-10646 UTF-8 encoding
+        string    language tag
+      */
+      message = readString(payload, 1, 'utf8', self, callback);
+      if (message === false)
+        return false;
+      lang = readString(payload, payload._pos, 'utf8', self, callback);
+      if (lang === false)
+        return false;
+      self.emit('USERAUTH_PASSWD_CHANGEREQ', message, lang);
+    }
+  } else if (authMethod === 'keyboard-interactive') {
+    if (type === MESSAGE.USERAUTH_INFO_REQUEST) {
+      /*
+        byte      SSH_MSG_USERAUTH_INFO_REQUEST
+        string    name (ISO-10646 UTF-8)
+        string    instruction (ISO-10646 UTF-8)
+        string    language tag -- MAY be empty
+        int       num-prompts
+        string    prompt[1] (ISO-10646 UTF-8)
+        boolean   echo[1]
+        ...
+        string    prompt[num-prompts] (ISO-10646 UTF-8)
+        boolean   echo[num-prompts]
+      */
+      var name;
+      var instr;
+      var nprompts;
+
+      name = readString(payload, 1, 'utf8', self, callback);
+      if (name === false)
+        return false;
+      instr = readString(payload, payload._pos, 'utf8', self, callback);
+      if (instr === false)
+        return false;
+      lang = readString(payload, payload._pos, 'utf8', self, callback);
+      if (lang === false)
+        return false;
+      nprompts = readInt(payload, payload._pos, self, callback);
+      if (nprompts === false)
+        return false;
+
+      payload._pos += 4;
+
+      var prompts = [];
+      for (var prompt = 0; prompt < nprompts; ++prompt) {
+        text = readString(payload, payload._pos, 'utf8', self, callback);
+        if (text === false)
+          return false;
+        var echo = payload[payload._pos++];
+        if (echo === undefined)
+          return false;
+        echo = (echo !== 0);
+        prompts.push({
+          prompt: text,
+          echo: echo
+        });
+      }
+      self.emit('USERAUTH_INFO_REQUEST', name, instr, lang, prompts);
+    } else if (type === MESSAGE.USERAUTH_INFO_RESPONSE) {
+      /*
+        byte      SSH_MSG_USERAUTH_INFO_RESPONSE
+        int       num-responses
+        string    response[1] (ISO-10646 UTF-8)
+        ...
+        string    response[num-responses] (ISO-10646 UTF-8)
+      */
+      var nresponses = readInt(payload, 1, self, callback);
+      if (nresponses === false)
+        return false;
+
+      payload._pos = 5;
+
+      var responses = [];
+      for (var response = 0; response < nresponses; ++response) {
+        text = readString(payload, payload._pos, 'utf8', self, callback);
+        if (text === false)
+          return false;
+        responses.push(text);
+      }
+      self.emit('USERAUTH_INFO_RESPONSE', responses);
+    }
+  } else if (authMethod === 'publickey') {
+    if (type === MESSAGE.USERAUTH_PK_OK) {
+      /*
+        byte      SSH_MSG_USERAUTH_PK_OK
+        string    public key algorithm name from the request
+        string    public key blob from the request
+      */
+      var authsQueue = self._state.authsQueue;
+      if (!authsQueue.length || authsQueue[0] !== 'publickey')
+        return;
+      authsQueue.shift();
+      self.emit('USERAUTH_PK_OK');
+      // XXX: Parse public key info? client currently can ignore it because
+      // there is only one outstanding auth request at any given time, so it
+      // knows which key was OK'd
+    }
+  } else if (authMethod !== undefined) {
+    // Invalid packet for this auth type
+    self.disconnect(DISCONNECT_REASON.PROTOCOL_ERROR);
+    var err = new Error('Invalid authentication method: ' + authMethod);
+    err.level = 'protocol';
+    self.emit('error', err);
+  }
+}
+
+function parse_CHANNEL_REQUEST(self, callback) {
+  var payload = self._state.incoming.payload;
+  var info;
+  var cols;
+  var rows;
+  var width;
+  var height;
+  var wantReply;
+  var signal;
+
+  var recipient = readInt(payload, 1, self, callback);
+  if (recipient === false)
+    return false;
+  var request = readString(payload, 5, 'ascii', self, callback);
+  if (request === false)
+    return false;
+
+  if (request === 'exit-status') { // Server->Client
+    /*
+      byte      SSH_MSG_CHANNEL_REQUEST
+      uint32    recipient channel
+      string    "exit-status"
+      boolean   FALSE
+      uint32    exit_status
+    */
+    var code = readInt(payload, ++payload._pos, self, callback);
+    if (code === false)
+      return false;
+    info = {
+      recipient: recipient,
+      request: request,
+      wantReply: false,
+      code: code
+    };
+  } else if (request === 'exit-signal') { // Server->Client
+    /*
+      byte      SSH_MSG_CHANNEL_REQUEST
+      uint32    recipient channel
+      string    "exit-signal"
+      boolean   FALSE
+      string    signal name (without the "SIG" prefix)
+      boolean   core dumped
+      string    error message in ISO-10646 UTF-8 encoding
+      string    language tag
+    */
+    var coredump;
+    if (!(self.remoteBugs & BUGS.OLD_EXIT)) {
+      signal = readString(payload, ++payload._pos, 'ascii', self, callback);
+      if (signal === false)
+        return false;
+      coredump = payload[payload._pos++];
+      if (coredump === undefined)
+        return false;
+      coredump = (coredump !== 0);
+    } else {
+      /*
+        Instead of `signal name` and `core dumped`, we have just:
+
+        uint32  signal number
+      */
+      signal = readInt(payload, ++payload._pos, self, callback);
+      if (signal === false)
+        return false;
+      switch (signal) {
+        case 1:
+          signal = 'HUP';
+          break;
+        case 2:
+          signal = 'INT';
+          break;
+        case 3:
+          signal = 'QUIT';
+          break;
+        case 6:
+          signal = 'ABRT';
+          break;
+        case 9:
+          signal = 'KILL';
+          break;
+        case 14:
+          signal = 'ALRM';
+          break;
+        case 15:
+          signal = 'TERM';
+          break;
+        default:
+          // Unknown or OS-specific
+          signal = 'UNKNOWN (' + signal + ')';
+      }
+      coredump = false;
+    }
+    var description = readString(payload, payload._pos, 'utf8', self,
+                                 callback);
+    if (description === false)
+      return false;
+    var lang = readString(payload, payload._pos, 'utf8', self, callback);
+    if (lang === false)
+      return false;
+    info = {
+      recipient: recipient,
+      request: request,
+      wantReply: false,
+      signal: signal,
+      coredump: coredump,
+      description: description,
+      lang: lang
+    };
+  } else if (request === 'pty-req') { // Client->Server
+    /*
+      byte      SSH_MSG_CHANNEL_REQUEST
+      uint32    recipient channel
+      string    "pty-req"
+      boolean   want_reply
+      string    TERM environment variable value (e.g., vt100)
+      uint32    terminal width, characters (e.g., 80)
+      uint32    terminal height, rows (e.g., 24)
+      uint32    terminal width, pixels (e.g., 640)
+      uint32    terminal height, pixels (e.g., 480)
+      string    encoded terminal modes
+    */
+    wantReply = payload[payload._pos++];
+    if (wantReply === undefined)
+      return false;
+    wantReply = (wantReply !== 0);
+    var term = readString(payload, payload._pos, 'ascii', self, callback);
+    if (term === false)
+      return false;
+    cols = readInt(payload, payload._pos, self, callback);
+    if (cols === false)
+      return false;
+    rows = readInt(payload, payload._pos += 4, self, callback);
+    if (rows === false)
+      return false;
+    width = readInt(payload, payload._pos += 4, self, callback);
+    if (width === false)
+      return false;
+    height = readInt(payload, payload._pos += 4, self, callback);
+    if (height === false)
+      return false;
+    var modes = readString(payload, payload._pos += 4, self, callback);
+    if (modes === false)
+      return false;
+    modes = bytesToModes(modes);
+    info = {
+      recipient: recipient,
+      request: request,
+      wantReply: wantReply,
+      term: term,
+      cols: cols,
+      rows: rows,
+      width: width,
+      height: height,
+      modes: modes
+    };
+  } else if (request === 'window-change') { // Client->Server
+    /*
+      byte      SSH_MSG_CHANNEL_REQUEST
+      uint32    recipient channel
+      string    "window-change"
+      boolean   FALSE
+      uint32    terminal width, columns
+      uint32    terminal height, rows
+      uint32    terminal width, pixels
+      uint32    terminal height, pixels
+    */
+    cols = readInt(payload, ++payload._pos, self, callback);
+    if (cols === false)
+      return false;
+    rows = readInt(payload, payload._pos += 4, self, callback);
+    if (rows === false)
+      return false;
+    width = readInt(payload, payload._pos += 4, self, callback);
+    if (width === false)
+      return false;
+    height = readInt(payload, payload._pos += 4, self, callback);
+    if (height === false)
+      return false;
+    info = {
+      recipient: recipient,
+      request: request,
+      wantReply: false,
+      cols: cols,
+      rows: rows,
+      width: width,
+      height: height
+    };
+  } else if (request === 'x11-req') { // Client->Server
+    /*
+      byte      SSH_MSG_CHANNEL_REQUEST
+      uint32    recipient channel
+      string    "x11-req"
+      boolean   want reply
+      boolean   single connection
+      string    x11 authentication protocol
+      string    x11 authentication cookie
+      uint32    x11 screen number
+    */
+    wantReply = payload[payload._pos++];
+    if (wantReply === undefined)
+      return false;
+    wantReply = (wantReply !== 0);
+    var single = payload[payload._pos++];
+    if (single === undefined)
+      return false;
+    single = (single !== 0);
+    var protocol = readString(payload, payload._pos, 'ascii', self, callback);
+    if (protocol === false)
+      return false;
+    var cookie = readString(payload, payload._pos, 'binary', self, callback);
+    if (cookie === false)
+      return false;
+    var screen = readInt(payload, payload._pos, self, callback);
+    if (screen === false)
+      return false;
+    info = {
+      recipient: recipient,
+      request: request,
+      wantReply: wantReply,
+      single: single,
+      protocol: protocol,
+      cookie: cookie,
+      screen: screen
+    };
+  } else if (request === 'env') { // Client->Server
+    /*
+      byte      SSH_MSG_CHANNEL_REQUEST
+      uint32    recipient channel
+      string    "env"
+      boolean   want reply
+      string    variable name
+      string    variable value
+    */
+    wantReply = payload[payload._pos++];
+    if (wantReply === undefined)
+      return false;
+    wantReply = (wantReply !== 0);
+    var key = readString(payload, payload._pos, 'utf8', self, callback);
+    if (key === false)
+      return false;
+    var val = readString(payload, payload._pos, 'utf8', self, callback);
+    if (val === false)
+      return false;
+    info = {
+      recipient: recipient,
+      request: request,
+      wantReply: wantReply,
+      key: key,
+      val: val
+    };
+  } else if (request === 'shell') { // Client->Server
+    /*
+      byte      SSH_MSG_CHANNEL_REQUEST
+      uint32    recipient channel
+      string    "shell"
+      boolean   want reply
+    */
+    wantReply = payload[payload._pos];
+    if (wantReply === undefined)
+      return false;
+    wantReply = (wantReply !== 0);
+    info = {
+      recipient: recipient,
+      request: request,
+      wantReply: wantReply
+    };
+  } else if (request === 'exec') { // Client->Server
+    /*
+      byte      SSH_MSG_CHANNEL_REQUEST
+      uint32    recipient channel
+      string    "exec"
+      boolean   want reply
+      string    command
+    */
+    wantReply = payload[payload._pos++];
+    if (wantReply === undefined)
+      return false;
+    wantReply = (wantReply !== 0);
+    var command = readString(payload, payload._pos, 'utf8', self, callback);
+    if (command === false)
+      return false;
+    info = {
+      recipient: recipient,
+      request: request,
+      wantReply: wantReply,
+      command: command
+    };
+  } else if (request === 'subsystem') { // Client->Server
+    /*
+      byte      SSH_MSG_CHANNEL_REQUEST
+      uint32    recipient channel
+      string    "subsystem"
+      boolean   want reply
+      string    subsystem name
+    */
+    wantReply = payload[payload._pos++];
+    if (wantReply === undefined)
+      return false;
+    wantReply = (wantReply !== 0);
+    var subsystem = readString(payload, payload._pos, 'utf8', self, callback);
+    if (subsystem === false)
+      return false;
+    info = {
+      recipient: recipient,
+      request: request,
+      wantReply: wantReply,
+      subsystem: subsystem
+    };
+  } else if (request === 'signal') { // Client->Server
+    /*
+      byte      SSH_MSG_CHANNEL_REQUEST
+      uint32    recipient channel
+      string    "signal"
+      boolean   FALSE
+      string    signal name (without the "SIG" prefix)
+    */
+    signal = readString(payload, ++payload._pos, 'ascii', self, callback);
+    if (signal === false)
+      return false;
+    info = {
+      recipient: recipient,
+      request: request,
+      wantReply: false,
+      signal: 'SIG' + signal
+    };
+  } else if (request === 'xon-xoff') { // Client->Server
+    /*
+      byte      SSH_MSG_CHANNEL_REQUEST
+      uint32    recipient channel
+      string    "xon-xoff"
+      boolean   FALSE
+      boolean   client can do
+    */
+    var clientControl = payload[++payload._pos];
+    if (clientControl === undefined)
+      return false;
+    clientControl = (clientControl !== 0);
+    info = {
+      recipient: recipient,
+      request: request,
+      wantReply: false,
+      clientControl: clientControl
+    };
+  } else if (request === 'auth-agent-req@openssh.com') { // Client->Server
+    /*
+      byte      SSH_MSG_CHANNEL_REQUEST
+      uint32    recipient channel
+      string    "auth-agent-req@openssh.com"
+      boolean   want reply
+    */
+    wantReply = payload[payload._pos];
+    if (wantReply === undefined)
+      return false;
+    wantReply = (wantReply !== 0);
+    info = {
+      recipient: recipient,
+      request: request,
+      wantReply: wantReply
+    };
+  } else {
+    // Unknown request type
+    wantReply = payload[payload._pos];
+    if (wantReply === undefined)
+      return false;
+    wantReply = (wantReply !== 0);
+    info = {
+      recipient: recipient,
+      request: request,
+      wantReply: wantReply
+    };
+  }
+  self.debug('DEBUG: Parser: IN_PACKETDATAAFTER, packet: CHANNEL_REQUEST ('
+             + recipient
+             + ', '
+             + request
+             + ')');
+  self.emit('CHANNEL_REQUEST:' + recipient, info);
+}
+
+function hmacVerify(self, data) {
+  var instate = self._state.incoming;
+  var hmac = instate.hmac;
+
+  self.debug('DEBUG: Parser: Verifying MAC');
+
+  if (instate.decrypt.info.authLen > 0) {
+    var decrypt = instate.decrypt;
+    var instance = decrypt.instance;
+
+    instance.setAuthTag(data);
+
+    var payload = instance.update(instate.packet);
+    instate.payload = payload.slice(1, instate.packet.length - payload[0]);
+    iv_inc(decrypt.iv);
+
+    decrypt.instance = crypto.createDecipheriv(
+                         SSH_TO_OPENSSL[decrypt.type],
+                         decrypt.key,
+                         decrypt.iv
+                       );
+    decrypt.instance.setAutoPadding(false);
+    return true;
+  } else {
+    var calcHmac = crypto.createHmac(SSH_TO_OPENSSL[hmac.type], hmac.key);
+
+    writeUInt32BE(HMAC_COMPUTE, instate.seqno, 0);
+    writeUInt32BE(HMAC_COMPUTE, instate.pktLen, 4);
+    HMAC_COMPUTE[8] = instate.padLen;
+
+    calcHmac.update(HMAC_COMPUTE);
+    calcHmac.update(instate.packet);
+
+    var mac = calcHmac.digest();
+    if (mac.length > instate.hmac.info.actualLen)
+      mac = mac.slice(0, instate.hmac.info.actualLen);
+    return timingSafeEqual(mac, data);
+  }
+}
+
+function decryptData(self, data) {
+  var instance = self._state.incoming.decrypt.instance;
+  self.debug('DEBUG: Parser: Decrypting');
+  return instance.update(data);
+}
+
+function expectData(self, type, amount, buffer) {
+  var expect = self._state.incoming.expect;
+  expect.amount = amount;
+  expect.type = type;
+  expect.ptr = 0;
+  if (buffer)
+    expect.buf = buffer;
+  else if (amount)
+    expect.buf = Buffer.allocUnsafe(amount);
+}
+
+function readList(buffer, start, stream, callback) {
+  var list = readString(buffer, start, 'ascii', stream, callback);
+  return (list !== false ? (list.length ? list.split(',') : []) : false);
+}
+
+function bytesToModes(buffer) {
+  var modes = {};
+
+  for (var i = 0, len = buffer.length, opcode; i < len; i += 5) {
+    opcode = buffer[i];
+    if (opcode === TERMINAL_MODE.TTY_OP_END
+        || TERMINAL_MODE[opcode] === undefined
+        || i + 5 > len)
+      break;
+    modes[TERMINAL_MODE[opcode]] = readUInt32BE(buffer, i + 1);
+  }
+
+  return modes;
+}
+
+function modesToBytes(modes) {
+  var RE_IS_NUM = /^\d+$/;
+  var keys = Object.keys(modes);
+  var b = 0;
+  var bytes = [];
+
+  for (var i = 0, len = keys.length, key, opcode, val; i < len; ++i) {
+    key = keys[i];
+    opcode = TERMINAL_MODE[key];
+    if (opcode
+        && !RE_IS_NUM.test(key)
+        && typeof modes[key] === 'number'
+        && key !== 'TTY_OP_END') {
+      val = modes[key];
+      bytes[b++] = opcode;
+      bytes[b++] = (val >>> 24) & 0xFF;
+      bytes[b++] = (val >>> 16) & 0xFF;
+      bytes[b++] = (val >>> 8) & 0xFF;
+      bytes[b++] = val & 0xFF;
+    }
+  }
+
+  bytes[b] = TERMINAL_MODE.TTY_OP_END;
+
+  return bytes;
+}
+
+// Shared outgoing functions
+function KEXINIT(self, cb) { // Client/Server
+  randBytes(16, function(myCookie) {
+    /*
+      byte         SSH_MSG_KEXINIT
+      byte[16]     cookie (random bytes)
+      name-list    kex_algorithms
+      name-list    server_host_key_algorithms
+      name-list    encryption_algorithms_client_to_server
+      name-list    encryption_algorithms_server_to_client
+      name-list    mac_algorithms_client_to_server
+      name-list    mac_algorithms_server_to_client
+      name-list    compression_algorithms_client_to_server
+      name-list    compression_algorithms_server_to_client
+      name-list    languages_client_to_server
+      name-list    languages_server_to_client
+      boolean      first_kex_packet_follows
+      uint32       0 (reserved for future extension)
+    */
+    var algos = self.config.algorithms;
+
+    var kexBuf = algos.kexBuf;
+    if (self.remoteBugs & BUGS.BAD_DHGEX) {
+      var copied = false;
+      var kexList = algos.kex;
+      for (var j = kexList.length - 1; j >= 0; --j) {
+        if (kexList[j].indexOf('group-exchange') !== -1) {
+          if (!copied) {
+            kexList = kexList.slice();
+            copied = true;
+          }
+          kexList.splice(j, 1);
+        }
+      }
+      if (copied)
+        kexBuf = Buffer.from(kexList.join(','));
+    }
+
+    var hostKeyBuf = algos.serverHostKeyBuf;
+
+    var kexInitSize = 1 + 16
+                      + 4 + kexBuf.length
+                      + 4 + hostKeyBuf.length
+                      + (2 * (4 + algos.cipherBuf.length))
+                      + (2 * (4 + algos.hmacBuf.length))
+                      + (2 * (4 + algos.compressBuf.length))
+                      + (2 * (4 /* languages skipped */))
+                      + 1 + 4;
+    var buf = Buffer.allocUnsafe(kexInitSize);
+    var p = 17;
+
+    buf[0] = MESSAGE.KEXINIT;
+
+    if (myCookie !== false)
+      myCookie.copy(buf, 1);
+
+    writeUInt32BE(buf, kexBuf.length, p);
+    p += 4;
+    kexBuf.copy(buf, p);
+    p += kexBuf.length;
+
+    writeUInt32BE(buf, hostKeyBuf.length, p);
+    p += 4;
+    hostKeyBuf.copy(buf, p);
+    p += hostKeyBuf.length;
+
+    writeUInt32BE(buf, algos.cipherBuf.length, p);
+    p += 4;
+    algos.cipherBuf.copy(buf, p);
+    p += algos.cipherBuf.length;
+
+    writeUInt32BE(buf, algos.cipherBuf.length, p);
+    p += 4;
+    algos.cipherBuf.copy(buf, p);
+    p += algos.cipherBuf.length;
+
+    writeUInt32BE(buf, algos.hmacBuf.length, p);
+    p += 4;
+    algos.hmacBuf.copy(buf, p);
+    p += algos.hmacBuf.length;
+
+    writeUInt32BE(buf, algos.hmacBuf.length, p);
+    p += 4;
+    algos.hmacBuf.copy(buf, p);
+    p += algos.hmacBuf.length;
+
+    writeUInt32BE(buf, algos.compressBuf.length, p);
+    p += 4;
+    algos.compressBuf.copy(buf, p);
+    p += algos.compressBuf.length;
+
+    writeUInt32BE(buf, algos.compressBuf.length, p);
+    p += 4;
+    algos.compressBuf.copy(buf, p);
+    p += algos.compressBuf.length;
+
+    // Skip language lists, first_kex_packet_follows, and reserved bytes
+    buf.fill(0, buf.length - 13);
+
+    self.debug('DEBUG: Outgoing: Writing KEXINIT');
+
+    self._state.incoming.expectedPacket = 'KEXINIT';
+
+    var outstate = self._state.outgoing;
+
+    outstate.kexinit = buf;
+
+    if (outstate.status === OUT_READY) {
+      // We are the one starting the rekeying process ...
+      outstate.status = OUT_REKEYING;
+    }
+
+    send(self, buf, cb, true);
+  });
+  return true;
+}
+
+function KEXDH_INIT(self) { // Client
+  var state = self._state;
+  var outstate = state.outgoing;
+  var buf = Buffer.allocUnsafe(1 + 4 + outstate.pubkey.length);
+
+  state.incoming.expectedPacket = state.kex.pktReply;
+  if (state.kex.type === 'groupex') {
+    buf[0] = MESSAGE.KEXDH_GEX_INIT;
+    self.debug('DEBUG: Outgoing: Writing KEXDH_GEX_INIT');
+  } else {
+    buf[0] = MESSAGE.KEXDH_INIT;
+    if (state.kex.type === 'group')
+      self.debug('DEBUG: Outgoing: Writing KEXDH_INIT');
+    else
+      self.debug('DEBUG: Outgoing: Writing KEXECDH_INIT');
+  }
+
+  writeUInt32BE(buf, outstate.pubkey.length, 1);
+  outstate.pubkey.copy(buf, 5);
+
+  return send(self, buf, undefined, true);
+}
+
+function KEXDH_REPLY(self, e) { // Server
+  var state = self._state;
+  var outstate = state.outgoing;
+  var instate = state.incoming;
+  var curHostKey = self.config.hostKeys[state.hostkeyFormat];
+  if (Array.isArray(curHostKey))
+    curHostKey = curHostKey[0];
+  var hostkey = curHostKey.getPublicSSH();
+  var hostkeyAlgo = curHostKey.type;
+
+  // e === client DH public key
+
+  e = state.kex.convertPublicKey(e);
+
+  var secret = state.kex.computeSecret(e);
+
+  if (secret instanceof Error) {
+    secret.message = 'Error while computing DH secret ('
+                     + state.kex.type + '): '
+                     + secret.message;
+    secret.level = 'handshake';
+    self.emit('error', secret);
+    self.disconnect(DISCONNECT_REASON.KEY_EXCHANGE_FAILED);
+    return false;
+  }
+
+  var hash = crypto.createHash(state.kex.hash);
+
+  var len_ident = Buffer.byteLength(instate.identRaw);
+  var len_sident = Buffer.byteLength(self.config.ident);
+  var len_init = instate.kexinit.length;
+  var len_sinit = outstate.kexinit.length;
+  var len_hostkey = hostkey.length;
+  var len_pubkey = e.length;
+  var len_spubkey = outstate.pubkey.length;
+  var len_secret = secret.length;
+
+  var exchangeBufLen = len_ident
+                       + len_sident
+                       + len_init
+                       + len_sinit
+                       + len_hostkey
+                       + len_pubkey
+                       + len_spubkey
+                       + len_secret
+                       + (4 * 8); // Length fields for above values
+
+  // Group exchange-related
+  var len_gex_prime;
+  var len_gex_gen;
+  var gex_prime;
+  var gex_gen;
+  var dhParams = state.kex.getDHParams();
+  if (dhParams) {
+    gex_prime = dhParams.prime;
+    gex_gen = dhParams.generator;
+    len_gex_prime = gex_prime.length;
+    len_gex_gen = gex_gen.length;
+    exchangeBufLen += (4 * 3); // min, n, max values
+    exchangeBufLen += (4 * 2); // prime, generator length fields
+    exchangeBufLen += len_gex_prime;
+    exchangeBufLen += len_gex_gen;
+  }
+
+  var bp = 0;
+  var exchangeBuf = Buffer.allocUnsafe(exchangeBufLen);
+
+  writeUInt32BE(exchangeBuf, len_ident, bp);
+  bp += 4;
+  exchangeBuf.write(instate.identRaw, bp, 'utf8'); // V_C
+  bp += len_ident;
+
+  writeUInt32BE(exchangeBuf, len_sident, bp);
+  bp += 4;
+  exchangeBuf.write(self.config.ident, bp, 'utf8'); // V_S
+  bp += len_sident;
+
+  writeUInt32BE(exchangeBuf, len_init, bp);
+  bp += 4;
+  instate.kexinit.copy(exchangeBuf, bp); // I_C
+  bp += len_init;
+  instate.kexinit = undefined;
+
+  writeUInt32BE(exchangeBuf, len_sinit, bp);
+  bp += 4;
+  outstate.kexinit.copy(exchangeBuf, bp); // I_S
+  bp += len_sinit;
+  outstate.kexinit = undefined;
+
+  writeUInt32BE(exchangeBuf, len_hostkey, bp);
+  bp += 4;
+  hostkey.copy(exchangeBuf, bp); // K_S
+  bp += len_hostkey;
+
+  if (dhParams) {
+    KEXDH_GEX_REQ_PACKET.slice(1).copy(exchangeBuf, bp); // min, n, max
+    bp += (4 * 3); // Skip over bytes just copied
+
+    writeUInt32BE(exchangeBuf, len_gex_prime, bp);
+    bp += 4;
+    gex_prime.copy(exchangeBuf, bp); // p
+    bp += len_gex_prime;
+
+    writeUInt32BE(exchangeBuf, len_gex_gen, bp);
+    bp += 4;
+    gex_gen.copy(exchangeBuf, bp); // g
+    bp += len_gex_gen;
+  }
+
+  writeUInt32BE(exchangeBuf, len_pubkey, bp);
+  bp += 4;
+  e.copy(exchangeBuf, bp); // e
+  bp += len_pubkey;
+
+  writeUInt32BE(exchangeBuf, len_spubkey, bp);
+  bp += 4;
+  outstate.pubkey.copy(exchangeBuf, bp); // f
+  bp += len_spubkey;
+
+  writeUInt32BE(exchangeBuf, len_secret, bp);
+  bp += 4;
+  secret.copy(exchangeBuf, bp); // K
+
+  outstate.exchangeHash = hash.update(exchangeBuf).digest(); // H
+
+  if (outstate.sessionId === undefined)
+    outstate.sessionId = outstate.exchangeHash;
+  outstate.kexsecret = secret;
+
+  var signature = curHostKey.sign(outstate.exchangeHash);
+  if (signature instanceof Error) {
+    signature.message = 'Error while signing data with host key ('
+                        + hostkeyAlgo + '): '
+                        + signature.message;
+    signature.level = 'handshake';
+    self.emit('error', signature);
+    self.disconnect(DISCONNECT_REASON.KEY_EXCHANGE_FAILED);
+    return false;
+  }
+
+  signature = convertSignature(signature, hostkeyAlgo);
+  if (signature === false) {
+    signature.message = 'Error while converting handshake signature';
+    signature.level = 'handshake';
+    self.emit('error', signature);
+    self.disconnect(DISCONNECT_REASON.KEY_EXCHANGE_FAILED);
+    return false;
+  }
+
+  /*
+    byte      SSH_MSG_KEXDH_REPLY
+    string    server public host key and certificates (K_S)
+    mpint     f
+    string    signature of H
+  */
+
+  var siglen = 4 + hostkeyAlgo.length + 4 + signature.length;
+  var buf = Buffer.allocUnsafe(1
+                               + 4 + len_hostkey
+                               + 4 + len_spubkey
+                               + 4 + siglen);
+
+  bp = 0;
+  buf[bp] = MESSAGE[state.kex.pktReply];
+  ++bp;
+
+  writeUInt32BE(buf, len_hostkey, bp);
+  bp += 4;
+  hostkey.copy(buf, bp); // K_S
+  bp += len_hostkey;
+
+  writeUInt32BE(buf, len_spubkey, bp);
+  bp += 4;
+  outstate.pubkey.copy(buf, bp); // f
+  bp += len_spubkey;
+
+  writeUInt32BE(buf, siglen, bp);
+  bp += 4;
+  writeUInt32BE(buf, hostkeyAlgo.length, bp);
+  bp += 4;
+  buf.write(hostkeyAlgo, bp, hostkeyAlgo.length, 'ascii');
+  bp += hostkeyAlgo.length;
+  writeUInt32BE(buf, signature.length, bp);
+  bp += 4;
+  signature.copy(buf, bp);
+
+  state.incoming.expectedPacket = 'NEWKEYS';
+
+  self.debug('DEBUG: Outgoing: Writing ' + state.kex.pktReply);
+  send(self, buf, undefined, true);
+
+  outstate.sentNEWKEYS = true;
+  self.debug('DEBUG: Outgoing: Writing NEWKEYS');
+  return send(self, NEWKEYS_PACKET, undefined, true);
+}
+
+function KEXDH_GEX_REQ(self) { // Client
+  self._state.incoming.expectedPacket = 'KEXDH_GEX_GROUP';
+
+  self.debug('DEBUG: Outgoing: Writing KEXDH_GEX_REQUEST');
+  return send(self, KEXDH_GEX_REQ_PACKET, undefined, true);
+}
+
+function compressPayload(self, payload, cb) {
+  var compress = self._state.outgoing.compress.instance;
+  compress.write(payload);
+  compress.flush(Z_PARTIAL_FLUSH, compressFlushCb.bind(self, cb));
+}
+
+function compressFlushCb(cb) {
+  if (this._readableState.ended || this._writableState.ended)
+    return;
+  send_(this, this._state.outgoing.compress.instance.read(), cb);
+
+  var queue = this._state.outgoing.compress.queue;
+  queue.shift();
+  if (queue.length > 0)
+    compressPayload(this, queue[0][0], queue[0][1]);
+}
+
+function send(self, payload, cb, bypass) {
+  var state = self._state;
+
+  if (!state)
+    return false;
+
+  var outstate = state.outgoing;
+  if (outstate.status === OUT_REKEYING && !bypass) {
+    if (typeof cb === 'function')
+      outstate.rekeyQueue.push([payload, cb]);
+    else
+      outstate.rekeyQueue.push(payload);
+    return false;
+  } else if (self._readableState.ended || self._writableState.ended) {
+    return false;
+  }
+
+  if (outstate.compress.instance) {
+    // This queue nonsense only exists because of a change made in node v10.12.0
+    // that changed flushing behavior, which now coalesces multiple writes to a
+    // single flush, which does not work for us.
+    var queue = outstate.compress.queue;
+    queue.push([payload, cb]);
+    if (queue.length === 1)
+      compressPayload(self, queue[0][0], queue[0][1]);
+    return true;
+  } else {
+    return send_(self, payload, cb);
+  }
+}
+
+function send_(self, payload, cb) {
+  // TODO: Implement length checks
+
+  var state = self._state;
+  var outstate = state.outgoing;
+  var encrypt = outstate.encrypt;
+  var hmac = outstate.hmac;
+  var pktLen;
+  var padLen;
+  var buf;
+  var mac;
+  var ret;
+
+  pktLen = payload.length + 9;
+
+  if (encrypt.instance !== false) {
+    if (encrypt.info.authLen > 0) {
+      var ptlen = 1 + payload.length + 4/* Must have at least 4 bytes padding*/;
+      while ((ptlen % encrypt.info.blockLen) !== 0)
+        ++ptlen;
+      padLen = ptlen - 1 - payload.length;
+      pktLen = 4 + ptlen;
+    } else {
+      var blockLen = encrypt.info.blockLen;
+      pktLen += ((blockLen - 1) * pktLen) % blockLen;
+      padLen = pktLen - payload.length - 5;
+    }
+  } else {
+    pktLen += (7 * pktLen) % 8;
+    padLen = pktLen - payload.length - 5;
+  }
+
+  buf = Buffer.allocUnsafe(pktLen);
+
+  writeUInt32BE(buf, pktLen - 4, 0);
+  buf[4] = padLen;
+  payload.copy(buf, 5);
+
+  copyRandPadBytes(buf, 5 + payload.length, padLen);
+
+  if (hmac.type !== false && hmac.key) {
+    mac = crypto.createHmac(SSH_TO_OPENSSL[hmac.type], hmac.key);
+    writeUInt32BE(outstate.bufSeqno, outstate.seqno, 0);
+    mac.update(outstate.bufSeqno);
+    mac.update(buf);
+    mac = mac.digest();
+    if (mac.length > hmac.info.actualLen)
+      mac = mac.slice(0, hmac.info.actualLen);
+  }
+
+  var nb = 0;
+  var encData;
+
+  if (encrypt.instance !== false) {
+    if (encrypt.info.authLen > 0) {
+      var encrypter = crypto.createCipheriv(SSH_TO_OPENSSL[encrypt.type],
+                                            encrypt.key,
+                                            encrypt.iv);
+      encrypter.setAutoPadding(false);
+
+      var lenbuf = buf.slice(0, 4);
+
+      encrypter.setAAD(lenbuf);
+      self.push(lenbuf);
+      nb += lenbuf;
+
+      encData = encrypter.update(buf.slice(4));
+      self.push(encData);
+      nb += encData.length;
+
+      var final = encrypter.final();
+      if (final.length) {
+        self.push(final);
+        nb += final.length;
+      }
+
+      var authTag = encrypter.getAuthTag();
+      ret = self.push(authTag);
+      nb += authTag.length;
+
+      iv_inc(encrypt.iv);
+    } else {
+      encData = encrypt.instance.update(buf);
+      self.push(encData);
+      nb += encData.length;
+
+      ret = self.push(mac);
+      nb += mac.length;
+    }
+  } else {
+    ret = self.push(buf);
+    nb = buf.length;
+  }
+
+  self.bytesSent += nb;
+
+  if (++outstate.seqno > MAX_SEQNO)
+    outstate.seqno = 0;
+
+  cb && cb();
+
+  return ret;
+}
+
+var copyRandPadBytes = (function() {
+  if (typeof crypto.randomFillSync === 'function') {
+    return crypto.randomFillSync;
+  } else {
+    return function copyRandPadBytes(buf, offset, count) {
+      var padBytes = crypto.randomBytes(count);
+      padBytes.copy(buf, offset);
+    };
+  }
+})();
+
+function randBytes(n, cb) {
+  crypto.randomBytes(n, function retry(err, buf) {
+    if (err)
+      return crypto.randomBytes(n, retry);
+    cb && cb(buf);
+  });
+}
+
+function convertSignature(signature, keyType) {
+  switch (keyType) {
+    case 'ssh-dss':
+      return DSASigBERToBare(signature);
+    case 'ecdsa-sha2-nistp256':
+    case 'ecdsa-sha2-nistp384':
+    case 'ecdsa-sha2-nistp521':
+      return ECDSASigASN1ToSSH(signature);
+  }
+
+  return signature;
+}
+
+var timingSafeEqual = (function() {
+  if (typeof crypto.timingSafeEqual === 'function') {
+    return function timingSafeEquals(a, b) {
+      if (a.length !== b.length) {
+        crypto.timingSafeEqual(a, a);
+        return false;
+      } else {
+        return crypto.timingSafeEqual(a, b);
+      }
+    };
+  } else {
+    return function timingSafeEquals(a, b) {
+      var val;
+      if (a.length === b.length) {
+        val = 0;
+      } else {
+        val = 1;
+        b = a;
+      }
+
+      for (var i = 0, len = a.length; i < len; ++i)
+        val |= (a[i] ^ b[i]);
+
+      return (val === 0);
+    }
+  }
+})();
+
+function KeyExchange(algo, options) {
+  switch (algo) {
+    case 'curve25519-sha256':
+    case 'curve25519-sha256@libssh.org':
+      if (!CURVE25519_SUPPORTED)
+        break;
+      this.type = '25519';
+      this.hash = 'sha256';
+      this.pktInit = 'KEXECDH_INIT';
+      this.pktReply = 'KEXECDH_REPLY';
+      return;
+    case 'ecdh-sha2-nistp256':
+      this.type = 'ecdh';
+      this.name = 'prime256v1';
+      this.hash = 'sha256';
+      this.pktInit = 'KEXECDH_INIT';
+      this.pktReply = 'KEXECDH_REPLY';
+      return;
+    case 'ecdh-sha2-nistp384':
+      this.type = 'ecdh';
+      this.name = 'secp384r1';
+      this.hash = 'sha384';
+      this.pktInit = 'KEXECDH_INIT';
+      this.pktReply = 'KEXECDH_REPLY';
+      return;
+    case 'ecdh-sha2-nistp521':
+      this.type = 'ecdh';
+      this.name = 'secp521r1';
+      this.hash = 'sha512';
+      this.pktInit = 'KEXECDH_INIT';
+      this.pktReply = 'KEXECDH_REPLY';
+      return;
+    case 'diffie-hellman-group1-sha1':
+      this.type = 'group';
+      this.name = 'modp2';
+      this.hash = 'sha1';
+      this.pktInit = 'KEXDH_INIT';
+      this.pktReply = 'KEXDH_REPLY';
+      return;
+    case 'diffie-hellman-group14-sha1':
+      this.type = 'group';
+      this.name = 'modp14';
+      this.hash = 'sha1';
+      this.pktInit = 'KEXDH_INIT';
+      this.pktReply = 'KEXDH_REPLY';
+      return;
+    case 'diffie-hellman-group14-sha256':
+      this.type = 'group';
+      this.name = 'modp14';
+      this.hash = 'sha256';
+      this.pktInit = 'KEXDH_INIT';
+      this.pktReply = 'KEXDH_REPLY';
+      return;
+    case 'diffie-hellman-group16-sha512':
+      this.type = 'group';
+      this.name = 'modp16';
+      this.hash = 'sha512';
+      this.pktInit = 'KEXDH_INIT';
+      this.pktReply = 'KEXDH_REPLY';
+      return;
+    case 'diffie-hellman-group18-sha512':
+      this.type = 'group';
+      this.name = 'modp18';
+      this.hash = 'sha512';
+      this.pktInit = 'KEXDH_INIT';
+      this.pktReply = 'KEXDH_REPLY';
+      return;
+    case 'diffie-hellman-group-exchange-sha1':
+      this.type = 'groupex';
+      this.hash = 'sha1';
+      this.pktInit = 'KEXDH_GEX_REQ';
+      this.pktReply = 'KEXDH_GEX_REPLY';
+      this._prime = null;
+      this._generator = null;
+      return;
+    case 'diffie-hellman-group-exchange-sha256':
+      this.type = 'groupex';
+      this.hash = 'sha256';
+      this.pktInit = 'KEXDH_GEX_REQ';
+      this.pktReply = 'KEXDH_GEX_REPLY';
+      this._prime = null;
+      this._generator = null;
+      return;
+  }
+  throw new Error('Unsupported key exchange algorithm: ' + algo);
+}
+KeyExchange.prototype.setDHParams = function(prime, generator) {
+  if (this.type === 'groupex') {
+    if (!Buffer.isBuffer(prime))
+      throw new Error('Invalid prime value');
+    if (!Buffer.isBuffer(generator))
+      throw new Error('Invalid generator value');
+    this._prime = prime;
+    this._generator = generator;
+  }
+};
+KeyExchange.prototype.getDHParams = function() {
+  if (this.type === 'groupex' && this._kex) {
+    return {
+      prime: convertToMpint(this._kex.getPrime()),
+      generator: convertToMpint(this._kex.getGenerator()),
+    };
+  }
+};
+KeyExchange.prototype.generateKeys = function() {
+  switch (this.type) {
+    case '25519':
+      if (!this._keys)
+        this._keys = crypto.generateKeyPairSync('x25519');
+      break;
+    case 'ecdh':
+      if (!this._kex) {
+        this._kex = crypto.createECDH(this.name);
+        this._public = this._kex.generateKeys();
+      }
+      break;
+    case 'group':
+    case 'groupex':
+      if (!this._kex) {
+        if (this.name)
+          this._kex = crypto.createDiffieHellmanGroup(this.name);
+        else if (this._prime && this._generator)
+          this._kex = crypto.createDiffieHellman(this._prime, this._generator);
+        if (this._kex)
+          this._public = this._kex.generateKeys();
+      }
+      break;
+  }
+};
+KeyExchange.prototype.getPublicKey = function() {
+  this.generateKeys();
+
+  var key;
+  switch (this.type) {
+    case '25519':
+      key = this._keys.publicKey.export({ type: 'spki', format: 'der' });
+      return key.slice(-32); // HACK: avoids parsing DER/BER header
+    case 'ecdh':
+    case 'group':
+    case 'groupex':
+      key = this._public;
+      break;
+  }
+  if (key)
+    return this.convertPublicKey(key);
+};
+KeyExchange.prototype.convertPublicKey = function(key) {
+  var newKey;
+  var idx = 0;
+  var len = key.length;
+  while (key[idx] === 0x00) {
+    ++idx;
+    --len;
+  }
+  switch (this.type) {
+    case '25519':
+      if (key.length === 32)
+        return key;
+      break;
+    default:
+      if (key[idx] & 0x80) {
+        newKey = Buffer.allocUnsafe(1 + len);
+        newKey[0] = 0;
+        key.copy(newKey, 1, idx);
+        return newKey;
+      }
+  }
+  if (len !== key.length) {
+    newKey = Buffer.allocUnsafe(len);
+    key.copy(newKey, 0, idx);
+    key = newKey;
+  }
+  return key;
+};
+KeyExchange.prototype.computeSecret = function(otherPublicKey) {
+  this.generateKeys();
+
+  switch (this.type) {
+    case '25519':
+      try {
+        var asnWriter = new Ber.Writer();
+        asnWriter.startSequence();
+          // algorithm
+          asnWriter.startSequence();
+            asnWriter.writeOID('1.3.101.110'); // id-X25519
+          asnWriter.endSequence();
+
+          // PublicKey
+          asnWriter.startSequence(Ber.BitString);
+            asnWriter.writeByte(0x00);
+            // XXX: hack to write a raw buffer without a tag -- yuck
+            asnWriter._ensure(otherPublicKey.length);
+            otherPublicKey.copy(asnWriter._buf,
+                                asnWriter._offset,
+                                0,
+                                otherPublicKey.length);
+            asnWriter._offset += otherPublicKey.length;
+          asnWriter.endSequence();
+        asnWriter.endSequence();
+
+        return convertToMpint(crypto.diffieHellman({
+          privateKey: this._keys.privateKey,
+          publicKey: crypto.createPublicKey({
+            key: asnWriter.buffer,
+            type: 'spki',
+            format: 'der',
+          }),
+        }));
+      } catch (ex) {
+        return ex;
+      }
+      break;
+    case 'ecdh':
+    case 'group':
+    case 'groupex':
+      try {
+        return convertToMpint(this._kex.computeSecret(otherPublicKey));
+      } catch (ex) {
+        return ex;
+      }
+  }
+};
+
+function convertToMpint(buf) {
+  var idx = 0;
+  var length = buf.length;
+  while (buf[idx] === 0x00) {
+    ++idx;
+    --length;
+  }
+  var newBuf;
+  if (buf[idx] & 0x80) {
+    newBuf = Buffer.allocUnsafe(1 + length);
+    newBuf[0] = 0;
+    buf.copy(newBuf, 1, idx);
+    buf = newBuf;
+  } else if (length !== buf.length) {
+    newBuf = Buffer.allocUnsafe(length);
+    buf.copy(newBuf, 0, idx);
+    buf = newBuf;
+  }
+  return buf;
+}
+
+module.exports = SSH2Stream;
+module.exports._send = send;
+
+
+/***/ }),
+
+/***/ 4928:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+var Ber = (__nccwpck_require__(970).Ber);
+
+var readUInt32BE = (__nccwpck_require__(9419).readUInt32BE);
+var writeUInt32BE = (__nccwpck_require__(9419).writeUInt32BE);
+
+// XXX the value of 2400 from dropbear is only for certain strings, not all
+// strings. for example the list strings used during handshakes
+var MAX_STRING_LEN = Infinity;//2400; // taken from dropbear
+
+module.exports = {
+  iv_inc: iv_inc,
+  readInt: readInt,
+  readString: readString,
+  parseKey: (__nccwpck_require__(8820).parseKey),
+  sigSSHToASN1: sigSSHToASN1,
+  DSASigBERToBare: DSASigBERToBare,
+  ECDSASigASN1ToSSH: ECDSASigASN1ToSSH
+};
+
+function iv_inc(iv) {
+  var n = 12;
+  var c = 0;
+  do {
+    --n;
+    c = iv[n];
+    if (c === 255)
+      iv[n] = 0;
+    else {
+      iv[n] = ++c;
+      return;
+    }
+  } while (n > 4);
+}
+
+function readInt(buffer, start, stream, cb) {
+  var bufferLen = buffer.length;
+  if (start < 0 || start >= bufferLen || (bufferLen - start) < 4) {
+    stream && stream._cleanup(cb);
+    return false;
+  }
+
+  return readUInt32BE(buffer, start);
+}
+
+function DSASigBERToBare(signature) {
+  if (signature.length <= 40)
+    return signature;
+  // This is a quick and dirty way to get from BER encoded r and s that
+  // OpenSSL gives us, to just the bare values back to back (40 bytes
+  // total) like OpenSSH (and possibly others) are expecting
+  var asnReader = new Ber.Reader(signature);
+  asnReader.readSequence();
+  var r = asnReader.readString(Ber.Integer, true);
+  var s = asnReader.readString(Ber.Integer, true);
+  var rOffset = 0;
+  var sOffset = 0;
+  if (r.length < 20) {
+    var rNew = Buffer.allocUnsafe(20);
+    r.copy(rNew, 1);
+    r = rNew;
+    r[0] = 0;
+  }
+  if (s.length < 20) {
+    var sNew = Buffer.allocUnsafe(20);
+    s.copy(sNew, 1);
+    s = sNew;
+    s[0] = 0;
+  }
+  if (r.length > 20 && r[0] === 0x00)
+    rOffset = 1;
+  if (s.length > 20 && s[0] === 0x00)
+    sOffset = 1;
+  var newSig = Buffer.allocUnsafe((r.length - rOffset) + (s.length - sOffset));
+  r.copy(newSig, 0, rOffset);
+  s.copy(newSig, r.length - rOffset, sOffset);
+  return newSig;
+}
+
+function ECDSASigASN1ToSSH(signature) {
+  if (signature[0] === 0x00)
+    return signature;
+  // Convert SSH signature parameters to ASN.1 BER values for OpenSSL
+  var asnReader = new Ber.Reader(signature);
+  asnReader.readSequence();
+  var r = asnReader.readString(Ber.Integer, true);
+  var s = asnReader.readString(Ber.Integer, true);
+  if (r === null || s === null)
+    return false;
+  var newSig = Buffer.allocUnsafe(4 + r.length + 4 + s.length);
+  writeUInt32BE(newSig, r.length, 0);
+  r.copy(newSig, 4);
+  writeUInt32BE(newSig, s.length, 4 + r.length);
+  s.copy(newSig, 4 + 4 + r.length);
+  return newSig;
+}
+
+function sigSSHToASN1(sig, type, self, callback) {
+  var asnWriter;
+  switch (type) {
+    case 'ssh-dss':
+      if (sig.length > 40)
+        return sig;
+      // Change bare signature r and s values to ASN.1 BER values for OpenSSL
+      asnWriter = new Ber.Writer();
+      asnWriter.startSequence();
+      var r = sig.slice(0, 20);
+      var s = sig.slice(20);
+      if (r[0] & 0x80) {
+        var rNew = Buffer.allocUnsafe(21);
+        rNew[0] = 0x00;
+        r.copy(rNew, 1);
+        r = rNew;
+      } else if (r[0] === 0x00 && !(r[1] & 0x80)) {
+        r = r.slice(1);
+      }
+      if (s[0] & 0x80) {
+        var sNew = Buffer.allocUnsafe(21);
+        sNew[0] = 0x00;
+        s.copy(sNew, 1);
+        s = sNew;
+      } else if (s[0] === 0x00 && !(s[1] & 0x80)) {
+        s = s.slice(1);
+      }
+      asnWriter.writeBuffer(r, Ber.Integer);
+      asnWriter.writeBuffer(s, Ber.Integer);
+      asnWriter.endSequence();
+      return asnWriter.buffer;
+    case 'ecdsa-sha2-nistp256':
+    case 'ecdsa-sha2-nistp384':
+    case 'ecdsa-sha2-nistp521':
+      var r = readString(sig, 0, self, callback);
+      if (r === false)
+        return false;
+      var s = readString(sig, sig._pos, self, callback);
+      if (s === false)
+        return false;
+
+      asnWriter = new Ber.Writer();
+      asnWriter.startSequence();
+      asnWriter.writeBuffer(r, Ber.Integer);
+      asnWriter.writeBuffer(s, Ber.Integer);
+      asnWriter.endSequence();
+      return asnWriter.buffer;
+    default:
+      return sig;
+  }
+}
+
+function readString(buffer, start, encoding, stream, cb, maxLen) {
+  if (encoding && !Buffer.isBuffer(encoding) && typeof encoding !== 'string') {
+    if (typeof cb === 'number')
+      maxLen = cb;
+    cb = stream;
+    stream = encoding;
+    encoding = undefined;
+  }
+
+  start || (start = 0);
+  var bufferLen = buffer.length;
+  var left = (bufferLen - start);
+  var len;
+  var end;
+  if (start < 0 || start >= bufferLen || left < 4) {
+    stream && stream._cleanup(cb);
+    return false;
+  }
+
+  len = readUInt32BE(buffer, start);
+  if (len > (maxLen || MAX_STRING_LEN) || left < (4 + len)) {
+    stream && stream._cleanup(cb);
+    return false;
+  }
+
+  start += 4;
+  end = start + len;
+  buffer._pos = end;
+
+  if (encoding) {
+    if (Buffer.isBuffer(encoding)) {
+      buffer.copy(encoding, 0, start, end);
+      return encoding;
+    } else {
+      return buffer.toString(encoding, start, end);
+    }
+  } else {
+    return buffer.slice(start, end);
+  }
+}
+
+
+
+/***/ }),
+
+/***/ 2405:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+/*
+  Based heavily on the Streaming Boyer-Moore-Horspool C++ implementation
+  by Hongli Lai at: https://github.com/FooBarWidget/boyer-moore-horspool
+*/
+var EventEmitter = (__nccwpck_require__(2361).EventEmitter),
+    inherits = (__nccwpck_require__(3837).inherits);
+
+function jsmemcmp(buf1, pos1, buf2, pos2, num) {
+  for (var i = 0; i < num; ++i, ++pos1, ++pos2)
+    if (buf1[pos1] !== buf2[pos2])
+      return false;
+  return true;
+}
+
+function SBMH(needle) {
+  if (typeof needle === 'string')
+    needle = new Buffer(needle);
+  var i, j, needle_len = needle.length;
+
+  this.maxMatches = Infinity;
+  this.matches = 0;
+
+  this._occ = new Array(256);
+  this._lookbehind_size = 0;
+  this._needle = needle;
+  this._bufpos = 0;
+
+  this._lookbehind = new Buffer(needle_len);
+
+  // Initialize occurrence table.
+  for (j = 0; j < 256; ++j)
+    this._occ[j] = needle_len;
+
+  // Populate occurrence table with analysis of the needle,
+  // ignoring last letter.
+  if (needle_len >= 1) {
+    for (i = 0; i < needle_len - 1; ++i)
+      this._occ[needle[i]] = needle_len - 1 - i;
+  }
+}
+inherits(SBMH, EventEmitter);
+
+SBMH.prototype.reset = function() {
+  this._lookbehind_size = 0;
+  this.matches = 0;
+  this._bufpos = 0;
+};
+
+SBMH.prototype.push = function(chunk, pos) {
+  var r, chlen;
+  if (!Buffer.isBuffer(chunk))
+    chunk = new Buffer(chunk, 'binary');
+  chlen = chunk.length;
+  this._bufpos = pos || 0;
+  while (r !== chlen && this.matches < this.maxMatches)
+    r = this._sbmh_feed(chunk);
+  return r;
+};
+
+SBMH.prototype._sbmh_feed = function(data) {
+  var len = data.length, needle = this._needle, needle_len = needle.length;
+
+  // Positive: points to a position in `data`
+  //           pos == 3 points to data[3]
+  // Negative: points to a position in the lookbehind buffer
+  //           pos == -2 points to lookbehind[lookbehind_size - 2]
+  var pos = -this._lookbehind_size,
+      last_needle_char = needle[needle_len - 1],
+      occ = this._occ,
+      lookbehind = this._lookbehind;
+
+  if (pos < 0) {
+    // Lookbehind buffer is not empty. Perform Boyer-Moore-Horspool
+    // search with character lookup code that considers both the
+    // lookbehind buffer and the current round's haystack data.
+    //
+    // Loop until
+    //   there is a match.
+    // or until
+    //   we've moved past the position that requires the
+    //   lookbehind buffer. In this case we switch to the
+    //   optimized loop.
+    // or until
+    //   the character to look at lies outside the haystack.
+    while (pos < 0 && pos <= len - needle_len) {
+       var ch = this._sbmh_lookup_char(data, pos + needle_len - 1);
+
+      if (ch === last_needle_char
+          && this._sbmh_memcmp(data, pos, needle_len - 1)) {
+        this._lookbehind_size = 0;
+        ++this.matches;
+        if (pos > -this._lookbehind_size)
+          this.emit('info', true, lookbehind, 0, this._lookbehind_size + pos);
+        else
+          this.emit('info', true);
+
+        this._bufpos = pos + needle_len;
+        return pos + needle_len;
+      } else
+        pos += occ[ch];
+    }
+
+    // No match.
+
+    if (pos < 0) {
+      // There's too few data for Boyer-Moore-Horspool to run,
+      // so let's use a different algorithm to skip as much as
+      // we can.
+      // Forward pos until
+      //   the trailing part of lookbehind + data
+      //   looks like the beginning of the needle
+      // or until
+      //   pos == 0
+      while (pos < 0 && !this._sbmh_memcmp(data, pos, len - pos))
+        pos++;
+    }
+
+    if (pos >= 0) {
+      // Discard lookbehind buffer.
+      this.emit('info', false, lookbehind, 0, this._lookbehind_size);
+      this._lookbehind_size = 0;
+    } else {
+      // Cut off part of the lookbehind buffer that has
+      // been processed and append the entire haystack
+      // into it.
+      var bytesToCutOff = this._lookbehind_size + pos;
+
+      if (bytesToCutOff > 0) {
+        // The cut off data is guaranteed not to contain the needle.
+        this.emit('info', false, lookbehind, 0, bytesToCutOff);
+      }
+
+      lookbehind.copy(lookbehind, 0, bytesToCutOff,
+                      this._lookbehind_size - bytesToCutOff);
+      this._lookbehind_size -= bytesToCutOff;
+
+      data.copy(lookbehind, this._lookbehind_size);
+      this._lookbehind_size += len;
+
+      this._bufpos = len;
+      return len;
+    }
+  }
+
+  if (pos >= 0)
+    pos += this._bufpos;
+
+  // Lookbehind buffer is now empty. Perform Boyer-Moore-Horspool
+  // search with optimized character lookup code that only considers
+  // the current round's haystack data.
+  while (pos <= len - needle_len) {
+    var ch = data[pos + needle_len - 1];
+
+    if (ch === last_needle_char
+        && data[pos] === needle[0]
+        && jsmemcmp(needle, 0, data, pos, needle_len - 1)) {
+      ++this.matches;
+      if (pos > 0)
+        this.emit('info', true, data, this._bufpos, pos);
+      else
+        this.emit('info', true);
+
+      this._bufpos = pos + needle_len;
+      return pos + needle_len;
+    } else
+      pos += occ[ch];
+  }
+
+  // There was no match. If there's trailing haystack data that we cannot
+  // match yet using the Boyer-Moore-Horspool algorithm (because the trailing
+  // data is less than the needle size) then match using a modified
+  // algorithm that starts matching from the beginning instead of the end.
+  // Whatever trailing data is left after running this algorithm is added to
+  // the lookbehind buffer.
+  if (pos < len) {
+    while (pos < len && (data[pos] !== needle[0]
+                         || !jsmemcmp(data, pos, needle, 0, len - pos))) {
+      ++pos;
+    }
+    if (pos < len) {
+      data.copy(lookbehind, 0, pos, pos + (len - pos));
+      this._lookbehind_size = len - pos;
+    }
+  }
+
+  // Everything until pos is guaranteed not to contain needle data.
+  if (pos > 0)
+    this.emit('info', false, data, this._bufpos, pos < len ? pos : len);
+
+  this._bufpos = len;
+  return len;
+};
+
+SBMH.prototype._sbmh_lookup_char = function(data, pos) {
+  if (pos < 0)
+    return this._lookbehind[this._lookbehind_size + pos];
+  else
+    return data[pos];
+}
+
+SBMH.prototype._sbmh_memcmp = function(data, pos, len) {
+  var i = 0;
+
+  while (i < len) {
+    if (this._sbmh_lookup_char(data, pos + i) === this._needle[i])
+      ++i;
+    else
+      return false;
+  }
+  return true;
+}
+
+module.exports = SBMH;
+
+
+/***/ }),
+
+/***/ 9318:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+"use strict";
+
+const os = __nccwpck_require__(2037);
+const tty = __nccwpck_require__(6224);
+const hasFlag = __nccwpck_require__(1621);
+
+const {env} = process;
+
+let forceColor;
+if (hasFlag('no-color') ||
+	hasFlag('no-colors') ||
+	hasFlag('color=false') ||
+	hasFlag('color=never')) {
+	forceColor = 0;
+} else if (hasFlag('color') ||
+	hasFlag('colors') ||
+	hasFlag('color=true') ||
+	hasFlag('color=always')) {
+	forceColor = 1;
+}
+
+if ('FORCE_COLOR' in env) {
+	if (env.FORCE_COLOR === 'true') {
+		forceColor = 1;
+	} else if (env.FORCE_COLOR === 'false') {
+		forceColor = 0;
+	} else {
+		forceColor = env.FORCE_COLOR.length === 0 ? 1 : Math.min(parseInt(env.FORCE_COLOR, 10), 3);
+	}
+}
+
+function translateLevel(level) {
+	if (level === 0) {
+		return false;
+	}
+
+	return {
+		level,
+		hasBasic: true,
+		has256: level >= 2,
+		has16m: level >= 3
+	};
+}
+
+function supportsColor(haveStream, streamIsTTY) {
+	if (forceColor === 0) {
+		return 0;
+	}
+
+	if (hasFlag('color=16m') ||
+		hasFlag('color=full') ||
+		hasFlag('color=truecolor')) {
+		return 3;
+	}
+
+	if (hasFlag('color=256')) {
+		return 2;
+	}
+
+	if (haveStream && !streamIsTTY && forceColor === undefined) {
+		return 0;
+	}
+
+	const min = forceColor || 0;
+
+	if (env.TERM === 'dumb') {
+		return min;
+	}
+
+	if (process.platform === 'win32') {
+		// Windows 10 build 10586 is the first Windows release that supports 256 colors.
+		// Windows 10 build 14931 is the first release that supports 16m/TrueColor.
+		const osRelease = os.release().split('.');
+		if (
+			Number(osRelease[0]) >= 10 &&
+			Number(osRelease[2]) >= 10586
+		) {
+			return Number(osRelease[2]) >= 14931 ? 3 : 2;
+		}
+
+		return 1;
+	}
+
+	if ('CI' in env) {
+		if (['TRAVIS', 'CIRCLECI', 'APPVEYOR', 'GITLAB_CI', 'GITHUB_ACTIONS', 'BUILDKITE'].some(sign => sign in env) || env.CI_NAME === 'codeship') {
+			return 1;
+		}
+
+		return min;
+	}
+
+	if ('TEAMCITY_VERSION' in env) {
+		return /^(9\.(0*[1-9]\d*)\.|\d{2,}\.)/.test(env.TEAMCITY_VERSION) ? 1 : 0;
+	}
+
+	if (env.COLORTERM === 'truecolor') {
+		return 3;
+	}
+
+	if ('TERM_PROGRAM' in env) {
+		const version = parseInt((env.TERM_PROGRAM_VERSION || '').split('.')[0], 10);
+
+		switch (env.TERM_PROGRAM) {
+			case 'iTerm.app':
+				return version >= 3 ? 3 : 2;
+			case 'Apple_Terminal':
+				return 2;
+			// No default
+		}
+	}
+
+	if (/-256(color)?$/i.test(env.TERM)) {
+		return 2;
+	}
+
+	if (/^screen|^xterm|^vt100|^vt220|^rxvt|color|ansi|cygwin|linux/i.test(env.TERM)) {
+		return 1;
+	}
+
+	if ('COLORTERM' in env) {
+		return 1;
+	}
+
+	return min;
+}
+
+function getSupportLevel(stream) {
+	const level = supportsColor(stream, stream && stream.isTTY);
+	return translateLevel(level);
+}
+
+module.exports = {
+	supportsColor: getSupportLevel,
+	stdout: translateLevel(supportsColor(true, tty.isatty(1))),
+	stderr: translateLevel(supportsColor(true, tty.isatty(2)))
+};
 
 
 /***/ }),
@@ -26498,6 +40821,14 @@ module.exports = require("tls");
 
 /***/ }),
 
+/***/ 6224:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("tty");
+
+/***/ }),
+
 /***/ 3837:
 /***/ ((module) => {
 
@@ -26514,671 +40845,19 @@ module.exports = require("zlib");
 
 /***/ }),
 
-/***/ 6323:
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __nccwpck_require__) => {
-
-"use strict";
-// ESM COMPAT FLAG
-__nccwpck_require__.r(__webpack_exports__);
-
-// EXPORTS
-__nccwpck_require__.d(__webpack_exports__, {
-  "Chalk": () => (/* binding */ Chalk),
-  "chalkStderr": () => (/* binding */ chalkStderr),
-  "default": () => (/* binding */ source),
-  "supportsColor": () => (/* binding */ stdoutColor),
-  "supportsColorStderr": () => (/* binding */ stderrColor)
-});
-
-;// CONCATENATED MODULE: ./node_modules/@wangyucode/sftp-sync-deploy/node_modules/chalk/source/vendor/ansi-styles/index.js
-const ANSI_BACKGROUND_OFFSET = 10;
-
-const wrapAnsi16 = (offset = 0) => code => `\u001B[${code + offset}m`;
-
-const wrapAnsi256 = (offset = 0) => code => `\u001B[${38 + offset};5;${code}m`;
-
-const wrapAnsi16m = (offset = 0) => (red, green, blue) => `\u001B[${38 + offset};2;${red};${green};${blue}m`;
-
-function assembleStyles() {
-	const codes = new Map();
-	const styles = {
-		modifier: {
-			reset: [0, 0],
-			// 21 isn't widely supported and 22 does the same thing
-			bold: [1, 22],
-			dim: [2, 22],
-			italic: [3, 23],
-			underline: [4, 24],
-			overline: [53, 55],
-			inverse: [7, 27],
-			hidden: [8, 28],
-			strikethrough: [9, 29],
-		},
-		color: {
-			black: [30, 39],
-			red: [31, 39],
-			green: [32, 39],
-			yellow: [33, 39],
-			blue: [34, 39],
-			magenta: [35, 39],
-			cyan: [36, 39],
-			white: [37, 39],
-
-			// Bright color
-			blackBright: [90, 39],
-			redBright: [91, 39],
-			greenBright: [92, 39],
-			yellowBright: [93, 39],
-			blueBright: [94, 39],
-			magentaBright: [95, 39],
-			cyanBright: [96, 39],
-			whiteBright: [97, 39],
-		},
-		bgColor: {
-			bgBlack: [40, 49],
-			bgRed: [41, 49],
-			bgGreen: [42, 49],
-			bgYellow: [43, 49],
-			bgBlue: [44, 49],
-			bgMagenta: [45, 49],
-			bgCyan: [46, 49],
-			bgWhite: [47, 49],
-
-			// Bright color
-			bgBlackBright: [100, 49],
-			bgRedBright: [101, 49],
-			bgGreenBright: [102, 49],
-			bgYellowBright: [103, 49],
-			bgBlueBright: [104, 49],
-			bgMagentaBright: [105, 49],
-			bgCyanBright: [106, 49],
-			bgWhiteBright: [107, 49],
-		},
-	};
-
-	// Alias bright black as gray (and grey)
-	styles.color.gray = styles.color.blackBright;
-	styles.bgColor.bgGray = styles.bgColor.bgBlackBright;
-	styles.color.grey = styles.color.blackBright;
-	styles.bgColor.bgGrey = styles.bgColor.bgBlackBright;
-
-	for (const [groupName, group] of Object.entries(styles)) {
-		for (const [styleName, style] of Object.entries(group)) {
-			styles[styleName] = {
-				open: `\u001B[${style[0]}m`,
-				close: `\u001B[${style[1]}m`,
-			};
-
-			group[styleName] = styles[styleName];
-
-			codes.set(style[0], style[1]);
-		}
-
-		Object.defineProperty(styles, groupName, {
-			value: group,
-			enumerable: false,
-		});
-	}
-
-	Object.defineProperty(styles, 'codes', {
-		value: codes,
-		enumerable: false,
-	});
-
-	styles.color.close = '\u001B[39m';
-	styles.bgColor.close = '\u001B[49m';
-
-	styles.color.ansi = wrapAnsi16();
-	styles.color.ansi256 = wrapAnsi256();
-	styles.color.ansi16m = wrapAnsi16m();
-	styles.bgColor.ansi = wrapAnsi16(ANSI_BACKGROUND_OFFSET);
-	styles.bgColor.ansi256 = wrapAnsi256(ANSI_BACKGROUND_OFFSET);
-	styles.bgColor.ansi16m = wrapAnsi16m(ANSI_BACKGROUND_OFFSET);
-
-	// From https://github.com/Qix-/color-convert/blob/3f0e0d4e92e235796ccb17f6e85c72094a651f49/conversions.js
-	Object.defineProperties(styles, {
-		rgbToAnsi256: {
-			value: (red, green, blue) => {
-				// We use the extended greyscale palette here, with the exception of
-				// black and white. normal palette only has 4 greyscale shades.
-				if (red === green && green === blue) {
-					if (red < 8) {
-						return 16;
-					}
-
-					if (red > 248) {
-						return 231;
-					}
-
-					return Math.round(((red - 8) / 247) * 24) + 232;
-				}
-
-				return 16
-					+ (36 * Math.round(red / 255 * 5))
-					+ (6 * Math.round(green / 255 * 5))
-					+ Math.round(blue / 255 * 5);
-			},
-			enumerable: false,
-		},
-		hexToRgb: {
-			value: hex => {
-				const matches = /(?<colorString>[a-f\d]{6}|[a-f\d]{3})/i.exec(hex.toString(16));
-				if (!matches) {
-					return [0, 0, 0];
-				}
-
-				let {colorString} = matches.groups;
-
-				if (colorString.length === 3) {
-					colorString = [...colorString].map(character => character + character).join('');
-				}
-
-				const integer = Number.parseInt(colorString, 16);
-
-				return [
-					/* eslint-disable no-bitwise */
-					(integer >> 16) & 0xFF,
-					(integer >> 8) & 0xFF,
-					integer & 0xFF,
-					/* eslint-enable no-bitwise */
-				];
-			},
-			enumerable: false,
-		},
-		hexToAnsi256: {
-			value: hex => styles.rgbToAnsi256(...styles.hexToRgb(hex)),
-			enumerable: false,
-		},
-		ansi256ToAnsi: {
-			value: code => {
-				if (code < 8) {
-					return 30 + code;
-				}
-
-				if (code < 16) {
-					return 90 + (code - 8);
-				}
-
-				let red;
-				let green;
-				let blue;
-
-				if (code >= 232) {
-					red = (((code - 232) * 10) + 8) / 255;
-					green = red;
-					blue = red;
-				} else {
-					code -= 16;
-
-					const remainder = code % 36;
-
-					red = Math.floor(code / 36) / 5;
-					green = Math.floor(remainder / 6) / 5;
-					blue = (remainder % 6) / 5;
-				}
-
-				const value = Math.max(red, green, blue) * 2;
-
-				if (value === 0) {
-					return 30;
-				}
-
-				// eslint-disable-next-line no-bitwise
-				let result = 30 + ((Math.round(blue) << 2) | (Math.round(green) << 1) | Math.round(red));
-
-				if (value === 2) {
-					result += 60;
-				}
-
-				return result;
-			},
-			enumerable: false,
-		},
-		rgbToAnsi: {
-			value: (red, green, blue) => styles.ansi256ToAnsi(styles.rgbToAnsi256(red, green, blue)),
-			enumerable: false,
-		},
-		hexToAnsi: {
-			value: hex => styles.ansi256ToAnsi(styles.hexToAnsi256(hex)),
-			enumerable: false,
-		},
-	});
-
-	return styles;
-}
-
-const ansiStyles = assembleStyles();
-
-/* harmony default export */ const ansi_styles = (ansiStyles);
-
-;// CONCATENATED MODULE: external "node:process"
-const external_node_process_namespaceObject = require("node:process");
-;// CONCATENATED MODULE: external "node:os"
-const external_node_os_namespaceObject = require("node:os");
-;// CONCATENATED MODULE: external "node:tty"
-const external_node_tty_namespaceObject = require("node:tty");
-;// CONCATENATED MODULE: ./node_modules/@wangyucode/sftp-sync-deploy/node_modules/chalk/source/vendor/supports-color/index.js
-
-
-
-
-// From: https://github.com/sindresorhus/has-flag/blob/main/index.js
-function hasFlag(flag, argv = external_node_process_namespaceObject.argv) {
-	const prefix = flag.startsWith('-') ? '' : (flag.length === 1 ? '-' : '--');
-	const position = argv.indexOf(prefix + flag);
-	const terminatorPosition = argv.indexOf('--');
-	return position !== -1 && (terminatorPosition === -1 || position < terminatorPosition);
-}
-
-const {env} = external_node_process_namespaceObject;
-
-let flagForceColor;
-if (
-	hasFlag('no-color')
-	|| hasFlag('no-colors')
-	|| hasFlag('color=false')
-	|| hasFlag('color=never')
-) {
-	flagForceColor = 0;
-} else if (
-	hasFlag('color')
-	|| hasFlag('colors')
-	|| hasFlag('color=true')
-	|| hasFlag('color=always')
-) {
-	flagForceColor = 1;
-}
-
-function envForceColor() {
-	if ('FORCE_COLOR' in env) {
-		if (env.FORCE_COLOR === 'true') {
-			return 1;
-		}
-
-		if (env.FORCE_COLOR === 'false') {
-			return 0;
-		}
-
-		return env.FORCE_COLOR.length === 0 ? 1 : Math.min(Number.parseInt(env.FORCE_COLOR, 10), 3);
-	}
-}
-
-function translateLevel(level) {
-	if (level === 0) {
-		return false;
-	}
-
-	return {
-		level,
-		hasBasic: true,
-		has256: level >= 2,
-		has16m: level >= 3,
-	};
-}
-
-function _supportsColor(haveStream, {streamIsTTY, sniffFlags = true} = {}) {
-	const noFlagForceColor = envForceColor();
-	if (noFlagForceColor !== undefined) {
-		flagForceColor = noFlagForceColor;
-	}
-
-	const forceColor = sniffFlags ? flagForceColor : noFlagForceColor;
-
-	if (forceColor === 0) {
-		return 0;
-	}
-
-	if (sniffFlags) {
-		if (hasFlag('color=16m')
-			|| hasFlag('color=full')
-			|| hasFlag('color=truecolor')) {
-			return 3;
-		}
-
-		if (hasFlag('color=256')) {
-			return 2;
-		}
-	}
-
-	if (haveStream && !streamIsTTY && forceColor === undefined) {
-		return 0;
-	}
-
-	const min = forceColor || 0;
-
-	if (env.TERM === 'dumb') {
-		return min;
-	}
-
-	if (external_node_process_namespaceObject.platform === 'win32') {
-		// Windows 10 build 10586 is the first Windows release that supports 256 colors.
-		// Windows 10 build 14931 is the first release that supports 16m/TrueColor.
-		const osRelease = external_node_os_namespaceObject.release().split('.');
-		if (
-			Number(osRelease[0]) >= 10
-			&& Number(osRelease[2]) >= 10_586
-		) {
-			return Number(osRelease[2]) >= 14_931 ? 3 : 2;
-		}
-
-		return 1;
-	}
-
-	if ('CI' in env) {
-		if (['TRAVIS', 'CIRCLECI', 'APPVEYOR', 'GITLAB_CI', 'GITHUB_ACTIONS', 'BUILDKITE', 'DRONE'].some(sign => sign in env) || env.CI_NAME === 'codeship') {
-			return 1;
-		}
-
-		return min;
-	}
-
-	if ('TEAMCITY_VERSION' in env) {
-		return /^(9\.(0*[1-9]\d*)\.|\d{2,}\.)/.test(env.TEAMCITY_VERSION) ? 1 : 0;
-	}
-
-	// Check for Azure DevOps pipelines
-	if ('TF_BUILD' in env && 'AGENT_NAME' in env) {
-		return 1;
-	}
-
-	if (env.COLORTERM === 'truecolor') {
-		return 3;
-	}
-
-	if ('TERM_PROGRAM' in env) {
-		const version = Number.parseInt((env.TERM_PROGRAM_VERSION || '').split('.')[0], 10);
-
-		switch (env.TERM_PROGRAM) {
-			case 'iTerm.app':
-				return version >= 3 ? 3 : 2;
-			case 'Apple_Terminal':
-				return 2;
-			// No default
-		}
-	}
-
-	if (/-256(color)?$/i.test(env.TERM)) {
-		return 2;
-	}
-
-	if (/^screen|^xterm|^vt100|^vt220|^rxvt|color|ansi|cygwin|linux/i.test(env.TERM)) {
-		return 1;
-	}
-
-	if ('COLORTERM' in env) {
-		return 1;
-	}
-
-	return min;
-}
-
-function createSupportsColor(stream, options = {}) {
-	const level = _supportsColor(stream, {
-		streamIsTTY: stream && stream.isTTY,
-		...options,
-	});
-
-	return translateLevel(level);
-}
-
-const supportsColor = {
-	stdout: createSupportsColor({isTTY: external_node_tty_namespaceObject.isatty(1)}),
-	stderr: createSupportsColor({isTTY: external_node_tty_namespaceObject.isatty(2)}),
-};
-
-/* harmony default export */ const supports_color = (supportsColor);
-
-;// CONCATENATED MODULE: ./node_modules/@wangyucode/sftp-sync-deploy/node_modules/chalk/source/utilities.js
-// TODO: When targeting Node.js 16, use `String.prototype.replaceAll`.
-function stringReplaceAll(string, substring, replacer) {
-	let index = string.indexOf(substring);
-	if (index === -1) {
-		return string;
-	}
-
-	const substringLength = substring.length;
-	let endIndex = 0;
-	let returnValue = '';
-	do {
-		returnValue += string.substr(endIndex, index - endIndex) + substring + replacer;
-		endIndex = index + substringLength;
-		index = string.indexOf(substring, endIndex);
-	} while (index !== -1);
-
-	returnValue += string.slice(endIndex);
-	return returnValue;
-}
-
-function stringEncaseCRLFWithFirstIndex(string, prefix, postfix, index) {
-	let endIndex = 0;
-	let returnValue = '';
-	do {
-		const gotCR = string[index - 1] === '\r';
-		returnValue += string.substr(endIndex, (gotCR ? index - 1 : index) - endIndex) + prefix + (gotCR ? '\r\n' : '\n') + postfix;
-		endIndex = index + 1;
-		index = string.indexOf('\n', endIndex);
-	} while (index !== -1);
-
-	returnValue += string.slice(endIndex);
-	return returnValue;
-}
-
-;// CONCATENATED MODULE: ./node_modules/@wangyucode/sftp-sync-deploy/node_modules/chalk/source/index.js
-
-
-
-
-const {stdout: stdoutColor, stderr: stderrColor} = supports_color;
-
-const GENERATOR = Symbol('GENERATOR');
-const STYLER = Symbol('STYLER');
-const IS_EMPTY = Symbol('IS_EMPTY');
-
-// `supportsColor.level` → `ansiStyles.color[name]` mapping
-const levelMapping = [
-	'ansi',
-	'ansi',
-	'ansi256',
-	'ansi16m',
-];
-
-const styles = Object.create(null);
-
-const applyOptions = (object, options = {}) => {
-	if (options.level && !(Number.isInteger(options.level) && options.level >= 0 && options.level <= 3)) {
-		throw new Error('The `level` option should be an integer from 0 to 3');
-	}
-
-	// Detect level if not set manually
-	const colorLevel = stdoutColor ? stdoutColor.level : 0;
-	object.level = options.level === undefined ? colorLevel : options.level;
-};
-
-class Chalk {
-	constructor(options) {
-		// eslint-disable-next-line no-constructor-return
-		return chalkFactory(options);
-	}
-}
-
-const chalkFactory = options => {
-	const chalk = (...strings) => strings.join(' ');
-	applyOptions(chalk, options);
-
-	Object.setPrototypeOf(chalk, createChalk.prototype);
-
-	return chalk;
-};
-
-function createChalk(options) {
-	return chalkFactory(options);
-}
-
-Object.setPrototypeOf(createChalk.prototype, Function.prototype);
-
-for (const [styleName, style] of Object.entries(ansi_styles)) {
-	styles[styleName] = {
-		get() {
-			const builder = createBuilder(this, createStyler(style.open, style.close, this[STYLER]), this[IS_EMPTY]);
-			Object.defineProperty(this, styleName, {value: builder});
-			return builder;
-		},
-	};
-}
-
-styles.visible = {
-	get() {
-		const builder = createBuilder(this, this[STYLER], true);
-		Object.defineProperty(this, 'visible', {value: builder});
-		return builder;
-	},
-};
-
-const getModelAnsi = (model, level, type, ...arguments_) => {
-	if (model === 'rgb') {
-		if (level === 'ansi16m') {
-			return ansi_styles[type].ansi16m(...arguments_);
-		}
-
-		if (level === 'ansi256') {
-			return ansi_styles[type].ansi256(ansi_styles.rgbToAnsi256(...arguments_));
-		}
-
-		return ansi_styles[type].ansi(ansi_styles.rgbToAnsi(...arguments_));
-	}
-
-	if (model === 'hex') {
-		return getModelAnsi('rgb', level, type, ...ansi_styles.hexToRgb(...arguments_));
-	}
-
-	return ansi_styles[type][model](...arguments_);
-};
-
-const usedModels = ['rgb', 'hex', 'ansi256'];
-
-for (const model of usedModels) {
-	styles[model] = {
-		get() {
-			const {level} = this;
-			return function (...arguments_) {
-				const styler = createStyler(getModelAnsi(model, levelMapping[level], 'color', ...arguments_), ansi_styles.color.close, this[STYLER]);
-				return createBuilder(this, styler, this[IS_EMPTY]);
-			};
-		},
-	};
-
-	const bgModel = 'bg' + model[0].toUpperCase() + model.slice(1);
-	styles[bgModel] = {
-		get() {
-			const {level} = this;
-			return function (...arguments_) {
-				const styler = createStyler(getModelAnsi(model, levelMapping[level], 'bgColor', ...arguments_), ansi_styles.bgColor.close, this[STYLER]);
-				return createBuilder(this, styler, this[IS_EMPTY]);
-			};
-		},
-	};
-}
-
-const proto = Object.defineProperties(() => {}, {
-	...styles,
-	level: {
-		enumerable: true,
-		get() {
-			return this[GENERATOR].level;
-		},
-		set(level) {
-			this[GENERATOR].level = level;
-		},
-	},
-});
-
-const createStyler = (open, close, parent) => {
-	let openAll;
-	let closeAll;
-	if (parent === undefined) {
-		openAll = open;
-		closeAll = close;
-	} else {
-		openAll = parent.openAll + open;
-		closeAll = close + parent.closeAll;
-	}
-
-	return {
-		open,
-		close,
-		openAll,
-		closeAll,
-		parent,
-	};
-};
-
-const createBuilder = (self, _styler, _isEmpty) => {
-	// Single argument is hot path, implicit coercion is faster than anything
-	// eslint-disable-next-line no-implicit-coercion
-	const builder = (...arguments_) => applyStyle(builder, (arguments_.length === 1) ? ('' + arguments_[0]) : arguments_.join(' '));
-
-	// We alter the prototype because we must return a function, but there is
-	// no way to create a function with a different prototype
-	Object.setPrototypeOf(builder, proto);
-
-	builder[GENERATOR] = self;
-	builder[STYLER] = _styler;
-	builder[IS_EMPTY] = _isEmpty;
-
-	return builder;
-};
-
-const applyStyle = (self, string) => {
-	if (self.level <= 0 || !string) {
-		return self[IS_EMPTY] ? '' : string;
-	}
-
-	let styler = self[STYLER];
-
-	if (styler === undefined) {
-		return string;
-	}
-
-	const {openAll, closeAll} = styler;
-	if (string.includes('\u001B')) {
-		while (styler !== undefined) {
-			// Replace any instances already present with a re-opening code
-			// otherwise only the part of the string until said closing code
-			// will be colored, and the rest will simply be 'plain'.
-			string = stringReplaceAll(string, styler.close, styler.open);
-
-			styler = styler.parent;
-		}
-	}
-
-	// We can move both next actions out of loop, because remaining actions in loop won't have
-	// any/visible effect on parts we add here. Close the styling before a linebreak and reopen
-	// after next line to fix a bleed issue on macOS: https://github.com/chalk/chalk/pull/92
-	const lfIndex = string.indexOf('\n');
-	if (lfIndex !== -1) {
-		string = stringEncaseCRLFWithFirstIndex(string, closeAll, openAll, lfIndex);
-	}
-
-	return openAll + string + closeAll;
-};
-
-Object.defineProperties(createChalk.prototype, styles);
-
-const chalk = createChalk();
-const chalkStderr = createChalk({level: stderrColor ? stderrColor.level : 0});
-
-
-
-/* harmony default export */ const source = (chalk);
-
-
-/***/ }),
-
 /***/ 9625:
 /***/ ((module) => {
 
 "use strict";
 module.exports = {"i8":"1.10.0"};
+
+/***/ }),
+
+/***/ 9186:
+/***/ ((module) => {
+
+"use strict";
+module.exports = {"i8":"0.4.10"};
 
 /***/ })
 
@@ -27196,8 +40875,8 @@ module.exports = {"i8":"1.10.0"};
 /******/ 		}
 /******/ 		// Create a new module (and put it into the cache)
 /******/ 		var module = __webpack_module_cache__[moduleId] = {
-/******/ 			// no module.id needed
-/******/ 			// no module.loaded needed
+/******/ 			id: moduleId,
+/******/ 			loaded: false,
 /******/ 			exports: {}
 /******/ 		};
 /******/ 	
@@ -27210,36 +40889,20 @@ module.exports = {"i8":"1.10.0"};
 /******/ 			if(threw) delete __webpack_module_cache__[moduleId];
 /******/ 		}
 /******/ 	
+/******/ 		// Flag the module as loaded
+/******/ 		module.loaded = true;
+/******/ 	
 /******/ 		// Return the exports of the module
 /******/ 		return module.exports;
 /******/ 	}
 /******/ 	
 /************************************************************************/
-/******/ 	/* webpack/runtime/define property getters */
+/******/ 	/* webpack/runtime/node module decorator */
 /******/ 	(() => {
-/******/ 		// define getter functions for harmony exports
-/******/ 		__nccwpck_require__.d = (exports, definition) => {
-/******/ 			for(var key in definition) {
-/******/ 				if(__nccwpck_require__.o(definition, key) && !__nccwpck_require__.o(exports, key)) {
-/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
-/******/ 				}
-/******/ 			}
-/******/ 		};
-/******/ 	})();
-/******/ 	
-/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
-/******/ 	(() => {
-/******/ 		__nccwpck_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
-/******/ 	})();
-/******/ 	
-/******/ 	/* webpack/runtime/make namespace object */
-/******/ 	(() => {
-/******/ 		// define __esModule on exports
-/******/ 		__nccwpck_require__.r = (exports) => {
-/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
-/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
-/******/ 			}
-/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 		__nccwpck_require__.nmd = (module) => {
+/******/ 			module.paths = [];
+/******/ 			if (!module.children) module.children = [];
+/******/ 			return module;
 /******/ 		};
 /******/ 	})();
 /******/ 	
