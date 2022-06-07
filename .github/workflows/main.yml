@@ -25,13 +25,16 @@ jobs:
           echo "hello server" > dist/1.txt
 
       - name: SFTP uploader
-        uses: wangyucode/sftp-upload-action@v1.3.2
+        uses: wangyucode/sftp-upload-action@v1.3.3
         with:
           host: 'wycode.cn'
           port: 22 # optional, default is 22 
           privateKey: ${{ secrets.SERVER_KEY }} 
           localDir: 'dist'
           remoteDir: '/root/test/'
+          exclude:
+            - '*.txt' 
+          excludeMode: 'ignore'
           dryRun: true # optional
           
           

@@ -40931,6 +40931,7 @@ let config = {
 
 let options = {
   dryRun: JSON.parse(core.getInput('dryRun')), // Enable dry-run mode. Default to false
+  exclude: core.getInput('exclude'), // exclude patterns (glob)
   excludeMode: core.getInput('excludeMode'), // Behavior for excluded files ('remove' or 'ignore'), Default to 'remove'.
   forceUpload: JSON.parse(core.getInput('forceUpload')) // Force uploading all files, Default to false(upload only newer files).
 };

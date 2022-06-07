@@ -32,6 +32,9 @@ inputs:
   excludeMode:
     required: false
     default: 'remove'
+  exclude:
+    required: false
+    default: []
   forceUpload:
     required: false
     default: false
