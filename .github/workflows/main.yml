@@ -22,7 +22,9 @@ jobs:
       - name: create files
         run: |
           mkdir dist
-          echo "hello server" > dist/1.txt
+          echo "hello server1" > dist/1.txt
+          echo "hello server2" > dist/2.tx
+          echo "hello server3" > dist/3.t
 
       - name: SFTP uploader
         uses: wangyucode/sftp-upload-action@v1.3.3
@@ -32,8 +34,7 @@ jobs:
           privateKey: ${{ secrets.SERVER_KEY }} 
           localDir: 'dist'
           remoteDir: '/root/test/'
-          exclude:
-            - '*.txt' 
+          exclude: '1.txt,*.t'
           excludeMode: 'ignore'
           dryRun: true # optional
           

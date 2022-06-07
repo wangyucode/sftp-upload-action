@@ -34,7 +34,7 @@ inputs:
     default: 'remove'
   exclude:
     required: false
-    default: []
+    default: ''
   forceUpload:
     required: false
     default: false
