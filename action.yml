@@ -1,6 +1,8 @@
 name: 'SFTP uploader'
-color: 'green'
-icon: 'upload'
+author: 'wycode.cn'
+branding:
+  color: 'green'
+  icon: 'upload'
 description: 'upload files to server via SFTP'
 inputs:
   host:
