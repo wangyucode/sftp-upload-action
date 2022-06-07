@@ -18,6 +18,12 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:  
+
+      - name: create files
+        run: |
+          mkdir dist
+          echo "hello server" > dist/1.txt
+
       - name: SFTP uploader
         uses: wangyucode/sftp-upload-action@v1.3.2
         with:
