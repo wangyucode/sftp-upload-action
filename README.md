@@ -2,8 +2,6 @@
 
 this is a github action script for upload files to server via SFTP protocol.
 
-it using [sftp-sync-deploy](https://www.npmjs.com/package/sftp-sync-deploy)
-
 ## Inputs
 
 ```
@@ -26,7 +24,7 @@ it using [sftp-sync-deploy](https://www.npmjs.com/package/sftp-sync-deploy)
 ### Use password
 ```yml
 - name: SFTP uploader
-  uses: wangyucode/sftp-upload-action@v1.2
+  uses: wangyucode/sftp-upload-action@v1.3.2
   with:
     host: 'wycode.cn'
     password: ${{ secrets.password }} 
@@ -38,7 +36,7 @@ it using [sftp-sync-deploy](https://www.npmjs.com/package/sftp-sync-deploy)
 ### Use privateKey
 ```yml
 - name: SFTP uploader
-  uses: wangyucode/sftp-upload-action@v1.2
+  uses: wangyucode/sftp-upload-action@v1.3.2
   with:
     host: 'wycode.cn'
     privateKey: ${{ secrets.key }} 
