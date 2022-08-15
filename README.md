@@ -14,9 +14,8 @@ this is a github action script for upload files to server via SFTP protocol.
   agent: '',                            # Optional, path to the ssh-agent socket.
   localDir: 'dist',                     # Required, Absolute or relative to cwd.
   remoteDir: '/path/to/dest'            # Required, Absolute path only.
-  dryRun: false                         # Optional. Default to false.
+  dryRun: true                          # Optional. Default to true.
   exclude: 'node_modules/,**/*.spec.ts' # Optional. exclude patterns (glob), use ',' to split, Default to ''.
-  excludeMode: 'remove'                 # Optional, Behavior for excluded files ('remove' or 'ignore'), Default to 'remove'.
   forceUpload: false                    # Optional, Force uploading all files, Default to false(upload only newer files).
 ```
 
@@ -25,23 +24,21 @@ this is a github action script for upload files to server via SFTP protocol.
 ### Use password
 ```yml
 - name: SFTP uploader
-  uses: wangyucode/sftp-upload-action@v1.3.3
+  uses: wangyucode/sftp-upload-action@v1.4.0
   with:
     host: 'wycode.cn'
     password: ${{ secrets.password }} 
     localDir: 'dist'
     remoteDir: '/data/nginx/www/wycode.cn/'
-    dryRun: true # use dryRun for test
 ```
 
 ### Use privateKey
 ```yml
 - name: SFTP uploader
-  uses: wangyucode/sftp-upload-action@v1.3.3
+  uses: wangyucode/sftp-upload-action@v1.4.0
   with:
     host: 'wycode.cn'
     privateKey: ${{ secrets.key }} 
     localDir: 'dist'
     remoteDir: '/data/nginx/www/wycode.cn/'
-    dryRun: true # use dryRun for test
 ```
