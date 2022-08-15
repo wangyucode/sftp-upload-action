@@ -1,9 +1,132 @@
-import { createRequire as __WEBPACK_EXTERNAL_createRequire } from "module";
-/******/ var __webpack_modules__ = ({
+/******/ (() => { // webpackBootstrap
+/******/ 	var __webpack_modules__ = ({
+
+/***/ 262:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+const { lstat, opendir } = __nccwpck_require__(3292);
+const Client = __nccwpck_require__(7551);
+const path = __nccwpck_require__(1017);
+const M = __nccwpck_require__(3973);
+
+class Deployer {
+
+    constructor(config, options) {
+        this.config = {
+            username: 'root',
+            port: 22,
+            ...config
+        };
+        this.options = {
+            dryRun: true,
+            exclude: [],
+            removeRedundant: false,
+            ...options
+        };
+        this.sftp = new Client();
+        this.promises = [];
+    }
+
+    async sync() {
+        await this.sftp.connect(this.config);
+        await this.syncDir(this.config.localDir, this.config.remoteDir, '');
+        await Promise.all(this.promises);
+        await this.sftp.end();
+    }
+
+    async syncDir(localDir, remoteDir, relativePath) {
+        let localPath = path.join(localDir, relativePath);
+        let remotePath = path.posix.join(remoteDir, relativePath);
+        const remoteStats = await this.sftp.exists(remotePath);
+        if (remoteStats === '-' || remoteStats === 'l') {
+            throw new Error(`remote has same name file as the directory: ${path.basename(remotePath)}`);
+        } else if (remoteStats === false) {
+            await this.sftp.mkdir(remotePath, true);
+            console.log(`created directory: ${remotePath} on remote.`);
+        }
+        let localStats = await lstat(localPath);
+        if (localStats.isDirectory()) {
+            console.log(`checking dir: ${localPath}`);
+            const dir = await opendir(localPath);
+            for await (const dirent of dir) {
+                const localFile = path.join(localPath, dirent.name);
+                const remoteFile = path.posix.join(remotePath, dirent.name);
+                if (this.isIgnoreFile(localFile)) {
+                    console.log(`ignoring ${dirent.name}`);
+                    continue;
+                }
+                if (dirent.isDirectory()) {
+                    const dirExists = await this.sftp.exists(remoteFile);
+                    if (dirExists === 'd') {
+                        await this.syncDir(localPath, remotePath, dirent.name);
+                    } else {
+                        console.log(`${this.options.dryRun ? 'Dry-run: ' : ''}uploading dir ${dirent.name}`);
+                        if (!this.options.dryRun) {
+                            this.promises.push(this.sftp.uploadDir(
+                                path.join(localPath, dirent.name),
+                                remoteFile,
+                                { filter: (path, isDirectory) => this.isIgnoreFile(path) }
+                            ));
+                        }
+                    }
+                } else {
+                    await this.uploadFile(localFile, remoteFile);
+                }
+
+            }
+        } else {
+            const remoteFile = path.posix.join(remotePath, path.basename(localPath));
+            if (!this.isIgnoreFile(remoteFile)) await this.uploadFile(localPath, remoteFile);
+        }
+    }
+
+    async uploadFile(localFile, remoteFile) {
+        const remoteExists = await this.sftp.exists(remoteFile);
+        if (this.options.forceUpload) {
+            console.log(`${this.options.dryRun ? 'Dry-run: ' : ''} force upload ${remoteFile}`);
+            if (!this.options.dryRun) {
+                if (remoteExists === 'd') {
+                    await this.sftp.rmdir(remoteFile, true);
+                } else {
+                    await this.sftp.delete(remoteFile, true);
+                }
+                this.promises.push(this.sftp.put(localFile, remoteFile));
+            };
+        } else {
+            if (remoteExists) {
+                if (remoteExists === '-') {
+                    console.log(`checking modified timestamp of ${remoteFile}`);
+                    const localStats = await lstat(localFile);
+                    const remoteStats = await this.sftp.stat(remoteFile);
+                    if (remoteStats.modifyTime < localStats.mtimeMs) {
+                        console.log(`${this.options.dryRun ? 'Dry-run: ' : ''}uploading newer file: ${localFile}`);
+                        if (!this.options.dryRun) this.promises.push(this.sftp.put(localFile, remoteFile));
+                    } else {
+                        console.log(`server has newer file: ${localFile}, skipping upload.`);
+                    }
+                } else {
+                    throw new Error(`remote has different file type and same name of ${remoteFile}, consider using forceUpload to overwrite it.`);
+                }
+            } else {
+                console.log(`${this.options.dryRun ? 'Dry-run: ' : ''}uploading file ${localFile}`);
+                if (!this.options.dryRun) this.promises.push(this.sftp.put(localFile, remoteFile));
+            }
+        }
+    }
+
+    isIgnoreFile(path) {
+        return this.options.exclude.some(pattern => M(path, pattern));
+    }
+}
+
+module.exports = { Deployer };
+
+/***/ }),
 
 /***/ 7351:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
+"use strict";
 
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -102,6 +225,7 @@ function escapeProperty(s) {
 /***/ 2186:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
+"use strict";
 
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -425,6 +549,7 @@ Object.defineProperty(exports, "markdownSummary", ({ enumerable: true, get: func
 /***/ 717:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
+"use strict";
 
 // For internal use, subject to change.
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
@@ -473,6 +598,7 @@ exports.issueCommand = issueCommand;
 /***/ 8042:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
+"use strict";
 
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -758,6 +884,7 @@ exports.markdownSummary = new MarkdownSummary();
 /***/ 8041:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
+"use strict";
 
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -841,6 +968,7 @@ exports.OidcClient = OidcClient;
 /***/ 5278:
 /***/ ((__unused_webpack_module, exports) => {
 
+"use strict";
 
 // We use any as a valid input type
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -887,6 +1015,7 @@ exports.toCommandProperties = toCommandProperties;
 /***/ 3702:
 /***/ ((__unused_webpack_module, exports) => {
 
+"use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 class BasicCredentialHandler {
@@ -952,6 +1081,7 @@ exports.PersonalAccessTokenCredentialHandler = PersonalAccessTokenCredentialHand
 /***/ 9925:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
+"use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const http = __nccwpck_require__(3685);
@@ -1496,6 +1626,7 @@ exports.HttpClient = HttpClient;
 /***/ 6443:
 /***/ ((__unused_webpack_module, exports) => {
 
+"use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 function getProxyUrl(reqUrl) {
@@ -2277,6 +2408,7 @@ module.exports = {
 /***/ 9417:
 /***/ ((module) => {
 
+"use strict";
 
 module.exports = balanced;
 function balanced(a, b, str) {
@@ -2346,6 +2478,7 @@ function range(a, b, str) {
 /***/ 5447:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
+"use strict";
 
 
 var crypto_hash_sha512 = (__nccwpck_require__(8729).lowlevel.crypto_hash);
@@ -3349,6 +3482,7 @@ function u8Concat (parts) {
 /***/ 2997:
 /***/ ((module) => {
 
+"use strict";
 
 
 function assign(obj, props) {
@@ -4377,6 +4511,7 @@ minimatch.Minimatch = Minimatch
 /***/ 4742:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
+"use strict";
 
 
 var errcode = __nccwpck_require__(2997);
@@ -4436,6 +4571,7 @@ module.exports = promiseRetry;
 /***/ 7214:
 /***/ ((module) => {
 
+"use strict";
 
 
 const codes = {};
@@ -4559,6 +4695,7 @@ module.exports.q = codes;
 /***/ 1359:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
+"use strict";
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -4704,6 +4841,7 @@ Object.defineProperty(Duplex.prototype, 'destroyed', {
 /***/ 1542:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
+"use strict";
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -4749,6 +4887,7 @@ PassThrough.prototype._transform = function (chunk, encoding, cb) {
 /***/ 1433:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
+"use strict";
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -5879,6 +6018,7 @@ function indexOf(xs, x) {
 /***/ 4415:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
+"use strict";
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -6086,6 +6226,7 @@ function done(stream, er, data) {
 /***/ 6993:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
+"use strict";
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -6789,6 +6930,7 @@ Writable.prototype._destroy = function (err, cb) {
 /***/ 3306:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
+"use strict";
 
 
 var _Object$setPrototypeO;
@@ -7002,6 +7144,7 @@ module.exports = createReadableStreamAsyncIterator;
 /***/ 2746:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
+"use strict";
 
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
@@ -7218,6 +7361,7 @@ function () {
 /***/ 7049:
 /***/ ((module) => {
 
+"use strict";
  // undocumented cb() API, needed for core, not for public API
 
 function destroy(err, cb) {
@@ -7329,6 +7473,7 @@ module.exports = {
 /***/ 6080:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
+"use strict";
 // Ported from https://github.com/mafintosh/end-of-stream with
 // permission from the author, Mathias Buus (@mafintosh).
 
@@ -7439,6 +7584,7 @@ module.exports = eos;
 /***/ 9082:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
+"use strict";
 
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
@@ -7509,6 +7655,7 @@ module.exports = from;
 /***/ 6989:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
+"use strict";
 // Ported from https://github.com/mafintosh/pump with
 // permission from the author, Mathias Buus (@mafintosh).
 
@@ -7612,6 +7759,7 @@ module.exports = pipeline;
 /***/ 9948:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
+"use strict";
 
 
 var ERR_INVALID_OPT_VALUE = (__nccwpck_require__(7214)/* .codes.ERR_INVALID_OPT_VALUE */ .q.ERR_INVALID_OPT_VALUE);
@@ -8027,6 +8175,7 @@ SafeBuffer.allocUnsafeSlow = function (size) {
 /***/ 5118:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
+"use strict";
 /* eslint-disable node/no-deprecated-api */
 
 
@@ -8141,6 +8290,7 @@ module.exports = {
 /***/ 7551:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
+"use strict";
 
 
 const { Client } = __nccwpck_require__(5869);
@@ -9920,6 +10070,7 @@ module.exports = {
 /***/ 3204:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
+"use strict";
 
 
 const {
@@ -10222,6 +10373,7 @@ module.exports = {
 /***/ 9054:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
+"use strict";
 
 
 const { Socket } = __nccwpck_require__(1808);
@@ -11352,6 +11504,7 @@ module.exports = {
 /***/ 6063:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
+"use strict";
 // TODO:
 //    * add `.connected` or similar property to allow immediate connection
 //      status checking
@@ -13373,6 +13526,7 @@ module.exports = Client;
 /***/ 2994:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
+"use strict";
 
 
 const { Agent: HttpAgent } = __nccwpck_require__(3685);
@@ -13464,6 +13618,7 @@ function decorateStream(stream, ctor, options) {
 /***/ 5869:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
+"use strict";
 
 
 const {
@@ -13514,6 +13669,7 @@ module.exports = {
 /***/ 9031:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
+"use strict";
 /*
   TODO:
     * Replace `buffer._pos` usage in keyParser.js and elsewhere
@@ -15598,6 +15754,7 @@ module.exports = Protocol;
 /***/ 2026:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
+"use strict";
 
 
 const EventEmitter = __nccwpck_require__(2361);
@@ -19469,6 +19626,7 @@ module.exports = {
 /***/ 6832:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
+"use strict";
 
 
 const crypto = __nccwpck_require__(6113);
@@ -19829,6 +19987,7 @@ module.exports.DISCONNECT_REASON_BY_VALUE =
 /***/ 5708:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
+"use strict";
 // TODO:
 //    * make max packet size configurable
 //    * if decompression is enabled, use `._packet` in decipher instances as
@@ -21485,6 +21644,7 @@ else {}
 /***/ 172:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
+"use strict";
 
 
 const MESSAGE_HANDLERS = new Array(256);
@@ -21508,6 +21668,7 @@ module.exports = MESSAGE_HANDLERS;
 /***/ 6475:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
+"use strict";
 
 
 const {
@@ -22729,6 +22890,7 @@ module.exports = {
 /***/ 4126:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
+"use strict";
 
 
 const {
@@ -24567,6 +24729,7 @@ module.exports = {
 /***/ 2218:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
+"use strict";
 // TODO:
 //    * utilize `crypto.create(Private|Public)Key()` and `keyObject.export()`
 //    * handle multi-line header values (OpenSSH)?
@@ -26057,6 +26220,7 @@ module.exports = {
 /***/ 7609:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
+"use strict";
 
 
 const assert = __nccwpck_require__(9491);
@@ -26179,6 +26343,7 @@ exports.validateNumber = function validateNumber(value, name) {
 /***/ 9475:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
+"use strict";
 
 
 const Ber = (__nccwpck_require__(970).Ber);
@@ -26542,6 +26707,7 @@ module.exports = {
 /***/ 6715:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
+"use strict";
 
 
 const { kMaxLength } = __nccwpck_require__(4300);
@@ -26804,6 +26970,7 @@ module.exports = {
 /***/ 2986:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
+"use strict";
 // TODO:
 //   * convert listenerCount() usage to emit() return value checking?
 //   * emit error when connection severed early (e.g. before handshake)
@@ -28178,6 +28345,7 @@ module.exports.IncomingClient = Client;
 /***/ 834:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
+"use strict";
 
 
 const { SFTP } = __nccwpck_require__(2026);
@@ -28521,6 +28689,7 @@ module.exports = {
 /***/ 4841:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
+"use strict";
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -28831,6 +29000,7 @@ module.exports = __nccwpck_require__(4219);
 /***/ 4219:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
+"use strict";
 
 
 var net = __nccwpck_require__(1808);
@@ -32163,292 +32333,190 @@ module.exports = eval("require")("cpu-features");
 /***/ 9491:
 /***/ ((module) => {
 
-module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("assert");
+"use strict";
+module.exports = require("assert");
 
 /***/ }),
 
 /***/ 4300:
 /***/ ((module) => {
 
-module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("buffer");
+"use strict";
+module.exports = require("buffer");
 
 /***/ }),
 
 /***/ 2081:
 /***/ ((module) => {
 
-module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("child_process");
+"use strict";
+module.exports = require("child_process");
 
 /***/ }),
 
 /***/ 6113:
 /***/ ((module) => {
 
-module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("crypto");
+"use strict";
+module.exports = require("crypto");
 
 /***/ }),
 
 /***/ 9523:
 /***/ ((module) => {
 
-module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("dns");
+"use strict";
+module.exports = require("dns");
 
 /***/ }),
 
 /***/ 2361:
 /***/ ((module) => {
 
-module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("events");
+"use strict";
+module.exports = require("events");
 
 /***/ }),
 
 /***/ 7147:
 /***/ ((module) => {
 
-module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("fs");
+"use strict";
+module.exports = require("fs");
+
+/***/ }),
+
+/***/ 3292:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("fs/promises");
 
 /***/ }),
 
 /***/ 3685:
 /***/ ((module) => {
 
-module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("http");
+"use strict";
+module.exports = require("http");
 
 /***/ }),
 
 /***/ 5687:
 /***/ ((module) => {
 
-module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("https");
+"use strict";
+module.exports = require("https");
 
 /***/ }),
 
 /***/ 1808:
 /***/ ((module) => {
 
-module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("net");
+"use strict";
+module.exports = require("net");
 
 /***/ }),
 
 /***/ 2037:
 /***/ ((module) => {
 
-module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("os");
+"use strict";
+module.exports = require("os");
 
 /***/ }),
 
 /***/ 1017:
 /***/ ((module) => {
 
-module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("path");
+"use strict";
+module.exports = require("path");
 
 /***/ }),
 
 /***/ 2781:
 /***/ ((module) => {
 
-module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("stream");
+"use strict";
+module.exports = require("stream");
 
 /***/ }),
 
 /***/ 4404:
 /***/ ((module) => {
 
-module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("tls");
+"use strict";
+module.exports = require("tls");
 
 /***/ }),
 
 /***/ 3837:
 /***/ ((module) => {
 
-module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("util");
+"use strict";
+module.exports = require("util");
 
 /***/ }),
 
 /***/ 9796:
 /***/ ((module) => {
 
-module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("zlib");
+"use strict";
+module.exports = require("zlib");
 
 /***/ }),
 
 /***/ 6674:
 /***/ ((module) => {
 
+"use strict";
 module.exports = {"i8":"1.11.0"};
 
 /***/ })
 
-/******/ });
+/******/ 	});
 /************************************************************************/
-/******/ // The module cache
-/******/ var __webpack_module_cache__ = {};
-/******/ 
-/******/ // The require function
-/******/ function __nccwpck_require__(moduleId) {
-/******/ 	// Check if module is in cache
-/******/ 	var cachedModule = __webpack_module_cache__[moduleId];
-/******/ 	if (cachedModule !== undefined) {
-/******/ 		return cachedModule.exports;
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __nccwpck_require__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			// no module.id needed
+/******/ 			// no module.loaded needed
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		var threw = true;
+/******/ 		try {
+/******/ 			__webpack_modules__[moduleId].call(module.exports, module, module.exports, __nccwpck_require__);
+/******/ 			threw = false;
+/******/ 		} finally {
+/******/ 			if(threw) delete __webpack_module_cache__[moduleId];
+/******/ 		}
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
 /******/ 	}
-/******/ 	// Create a new module (and put it into the cache)
-/******/ 	var module = __webpack_module_cache__[moduleId] = {
-/******/ 		// no module.id needed
-/******/ 		// no module.loaded needed
-/******/ 		exports: {}
-/******/ 	};
-/******/ 
-/******/ 	// Execute the module function
-/******/ 	var threw = true;
-/******/ 	try {
-/******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __nccwpck_require__);
-/******/ 		threw = false;
-/******/ 	} finally {
-/******/ 		if(threw) delete __webpack_module_cache__[moduleId];
-/******/ 	}
-/******/ 
-/******/ 	// Return the exports of the module
-/******/ 	return module.exports;
-/******/ }
-/******/ 
+/******/ 	
 /************************************************************************/
-/******/ /* webpack/runtime/compat */
-/******/ 
-/******/ if (typeof __nccwpck_require__ !== 'undefined') __nccwpck_require__.ab = new URL('.', import.meta.url).pathname.slice(import.meta.url.match(/^file:\/\/\/\w:/) ? 1 : 0, -1) + "/";
-/******/ 
+/******/ 	/* webpack/runtime/compat */
+/******/ 	
+/******/ 	if (typeof __nccwpck_require__ !== 'undefined') __nccwpck_require__.ab = __dirname + "/";
+/******/ 	
 /************************************************************************/
 var __webpack_exports__ = {};
 // This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
 (() => {
-
-// EXTERNAL MODULE: ./node_modules/@actions/core/lib/core.js
-var core = __nccwpck_require__(2186);
-;// CONCATENATED MODULE: external "fs/promises"
-const promises_namespaceObject = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("fs/promises");
-// EXTERNAL MODULE: ./node_modules/ssh2-sftp-client/src/index.js
-var src = __nccwpck_require__(7551);
-// EXTERNAL MODULE: external "path"
-var external_path_ = __nccwpck_require__(1017);
-// EXTERNAL MODULE: ./node_modules/minimatch/minimatch.js
-var minimatch = __nccwpck_require__(3973);
-;// CONCATENATED MODULE: ./lib/deployer.js
-
-
-
-
-
-class Deployer {
-
-    constructor(config, options) {
-        this.config = {
-            username: 'root',
-            port: 22,
-            ...config
-        };
-        this.options = {
-            dryRun: true,
-            exclude: [],
-            removeRedundant: false,
-            ...options
-        };
-        this.sftp = new src();
-        this.promises = [];
-    }
-
-    async sync() {
-        await this.sftp.connect(this.config);
-        await this.syncDir(['']);
-        await Promise.all(this.promises);
-        await this.sftp.end();
-    }
-
-    async syncDir(relativePath) {
-        let localPath = external_path_.join(this.config.localDir, ...relativePath);
-        let remotePath = external_path_.posix.join(this.config.remoteDir, ...relativePath);
-        const remoteStats = await this.sftp.exists(remotePath);
-        if (remoteStats === '-' || remoteStats === 'l') {
-            throw new Error(`remote has same name file as the directory: ${external_path_.basename(remotePath)}`);
-        } else if (remoteStats === false) {
-            await this.sftp.mkdir(remotePath, true);
-            console.log(`created directory: ${remotePath} on remote.`);
-        }
-        let localStats = await (0,promises_namespaceObject.lstat)(localPath);
-        if (localStats.isDirectory()) {
-            console.log(`checking dir: ${localPath}`);
-            const dir = await (0,promises_namespaceObject.opendir)(localPath);
-            for await (const dirent of dir) {
-                const localFile = external_path_.join(localPath, dirent.name);
-                const remoteFile = external_path_.posix.join(remotePath, dirent.name);
-                if (this.isIgnoreFile(localFile)) {
-                    console.log(`ignoring ${dirent.name}`);
-                    continue;
-                }
-                if (dirent.isDirectory()) {
-                    const dirExists = await this.sftp.exists(remoteFile);
-                    if (dirExists === 'd') {
-                        await this.syncDir(localFile.split(external_path_.sep));
-                    } else {
-                        console.log(`${this.options.dryRun ? 'Dry-run: ': ''}uploading dir ${dirent.name}`);
-                        if (!this.options.dryRun) {
-                            this.promises.push(this.sftp.uploadDir(
-                                external_path_.join(localPath, dirent.name),
-                                remoteFile,
-                                { filter: (path, isDirectory) => this.isIgnoreFile(path) }
-                            ));
-                        }
-                    }
-                } else {
-                   await this.uploadFile(localFile, remoteFile);
-                }
-
-            }
-        } else {
-            const remoteFile = external_path_.posix.join(remotePath, external_path_.basename(localPath));
-            if (!this.isIgnoreFile(remoteFile)) await this.uploadFile(localPath, remoteFile);
-        }
-    }
-
-    async uploadFile(localFile, remoteFile) {
-        const remoteExists = await this.sftp.exists(remoteFile);
-        if (this.options.forceUpload) {
-            console.log(`${this.options.dryRun ? 'Dry-run: ': ''} force upload ${remoteFile}`);
-            if (!this.options.dryRun) {
-                if (remoteExists === 'd') {
-                    await this.sftp.rmdir(remoteFile, true);
-                } else {
-                    await this.sftp.delete(remoteFile, true);
-                }
-                this.promises.push(this.sftp.put(localFile, remoteFile));
-            };
-        } else {
-            if (remoteExists) {
-                if (remoteExists === '-') {
-                    console.log(`checking modified timestamp of ${remoteFile}`);
-                    const localStats = await (0,promises_namespaceObject.lstat)(localFile);
-                    const remoteStats = await this.sftp.stat(remoteFile);
-                    if (remoteStats.modifyTime < localStats.mtimeMs) {
-                        console.log(`${this.options.dryRun ? 'Dry-run: ': ''}uploading newer file: ${localFile}`);
-                        if (!this.options.dryRun)  this.promises.push(this.sftp.put(localFile, remoteFile));
-                    } else {
-                        console.log(`server has newer file: ${localFile}, skipping upload.`);
-                    }
-                } else {
-                    throw new Error(`remote has different file type and same name of ${remoteFile}, consider using forceUpload to overwrite it.`);
-                }
-            } else {
-                console.log(`${this.options.dryRun ? 'Dry-run: ': ''}uploading file ${localFile}`);
-                if (!this.options.dryRun)  this.promises.push(this.sftp.put(localFile, remoteFile));
-            }
-        }
-    }
-
-    isIgnoreFile(path) {
-        return this.options.exclude.some(pattern => minimatch(path, pattern));
-    }
-}
-;// CONCATENATED MODULE: ./sftp.js
-
-
+const core = __nccwpck_require__(2186);
+const { Deployer } = __nccwpck_require__(262);
 
 const config = {
   host: core.getInput('host'), // Required.
@@ -32472,8 +32540,11 @@ console.log('config->', config, options);
 
 new Deployer(config, options)
   .sync()
-  .then(()=> console.log('sftp upload success!'));
+  .then(() => console.log('sftp upload success!'));
 
 
 })();
 
+module.exports = __webpack_exports__;
+/******/ })()
+;

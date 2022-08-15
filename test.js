@@ -1,10 +1,10 @@
-import Deployer from "./lib/deployer.js";
-import fs from "fs";
+const { Deployer } = require('./lib/deployer');
+const fs = require('fs');
 
 new Deployer({
     host: '192.168.0.99',
     privateKey: fs.readFileSync('./id_rsa'),
-    localDir: './',
-    remoteDir: '/root/test'
-}, {exclude: ['.git','*rsa', 'node_modules'], dryRun: false, forceUpload: true})
+    localDir: './node_modules',
+    remoteDir: '/root/test/blablabla'
+}, { exclude: ['*!ssh2-sftp-client'], dryRun: false, forceUpload: true })
     .sync();

@@ -1,5 +1,5 @@
-import core from '@actions/core';
-import Deployer from "./lib/deployer.js";
+const core = require('@actions/core');
+const { Deployer } = require('./lib/deployer');
 
 const config = {
   host: core.getInput('host'), // Required.
@@ -23,5 +23,5 @@ console.log('config->', config, options);
 
 new Deployer(config, options)
   .sync()
-  .then(()=> console.log('sftp upload success!'));
+  .then(() => console.log('sftp upload success!'));
 

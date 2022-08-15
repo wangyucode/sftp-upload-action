@@ -1,12 +1,12 @@
 {
   "name": "sftp-upload-action",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "sftp upload using sftp-sync-deploy",
   "private": true,
-  "type": "module",
   "scripts": {
-    "build": "ncc build sftp.js --license licenses.txt",
-    "test": "node test.js"
+    "build": "ncc build sftp.cjs --license licenses.txt && npm run rename",
+    "test": "node test.js",
+    "rename": "move-cli dist/index.cjs dist/index.js"
   },
   "repository": {
     "type": "git",
@@ -24,5 +24,8 @@
     "@vercel/ncc": "^0.33.4",
     "minimatch": "^5.1.0",
     "ssh2-sftp-client": "^9.0.3"
+  },
+  "devDependencies": {
+    "move-cli": "^2.0.0"
   }
 }

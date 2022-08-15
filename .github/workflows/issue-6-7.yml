@@ -29,7 +29,7 @@ jobs:
         run: npm install
 
       - name: SFTP uploader
-        uses: wangyucode/sftp-upload-action@v1.4.0
+        uses: wangyucode/sftp-upload-action@v1.4.1
         with:
           host: '121.89.216.18'
           port: 5190
@@ -38,13 +38,13 @@ jobs:
           remoteDir: '/root/test/blablabla'
 
       - name: Criando diretorio OK
-        run: mkdir /home/runner/work/blablabla/ok
+        run: mkdir -p /home/runner/work/blablabla/ok
 
       - name: Criando arquivo .ok
         run: touch /home/runner/work/blablabla/ok/deploy.ok
 
       - name: SFTP uploader
-        uses: wangyucode/sftp-upload-action@v1.4.0
+        uses: wangyucode/sftp-upload-action@v1.4.1
         with:
           host: '121.89.216.18'
           port: 5190
