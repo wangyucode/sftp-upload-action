@@ -29,7 +29,7 @@ jobs:
         run: npm install
 
       - name: SFTP uploader
-        uses: wangyucode/sftp-upload-action@v1.3.3
+        uses: wangyucode/sftp-upload-action@v1.4.0
         with:
           host: '121.89.216.18'
           port: 5190
@@ -44,12 +44,11 @@ jobs:
         run: touch /home/runner/work/blablabla/ok/deploy.ok
 
       - name: SFTP uploader
-        uses: wangyucode/sftp-upload-action@v1.3.3
+        uses: wangyucode/sftp-upload-action@v1.4.0
         with:
           host: '121.89.216.18'
           port: 5190
           privateKey: ${{ secrets.SERVER_KEY }} 
           localDir: '/home/runner/work/blablabla/ok'
           remoteDir: '/root/test/blablabla'
-          excludeMode: 'ignore'
 
