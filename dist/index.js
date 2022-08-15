@@ -1,10 +1,9 @@
-/******/ (() => { // webpackBootstrap
-/******/ 	var __webpack_modules__ = ({
+import { createRequire as __WEBPACK_EXTERNAL_createRequire } from "module";
+/******/ var __webpack_modules__ = ({
 
 /***/ 7351:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
-"use strict";
 
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -103,7 +102,6 @@ function escapeProperty(s) {
 /***/ 2186:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
-"use strict";
 
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -427,7 +425,6 @@ Object.defineProperty(exports, "markdownSummary", ({ enumerable: true, get: func
 /***/ 717:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
-"use strict";
 
 // For internal use, subject to change.
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
@@ -476,7 +473,6 @@ exports.issueCommand = issueCommand;
 /***/ 8042:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
-"use strict";
 
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -762,7 +758,6 @@ exports.markdownSummary = new MarkdownSummary();
 /***/ 8041:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
-"use strict";
 
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -846,7 +841,6 @@ exports.OidcClient = OidcClient;
 /***/ 5278:
 /***/ ((__unused_webpack_module, exports) => {
 
-"use strict";
 
 // We use any as a valid input type
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -893,7 +887,6 @@ exports.toCommandProperties = toCommandProperties;
 /***/ 3702:
 /***/ ((__unused_webpack_module, exports) => {
 
-"use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 class BasicCredentialHandler {
@@ -959,7 +952,6 @@ exports.PersonalAccessTokenCredentialHandler = PersonalAccessTokenCredentialHand
 /***/ 9925:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
-"use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const http = __nccwpck_require__(3685);
@@ -1504,7 +1496,6 @@ exports.HttpClient = HttpClient;
 /***/ 6443:
 /***/ ((__unused_webpack_module, exports) => {
 
-"use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 function getProxyUrl(reqUrl) {
@@ -1566,759 +1557,1356 @@ exports.checkBypass = checkBypass;
 
 /***/ }),
 
-/***/ 5911:
-/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+/***/ 9348:
+/***/ ((module) => {
 
-"use strict";
+// Copyright 2011 Mark Cavage <mcavage@gmail.com> All rights reserved.
 
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __exportStar = (this && this.__exportStar) || function(m, exports) {
-    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+
+module.exports = {
+
+  newInvalidAsn1Error: function (msg) {
+    var e = new Error();
+    e.name = 'InvalidAsn1Error';
+    e.message = msg || '';
+    return e;
+  }
+
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
+
+
+/***/ }),
+
+/***/ 194:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+// Copyright 2011 Mark Cavage <mcavage@gmail.com> All rights reserved.
+
+var errors = __nccwpck_require__(9348);
+var types = __nccwpck_require__(2473);
+
+var Reader = __nccwpck_require__(290);
+var Writer = __nccwpck_require__(3200);
+
+
+// --- Exports
+
+module.exports = {
+
+  Reader: Reader,
+
+  Writer: Writer
+
 };
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.deploy = void 0;
-const chalk_1 = __importDefault(__nccwpck_require__(8818));
-const sftpSync_1 = __nccwpck_require__(8729);
-function deploy(config, options) {
-    const deployer = new sftpSync_1.SftpSync(config, options);
-    console.log(chalk_1.default.green(`* Deploying to host ${config.host}`));
-    console.log(chalk_1.default.grey('* local dir  = ') + deployer.localRoot);
-    console.log(chalk_1.default.grey('* remote dir = ') + deployer.remoteRoot);
-    console.log('');
-    return deployer.sync();
+
+for (var t in types) {
+  if (types.hasOwnProperty(t))
+    module.exports[t] = types[t];
 }
-exports.deploy = deploy;
-;
-exports["default"] = deploy;
-__exportStar(__nccwpck_require__(8729), exports);
-__exportStar(__nccwpck_require__(267), exports);
-
-
-/***/ }),
-
-/***/ 267:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-
-
-/***/ }),
-
-/***/ 9962:
-/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
-
-"use strict";
-
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.QueuifiedSFTP = void 0;
-const queue_1 = __importDefault(__nccwpck_require__(3795));
-class QueuifiedSFTP {
-    constructor(concurrency) {
-        this.started = false;
-        this.paused = false;
-        this.queue = new queue_1.default({ concurrency });
-        this.queue.on('end', err => {
-            this.started = false;
-        });
-    }
-    static init(client, concurrency = Infinity) {
-        const instance = new QueuifiedSFTP(concurrency);
-        return new Promise((resolve, reject) => {
-            client.sftp((err, sftp) => {
-                if (err)
-                    return reject(err);
-                instance.sftp = sftp;
-                resolve(instance);
-            });
-        });
-    }
-    fastPut(localPath, remotePath, options) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return this.run('fastPut', [localPath, remotePath, options]);
-        });
-    }
-    open(filename, mode, attributes) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return this.run('open', [filename, mode, attributes]);
-        });
-    }
-    writeData(handle, buffer, offset, length, position) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return this.run('write', [handle, buffer, offset, length, position]);
-        });
-    }
-    close(handle) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return this.run('close', [handle]);
-        });
-    }
-    mkdir(path, attributes) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return this.run('mkdir', [path, attributes]);
-        });
-    }
-    rmdir(path) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return this.run('rmdir', [path]);
-        });
-    }
-    readdir(location) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return this.run('readdir', [location]);
-        });
-    }
-    unlink(path) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return this.run('unlink', [path]);
-        });
-    }
-    lstat(path) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return this.run('lstat', [path]);
-        });
-    }
-    run(method, args) {
-        return new Promise((resolve, reject) => {
-            this.queue.push(cb => {
-                this.sftp[method](...args, (err, result) => {
-                    err ? reject(err) : resolve(result);
-                    cb(null, result);
-                });
-            });
-            if (!this.started) {
-                this.queue.start();
-                this.started = true;
-            }
-        });
-    }
+for (var e in errors) {
+  if (errors.hasOwnProperty(e))
+    module.exports[e] = errors[e];
 }
-exports.QueuifiedSFTP = QueuifiedSFTP;
 
 
 /***/ }),
 
-/***/ 8729:
-/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+/***/ 290:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
+// Copyright 2011 Mark Cavage <mcavage@gmail.com> All rights reserved.
 
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
+var assert = __nccwpck_require__(9491);
+var Buffer = (__nccwpck_require__(5118).Buffer);
+
+var ASN1 = __nccwpck_require__(2473);
+var errors = __nccwpck_require__(9348);
+
+
+// --- Globals
+
+var newInvalidAsn1Error = errors.newInvalidAsn1Error;
+
+
+
+// --- API
+
+function Reader(data) {
+  if (!data || !Buffer.isBuffer(data))
+    throw new TypeError('data must be a node Buffer');
+
+  this._buf = data;
+  this._size = data.length;
+
+  // These hold the "current" state
+  this._len = 0;
+  this._offset = 0;
+}
+
+Object.defineProperty(Reader.prototype, 'length', {
+  enumerable: true,
+  get: function () { return (this._len); }
 });
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SftpSync = void 0;
-const ssh2_1 = __nccwpck_require__(9236);
-const ssh2_streams_1 = __nccwpck_require__(792);
-const path = __importStar(__nccwpck_require__(1017));
-const fs = __importStar(__nccwpck_require__(7147));
-const util_1 = __nccwpck_require__(9310);
-const queuifiedSftp_1 = __nccwpck_require__(9962);
-const syncTable_1 = __nccwpck_require__(8594);
-/**
- * Creates a new SftpDeploy instance
- * @class
- */
-class SftpSync {
-    /**
-     * Constructor
-     */
-    constructor(config, options) {
-        /**
-         * Whether a SSH2 connection has been made or not
-         */
-        this.connected = false;
-        this.config = config;
-        this.options = Object.assign({ dryRun: false, exclude: [], excludeMode: 'remove', concurrency: 100 }, options);
-        this.client = new ssh2_1.Client;
-        this.localRoot = (0, util_1.chomp)(path.resolve(this.config.localDir), path.sep);
-        this.remoteRoot = (0, util_1.chomp)(this.config.remoteDir, path.posix.sep);
-    }
-    /**
-     * Make SSH2 connection
-     */
-    connect() {
-        let privKeyRaw;
-        const { privateKey } = this.config;
-        if (privateKey) {
-            if (privateKey.startsWith('---')) {
-                privKeyRaw = privateKey;
-            }
-            else {
-                try {
-                    privKeyRaw = fs.readFileSync(this.config.privateKey);
-                }
-                catch (err) {
-                    throw new Error(`Local Error: Private key file not found ${this.config.privateKey}`);
-                }
-            }
-        }
-        return new Promise((resolve, reject) => {
-            this.client
-                .on('ready', () => {
-                this.connected = true;
-                resolve();
-            })
-                .on('error', err_1 => {
-                reject(new Error(`Connection Error: ${err_1.message}`));
-            })
-                .connect({
-                host: this.config.host,
-                port: this.config.port || 22,
-                username: this.config.username,
-                password: this.config.password,
-                passphrase: this.config.passphrase,
-                privateKey: privKeyRaw,
-                agent: this.config.agent
-            });
-        });
-    }
-    /**
-     * Close SSH2 connection
-     */
-    close() {
-        this.connected = false;
-        this.client.end();
-    }
-    /**
-     * Sync with specified path
-     */
-    sync(relativePath = '', isRootTask = true) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const table = yield this.buildSyncTable(relativePath);
-            yield Promise.all(table.all.map((entry) => __awaiter(this, void 0, void 0, function* () {
-                const task = entry.getTask();
-                const args = [entry.path, false];
-                if (this.options.dryRun) {
-                    entry.dryRunLog();
-                    if (task.method === 'sync') {
-                        return this.sync(entry.path, false);
-                    }
-                    return;
-                }
-                if (task.removeRemote) {
-                    yield this.removeRemote(entry.path, false);
-                }
-                if (task.method === 'sync' && entry.remoteStat !== 'dir') {
-                    yield this.createRemoteDirectory(entry.path);
-                }
-                yield this[task.method].apply(this, args);
-                entry.liveRunLog();
-            })));
-            if (isRootTask)
-                this.close();
-        });
-    }
-    /**
-     * Upload file/directory
-     */
-    upload(relativePath, isRootTask = true) {
-        return __awaiter(this, void 0, void 0, function* () {
-            if (!this.queuifiedSftp) {
-                yield this.initQueuifiedSftp();
-                return this.upload(relativePath, isRootTask);
-            }
-            const localPath = this.localFullPath(relativePath);
-            const remotePath = this.remoteFullPath(relativePath);
-            const stat = fs.lstatSync(localPath);
-            if (stat.isDirectory()) {
-                const files = fs.readdirSync(localPath);
-                if (files && files.length) {
-                    yield Promise.all(files.map(filename => this.upload(path.posix.join(relativePath, filename), false)));
-                }
-            }
-            else {
-                try {
-                    // const buffer = fs.readFileSync(localPath);
-                    // const handle = await this.queuifiedSftp.open(remotePath, 'r+');
-                    // await this.queuifiedSftp.writeData(handle, buffer, 0, buffer.length, 0);
-                    // await this.queuifiedSftp.close(handle);
-                    yield this.queuifiedSftp.fastPut(localPath, remotePath);
-                }
-                catch (err) {
-                    switch (err.code) {
-                        case ssh2_streams_1.SFTPStream.STATUS_CODE.NO_SUCH_FILE: {
-                            throw new Error(`Remote Error: Cannot upload file. No such file ${remotePath}`);
-                        }
-                        case ssh2_streams_1.SFTPStream.STATUS_CODE.PERMISSION_DENIED: {
-                            throw new Error(`Remote Error: Cannot upload file. Permission denied ${remotePath}`);
-                        }
-                        case ssh2_streams_1.SFTPStream.STATUS_CODE.FAILURE: {
-                            throw new Error(`Remote Error: Unknown error while uploading file ${remotePath}`);
-                        }
-                        default: throw err;
-                    }
-                }
-            }
-            if (isRootTask)
-                this.close();
-        });
-    }
-    /**
-     * Remove a remote file or directory
-     */
-    removeRemote(relativePath, isRootTask = true) {
-        return __awaiter(this, void 0, void 0, function* () {
-            if (!this.queuifiedSftp) {
-                yield this.initQueuifiedSftp();
-                return this.removeRemote(relativePath, isRootTask);
-            }
-            const remotePath = this.remoteFullPath(relativePath);
-            const stat = yield this.queuifiedSftp.lstat(remotePath);
-            if (stat.isDirectory()) {
-                const files = yield this.queuifiedSftp.readdir(remotePath);
-                yield Promise.all(files.map(file => this.removeRemote(path.posix.join(relativePath, file.filename), false)));
-                yield this.queuifiedSftp.rmdir(remotePath);
-            }
-            else {
-                return this.queuifiedSftp.unlink(remotePath);
-            }
-            if (isRootTask)
-                this.close();
-        });
-    }
-    /**
-     * No operation
-     */
-    noop() {
-        return __awaiter(this, void 0, void 0, function* () {
-            return;
-        });
-    }
-    /**
-     * Create a directory on a remote host
-     */
-    createRemoteDirectory(relativePath) {
-        return __awaiter(this, void 0, void 0, function* () {
-            if (!this.queuifiedSftp) {
-                yield this.initQueuifiedSftp();
-                return this.createRemoteDirectory(relativePath);
-            }
-            const remotePath = this.remoteFullPath(relativePath);
-            try {
-                yield this.queuifiedSftp.mkdir(remotePath);
-            }
-            catch (err) {
-                switch (err.code) {
-                    case ssh2_streams_1.SFTPStream.STATUS_CODE.NO_SUCH_FILE: {
-                        throw new Error(`Remote Error: Cannot create directory ${remotePath}`);
-                    }
-                    case ssh2_streams_1.SFTPStream.STATUS_CODE.PERMISSION_DENIED: {
-                        throw new Error(`Remote Error: Cannot create directory. Permission denied ${remotePath}`);
-                    }
-                    case ssh2_streams_1.SFTPStream.STATUS_CODE.FAILURE: {
-                        throw new Error(`Remote Error: Unknown error while creating directory ${remotePath}`);
-                    }
-                    default: throw err;
-                }
-            }
-        });
-    }
-    /**
-     * Build a local and remote files status report for the specified path
-     */
-    buildSyncTable(relativePath) {
-        return __awaiter(this, void 0, void 0, function* () {
-            if (!this.queuifiedSftp) {
-                yield this.initQueuifiedSftp();
-                return this.buildSyncTable(relativePath);
-            }
-            const localPath = this.localFullPath(relativePath);
-            const remotePath = this.remoteFullPath(relativePath);
-            const table = new syncTable_1.SyncTable(relativePath, this.options);
-            const readLocal = () => __awaiter(this, void 0, void 0, function* () {
-                let files;
-                try {
-                    files = fs.readdirSync(localPath);
-                }
-                catch (err) {
-                    switch (err.code) {
-                        case 'ENOENT': throw new Error(`Local Error: No such directory ${localPath}`);
-                        case 'ENOTDIR': throw new Error(`Local Error: Not a directory ${localPath}`);
-                        case 'EPERM': throw new Error(`Local Error: Cannot read directory. Permission denied ${localPath}`);
-                        default: throw err;
-                    }
-                }
-                if (!files || !files.length)
-                    return;
-                yield Promise.all(files.map((filename) => __awaiter(this, void 0, void 0, function* () {
-                    const fullPath = path.join(localPath, filename);
-                    let stat;
-                    try {
-                        fs.accessSync(fullPath, fs.constants.R_OK);
-                        stat = fs.lstatSync(fullPath);
-                    }
-                    catch (err) {
-                        if (err.code === 'EPERM' || err.code === 'EACCES') {
-                            table.set(filename, { localStat: 'error', localTimestamp: null });
-                        }
-                        return;
-                    }
-                    const mtime = Math.floor(new Date(stat.mtime).getTime() / 1000);
-                    table.set(filename, {
-                        localStat: stat.isDirectory() ? 'dir' : 'file',
-                        localTimestamp: mtime
-                    });
-                })));
-            });
-            const readRemote = () => __awaiter(this, void 0, void 0, function* () {
-                let files;
-                try {
-                    files = yield this.queuifiedSftp.readdir(remotePath);
-                }
-                catch (err) { }
-                if (!files || !files.length)
-                    return;
-                yield Promise.all(files.map((file) => __awaiter(this, void 0, void 0, function* () {
-                    const fullPath = path.posix.join(remotePath, file.filename);
-                    let stat;
-                    try {
-                        stat = yield this.queuifiedSftp.lstat(fullPath);
-                        if (stat.isDirectory()) {
-                            yield this.queuifiedSftp.readdir(fullPath);
-                        }
-                        else {
-                            const buffer = yield this.queuifiedSftp.open(fullPath, 'r+');
-                            yield this.queuifiedSftp.close(buffer);
-                        }
-                    }
-                    catch (err) {
-                        if (err.code === ssh2_streams_1.SFTPStream.STATUS_CODE.PERMISSION_DENIED) {
-                            table.set(file.filename, { remoteStat: 'error', remoteTimestamp: null });
-                        }
-                        return;
-                    }
-                    if (stat) {
-                        table.set(file.filename, {
-                            remoteStat: stat.isDirectory() ? 'dir' : 'file',
-                            remoteTimestamp: stat.mtime
-                        });
-                    }
-                })));
-            });
-            yield Promise.all([readLocal(), readRemote()]);
-            return table.forEach(entry => entry.detectExclusion());
-        });
-    }
-    /**
-     * Get an async version of sftp stream
-     */
-    initQueuifiedSftp(concurrency = this.options.concurrency) {
-        return __awaiter(this, void 0, void 0, function* () {
-            if (this.queuifiedSftp) {
-                return this.queuifiedSftp;
-            }
-            if (!this.connected) {
-                yield this.connect();
-                return this.initQueuifiedSftp(concurrency);
-            }
-            this.queuifiedSftp = yield queuifiedSftp_1.QueuifiedSFTP.init(this.client, concurrency);
-            return this.queuifiedSftp;
-        });
-    }
-    /**
-     * Get a full path of a local file or directory
-     */
-    localFullPath(relativePath) {
-        return path.join(this.localRoot, relativePath);
-    }
-    /**
-     * Get a full path of a remote file or directory
-     */
-    remoteFullPath(relativePath) {
-        return path.posix.join(this.remoteRoot, relativePath);
-    }
-}
-exports.SftpSync = SftpSync;
 
-
-/***/ }),
-
-/***/ 8594:
-/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
-
-"use strict";
-
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
+Object.defineProperty(Reader.prototype, 'offset', {
+  enumerable: true,
+  get: function () { return (this._offset); }
 });
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
+
+Object.defineProperty(Reader.prototype, 'remain', {
+  get: function () { return (this._size - this._offset); }
+});
+
+Object.defineProperty(Reader.prototype, 'buffer', {
+  get: function () { return (this._buf.slice(this._offset)); }
+});
+
+
+/**
+ * Reads a single byte and advances offset; you can pass in `true` to make this
+ * a "peek" operation (i.e., get the byte, but don't advance the offset).
+ *
+ * @param {Boolean} peek true means don't move offset.
+ * @return {Number} the next byte, null if not enough data.
+ */
+Reader.prototype.readByte = function (peek) {
+  if (this._size - this._offset < 1)
+    return null;
+
+  var b = this._buf[this._offset] & 0xff;
+
+  if (!peek)
+    this._offset += 1;
+
+  return b;
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
+
+
+Reader.prototype.peek = function () {
+  return this.readByte(true);
 };
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SyncTable = exports.SyncTableEntry = void 0;
-const minimatch_1 = __importDefault(__nccwpck_require__(6802));
-const chalk_1 = __importDefault(__nccwpck_require__(8818));
-const path = __importStar(__nccwpck_require__(1017));
-class SyncTableEntry {
-    constructor(table, name) {
-        this.table = table;
-        this.name = name;
-        this.localStat = null;
-        this.remoteStat = null;
-        this.localTimestamp = null;
-        this.remoteTimestamp = null;
-        this.path = path.posix.join(table.relativePath || '.', name);
+
+
+/**
+ * Reads a (potentially) variable length off the BER buffer.  This call is
+ * not really meant to be called directly, as callers have to manipulate
+ * the internal buffer afterwards.
+ *
+ * As a result of this call, you can call `Reader.length`, until the
+ * next thing called that does a readLength.
+ *
+ * @return {Number} the amount of offset to advance the buffer.
+ * @throws {InvalidAsn1Error} on bad ASN.1
+ */
+Reader.prototype.readLength = function (offset) {
+  if (offset === undefined)
+    offset = this._offset;
+
+  if (offset >= this._size)
+    return null;
+
+  var lenB = this._buf[offset++] & 0xff;
+  if (lenB === null)
+    return null;
+
+  if ((lenB & 0x80) === 0x80) {
+    lenB &= 0x7f;
+
+    if (lenB === 0)
+      throw newInvalidAsn1Error('Indefinite length not supported');
+
+    if (lenB > 4)
+      throw newInvalidAsn1Error('encoding too long');
+
+    if (this._size - offset < lenB)
+      return null;
+
+    this._len = 0;
+    for (var i = 0; i < lenB; i++)
+      this._len = (this._len << 8) + (this._buf[offset++] & 0xff);
+
+  } else {
+    // Wasn't a variable length
+    this._len = lenB;
+  }
+
+  return offset;
+};
+
+
+/**
+ * Parses the next sequence in this BER buffer.
+ *
+ * To get the length of the sequence, call `Reader.length`.
+ *
+ * @return {Number} the sequence's tag.
+ */
+Reader.prototype.readSequence = function (tag) {
+  var seq = this.peek();
+  if (seq === null)
+    return null;
+  if (tag !== undefined && tag !== seq)
+    throw newInvalidAsn1Error('Expected 0x' + tag.toString(16) +
+                              ': got 0x' + seq.toString(16));
+
+  var o = this.readLength(this._offset + 1); // stored in `length`
+  if (o === null)
+    return null;
+
+  this._offset = o;
+  return seq;
+};
+
+
+Reader.prototype.readInt = function () {
+  return this._readTag(ASN1.Integer);
+};
+
+
+Reader.prototype.readBoolean = function () {
+  return (this._readTag(ASN1.Boolean) === 0 ? false : true);
+};
+
+
+Reader.prototype.readEnumeration = function () {
+  return this._readTag(ASN1.Enumeration);
+};
+
+
+Reader.prototype.readString = function (tag, retbuf) {
+  if (!tag)
+    tag = ASN1.OctetString;
+
+  var b = this.peek();
+  if (b === null)
+    return null;
+
+  if (b !== tag)
+    throw newInvalidAsn1Error('Expected 0x' + tag.toString(16) +
+                              ': got 0x' + b.toString(16));
+
+  var o = this.readLength(this._offset + 1); // stored in `length`
+
+  if (o === null)
+    return null;
+
+  if (this.length > this._size - o)
+    return null;
+
+  this._offset = o;
+
+  if (this.length === 0)
+    return retbuf ? Buffer.alloc(0) : '';
+
+  var str = this._buf.slice(this._offset, this._offset + this.length);
+  this._offset += this.length;
+
+  return retbuf ? str : str.toString('utf8');
+};
+
+Reader.prototype.readOID = function (tag) {
+  if (!tag)
+    tag = ASN1.OID;
+
+  var b = this.readString(tag, true);
+  if (b === null)
+    return null;
+
+  var values = [];
+  var value = 0;
+
+  for (var i = 0; i < b.length; i++) {
+    var byte = b[i] & 0xff;
+
+    value <<= 7;
+    value += byte & 0x7f;
+    if ((byte & 0x80) === 0) {
+      values.push(value);
+      value = 0;
     }
-    /**
-     * Get a task for this entry
-     */
-    getTask() {
-        if (this.task) {
-            return this.task;
-        }
-        let task = { method: undefined, removeRemote: false, hasError: false, skip: false };
-        let options = this.table.options;
-        if (this.localStat === 'error' || this.remoteStat === 'error') {
-            task.hasError = true;
-        }
-        if (this.remoteStat !== null && !task.hasError && this.localStat !== this.remoteStat) {
-            task.removeRemote = true;
-        }
-        if (this.localStat === 'excluded' && options.excludeMode === 'ignore') {
-            task.removeRemote = false;
-        }
-        if (this.localStat === 'excluded' || task.hasError) {
-            task.method = 'noop';
-        }
-        else if (this.localStat === 'file') {
-            if (!options.forceUpload && this.localTimestamp <= this.remoteTimestamp) {
-                task.skip = true;
-                task.method = 'noop';
-            }
-            else {
-                task.method = 'upload';
-            }
-        }
-        else if (this.localStat === 'dir') {
-            task.method = 'sync';
-        }
-        else {
-            task.method = 'noop';
-        }
-        return this.task = task;
-    }
-    /**
-     * Output live run mode log
-     */
-    liveRunLog() {
-        let task = this.getTask();
-        let displayName = this.path;
-        if (task.removeRemote) {
-            if (this.remoteStat === 'dir') {
-                console.log(chalk_1.default.red(' remote dir removed : ') + displayName);
-            }
-            else {
-                console.log(chalk_1.default.red('remote file removed : ') + displayName);
-            }
-        }
-        else if (task.hasError) {
-            console.log(chalk_1.default.bgRed(`              error : ${displayName}`));
-        }
-        else if (task.skip) {
-            console.log(chalk_1.default.gray('            skipped : ') + displayName);
-        }
-        else if (task.method === 'noop') {
-            console.log(chalk_1.default.gray('            ignored : ') + displayName);
-        }
-        if (task.method === 'sync') {
-            console.log(chalk_1.default.cyan('     sync completed : ') + displayName);
-        }
-        else if (task.method === 'upload') {
-            console.log(chalk_1.default.yellow('      file uploaded : ') + displayName);
-        }
-    }
-    /**
-     * Output dry run mode log
-     */
-    dryRunLog() {
-        let taskName = '';
-        let task = this.getTask();
-        function label(stat) {
-            switch (stat) {
-                case 'dir': return chalk_1.default.cyan('D');
-                case 'file': return chalk_1.default.yellow('F');
-                case 'excluded': return chalk_1.default.gray('X');
-                case 'error': return chalk_1.default.red('!');
-                default: return ' ';
-            }
-        }
-        if (this.remoteStat === 'error') {
-            taskName = 'denied';
-        }
-        else if (task.removeRemote) {
-            taskName = 'remove remote';
-            if (task.method !== 'noop') {
-                taskName += ' and ' + task.method;
-            }
-        }
-        else if (task.skip) {
-            taskName = 'skip';
-        }
-        else if (task.method === 'noop') {
-            taskName = 'ignore';
-        }
-        else {
-            taskName = task.method;
-        }
-        console.log(`[ ${label(this.localStat)} | ${label(this.remoteStat)} ] ${this.path}`);
-        console.log(chalk_1.default.magenta(`          -> ${taskName}`));
-        console.log('');
-    }
-    /**
-     * Check if the path matches the exclude patterns
-     */
-    detectExclusion() {
-        let pathForMatch = this.path;
-        let patterns = this.table.options.exclude;
-        if (this.localStat === 'dir') {
-            pathForMatch += path.posix.sep;
-        }
-        if (patterns.some(pattern => (0, minimatch_1.default)(pathForMatch, pattern))) {
-            this.localStat = 'excluded';
-        }
-    }
-}
-exports.SyncTableEntry = SyncTableEntry;
-class SyncTable {
-    constructor(relativePath, options) {
-        this.relativePath = relativePath;
-        this.options = options;
-        this.registry = [];
-    }
-    get(filename) {
-        return this.registry.find(e => e.name === filename);
-    }
-    get all() {
-        return this.registry;
-    }
-    set(filename, stats) {
-        let entry = this.get(filename);
-        let isNew = false;
-        if (!entry) {
-            entry = new SyncTableEntry(this, filename);
-            isNew = true;
-        }
-        Object.assign(entry, stats);
-        if (isNew) {
-            this.registry.push(entry);
-        }
-        return entry;
-    }
-    has(filename) {
-        return this.registry.some(e => e.name === filename);
-    }
-    forEach(fn) {
-        this.registry.forEach(fn);
-        return this;
-    }
-}
-exports.SyncTable = SyncTable;
+  }
+
+  value = values.shift();
+  values.unshift(value % 40);
+  values.unshift((value / 40) >> 0);
+
+  return values.join('.');
+};
+
+
+Reader.prototype._readTag = function (tag) {
+  assert.ok(tag !== undefined);
+
+  var b = this.peek();
+
+  if (b === null)
+    return null;
+
+  if (b !== tag)
+    throw newInvalidAsn1Error('Expected 0x' + tag.toString(16) +
+                              ': got 0x' + b.toString(16));
+
+  var o = this.readLength(this._offset + 1); // stored in `length`
+  if (o === null)
+    return null;
+
+  if (this.length > 4)
+    throw newInvalidAsn1Error('Integer too long: ' + this.length);
+
+  if (this.length > this._size - o)
+    return null;
+  this._offset = o;
+
+  var fb = this._buf[this._offset];
+  var value = 0;
+
+  for (var i = 0; i < this.length; i++) {
+    value <<= 8;
+    value |= (this._buf[this._offset++] & 0xff);
+  }
+
+  if ((fb & 0x80) === 0x80 && i !== 4)
+    value -= (1 << (i * 8));
+
+  return value >> 0;
+};
+
+
+
+// --- Exported API
+
+module.exports = Reader;
 
 
 /***/ }),
 
-/***/ 9310:
-/***/ ((__unused_webpack_module, exports) => {
+/***/ 2473:
+/***/ ((module) => {
 
-"use strict";
+// Copyright 2011 Mark Cavage <mcavage@gmail.com> All rights reserved.
 
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.chomp = exports.escapeRegExp = void 0;
-/**
- * Escapes regexp special chars
- */
-function escapeRegExp(str) {
-    return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
-}
-exports.escapeRegExp = escapeRegExp;
-/**
- * Trim trailing char
- */
-function chomp(str, char) {
-    return str.replace(new RegExp(escapeRegExp(char) + '+$'), '');
-}
-exports.chomp = chomp;
+
+module.exports = {
+  EOC: 0,
+  Boolean: 1,
+  Integer: 2,
+  BitString: 3,
+  OctetString: 4,
+  Null: 5,
+  OID: 6,
+  ObjectDescriptor: 7,
+  External: 8,
+  Real: 9, // float
+  Enumeration: 10,
+  PDV: 11,
+  Utf8String: 12,
+  RelativeOID: 13,
+  Sequence: 16,
+  Set: 17,
+  NumericString: 18,
+  PrintableString: 19,
+  T61String: 20,
+  VideotexString: 21,
+  IA5String: 22,
+  UTCTime: 23,
+  GeneralizedTime: 24,
+  GraphicString: 25,
+  VisibleString: 26,
+  GeneralString: 28,
+  UniversalString: 29,
+  CharacterString: 30,
+  BMPString: 31,
+  Constructor: 32,
+  Context: 128
+};
 
 
 /***/ }),
 
-/***/ 9314:
+/***/ 3200:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+// Copyright 2011 Mark Cavage <mcavage@gmail.com> All rights reserved.
+
+var assert = __nccwpck_require__(9491);
+var Buffer = (__nccwpck_require__(5118).Buffer);
+var ASN1 = __nccwpck_require__(2473);
+var errors = __nccwpck_require__(9348);
+
+
+// --- Globals
+
+var newInvalidAsn1Error = errors.newInvalidAsn1Error;
+
+var DEFAULT_OPTS = {
+  size: 1024,
+  growthFactor: 8
+};
+
+
+// --- Helpers
+
+function merge(from, to) {
+  assert.ok(from);
+  assert.equal(typeof (from), 'object');
+  assert.ok(to);
+  assert.equal(typeof (to), 'object');
+
+  var keys = Object.getOwnPropertyNames(from);
+  keys.forEach(function (key) {
+    if (to[key])
+      return;
+
+    var value = Object.getOwnPropertyDescriptor(from, key);
+    Object.defineProperty(to, key, value);
+  });
+
+  return to;
+}
+
+
+
+// --- API
+
+function Writer(options) {
+  options = merge(DEFAULT_OPTS, options || {});
+
+  this._buf = Buffer.alloc(options.size || 1024);
+  this._size = this._buf.length;
+  this._offset = 0;
+  this._options = options;
+
+  // A list of offsets in the buffer where we need to insert
+  // sequence tag/len pairs.
+  this._seq = [];
+}
+
+Object.defineProperty(Writer.prototype, 'buffer', {
+  get: function () {
+    if (this._seq.length)
+      throw newInvalidAsn1Error(this._seq.length + ' unended sequence(s)');
+
+    return (this._buf.slice(0, this._offset));
+  }
+});
+
+Writer.prototype.writeByte = function (b) {
+  if (typeof (b) !== 'number')
+    throw new TypeError('argument must be a Number');
+
+  this._ensure(1);
+  this._buf[this._offset++] = b;
+};
+
+
+Writer.prototype.writeInt = function (i, tag) {
+  if (typeof (i) !== 'number')
+    throw new TypeError('argument must be a Number');
+  if (typeof (tag) !== 'number')
+    tag = ASN1.Integer;
+
+  var sz = 4;
+
+  while ((((i & 0xff800000) === 0) || ((i & 0xff800000) === 0xff800000 >> 0)) &&
+        (sz > 1)) {
+    sz--;
+    i <<= 8;
+  }
+
+  if (sz > 4)
+    throw newInvalidAsn1Error('BER ints cannot be > 0xffffffff');
+
+  this._ensure(2 + sz);
+  this._buf[this._offset++] = tag;
+  this._buf[this._offset++] = sz;
+
+  while (sz-- > 0) {
+    this._buf[this._offset++] = ((i & 0xff000000) >>> 24);
+    i <<= 8;
+  }
+
+};
+
+
+Writer.prototype.writeNull = function () {
+  this.writeByte(ASN1.Null);
+  this.writeByte(0x00);
+};
+
+
+Writer.prototype.writeEnumeration = function (i, tag) {
+  if (typeof (i) !== 'number')
+    throw new TypeError('argument must be a Number');
+  if (typeof (tag) !== 'number')
+    tag = ASN1.Enumeration;
+
+  return this.writeInt(i, tag);
+};
+
+
+Writer.prototype.writeBoolean = function (b, tag) {
+  if (typeof (b) !== 'boolean')
+    throw new TypeError('argument must be a Boolean');
+  if (typeof (tag) !== 'number')
+    tag = ASN1.Boolean;
+
+  this._ensure(3);
+  this._buf[this._offset++] = tag;
+  this._buf[this._offset++] = 0x01;
+  this._buf[this._offset++] = b ? 0xff : 0x00;
+};
+
+
+Writer.prototype.writeString = function (s, tag) {
+  if (typeof (s) !== 'string')
+    throw new TypeError('argument must be a string (was: ' + typeof (s) + ')');
+  if (typeof (tag) !== 'number')
+    tag = ASN1.OctetString;
+
+  var len = Buffer.byteLength(s);
+  this.writeByte(tag);
+  this.writeLength(len);
+  if (len) {
+    this._ensure(len);
+    this._buf.write(s, this._offset);
+    this._offset += len;
+  }
+};
+
+
+Writer.prototype.writeBuffer = function (buf, tag) {
+  if (typeof (tag) !== 'number')
+    throw new TypeError('tag must be a number');
+  if (!Buffer.isBuffer(buf))
+    throw new TypeError('argument must be a buffer');
+
+  this.writeByte(tag);
+  this.writeLength(buf.length);
+  this._ensure(buf.length);
+  buf.copy(this._buf, this._offset, 0, buf.length);
+  this._offset += buf.length;
+};
+
+
+Writer.prototype.writeStringArray = function (strings) {
+  if ((!strings instanceof Array))
+    throw new TypeError('argument must be an Array[String]');
+
+  var self = this;
+  strings.forEach(function (s) {
+    self.writeString(s);
+  });
+};
+
+// This is really to solve DER cases, but whatever for now
+Writer.prototype.writeOID = function (s, tag) {
+  if (typeof (s) !== 'string')
+    throw new TypeError('argument must be a string');
+  if (typeof (tag) !== 'number')
+    tag = ASN1.OID;
+
+  if (!/^([0-9]+\.){3,}[0-9]+$/.test(s))
+    throw new Error('argument is not a valid OID string');
+
+  function encodeOctet(bytes, octet) {
+    if (octet < 128) {
+        bytes.push(octet);
+    } else if (octet < 16384) {
+        bytes.push((octet >>> 7) | 0x80);
+        bytes.push(octet & 0x7F);
+    } else if (octet < 2097152) {
+      bytes.push((octet >>> 14) | 0x80);
+      bytes.push(((octet >>> 7) | 0x80) & 0xFF);
+      bytes.push(octet & 0x7F);
+    } else if (octet < 268435456) {
+      bytes.push((octet >>> 21) | 0x80);
+      bytes.push(((octet >>> 14) | 0x80) & 0xFF);
+      bytes.push(((octet >>> 7) | 0x80) & 0xFF);
+      bytes.push(octet & 0x7F);
+    } else {
+      bytes.push(((octet >>> 28) | 0x80) & 0xFF);
+      bytes.push(((octet >>> 21) | 0x80) & 0xFF);
+      bytes.push(((octet >>> 14) | 0x80) & 0xFF);
+      bytes.push(((octet >>> 7) | 0x80) & 0xFF);
+      bytes.push(octet & 0x7F);
+    }
+  }
+
+  var tmp = s.split('.');
+  var bytes = [];
+  bytes.push(parseInt(tmp[0], 10) * 40 + parseInt(tmp[1], 10));
+  tmp.slice(2).forEach(function (b) {
+    encodeOctet(bytes, parseInt(b, 10));
+  });
+
+  var self = this;
+  this._ensure(2 + bytes.length);
+  this.writeByte(tag);
+  this.writeLength(bytes.length);
+  bytes.forEach(function (b) {
+    self.writeByte(b);
+  });
+};
+
+
+Writer.prototype.writeLength = function (len) {
+  if (typeof (len) !== 'number')
+    throw new TypeError('argument must be a Number');
+
+  this._ensure(4);
+
+  if (len <= 0x7f) {
+    this._buf[this._offset++] = len;
+  } else if (len <= 0xff) {
+    this._buf[this._offset++] = 0x81;
+    this._buf[this._offset++] = len;
+  } else if (len <= 0xffff) {
+    this._buf[this._offset++] = 0x82;
+    this._buf[this._offset++] = len >> 8;
+    this._buf[this._offset++] = len;
+  } else if (len <= 0xffffff) {
+    this._buf[this._offset++] = 0x83;
+    this._buf[this._offset++] = len >> 16;
+    this._buf[this._offset++] = len >> 8;
+    this._buf[this._offset++] = len;
+  } else {
+    throw newInvalidAsn1Error('Length too long (> 4 bytes)');
+  }
+};
+
+Writer.prototype.startSequence = function (tag) {
+  if (typeof (tag) !== 'number')
+    tag = ASN1.Sequence | ASN1.Constructor;
+
+  this.writeByte(tag);
+  this._seq.push(this._offset);
+  this._ensure(3);
+  this._offset += 3;
+};
+
+
+Writer.prototype.endSequence = function () {
+  var seq = this._seq.pop();
+  var start = seq + 3;
+  var len = this._offset - start;
+
+  if (len <= 0x7f) {
+    this._shift(start, len, -2);
+    this._buf[seq] = len;
+  } else if (len <= 0xff) {
+    this._shift(start, len, -1);
+    this._buf[seq] = 0x81;
+    this._buf[seq + 1] = len;
+  } else if (len <= 0xffff) {
+    this._buf[seq] = 0x82;
+    this._buf[seq + 1] = len >> 8;
+    this._buf[seq + 2] = len;
+  } else if (len <= 0xffffff) {
+    this._shift(start, len, 1);
+    this._buf[seq] = 0x83;
+    this._buf[seq + 1] = len >> 16;
+    this._buf[seq + 2] = len >> 8;
+    this._buf[seq + 3] = len;
+  } else {
+    throw newInvalidAsn1Error('Sequence too long');
+  }
+};
+
+
+Writer.prototype._shift = function (start, len, shift) {
+  assert.ok(start !== undefined);
+  assert.ok(len !== undefined);
+  assert.ok(shift);
+
+  this._buf.copy(this._buf, start + shift, start, start + len);
+  this._offset += shift;
+};
+
+Writer.prototype._ensure = function (len) {
+  assert.ok(len);
+
+  if (this._size - this._offset < len) {
+    var sz = this._size * this._options.growthFactor;
+    if (sz - this._offset < len)
+      sz += len;
+
+    var buf = Buffer.alloc(sz);
+
+    this._buf.copy(buf, 0, 0, this._offset);
+    this._buf = buf;
+    this._size = sz;
+  }
+};
+
+
+
+// --- Exported API
+
+module.exports = Writer;
+
+
+/***/ }),
+
+/***/ 970:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+// Copyright 2011 Mark Cavage <mcavage@gmail.com> All rights reserved.
+
+// If you have no idea what ASN.1 or BER is, see this:
+// ftp://ftp.rsa.com/pub/pkcs/ascii/layman.asc
+
+var Ber = __nccwpck_require__(194);
+
+
+
+// --- Exported API
+
+module.exports = {
+
+  Ber: Ber,
+
+  BerReader: Ber.Reader,
+
+  BerWriter: Ber.Writer
+
+};
+
+
+/***/ }),
+
+/***/ 9417:
+/***/ ((module) => {
+
+
+module.exports = balanced;
+function balanced(a, b, str) {
+  if (a instanceof RegExp) a = maybeMatch(a, str);
+  if (b instanceof RegExp) b = maybeMatch(b, str);
+
+  var r = range(a, b, str);
+
+  return r && {
+    start: r[0],
+    end: r[1],
+    pre: str.slice(0, r[0]),
+    body: str.slice(r[0] + a.length, r[1]),
+    post: str.slice(r[1] + b.length)
+  };
+}
+
+function maybeMatch(reg, str) {
+  var m = str.match(reg);
+  return m ? m[0] : null;
+}
+
+balanced.range = range;
+function range(a, b, str) {
+  var begs, beg, left, right, result;
+  var ai = str.indexOf(a);
+  var bi = str.indexOf(b, ai + 1);
+  var i = ai;
+
+  if (ai >= 0 && bi > 0) {
+    if(a===b) {
+      return [ai, bi];
+    }
+    begs = [];
+    left = str.length;
+
+    while (i >= 0 && !result) {
+      if (i == ai) {
+        begs.push(i);
+        ai = str.indexOf(a, i + 1);
+      } else if (begs.length == 1) {
+        result = [ begs.pop(), bi ];
+      } else {
+        beg = begs.pop();
+        if (beg < left) {
+          left = beg;
+          right = bi;
+        }
+
+        bi = str.indexOf(b, i + 1);
+      }
+
+      i = ai < bi && ai >= 0 ? ai : bi;
+    }
+
+    if (begs.length) {
+      result = [ left, right ];
+    }
+  }
+
+  return result;
+}
+
+
+/***/ }),
+
+/***/ 5447:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+
+
+var crypto_hash_sha512 = (__nccwpck_require__(8729).lowlevel.crypto_hash);
+
+/*
+ * This file is a 1:1 port from the OpenBSD blowfish.c and bcrypt_pbkdf.c. As a
+ * result, it retains the original copyright and license. The two files are
+ * under slightly different (but compatible) licenses, and are here combined in
+ * one file.
+ *
+ * Credit for the actual porting work goes to:
+ *  Devi Mandiri <me@devi.web.id>
+ */
+
+/*
+ * The Blowfish portions are under the following license:
+ *
+ * Blowfish block cipher for OpenBSD
+ * Copyright 1997 Niels Provos <provos@physnet.uni-hamburg.de>
+ * All rights reserved.
+ *
+ * Implementation advice by David Mazieres <dm@lcs.mit.edu>.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ * 3. The name of the author may not be used to endorse or promote products
+ *    derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+ * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+ * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+ * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+ * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+/*
+ * The bcrypt_pbkdf portions are under the following license:
+ *
+ * Copyright (c) 2013 Ted Unangst <tedu@openbsd.org>
+ *
+ * Permission to use, copy, modify, and distribute this software for any
+ * purpose with or without fee is hereby granted, provided that the above
+ * copyright notice and this permission notice appear in all copies.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+ * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+ * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+ * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ */
+
+/*
+ * Performance improvements (Javascript-specific):
+ *
+ * Copyright 2016, Joyent Inc
+ * Author: Alex Wilson <alex.wilson@joyent.com>
+ *
+ * Permission to use, copy, modify, and distribute this software for any
+ * purpose with or without fee is hereby granted, provided that the above
+ * copyright notice and this permission notice appear in all copies.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+ * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+ * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+ * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ */
+
+// Ported from OpenBSD bcrypt_pbkdf.c v1.9
+
+var BLF_J = 0;
+
+var Blowfish = function() {
+  this.S = [
+    new Uint32Array([
+      0xd1310ba6, 0x98dfb5ac, 0x2ffd72db, 0xd01adfb7,
+      0xb8e1afed, 0x6a267e96, 0xba7c9045, 0xf12c7f99,
+      0x24a19947, 0xb3916cf7, 0x0801f2e2, 0x858efc16,
+      0x636920d8, 0x71574e69, 0xa458fea3, 0xf4933d7e,
+      0x0d95748f, 0x728eb658, 0x718bcd58, 0x82154aee,
+      0x7b54a41d, 0xc25a59b5, 0x9c30d539, 0x2af26013,
+      0xc5d1b023, 0x286085f0, 0xca417918, 0xb8db38ef,
+      0x8e79dcb0, 0x603a180e, 0x6c9e0e8b, 0xb01e8a3e,
+      0xd71577c1, 0xbd314b27, 0x78af2fda, 0x55605c60,
+      0xe65525f3, 0xaa55ab94, 0x57489862, 0x63e81440,
+      0x55ca396a, 0x2aab10b6, 0xb4cc5c34, 0x1141e8ce,
+      0xa15486af, 0x7c72e993, 0xb3ee1411, 0x636fbc2a,
+      0x2ba9c55d, 0x741831f6, 0xce5c3e16, 0x9b87931e,
+      0xafd6ba33, 0x6c24cf5c, 0x7a325381, 0x28958677,
+      0x3b8f4898, 0x6b4bb9af, 0xc4bfe81b, 0x66282193,
+      0x61d809cc, 0xfb21a991, 0x487cac60, 0x5dec8032,
+      0xef845d5d, 0xe98575b1, 0xdc262302, 0xeb651b88,
+      0x23893e81, 0xd396acc5, 0x0f6d6ff3, 0x83f44239,
+      0x2e0b4482, 0xa4842004, 0x69c8f04a, 0x9e1f9b5e,
+      0x21c66842, 0xf6e96c9a, 0x670c9c61, 0xabd388f0,
+      0x6a51a0d2, 0xd8542f68, 0x960fa728, 0xab5133a3,
+      0x6eef0b6c, 0x137a3be4, 0xba3bf050, 0x7efb2a98,
+      0xa1f1651d, 0x39af0176, 0x66ca593e, 0x82430e88,
+      0x8cee8619, 0x456f9fb4, 0x7d84a5c3, 0x3b8b5ebe,
+      0xe06f75d8, 0x85c12073, 0x401a449f, 0x56c16aa6,
+      0x4ed3aa62, 0x363f7706, 0x1bfedf72, 0x429b023d,
+      0x37d0d724, 0xd00a1248, 0xdb0fead3, 0x49f1c09b,
+      0x075372c9, 0x80991b7b, 0x25d479d8, 0xf6e8def7,
+      0xe3fe501a, 0xb6794c3b, 0x976ce0bd, 0x04c006ba,
+      0xc1a94fb6, 0x409f60c4, 0x5e5c9ec2, 0x196a2463,
+      0x68fb6faf, 0x3e6c53b5, 0x1339b2eb, 0x3b52ec6f,
+      0x6dfc511f, 0x9b30952c, 0xcc814544, 0xaf5ebd09,
+      0xbee3d004, 0xde334afd, 0x660f2807, 0x192e4bb3,
+      0xc0cba857, 0x45c8740f, 0xd20b5f39, 0xb9d3fbdb,
+      0x5579c0bd, 0x1a60320a, 0xd6a100c6, 0x402c7279,
+      0x679f25fe, 0xfb1fa3cc, 0x8ea5e9f8, 0xdb3222f8,
+      0x3c7516df, 0xfd616b15, 0x2f501ec8, 0xad0552ab,
+      0x323db5fa, 0xfd238760, 0x53317b48, 0x3e00df82,
+      0x9e5c57bb, 0xca6f8ca0, 0x1a87562e, 0xdf1769db,
+      0xd542a8f6, 0x287effc3, 0xac6732c6, 0x8c4f5573,
+      0x695b27b0, 0xbbca58c8, 0xe1ffa35d, 0xb8f011a0,
+      0x10fa3d98, 0xfd2183b8, 0x4afcb56c, 0x2dd1d35b,
+      0x9a53e479, 0xb6f84565, 0xd28e49bc, 0x4bfb9790,
+      0xe1ddf2da, 0xa4cb7e33, 0x62fb1341, 0xcee4c6e8,
+      0xef20cada, 0x36774c01, 0xd07e9efe, 0x2bf11fb4,
+      0x95dbda4d, 0xae909198, 0xeaad8e71, 0x6b93d5a0,
+      0xd08ed1d0, 0xafc725e0, 0x8e3c5b2f, 0x8e7594b7,
+      0x8ff6e2fb, 0xf2122b64, 0x8888b812, 0x900df01c,
+      0x4fad5ea0, 0x688fc31c, 0xd1cff191, 0xb3a8c1ad,
+      0x2f2f2218, 0xbe0e1777, 0xea752dfe, 0x8b021fa1,
+      0xe5a0cc0f, 0xb56f74e8, 0x18acf3d6, 0xce89e299,
+      0xb4a84fe0, 0xfd13e0b7, 0x7cc43b81, 0xd2ada8d9,
+      0x165fa266, 0x80957705, 0x93cc7314, 0x211a1477,
+      0xe6ad2065, 0x77b5fa86, 0xc75442f5, 0xfb9d35cf,
+      0xebcdaf0c, 0x7b3e89a0, 0xd6411bd3, 0xae1e7e49,
+      0x00250e2d, 0x2071b35e, 0x226800bb, 0x57b8e0af,
+      0x2464369b, 0xf009b91e, 0x5563911d, 0x59dfa6aa,
+      0x78c14389, 0xd95a537f, 0x207d5ba2, 0x02e5b9c5,
+      0x83260376, 0x6295cfa9, 0x11c81968, 0x4e734a41,
+      0xb3472dca, 0x7b14a94a, 0x1b510052, 0x9a532915,
+      0xd60f573f, 0xbc9bc6e4, 0x2b60a476, 0x81e67400,
+      0x08ba6fb5, 0x571be91f, 0xf296ec6b, 0x2a0dd915,
+      0xb6636521, 0xe7b9f9b6, 0xff34052e, 0xc5855664,
+      0x53b02d5d, 0xa99f8fa1, 0x08ba4799, 0x6e85076a]),
+    new Uint32Array([
+      0x4b7a70e9, 0xb5b32944, 0xdb75092e, 0xc4192623,
+      0xad6ea6b0, 0x49a7df7d, 0x9cee60b8, 0x8fedb266,
+      0xecaa8c71, 0x699a17ff, 0x5664526c, 0xc2b19ee1,
+      0x193602a5, 0x75094c29, 0xa0591340, 0xe4183a3e,
+      0x3f54989a, 0x5b429d65, 0x6b8fe4d6, 0x99f73fd6,
+      0xa1d29c07, 0xefe830f5, 0x4d2d38e6, 0xf0255dc1,
+      0x4cdd2086, 0x8470eb26, 0x6382e9c6, 0x021ecc5e,
+      0x09686b3f, 0x3ebaefc9, 0x3c971814, 0x6b6a70a1,
+      0x687f3584, 0x52a0e286, 0xb79c5305, 0xaa500737,
+      0x3e07841c, 0x7fdeae5c, 0x8e7d44ec, 0x5716f2b8,
+      0xb03ada37, 0xf0500c0d, 0xf01c1f04, 0x0200b3ff,
+      0xae0cf51a, 0x3cb574b2, 0x25837a58, 0xdc0921bd,
+      0xd19113f9, 0x7ca92ff6, 0x94324773, 0x22f54701,
+      0x3ae5e581, 0x37c2dadc, 0xc8b57634, 0x9af3dda7,
+      0xa9446146, 0x0fd0030e, 0xecc8c73e, 0xa4751e41,
+      0xe238cd99, 0x3bea0e2f, 0x3280bba1, 0x183eb331,
+      0x4e548b38, 0x4f6db908, 0x6f420d03, 0xf60a04bf,
+      0x2cb81290, 0x24977c79, 0x5679b072, 0xbcaf89af,
+      0xde9a771f, 0xd9930810, 0xb38bae12, 0xdccf3f2e,
+      0x5512721f, 0x2e6b7124, 0x501adde6, 0x9f84cd87,
+      0x7a584718, 0x7408da17, 0xbc9f9abc, 0xe94b7d8c,
+      0xec7aec3a, 0xdb851dfa, 0x63094366, 0xc464c3d2,
+      0xef1c1847, 0x3215d908, 0xdd433b37, 0x24c2ba16,
+      0x12a14d43, 0x2a65c451, 0x50940002, 0x133ae4dd,
+      0x71dff89e, 0x10314e55, 0x81ac77d6, 0x5f11199b,
+      0x043556f1, 0xd7a3c76b, 0x3c11183b, 0x5924a509,
+      0xf28fe6ed, 0x97f1fbfa, 0x9ebabf2c, 0x1e153c6e,
+      0x86e34570, 0xeae96fb1, 0x860e5e0a, 0x5a3e2ab3,
+      0x771fe71c, 0x4e3d06fa, 0x2965dcb9, 0x99e71d0f,
+      0x803e89d6, 0x5266c825, 0x2e4cc978, 0x9c10b36a,
+      0xc6150eba, 0x94e2ea78, 0xa5fc3c53, 0x1e0a2df4,
+      0xf2f74ea7, 0x361d2b3d, 0x1939260f, 0x19c27960,
+      0x5223a708, 0xf71312b6, 0xebadfe6e, 0xeac31f66,
+      0xe3bc4595, 0xa67bc883, 0xb17f37d1, 0x018cff28,
+      0xc332ddef, 0xbe6c5aa5, 0x65582185, 0x68ab9802,
+      0xeecea50f, 0xdb2f953b, 0x2aef7dad, 0x5b6e2f84,
+      0x1521b628, 0x29076170, 0xecdd4775, 0x619f1510,
+      0x13cca830, 0xeb61bd96, 0x0334fe1e, 0xaa0363cf,
+      0xb5735c90, 0x4c70a239, 0xd59e9e0b, 0xcbaade14,
+      0xeecc86bc, 0x60622ca7, 0x9cab5cab, 0xb2f3846e,
+      0x648b1eaf, 0x19bdf0ca, 0xa02369b9, 0x655abb50,
+      0x40685a32, 0x3c2ab4b3, 0x319ee9d5, 0xc021b8f7,
+      0x9b540b19, 0x875fa099, 0x95f7997e, 0x623d7da8,
+      0xf837889a, 0x97e32d77, 0x11ed935f, 0x16681281,
+      0x0e358829, 0xc7e61fd6, 0x96dedfa1, 0x7858ba99,
+      0x57f584a5, 0x1b227263, 0x9b83c3ff, 0x1ac24696,
+      0xcdb30aeb, 0x532e3054, 0x8fd948e4, 0x6dbc3128,
+      0x58ebf2ef, 0x34c6ffea, 0xfe28ed61, 0xee7c3c73,
+      0x5d4a14d9, 0xe864b7e3, 0x42105d14, 0x203e13e0,
+      0x45eee2b6, 0xa3aaabea, 0xdb6c4f15, 0xfacb4fd0,
+      0xc742f442, 0xef6abbb5, 0x654f3b1d, 0x41cd2105,
+      0xd81e799e, 0x86854dc7, 0xe44b476a, 0x3d816250,
+      0xcf62a1f2, 0x5b8d2646, 0xfc8883a0, 0xc1c7b6a3,
+      0x7f1524c3, 0x69cb7492, 0x47848a0b, 0x5692b285,
+      0x095bbf00, 0xad19489d, 0x1462b174, 0x23820e00,
+      0x58428d2a, 0x0c55f5ea, 0x1dadf43e, 0x233f7061,
+      0x3372f092, 0x8d937e41, 0xd65fecf1, 0x6c223bdb,
+      0x7cde3759, 0xcbee7460, 0x4085f2a7, 0xce77326e,
+      0xa6078084, 0x19f8509e, 0xe8efd855, 0x61d99735,
+      0xa969a7aa, 0xc50c06c2, 0x5a04abfc, 0x800bcadc,
+      0x9e447a2e, 0xc3453484, 0xfdd56705, 0x0e1e9ec9,
+      0xdb73dbd3, 0x105588cd, 0x675fda79, 0xe3674340,
+      0xc5c43465, 0x713e38d8, 0x3d28f89e, 0xf16dff20,
+      0x153e21e7, 0x8fb03d4a, 0xe6e39f2b, 0xdb83adf7]),
+    new Uint32Array([
+      0xe93d5a68, 0x948140f7, 0xf64c261c, 0x94692934,
+      0x411520f7, 0x7602d4f7, 0xbcf46b2e, 0xd4a20068,
+      0xd4082471, 0x3320f46a, 0x43b7d4b7, 0x500061af,
+      0x1e39f62e, 0x97244546, 0x14214f74, 0xbf8b8840,
+      0x4d95fc1d, 0x96b591af, 0x70f4ddd3, 0x66a02f45,
+      0xbfbc09ec, 0x03bd9785, 0x7fac6dd0, 0x31cb8504,
+      0x96eb27b3, 0x55fd3941, 0xda2547e6, 0xabca0a9a,
+      0x28507825, 0x530429f4, 0x0a2c86da, 0xe9b66dfb,
+      0x68dc1462, 0xd7486900, 0x680ec0a4, 0x27a18dee,
+      0x4f3ffea2, 0xe887ad8c, 0xb58ce006, 0x7af4d6b6,
+      0xaace1e7c, 0xd3375fec, 0xce78a399, 0x406b2a42,
+      0x20fe9e35, 0xd9f385b9, 0xee39d7ab, 0x3b124e8b,
+      0x1dc9faf7, 0x4b6d1856, 0x26a36631, 0xeae397b2,
+      0x3a6efa74, 0xdd5b4332, 0x6841e7f7, 0xca7820fb,
+      0xfb0af54e, 0xd8feb397, 0x454056ac, 0xba489527,
+      0x55533a3a, 0x20838d87, 0xfe6ba9b7, 0xd096954b,
+      0x55a867bc, 0xa1159a58, 0xcca92963, 0x99e1db33,
+      0xa62a4a56, 0x3f3125f9, 0x5ef47e1c, 0x9029317c,
+      0xfdf8e802, 0x04272f70, 0x80bb155c, 0x05282ce3,
+      0x95c11548, 0xe4c66d22, 0x48c1133f, 0xc70f86dc,
+      0x07f9c9ee, 0x41041f0f, 0x404779a4, 0x5d886e17,
+      0x325f51eb, 0xd59bc0d1, 0xf2bcc18f, 0x41113564,
+      0x257b7834, 0x602a9c60, 0xdff8e8a3, 0x1f636c1b,
+      0x0e12b4c2, 0x02e1329e, 0xaf664fd1, 0xcad18115,
+      0x6b2395e0, 0x333e92e1, 0x3b240b62, 0xeebeb922,
+      0x85b2a20e, 0xe6ba0d99, 0xde720c8c, 0x2da2f728,
+      0xd0127845, 0x95b794fd, 0x647d0862, 0xe7ccf5f0,
+      0x5449a36f, 0x877d48fa, 0xc39dfd27, 0xf33e8d1e,
+      0x0a476341, 0x992eff74, 0x3a6f6eab, 0xf4f8fd37,
+      0xa812dc60, 0xa1ebddf8, 0x991be14c, 0xdb6e6b0d,
+      0xc67b5510, 0x6d672c37, 0x2765d43b, 0xdcd0e804,
+      0xf1290dc7, 0xcc00ffa3, 0xb5390f92, 0x690fed0b,
+      0x667b9ffb, 0xcedb7d9c, 0xa091cf0b, 0xd9155ea3,
+      0xbb132f88, 0x515bad24, 0x7b9479bf, 0x763bd6eb,
+      0x37392eb3, 0xcc115979, 0x8026e297, 0xf42e312d,
+      0x6842ada7, 0xc66a2b3b, 0x12754ccc, 0x782ef11c,
+      0x6a124237, 0xb79251e7, 0x06a1bbe6, 0x4bfb6350,
+      0x1a6b1018, 0x11caedfa, 0x3d25bdd8, 0xe2e1c3c9,
+      0x44421659, 0x0a121386, 0xd90cec6e, 0xd5abea2a,
+      0x64af674e, 0xda86a85f, 0xbebfe988, 0x64e4c3fe,
+      0x9dbc8057, 0xf0f7c086, 0x60787bf8, 0x6003604d,
+      0xd1fd8346, 0xf6381fb0, 0x7745ae04, 0xd736fccc,
+      0x83426b33, 0xf01eab71, 0xb0804187, 0x3c005e5f,
+      0x77a057be, 0xbde8ae24, 0x55464299, 0xbf582e61,
+      0x4e58f48f, 0xf2ddfda2, 0xf474ef38, 0x8789bdc2,
+      0x5366f9c3, 0xc8b38e74, 0xb475f255, 0x46fcd9b9,
+      0x7aeb2661, 0x8b1ddf84, 0x846a0e79, 0x915f95e2,
+      0x466e598e, 0x20b45770, 0x8cd55591, 0xc902de4c,
+      0xb90bace1, 0xbb8205d0, 0x11a86248, 0x7574a99e,
+      0xb77f19b6, 0xe0a9dc09, 0x662d09a1, 0xc4324633,
+      0xe85a1f02, 0x09f0be8c, 0x4a99a025, 0x1d6efe10,
+      0x1ab93d1d, 0x0ba5a4df, 0xa186f20f, 0x2868f169,
+      0xdcb7da83, 0x573906fe, 0xa1e2ce9b, 0x4fcd7f52,
+      0x50115e01, 0xa70683fa, 0xa002b5c4, 0x0de6d027,
+      0x9af88c27, 0x773f8641, 0xc3604c06, 0x61a806b5,
+      0xf0177a28, 0xc0f586e0, 0x006058aa, 0x30dc7d62,
+      0x11e69ed7, 0x2338ea63, 0x53c2dd94, 0xc2c21634,
+      0xbbcbee56, 0x90bcb6de, 0xebfc7da1, 0xce591d76,
+      0x6f05e409, 0x4b7c0188, 0x39720a3d, 0x7c927c24,
+      0x86e3725f, 0x724d9db9, 0x1ac15bb4, 0xd39eb8fc,
+      0xed545578, 0x08fca5b5, 0xd83d7cd3, 0x4dad0fc4,
+      0x1e50ef5e, 0xb161e6f8, 0xa28514d9, 0x6c51133c,
+      0x6fd5c7e7, 0x56e14ec4, 0x362abfce, 0xddc6c837,
+      0xd79a3234, 0x92638212, 0x670efa8e, 0x406000e0]),
+    new Uint32Array([
+      0x3a39ce37, 0xd3faf5cf, 0xabc27737, 0x5ac52d1b,
+      0x5cb0679e, 0x4fa33742, 0xd3822740, 0x99bc9bbe,
+      0xd5118e9d, 0xbf0f7315, 0xd62d1c7e, 0xc700c47b,
+      0xb78c1b6b, 0x21a19045, 0xb26eb1be, 0x6a366eb4,
+      0x5748ab2f, 0xbc946e79, 0xc6a376d2, 0x6549c2c8,
+      0x530ff8ee, 0x468dde7d, 0xd5730a1d, 0x4cd04dc6,
+      0x2939bbdb, 0xa9ba4650, 0xac9526e8, 0xbe5ee304,
+      0xa1fad5f0, 0x6a2d519a, 0x63ef8ce2, 0x9a86ee22,
+      0xc089c2b8, 0x43242ef6, 0xa51e03aa, 0x9cf2d0a4,
+      0x83c061ba, 0x9be96a4d, 0x8fe51550, 0xba645bd6,
+      0x2826a2f9, 0xa73a3ae1, 0x4ba99586, 0xef5562e9,
+      0xc72fefd3, 0xf752f7da, 0x3f046f69, 0x77fa0a59,
+      0x80e4a915, 0x87b08601, 0x9b09e6ad, 0x3b3ee593,
+      0xe990fd5a, 0x9e34d797, 0x2cf0b7d9, 0x022b8b51,
+      0x96d5ac3a, 0x017da67d, 0xd1cf3ed6, 0x7c7d2d28,
+      0x1f9f25cf, 0xadf2b89b, 0x5ad6b472, 0x5a88f54c,
+      0xe029ac71, 0xe019a5e6, 0x47b0acfd, 0xed93fa9b,
+      0xe8d3c48d, 0x283b57cc, 0xf8d56629, 0x79132e28,
+      0x785f0191, 0xed756055, 0xf7960e44, 0xe3d35e8c,
+      0x15056dd4, 0x88f46dba, 0x03a16125, 0x0564f0bd,
+      0xc3eb9e15, 0x3c9057a2, 0x97271aec, 0xa93a072a,
+      0x1b3f6d9b, 0x1e6321f5, 0xf59c66fb, 0x26dcf319,
+      0x7533d928, 0xb155fdf5, 0x03563482, 0x8aba3cbb,
+      0x28517711, 0xc20ad9f8, 0xabcc5167, 0xccad925f,
+      0x4de81751, 0x3830dc8e, 0x379d5862, 0x9320f991,
+      0xea7a90c2, 0xfb3e7bce, 0x5121ce64, 0x774fbe32,
+      0xa8b6e37e, 0xc3293d46, 0x48de5369, 0x6413e680,
+      0xa2ae0810, 0xdd6db224, 0x69852dfd, 0x09072166,
+      0xb39a460a, 0x6445c0dd, 0x586cdecf, 0x1c20c8ae,
+      0x5bbef7dd, 0x1b588d40, 0xccd2017f, 0x6bb4e3bb,
+      0xdda26a7e, 0x3a59ff45, 0x3e350a44, 0xbcb4cdd5,
+      0x72eacea8, 0xfa6484bb, 0x8d6612ae, 0xbf3c6f47,
+      0xd29be463, 0x542f5d9e, 0xaec2771b, 0xf64e6370,
+      0x740e0d8d, 0xe75b1357, 0xf8721671, 0xaf537d5d,
+      0x4040cb08, 0x4eb4e2cc, 0x34d2466a, 0x0115af84,
+      0xe1b00428, 0x95983a1d, 0x06b89fb4, 0xce6ea048,
+      0x6f3f3b82, 0x3520ab82, 0x011a1d4b, 0x277227f8,
+      0x611560b1, 0xe7933fdc, 0xbb3a792b, 0x344525bd,
+      0xa08839e1, 0x51ce794b, 0x2f32c9b7, 0xa01fbac9,
+      0xe01cc87e, 0xbcc7d1f6, 0xcf0111c3, 0xa1e8aac7,
+      0x1a908749, 0xd44fbd9a, 0xd0dadecb, 0xd50ada38,
+      0x0339c32a, 0xc6913667, 0x8df9317c, 0xe0b12b4f,
+      0xf79e59b7, 0x43f5bb3a, 0xf2d519ff, 0x27d9459c,
+      0xbf97222c, 0x15e6fc2a, 0x0f91fc71, 0x9b941525,
+      0xfae59361, 0xceb69ceb, 0xc2a86459, 0x12baa8d1,
+      0xb6c1075e, 0xe3056a0c, 0x10d25065, 0xcb03a442,
+      0xe0ec6e0e, 0x1698db3b, 0x4c98a0be, 0x3278e964,
+      0x9f1f9532, 0xe0d392df, 0xd3a0342b, 0x8971f21e,
+      0x1b0a7441, 0x4ba3348c, 0xc5be7120, 0xc37632d8,
+      0xdf359f8d, 0x9b992f2e, 0xe60b6f47, 0x0fe3f11d,
+      0xe54cda54, 0x1edad891, 0xce6279cf, 0xcd3e7e6f,
+      0x1618b166, 0xfd2c1d05, 0x848fd2c5, 0xf6fb2299,
+      0xf523f357, 0xa6327623, 0x93a83531, 0x56cccd02,
+      0xacf08162, 0x5a75ebb5, 0x6e163697, 0x88d273cc,
+      0xde966292, 0x81b949d0, 0x4c50901b, 0x71c65614,
+      0xe6c6c7bd, 0x327a140a, 0x45e1d006, 0xc3f27b9a,
+      0xc9aa53fd, 0x62a80f00, 0xbb25bfe2, 0x35bdd2f6,
+      0x71126905, 0xb2040222, 0xb6cbcf7c, 0xcd769c2b,
+      0x53113ec0, 0x1640e3d3, 0x38abbd60, 0x2547adf0,
+      0xba38209c, 0xf746ce76, 0x77afa1c5, 0x20756060,
+      0x85cbfe4e, 0x8ae88dd8, 0x7aaaf9b0, 0x4cf9aa7e,
+      0x1948c25c, 0x02fb8a8c, 0x01c36ae4, 0xd6ebe1f9,
+      0x90d4f869, 0xa65cdea0, 0x3f09252d, 0xc208e69f,
+      0xb74e6132, 0xce77e25b, 0x578fdfe3, 0x3ac372e6])
+    ];
+  this.P = new Uint32Array([
+    0x243f6a88, 0x85a308d3, 0x13198a2e, 0x03707344,
+    0xa4093822, 0x299f31d0, 0x082efa98, 0xec4e6c89,
+    0x452821e6, 0x38d01377, 0xbe5466cf, 0x34e90c6c,
+    0xc0ac29b7, 0xc97c50dd, 0x3f84d5b5, 0xb5470917,
+    0x9216d5d9, 0x8979fb1b]);
+};
+
+function F(S, x8, i) {
+  return (((S[0][x8[i+3]] +
+            S[1][x8[i+2]]) ^
+            S[2][x8[i+1]]) +
+            S[3][x8[i]]);
+};
+
+Blowfish.prototype.encipher = function(x, x8) {
+  if (x8 === undefined) {
+    x8 = new Uint8Array(x.buffer);
+    if (x.byteOffset !== 0)
+      x8 = x8.subarray(x.byteOffset);
+  }
+  x[0] ^= this.P[0];
+  for (var i = 1; i < 16; i += 2) {
+    x[1] ^= F(this.S, x8, 0) ^ this.P[i];
+    x[0] ^= F(this.S, x8, 4) ^ this.P[i+1];
+  }
+  var t = x[0];
+  x[0] = x[1] ^ this.P[17];
+  x[1] = t;
+};
+
+Blowfish.prototype.decipher = function(x) {
+  var x8 = new Uint8Array(x.buffer);
+  if (x.byteOffset !== 0)
+    x8 = x8.subarray(x.byteOffset);
+  x[0] ^= this.P[17];
+  for (var i = 16; i > 0; i -= 2) {
+    x[1] ^= F(this.S, x8, 0) ^ this.P[i];
+    x[0] ^= F(this.S, x8, 4) ^ this.P[i-1];
+  }
+  var t = x[0];
+  x[0] = x[1] ^ this.P[0];
+  x[1] = t;
+};
+
+function stream2word(data, databytes){
+  var i, temp = 0;
+  for (i = 0; i < 4; i++, BLF_J++) {
+    if (BLF_J >= databytes) BLF_J = 0;
+    temp = (temp << 8) | data[BLF_J];
+  }
+  return temp;
+};
+
+Blowfish.prototype.expand0state = function(key, keybytes) {
+  var d = new Uint32Array(2), i, k;
+  var d8 = new Uint8Array(d.buffer);
+
+  for (i = 0, BLF_J = 0; i < 18; i++) {
+    this.P[i] ^= stream2word(key, keybytes);
+  }
+  BLF_J = 0;
+
+  for (i = 0; i < 18; i += 2) {
+    this.encipher(d, d8);
+    this.P[i]   = d[0];
+    this.P[i+1] = d[1];
+  }
+
+  for (i = 0; i < 4; i++) {
+    for (k = 0; k < 256; k += 2) {
+      this.encipher(d, d8);
+      this.S[i][k]   = d[0];
+      this.S[i][k+1] = d[1];
+    }
+  }
+};
+
+Blowfish.prototype.expandstate = function(data, databytes, key, keybytes) {
+  var d = new Uint32Array(2), i, k;
+
+  for (i = 0, BLF_J = 0; i < 18; i++) {
+    this.P[i] ^= stream2word(key, keybytes);
+  }
+
+  for (i = 0, BLF_J = 0; i < 18; i += 2) {
+    d[0] ^= stream2word(data, databytes);
+    d[1] ^= stream2word(data, databytes);
+    this.encipher(d);
+    this.P[i]   = d[0];
+    this.P[i+1] = d[1];
+  }
+
+  for (i = 0; i < 4; i++) {
+    for (k = 0; k < 256; k += 2) {
+      d[0] ^= stream2word(data, databytes);
+      d[1] ^= stream2word(data, databytes);
+      this.encipher(d);
+      this.S[i][k]   = d[0];
+      this.S[i][k+1] = d[1];
+    }
+  }
+  BLF_J = 0;
+};
+
+Blowfish.prototype.enc = function(data, blocks) {
+  for (var i = 0; i < blocks; i++) {
+    this.encipher(data.subarray(i*2));
+  }
+};
+
+Blowfish.prototype.dec = function(data, blocks) {
+  for (var i = 0; i < blocks; i++) {
+    this.decipher(data.subarray(i*2));
+  }
+};
+
+var BCRYPT_BLOCKS = 8,
+    BCRYPT_HASHSIZE = 32;
+
+function bcrypt_hash(sha2pass, sha2salt, out) {
+  var state = new Blowfish(),
+      cdata = new Uint32Array(BCRYPT_BLOCKS), i,
+      ciphertext = new Uint8Array([79,120,121,99,104,114,111,109,97,116,105,
+            99,66,108,111,119,102,105,115,104,83,119,97,116,68,121,110,97,109,
+            105,116,101]); //"OxychromaticBlowfishSwatDynamite"
+
+  state.expandstate(sha2salt, 64, sha2pass, 64);
+  for (i = 0; i < 64; i++) {
+    state.expand0state(sha2salt, 64);
+    state.expand0state(sha2pass, 64);
+  }
+
+  for (i = 0; i < BCRYPT_BLOCKS; i++)
+    cdata[i] = stream2word(ciphertext, ciphertext.byteLength);
+  for (i = 0; i < 64; i++)
+    state.enc(cdata, cdata.byteLength / 8);
+
+  for (i = 0; i < BCRYPT_BLOCKS; i++) {
+    out[4*i+3] = cdata[i] >>> 24;
+    out[4*i+2] = cdata[i] >>> 16;
+    out[4*i+1] = cdata[i] >>> 8;
+    out[4*i+0] = cdata[i];
+  }
+};
+
+function bcrypt_pbkdf(pass, passlen, salt, saltlen, key, keylen, rounds) {
+  var sha2pass = new Uint8Array(64),
+      sha2salt = new Uint8Array(64),
+      out = new Uint8Array(BCRYPT_HASHSIZE),
+      tmpout = new Uint8Array(BCRYPT_HASHSIZE),
+      countsalt = new Uint8Array(saltlen+4),
+      i, j, amt, stride, dest, count,
+      origkeylen = keylen;
+
+  if (rounds < 1)
+    return -1;
+  if (passlen === 0 || saltlen === 0 || keylen === 0 ||
+      keylen > (out.byteLength * out.byteLength) || saltlen > (1<<20))
+    return -1;
+
+  stride = Math.floor((keylen + out.byteLength - 1) / out.byteLength);
+  amt = Math.floor((keylen + stride - 1) / stride);
+
+  for (i = 0; i < saltlen; i++)
+    countsalt[i] = salt[i];
+
+  crypto_hash_sha512(sha2pass, pass, passlen);
+
+  for (count = 1; keylen > 0; count++) {
+    countsalt[saltlen+0] = count >>> 24;
+    countsalt[saltlen+1] = count >>> 16;
+    countsalt[saltlen+2] = count >>>  8;
+    countsalt[saltlen+3] = count;
+
+    crypto_hash_sha512(sha2salt, countsalt, saltlen + 4);
+    bcrypt_hash(sha2pass, sha2salt, tmpout);
+    for (i = out.byteLength; i--;)
+      out[i] = tmpout[i];
+
+    for (i = 1; i < rounds; i++) {
+      crypto_hash_sha512(sha2salt, tmpout, tmpout.byteLength);
+      bcrypt_hash(sha2pass, sha2salt, tmpout);
+      for (j = 0; j < out.byteLength; j++)
+        out[j] ^= tmpout[j];
+    }
+
+    amt = Math.min(amt, keylen);
+    for (i = 0; i < amt; i++) {
+      dest = i * stride + (count - 1);
+      if (dest >= origkeylen)
+        break;
+      key[dest] = out[i];
+    }
+    keylen -= i;
+  }
+
+  return 0;
+};
+
+module.exports = {
+      BLOCKS: BCRYPT_BLOCKS,
+      HASHSIZE: BCRYPT_HASHSIZE,
+      hash: bcrypt_hash,
+      pbkdf: bcrypt_pbkdf
+};
+
+
+/***/ }),
+
+/***/ 3717:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 var balanced = __nccwpck_require__(9417);
@@ -2528,7 +3116,341 @@ function expand(str, isTop) {
 
 /***/ }),
 
-/***/ 7999:
+/***/ 3018:
+/***/ ((module) => {
+
+/* eslint-disable node/no-deprecated-api */
+
+var toString = Object.prototype.toString
+
+var isModern = (
+  typeof Buffer !== 'undefined' &&
+  typeof Buffer.alloc === 'function' &&
+  typeof Buffer.allocUnsafe === 'function' &&
+  typeof Buffer.from === 'function'
+)
+
+function isArrayBuffer (input) {
+  return toString.call(input).slice(8, -1) === 'ArrayBuffer'
+}
+
+function fromArrayBuffer (obj, byteOffset, length) {
+  byteOffset >>>= 0
+
+  var maxLength = obj.byteLength - byteOffset
+
+  if (maxLength < 0) {
+    throw new RangeError("'offset' is out of bounds")
+  }
+
+  if (length === undefined) {
+    length = maxLength
+  } else {
+    length >>>= 0
+
+    if (length > maxLength) {
+      throw new RangeError("'length' is out of bounds")
+    }
+  }
+
+  return isModern
+    ? Buffer.from(obj.slice(byteOffset, byteOffset + length))
+    : new Buffer(new Uint8Array(obj.slice(byteOffset, byteOffset + length)))
+}
+
+function fromString (string, encoding) {
+  if (typeof encoding !== 'string' || encoding === '') {
+    encoding = 'utf8'
+  }
+
+  if (!Buffer.isEncoding(encoding)) {
+    throw new TypeError('"encoding" must be a valid string encoding')
+  }
+
+  return isModern
+    ? Buffer.from(string, encoding)
+    : new Buffer(string, encoding)
+}
+
+function bufferFrom (value, encodingOrOffset, length) {
+  if (typeof value === 'number') {
+    throw new TypeError('"value" argument must not be a number')
+  }
+
+  if (isArrayBuffer(value)) {
+    return fromArrayBuffer(value, encodingOrOffset, length)
+  }
+
+  if (typeof value === 'string') {
+    return fromString(value, encodingOrOffset)
+  }
+
+  return isModern
+    ? Buffer.from(value)
+    : new Buffer(value)
+}
+
+module.exports = bufferFrom
+
+
+/***/ }),
+
+/***/ 5107:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+var Writable = (__nccwpck_require__(1642).Writable)
+var inherits = __nccwpck_require__(4124)
+var bufferFrom = __nccwpck_require__(3018)
+
+if (typeof Uint8Array === 'undefined') {
+  var U8 = (__nccwpck_require__(5027)/* .Uint8Array */ .U2)
+} else {
+  var U8 = Uint8Array
+}
+
+function ConcatStream(opts, cb) {
+  if (!(this instanceof ConcatStream)) return new ConcatStream(opts, cb)
+
+  if (typeof opts === 'function') {
+    cb = opts
+    opts = {}
+  }
+  if (!opts) opts = {}
+
+  var encoding = opts.encoding
+  var shouldInferEncoding = false
+
+  if (!encoding) {
+    shouldInferEncoding = true
+  } else {
+    encoding =  String(encoding).toLowerCase()
+    if (encoding === 'u8' || encoding === 'uint8') {
+      encoding = 'uint8array'
+    }
+  }
+
+  Writable.call(this, { objectMode: true })
+
+  this.encoding = encoding
+  this.shouldInferEncoding = shouldInferEncoding
+
+  if (cb) this.on('finish', function () { cb(this.getBody()) })
+  this.body = []
+}
+
+module.exports = ConcatStream
+inherits(ConcatStream, Writable)
+
+ConcatStream.prototype._write = function(chunk, enc, next) {
+  this.body.push(chunk)
+  next()
+}
+
+ConcatStream.prototype.inferEncoding = function (buff) {
+  var firstBuffer = buff === undefined ? this.body[0] : buff;
+  if (Buffer.isBuffer(firstBuffer)) return 'buffer'
+  if (typeof Uint8Array !== 'undefined' && firstBuffer instanceof Uint8Array) return 'uint8array'
+  if (Array.isArray(firstBuffer)) return 'array'
+  if (typeof firstBuffer === 'string') return 'string'
+  if (Object.prototype.toString.call(firstBuffer) === "[object Object]") return 'object'
+  return 'buffer'
+}
+
+ConcatStream.prototype.getBody = function () {
+  if (!this.encoding && this.body.length === 0) return []
+  if (this.shouldInferEncoding) this.encoding = this.inferEncoding()
+  if (this.encoding === 'array') return arrayConcat(this.body)
+  if (this.encoding === 'string') return stringConcat(this.body)
+  if (this.encoding === 'buffer') return bufferConcat(this.body)
+  if (this.encoding === 'uint8array') return u8Concat(this.body)
+  return this.body
+}
+
+var isArray = Array.isArray || function (arr) {
+  return Object.prototype.toString.call(arr) == '[object Array]'
+}
+
+function isArrayish (arr) {
+  return /Array\]$/.test(Object.prototype.toString.call(arr))
+}
+
+function isBufferish (p) {
+  return typeof p === 'string' || isArrayish(p) || (p && typeof p.subarray === 'function')
+}
+
+function stringConcat (parts) {
+  var strings = []
+  var needsToString = false
+  for (var i = 0; i < parts.length; i++) {
+    var p = parts[i]
+    if (typeof p === 'string') {
+      strings.push(p)
+    } else if (Buffer.isBuffer(p)) {
+      strings.push(p)
+    } else if (isBufferish(p)) {
+      strings.push(bufferFrom(p))
+    } else {
+      strings.push(bufferFrom(String(p)))
+    }
+  }
+  if (Buffer.isBuffer(parts[0])) {
+    strings = Buffer.concat(strings)
+    strings = strings.toString('utf8')
+  } else {
+    strings = strings.join('')
+  }
+  return strings
+}
+
+function bufferConcat (parts) {
+  var bufs = []
+  for (var i = 0; i < parts.length; i++) {
+    var p = parts[i]
+    if (Buffer.isBuffer(p)) {
+      bufs.push(p)
+    } else if (isBufferish(p)) {
+      bufs.push(bufferFrom(p))
+    } else {
+      bufs.push(bufferFrom(String(p)))
+    }
+  }
+  return Buffer.concat(bufs)
+}
+
+function arrayConcat (parts) {
+  var res = []
+  for (var i = 0; i < parts.length; i++) {
+    res.push.apply(res, parts[i])
+  }
+  return res
+}
+
+function u8Concat (parts) {
+  var len = 0
+  for (var i = 0; i < parts.length; i++) {
+    if (typeof parts[i] === 'string') {
+      parts[i] = bufferFrom(parts[i])
+    }
+    len += parts[i].length
+  }
+  var u8 = new U8(len)
+  for (var i = 0, offset = 0; i < parts.length; i++) {
+    var part = parts[i]
+    for (var j = 0; j < part.length; j++) {
+      u8[offset++] = part[j]
+    }
+  }
+  return u8
+}
+
+
+/***/ }),
+
+/***/ 2997:
+/***/ ((module) => {
+
+
+
+function assign(obj, props) {
+    for (const key in props) {
+        Object.defineProperty(obj, key, {
+            value: props[key],
+            enumerable: true,
+            configurable: true,
+        });
+    }
+
+    return obj;
+}
+
+function createError(err, code, props) {
+    if (!err || typeof err === 'string') {
+        throw new TypeError('Please pass an Error to err-code');
+    }
+
+    if (!props) {
+        props = {};
+    }
+
+    if (typeof code === 'object') {
+        props = code;
+        code = undefined;
+    }
+
+    if (code != null) {
+        props.code = code;
+    }
+
+    try {
+        return assign(err, props);
+    } catch (_) {
+        props.message = err.message;
+        props.stack = err.stack;
+
+        const ErrClass = function () {};
+
+        ErrClass.prototype = Object.create(Object.getPrototypeOf(err));
+
+        return assign(new ErrClass(), props);
+    }
+}
+
+module.exports = createError;
+
+
+/***/ }),
+
+/***/ 4124:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+try {
+  var util = __nccwpck_require__(3837);
+  /* istanbul ignore next */
+  if (typeof util.inherits !== 'function') throw '';
+  module.exports = util.inherits;
+} catch (e) {
+  /* istanbul ignore next */
+  module.exports = __nccwpck_require__(8544);
+}
+
+
+/***/ }),
+
+/***/ 8544:
+/***/ ((module) => {
+
+if (typeof Object.create === 'function') {
+  // implementation from standard node.js 'util' module
+  module.exports = function inherits(ctor, superCtor) {
+    if (superCtor) {
+      ctor.super_ = superCtor
+      ctor.prototype = Object.create(superCtor.prototype, {
+        constructor: {
+          value: ctor,
+          enumerable: false,
+          writable: true,
+          configurable: true
+        }
+      })
+    }
+  };
+} else {
+  // old school shim for old browsers
+  module.exports = function inherits(ctor, superCtor) {
+    if (superCtor) {
+      ctor.super_ = superCtor
+      var TempCtor = function () {}
+      TempCtor.prototype = superCtor.prototype
+      ctor.prototype = new TempCtor()
+      ctor.prototype.constructor = ctor
+    }
+  }
+}
+
+
+/***/ }),
+
+/***/ 4917:
 /***/ ((module) => {
 
 const isWindows = typeof process === 'object' &&
@@ -2539,7 +3461,7 @@ module.exports = isWindows ? { sep: '\\' } : { sep: '/' }
 
 /***/ }),
 
-/***/ 6802:
+/***/ 3973:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 const minimatch = module.exports = (p, pattern, options = {}) => {
@@ -2555,12 +3477,12 @@ const minimatch = module.exports = (p, pattern, options = {}) => {
 
 module.exports = minimatch
 
-const path = __nccwpck_require__(7999)
+const path = __nccwpck_require__(4917)
 minimatch.sep = path.sep
 
 const GLOBSTAR = Symbol('globstar **')
 minimatch.GLOBSTAR = GLOBSTAR
-const expand = __nccwpck_require__(9314)
+const expand = __nccwpck_require__(3717)
 
 const plTypes = {
   '!': { open: '(?:(?!(?:', close: '))[^/]*?)'},
@@ -2712,6 +3634,11 @@ class Minimatch {
     this.options = options
     this.set = []
     this.pattern = pattern
+    this.windowsPathsNoEscape = !!options.windowsPathsNoEscape ||
+      options.allowWindowsEscape === false
+    if (this.windowsPathsNoEscape) {
+      this.pattern = this.pattern.replace(/\\/g, '/')
+    }
     this.regexp = null
     this.negate = false
     this.comment = false
@@ -3447,10 +4374,5552 @@ minimatch.Minimatch = Minimatch
 
 /***/ }),
 
-/***/ 4816:
+/***/ 4742:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
+
+
+var errcode = __nccwpck_require__(2997);
+var retry = __nccwpck_require__(4347);
+
+var hasOwn = Object.prototype.hasOwnProperty;
+
+function isRetryError(err) {
+    return err && err.code === 'EPROMISERETRY' && hasOwn.call(err, 'retried');
+}
+
+function promiseRetry(fn, options) {
+    var temp;
+    var operation;
+
+    if (typeof fn === 'object' && typeof options === 'function') {
+        // Swap options and fn when using alternate signature (options, fn)
+        temp = options;
+        options = fn;
+        fn = temp;
+    }
+
+    operation = retry.operation(options);
+
+    return new Promise(function (resolve, reject) {
+        operation.attempt(function (number) {
+            Promise.resolve()
+            .then(function () {
+                return fn(function (err) {
+                    if (isRetryError(err)) {
+                        err = err.retried;
+                    }
+
+                    throw errcode(new Error('Retrying'), 'EPROMISERETRY', { retried: err });
+                }, number);
+            })
+            .then(resolve, function (err) {
+                if (isRetryError(err)) {
+                    err = err.retried;
+
+                    if (operation.retry(err || new Error())) {
+                        return;
+                    }
+                }
+
+                reject(err);
+            });
+        });
+    });
+}
+
+module.exports = promiseRetry;
+
+
+/***/ }),
+
+/***/ 7214:
+/***/ ((module) => {
+
+
+
+const codes = {};
+
+function createErrorType(code, message, Base) {
+  if (!Base) {
+    Base = Error
+  }
+
+  function getMessage (arg1, arg2, arg3) {
+    if (typeof message === 'string') {
+      return message
+    } else {
+      return message(arg1, arg2, arg3)
+    }
+  }
+
+  class NodeError extends Base {
+    constructor (arg1, arg2, arg3) {
+      super(getMessage(arg1, arg2, arg3));
+    }
+  }
+
+  NodeError.prototype.name = Base.name;
+  NodeError.prototype.code = code;
+
+  codes[code] = NodeError;
+}
+
+// https://github.com/nodejs/node/blob/v10.8.0/lib/internal/errors.js
+function oneOf(expected, thing) {
+  if (Array.isArray(expected)) {
+    const len = expected.length;
+    expected = expected.map((i) => String(i));
+    if (len > 2) {
+      return `one of ${thing} ${expected.slice(0, len - 1).join(', ')}, or ` +
+             expected[len - 1];
+    } else if (len === 2) {
+      return `one of ${thing} ${expected[0]} or ${expected[1]}`;
+    } else {
+      return `of ${thing} ${expected[0]}`;
+    }
+  } else {
+    return `of ${thing} ${String(expected)}`;
+  }
+}
+
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/startsWith
+function startsWith(str, search, pos) {
+	return str.substr(!pos || pos < 0 ? 0 : +pos, search.length) === search;
+}
+
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/endsWith
+function endsWith(str, search, this_len) {
+	if (this_len === undefined || this_len > str.length) {
+		this_len = str.length;
+	}
+	return str.substring(this_len - search.length, this_len) === search;
+}
+
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/includes
+function includes(str, search, start) {
+  if (typeof start !== 'number') {
+    start = 0;
+  }
+
+  if (start + search.length > str.length) {
+    return false;
+  } else {
+    return str.indexOf(search, start) !== -1;
+  }
+}
+
+createErrorType('ERR_INVALID_OPT_VALUE', function (name, value) {
+  return 'The value "' + value + '" is invalid for option "' + name + '"'
+}, TypeError);
+createErrorType('ERR_INVALID_ARG_TYPE', function (name, expected, actual) {
+  // determiner: 'must be' or 'must not be'
+  let determiner;
+  if (typeof expected === 'string' && startsWith(expected, 'not ')) {
+    determiner = 'must not be';
+    expected = expected.replace(/^not /, '');
+  } else {
+    determiner = 'must be';
+  }
+
+  let msg;
+  if (endsWith(name, ' argument')) {
+    // For cases like 'first argument'
+    msg = `The ${name} ${determiner} ${oneOf(expected, 'type')}`;
+  } else {
+    const type = includes(name, '.') ? 'property' : 'argument';
+    msg = `The "${name}" ${type} ${determiner} ${oneOf(expected, 'type')}`;
+  }
+
+  msg += `. Received type ${typeof actual}`;
+  return msg;
+}, TypeError);
+createErrorType('ERR_STREAM_PUSH_AFTER_EOF', 'stream.push() after EOF');
+createErrorType('ERR_METHOD_NOT_IMPLEMENTED', function (name) {
+  return 'The ' + name + ' method is not implemented'
+});
+createErrorType('ERR_STREAM_PREMATURE_CLOSE', 'Premature close');
+createErrorType('ERR_STREAM_DESTROYED', function (name) {
+  return 'Cannot call ' + name + ' after a stream was destroyed';
+});
+createErrorType('ERR_MULTIPLE_CALLBACK', 'Callback called multiple times');
+createErrorType('ERR_STREAM_CANNOT_PIPE', 'Cannot pipe, not readable');
+createErrorType('ERR_STREAM_WRITE_AFTER_END', 'write after end');
+createErrorType('ERR_STREAM_NULL_VALUES', 'May not write null values to stream', TypeError);
+createErrorType('ERR_UNKNOWN_ENCODING', function (arg) {
+  return 'Unknown encoding: ' + arg
+}, TypeError);
+createErrorType('ERR_STREAM_UNSHIFT_AFTER_END_EVENT', 'stream.unshift() after end event');
+
+module.exports.q = codes;
+
+
+/***/ }),
+
+/***/ 1359:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+// a duplex stream is just a stream that is both readable and writable.
+// Since JS doesn't have multiple prototypal inheritance, this class
+// prototypally inherits from Readable, and then parasitically from
+// Writable.
+
+/*<replacement>*/
+
+var objectKeys = Object.keys || function (obj) {
+  var keys = [];
+
+  for (var key in obj) {
+    keys.push(key);
+  }
+
+  return keys;
+};
+/*</replacement>*/
+
+
+module.exports = Duplex;
+
+var Readable = __nccwpck_require__(1433);
+
+var Writable = __nccwpck_require__(6993);
+
+__nccwpck_require__(4124)(Duplex, Readable);
+
+{
+  // Allow the keys array to be GC'ed.
+  var keys = objectKeys(Writable.prototype);
+
+  for (var v = 0; v < keys.length; v++) {
+    var method = keys[v];
+    if (!Duplex.prototype[method]) Duplex.prototype[method] = Writable.prototype[method];
+  }
+}
+
+function Duplex(options) {
+  if (!(this instanceof Duplex)) return new Duplex(options);
+  Readable.call(this, options);
+  Writable.call(this, options);
+  this.allowHalfOpen = true;
+
+  if (options) {
+    if (options.readable === false) this.readable = false;
+    if (options.writable === false) this.writable = false;
+
+    if (options.allowHalfOpen === false) {
+      this.allowHalfOpen = false;
+      this.once('end', onend);
+    }
+  }
+}
+
+Object.defineProperty(Duplex.prototype, 'writableHighWaterMark', {
+  // making it explicit this property is not enumerable
+  // because otherwise some prototype manipulation in
+  // userland will fail
+  enumerable: false,
+  get: function get() {
+    return this._writableState.highWaterMark;
+  }
+});
+Object.defineProperty(Duplex.prototype, 'writableBuffer', {
+  // making it explicit this property is not enumerable
+  // because otherwise some prototype manipulation in
+  // userland will fail
+  enumerable: false,
+  get: function get() {
+    return this._writableState && this._writableState.getBuffer();
+  }
+});
+Object.defineProperty(Duplex.prototype, 'writableLength', {
+  // making it explicit this property is not enumerable
+  // because otherwise some prototype manipulation in
+  // userland will fail
+  enumerable: false,
+  get: function get() {
+    return this._writableState.length;
+  }
+}); // the no-half-open enforcer
+
+function onend() {
+  // If the writable side ended, then we're ok.
+  if (this._writableState.ended) return; // no more data can be written.
+  // But allow more writes to happen in this tick.
+
+  process.nextTick(onEndNT, this);
+}
+
+function onEndNT(self) {
+  self.end();
+}
+
+Object.defineProperty(Duplex.prototype, 'destroyed', {
+  // making it explicit this property is not enumerable
+  // because otherwise some prototype manipulation in
+  // userland will fail
+  enumerable: false,
+  get: function get() {
+    if (this._readableState === undefined || this._writableState === undefined) {
+      return false;
+    }
+
+    return this._readableState.destroyed && this._writableState.destroyed;
+  },
+  set: function set(value) {
+    // we ignore the value if the stream
+    // has not been initialized yet
+    if (this._readableState === undefined || this._writableState === undefined) {
+      return;
+    } // backward compatibility, the user is explicitly
+    // managing destroyed
+
+
+    this._readableState.destroyed = value;
+    this._writableState.destroyed = value;
+  }
+});
+
+/***/ }),
+
+/***/ 1542:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+// a passthrough stream.
+// basically just the most minimal sort of Transform stream.
+// Every written chunk gets output as-is.
+
+
+module.exports = PassThrough;
+
+var Transform = __nccwpck_require__(4415);
+
+__nccwpck_require__(4124)(PassThrough, Transform);
+
+function PassThrough(options) {
+  if (!(this instanceof PassThrough)) return new PassThrough(options);
+  Transform.call(this, options);
+}
+
+PassThrough.prototype._transform = function (chunk, encoding, cb) {
+  cb(null, chunk);
+};
+
+/***/ }),
+
+/***/ 1433:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
+module.exports = Readable;
+/*<replacement>*/
+
+var Duplex;
+/*</replacement>*/
+
+Readable.ReadableState = ReadableState;
+/*<replacement>*/
+
+var EE = (__nccwpck_require__(2361).EventEmitter);
+
+var EElistenerCount = function EElistenerCount(emitter, type) {
+  return emitter.listeners(type).length;
+};
+/*</replacement>*/
+
+/*<replacement>*/
+
+
+var Stream = __nccwpck_require__(2387);
+/*</replacement>*/
+
+
+var Buffer = (__nccwpck_require__(4300).Buffer);
+
+var OurUint8Array = global.Uint8Array || function () {};
+
+function _uint8ArrayToBuffer(chunk) {
+  return Buffer.from(chunk);
+}
+
+function _isUint8Array(obj) {
+  return Buffer.isBuffer(obj) || obj instanceof OurUint8Array;
+}
+/*<replacement>*/
+
+
+var debugUtil = __nccwpck_require__(3837);
+
+var debug;
+
+if (debugUtil && debugUtil.debuglog) {
+  debug = debugUtil.debuglog('stream');
+} else {
+  debug = function debug() {};
+}
+/*</replacement>*/
+
+
+var BufferList = __nccwpck_require__(2746);
+
+var destroyImpl = __nccwpck_require__(7049);
+
+var _require = __nccwpck_require__(9948),
+    getHighWaterMark = _require.getHighWaterMark;
+
+var _require$codes = (__nccwpck_require__(7214)/* .codes */ .q),
+    ERR_INVALID_ARG_TYPE = _require$codes.ERR_INVALID_ARG_TYPE,
+    ERR_STREAM_PUSH_AFTER_EOF = _require$codes.ERR_STREAM_PUSH_AFTER_EOF,
+    ERR_METHOD_NOT_IMPLEMENTED = _require$codes.ERR_METHOD_NOT_IMPLEMENTED,
+    ERR_STREAM_UNSHIFT_AFTER_END_EVENT = _require$codes.ERR_STREAM_UNSHIFT_AFTER_END_EVENT; // Lazy loaded to improve the startup performance.
+
+
+var StringDecoder;
+var createReadableStreamAsyncIterator;
+var from;
+
+__nccwpck_require__(4124)(Readable, Stream);
+
+var errorOrDestroy = destroyImpl.errorOrDestroy;
+var kProxyEvents = ['error', 'close', 'destroy', 'pause', 'resume'];
+
+function prependListener(emitter, event, fn) {
+  // Sadly this is not cacheable as some libraries bundle their own
+  // event emitter implementation with them.
+  if (typeof emitter.prependListener === 'function') return emitter.prependListener(event, fn); // This is a hack to make sure that our error handler is attached before any
+  // userland ones.  NEVER DO THIS. This is here only because this code needs
+  // to continue to work with older versions of Node.js that do not include
+  // the prependListener() method. The goal is to eventually remove this hack.
+
+  if (!emitter._events || !emitter._events[event]) emitter.on(event, fn);else if (Array.isArray(emitter._events[event])) emitter._events[event].unshift(fn);else emitter._events[event] = [fn, emitter._events[event]];
+}
+
+function ReadableState(options, stream, isDuplex) {
+  Duplex = Duplex || __nccwpck_require__(1359);
+  options = options || {}; // Duplex streams are both readable and writable, but share
+  // the same options object.
+  // However, some cases require setting options to different
+  // values for the readable and the writable sides of the duplex stream.
+  // These options can be provided separately as readableXXX and writableXXX.
+
+  if (typeof isDuplex !== 'boolean') isDuplex = stream instanceof Duplex; // object stream flag. Used to make read(n) ignore n and to
+  // make all the buffer merging and length checks go away
+
+  this.objectMode = !!options.objectMode;
+  if (isDuplex) this.objectMode = this.objectMode || !!options.readableObjectMode; // the point at which it stops calling _read() to fill the buffer
+  // Note: 0 is a valid value, means "don't call _read preemptively ever"
+
+  this.highWaterMark = getHighWaterMark(this, options, 'readableHighWaterMark', isDuplex); // A linked list is used to store data chunks instead of an array because the
+  // linked list can remove elements from the beginning faster than
+  // array.shift()
+
+  this.buffer = new BufferList();
+  this.length = 0;
+  this.pipes = null;
+  this.pipesCount = 0;
+  this.flowing = null;
+  this.ended = false;
+  this.endEmitted = false;
+  this.reading = false; // a flag to be able to tell if the event 'readable'/'data' is emitted
+  // immediately, or on a later tick.  We set this to true at first, because
+  // any actions that shouldn't happen until "later" should generally also
+  // not happen before the first read call.
+
+  this.sync = true; // whenever we return null, then we set a flag to say
+  // that we're awaiting a 'readable' event emission.
+
+  this.needReadable = false;
+  this.emittedReadable = false;
+  this.readableListening = false;
+  this.resumeScheduled = false;
+  this.paused = true; // Should close be emitted on destroy. Defaults to true.
+
+  this.emitClose = options.emitClose !== false; // Should .destroy() be called after 'end' (and potentially 'finish')
+
+  this.autoDestroy = !!options.autoDestroy; // has it been destroyed
+
+  this.destroyed = false; // Crypto is kind of old and crusty.  Historically, its default string
+  // encoding is 'binary' so we have to make this configurable.
+  // Everything else in the universe uses 'utf8', though.
+
+  this.defaultEncoding = options.defaultEncoding || 'utf8'; // the number of writers that are awaiting a drain event in .pipe()s
+
+  this.awaitDrain = 0; // if true, a maybeReadMore has been scheduled
+
+  this.readingMore = false;
+  this.decoder = null;
+  this.encoding = null;
+
+  if (options.encoding) {
+    if (!StringDecoder) StringDecoder = (__nccwpck_require__(4841)/* .StringDecoder */ .s);
+    this.decoder = new StringDecoder(options.encoding);
+    this.encoding = options.encoding;
+  }
+}
+
+function Readable(options) {
+  Duplex = Duplex || __nccwpck_require__(1359);
+  if (!(this instanceof Readable)) return new Readable(options); // Checking for a Stream.Duplex instance is faster here instead of inside
+  // the ReadableState constructor, at least with V8 6.5
+
+  var isDuplex = this instanceof Duplex;
+  this._readableState = new ReadableState(options, this, isDuplex); // legacy
+
+  this.readable = true;
+
+  if (options) {
+    if (typeof options.read === 'function') this._read = options.read;
+    if (typeof options.destroy === 'function') this._destroy = options.destroy;
+  }
+
+  Stream.call(this);
+}
+
+Object.defineProperty(Readable.prototype, 'destroyed', {
+  // making it explicit this property is not enumerable
+  // because otherwise some prototype manipulation in
+  // userland will fail
+  enumerable: false,
+  get: function get() {
+    if (this._readableState === undefined) {
+      return false;
+    }
+
+    return this._readableState.destroyed;
+  },
+  set: function set(value) {
+    // we ignore the value if the stream
+    // has not been initialized yet
+    if (!this._readableState) {
+      return;
+    } // backward compatibility, the user is explicitly
+    // managing destroyed
+
+
+    this._readableState.destroyed = value;
+  }
+});
+Readable.prototype.destroy = destroyImpl.destroy;
+Readable.prototype._undestroy = destroyImpl.undestroy;
+
+Readable.prototype._destroy = function (err, cb) {
+  cb(err);
+}; // Manually shove something into the read() buffer.
+// This returns true if the highWaterMark has not been hit yet,
+// similar to how Writable.write() returns true if you should
+// write() some more.
+
+
+Readable.prototype.push = function (chunk, encoding) {
+  var state = this._readableState;
+  var skipChunkCheck;
+
+  if (!state.objectMode) {
+    if (typeof chunk === 'string') {
+      encoding = encoding || state.defaultEncoding;
+
+      if (encoding !== state.encoding) {
+        chunk = Buffer.from(chunk, encoding);
+        encoding = '';
+      }
+
+      skipChunkCheck = true;
+    }
+  } else {
+    skipChunkCheck = true;
+  }
+
+  return readableAddChunk(this, chunk, encoding, false, skipChunkCheck);
+}; // Unshift should *always* be something directly out of read()
+
+
+Readable.prototype.unshift = function (chunk) {
+  return readableAddChunk(this, chunk, null, true, false);
+};
+
+function readableAddChunk(stream, chunk, encoding, addToFront, skipChunkCheck) {
+  debug('readableAddChunk', chunk);
+  var state = stream._readableState;
+
+  if (chunk === null) {
+    state.reading = false;
+    onEofChunk(stream, state);
+  } else {
+    var er;
+    if (!skipChunkCheck) er = chunkInvalid(state, chunk);
+
+    if (er) {
+      errorOrDestroy(stream, er);
+    } else if (state.objectMode || chunk && chunk.length > 0) {
+      if (typeof chunk !== 'string' && !state.objectMode && Object.getPrototypeOf(chunk) !== Buffer.prototype) {
+        chunk = _uint8ArrayToBuffer(chunk);
+      }
+
+      if (addToFront) {
+        if (state.endEmitted) errorOrDestroy(stream, new ERR_STREAM_UNSHIFT_AFTER_END_EVENT());else addChunk(stream, state, chunk, true);
+      } else if (state.ended) {
+        errorOrDestroy(stream, new ERR_STREAM_PUSH_AFTER_EOF());
+      } else if (state.destroyed) {
+        return false;
+      } else {
+        state.reading = false;
+
+        if (state.decoder && !encoding) {
+          chunk = state.decoder.write(chunk);
+          if (state.objectMode || chunk.length !== 0) addChunk(stream, state, chunk, false);else maybeReadMore(stream, state);
+        } else {
+          addChunk(stream, state, chunk, false);
+        }
+      }
+    } else if (!addToFront) {
+      state.reading = false;
+      maybeReadMore(stream, state);
+    }
+  } // We can push more data if we are below the highWaterMark.
+  // Also, if we have no data yet, we can stand some more bytes.
+  // This is to work around cases where hwm=0, such as the repl.
+
+
+  return !state.ended && (state.length < state.highWaterMark || state.length === 0);
+}
+
+function addChunk(stream, state, chunk, addToFront) {
+  if (state.flowing && state.length === 0 && !state.sync) {
+    state.awaitDrain = 0;
+    stream.emit('data', chunk);
+  } else {
+    // update the buffer info.
+    state.length += state.objectMode ? 1 : chunk.length;
+    if (addToFront) state.buffer.unshift(chunk);else state.buffer.push(chunk);
+    if (state.needReadable) emitReadable(stream);
+  }
+
+  maybeReadMore(stream, state);
+}
+
+function chunkInvalid(state, chunk) {
+  var er;
+
+  if (!_isUint8Array(chunk) && typeof chunk !== 'string' && chunk !== undefined && !state.objectMode) {
+    er = new ERR_INVALID_ARG_TYPE('chunk', ['string', 'Buffer', 'Uint8Array'], chunk);
+  }
+
+  return er;
+}
+
+Readable.prototype.isPaused = function () {
+  return this._readableState.flowing === false;
+}; // backwards compatibility.
+
+
+Readable.prototype.setEncoding = function (enc) {
+  if (!StringDecoder) StringDecoder = (__nccwpck_require__(4841)/* .StringDecoder */ .s);
+  var decoder = new StringDecoder(enc);
+  this._readableState.decoder = decoder; // If setEncoding(null), decoder.encoding equals utf8
+
+  this._readableState.encoding = this._readableState.decoder.encoding; // Iterate over current buffer to convert already stored Buffers:
+
+  var p = this._readableState.buffer.head;
+  var content = '';
+
+  while (p !== null) {
+    content += decoder.write(p.data);
+    p = p.next;
+  }
+
+  this._readableState.buffer.clear();
+
+  if (content !== '') this._readableState.buffer.push(content);
+  this._readableState.length = content.length;
+  return this;
+}; // Don't raise the hwm > 1GB
+
+
+var MAX_HWM = 0x40000000;
+
+function computeNewHighWaterMark(n) {
+  if (n >= MAX_HWM) {
+    // TODO(ronag): Throw ERR_VALUE_OUT_OF_RANGE.
+    n = MAX_HWM;
+  } else {
+    // Get the next highest power of 2 to prevent increasing hwm excessively in
+    // tiny amounts
+    n--;
+    n |= n >>> 1;
+    n |= n >>> 2;
+    n |= n >>> 4;
+    n |= n >>> 8;
+    n |= n >>> 16;
+    n++;
+  }
+
+  return n;
+} // This function is designed to be inlinable, so please take care when making
+// changes to the function body.
+
+
+function howMuchToRead(n, state) {
+  if (n <= 0 || state.length === 0 && state.ended) return 0;
+  if (state.objectMode) return 1;
+
+  if (n !== n) {
+    // Only flow one buffer at a time
+    if (state.flowing && state.length) return state.buffer.head.data.length;else return state.length;
+  } // If we're asking for more than the current hwm, then raise the hwm.
+
+
+  if (n > state.highWaterMark) state.highWaterMark = computeNewHighWaterMark(n);
+  if (n <= state.length) return n; // Don't have enough
+
+  if (!state.ended) {
+    state.needReadable = true;
+    return 0;
+  }
+
+  return state.length;
+} // you can override either this method, or the async _read(n) below.
+
+
+Readable.prototype.read = function (n) {
+  debug('read', n);
+  n = parseInt(n, 10);
+  var state = this._readableState;
+  var nOrig = n;
+  if (n !== 0) state.emittedReadable = false; // if we're doing read(0) to trigger a readable event, but we
+  // already have a bunch of data in the buffer, then just trigger
+  // the 'readable' event and move on.
+
+  if (n === 0 && state.needReadable && ((state.highWaterMark !== 0 ? state.length >= state.highWaterMark : state.length > 0) || state.ended)) {
+    debug('read: emitReadable', state.length, state.ended);
+    if (state.length === 0 && state.ended) endReadable(this);else emitReadable(this);
+    return null;
+  }
+
+  n = howMuchToRead(n, state); // if we've ended, and we're now clear, then finish it up.
+
+  if (n === 0 && state.ended) {
+    if (state.length === 0) endReadable(this);
+    return null;
+  } // All the actual chunk generation logic needs to be
+  // *below* the call to _read.  The reason is that in certain
+  // synthetic stream cases, such as passthrough streams, _read
+  // may be a completely synchronous operation which may change
+  // the state of the read buffer, providing enough data when
+  // before there was *not* enough.
+  //
+  // So, the steps are:
+  // 1. Figure out what the state of things will be after we do
+  // a read from the buffer.
+  //
+  // 2. If that resulting state will trigger a _read, then call _read.
+  // Note that this may be asynchronous, or synchronous.  Yes, it is
+  // deeply ugly to write APIs this way, but that still doesn't mean
+  // that the Readable class should behave improperly, as streams are
+  // designed to be sync/async agnostic.
+  // Take note if the _read call is sync or async (ie, if the read call
+  // has returned yet), so that we know whether or not it's safe to emit
+  // 'readable' etc.
+  //
+  // 3. Actually pull the requested chunks out of the buffer and return.
+  // if we need a readable event, then we need to do some reading.
+
+
+  var doRead = state.needReadable;
+  debug('need readable', doRead); // if we currently have less than the highWaterMark, then also read some
+
+  if (state.length === 0 || state.length - n < state.highWaterMark) {
+    doRead = true;
+    debug('length less than watermark', doRead);
+  } // however, if we've ended, then there's no point, and if we're already
+  // reading, then it's unnecessary.
+
+
+  if (state.ended || state.reading) {
+    doRead = false;
+    debug('reading or ended', doRead);
+  } else if (doRead) {
+    debug('do read');
+    state.reading = true;
+    state.sync = true; // if the length is currently zero, then we *need* a readable event.
+
+    if (state.length === 0) state.needReadable = true; // call internal read method
+
+    this._read(state.highWaterMark);
+
+    state.sync = false; // If _read pushed data synchronously, then `reading` will be false,
+    // and we need to re-evaluate how much data we can return to the user.
+
+    if (!state.reading) n = howMuchToRead(nOrig, state);
+  }
+
+  var ret;
+  if (n > 0) ret = fromList(n, state);else ret = null;
+
+  if (ret === null) {
+    state.needReadable = state.length <= state.highWaterMark;
+    n = 0;
+  } else {
+    state.length -= n;
+    state.awaitDrain = 0;
+  }
+
+  if (state.length === 0) {
+    // If we have nothing in the buffer, then we want to know
+    // as soon as we *do* get something into the buffer.
+    if (!state.ended) state.needReadable = true; // If we tried to read() past the EOF, then emit end on the next tick.
+
+    if (nOrig !== n && state.ended) endReadable(this);
+  }
+
+  if (ret !== null) this.emit('data', ret);
+  return ret;
+};
+
+function onEofChunk(stream, state) {
+  debug('onEofChunk');
+  if (state.ended) return;
+
+  if (state.decoder) {
+    var chunk = state.decoder.end();
+
+    if (chunk && chunk.length) {
+      state.buffer.push(chunk);
+      state.length += state.objectMode ? 1 : chunk.length;
+    }
+  }
+
+  state.ended = true;
+
+  if (state.sync) {
+    // if we are sync, wait until next tick to emit the data.
+    // Otherwise we risk emitting data in the flow()
+    // the readable code triggers during a read() call
+    emitReadable(stream);
+  } else {
+    // emit 'readable' now to make sure it gets picked up.
+    state.needReadable = false;
+
+    if (!state.emittedReadable) {
+      state.emittedReadable = true;
+      emitReadable_(stream);
+    }
+  }
+} // Don't emit readable right away in sync mode, because this can trigger
+// another read() call => stack overflow.  This way, it might trigger
+// a nextTick recursion warning, but that's not so bad.
+
+
+function emitReadable(stream) {
+  var state = stream._readableState;
+  debug('emitReadable', state.needReadable, state.emittedReadable);
+  state.needReadable = false;
+
+  if (!state.emittedReadable) {
+    debug('emitReadable', state.flowing);
+    state.emittedReadable = true;
+    process.nextTick(emitReadable_, stream);
+  }
+}
+
+function emitReadable_(stream) {
+  var state = stream._readableState;
+  debug('emitReadable_', state.destroyed, state.length, state.ended);
+
+  if (!state.destroyed && (state.length || state.ended)) {
+    stream.emit('readable');
+    state.emittedReadable = false;
+  } // The stream needs another readable event if
+  // 1. It is not flowing, as the flow mechanism will take
+  //    care of it.
+  // 2. It is not ended.
+  // 3. It is below the highWaterMark, so we can schedule
+  //    another readable later.
+
+
+  state.needReadable = !state.flowing && !state.ended && state.length <= state.highWaterMark;
+  flow(stream);
+} // at this point, the user has presumably seen the 'readable' event,
+// and called read() to consume some data.  that may have triggered
+// in turn another _read(n) call, in which case reading = true if
+// it's in progress.
+// However, if we're not ended, or reading, and the length < hwm,
+// then go ahead and try to read some more preemptively.
+
+
+function maybeReadMore(stream, state) {
+  if (!state.readingMore) {
+    state.readingMore = true;
+    process.nextTick(maybeReadMore_, stream, state);
+  }
+}
+
+function maybeReadMore_(stream, state) {
+  // Attempt to read more data if we should.
+  //
+  // The conditions for reading more data are (one of):
+  // - Not enough data buffered (state.length < state.highWaterMark). The loop
+  //   is responsible for filling the buffer with enough data if such data
+  //   is available. If highWaterMark is 0 and we are not in the flowing mode
+  //   we should _not_ attempt to buffer any extra data. We'll get more data
+  //   when the stream consumer calls read() instead.
+  // - No data in the buffer, and the stream is in flowing mode. In this mode
+  //   the loop below is responsible for ensuring read() is called. Failing to
+  //   call read here would abort the flow and there's no other mechanism for
+  //   continuing the flow if the stream consumer has just subscribed to the
+  //   'data' event.
+  //
+  // In addition to the above conditions to keep reading data, the following
+  // conditions prevent the data from being read:
+  // - The stream has ended (state.ended).
+  // - There is already a pending 'read' operation (state.reading). This is a
+  //   case where the the stream has called the implementation defined _read()
+  //   method, but they are processing the call asynchronously and have _not_
+  //   called push() with new data. In this case we skip performing more
+  //   read()s. The execution ends in this method again after the _read() ends
+  //   up calling push() with more data.
+  while (!state.reading && !state.ended && (state.length < state.highWaterMark || state.flowing && state.length === 0)) {
+    var len = state.length;
+    debug('maybeReadMore read 0');
+    stream.read(0);
+    if (len === state.length) // didn't get any data, stop spinning.
+      break;
+  }
+
+  state.readingMore = false;
+} // abstract method.  to be overridden in specific implementation classes.
+// call cb(er, data) where data is <= n in length.
+// for virtual (non-string, non-buffer) streams, "length" is somewhat
+// arbitrary, and perhaps not very meaningful.
+
+
+Readable.prototype._read = function (n) {
+  errorOrDestroy(this, new ERR_METHOD_NOT_IMPLEMENTED('_read()'));
+};
+
+Readable.prototype.pipe = function (dest, pipeOpts) {
+  var src = this;
+  var state = this._readableState;
+
+  switch (state.pipesCount) {
+    case 0:
+      state.pipes = dest;
+      break;
+
+    case 1:
+      state.pipes = [state.pipes, dest];
+      break;
+
+    default:
+      state.pipes.push(dest);
+      break;
+  }
+
+  state.pipesCount += 1;
+  debug('pipe count=%d opts=%j', state.pipesCount, pipeOpts);
+  var doEnd = (!pipeOpts || pipeOpts.end !== false) && dest !== process.stdout && dest !== process.stderr;
+  var endFn = doEnd ? onend : unpipe;
+  if (state.endEmitted) process.nextTick(endFn);else src.once('end', endFn);
+  dest.on('unpipe', onunpipe);
+
+  function onunpipe(readable, unpipeInfo) {
+    debug('onunpipe');
+
+    if (readable === src) {
+      if (unpipeInfo && unpipeInfo.hasUnpiped === false) {
+        unpipeInfo.hasUnpiped = true;
+        cleanup();
+      }
+    }
+  }
+
+  function onend() {
+    debug('onend');
+    dest.end();
+  } // when the dest drains, it reduces the awaitDrain counter
+  // on the source.  This would be more elegant with a .once()
+  // handler in flow(), but adding and removing repeatedly is
+  // too slow.
+
+
+  var ondrain = pipeOnDrain(src);
+  dest.on('drain', ondrain);
+  var cleanedUp = false;
+
+  function cleanup() {
+    debug('cleanup'); // cleanup event handlers once the pipe is broken
+
+    dest.removeListener('close', onclose);
+    dest.removeListener('finish', onfinish);
+    dest.removeListener('drain', ondrain);
+    dest.removeListener('error', onerror);
+    dest.removeListener('unpipe', onunpipe);
+    src.removeListener('end', onend);
+    src.removeListener('end', unpipe);
+    src.removeListener('data', ondata);
+    cleanedUp = true; // if the reader is waiting for a drain event from this
+    // specific writer, then it would cause it to never start
+    // flowing again.
+    // So, if this is awaiting a drain, then we just call it now.
+    // If we don't know, then assume that we are waiting for one.
+
+    if (state.awaitDrain && (!dest._writableState || dest._writableState.needDrain)) ondrain();
+  }
+
+  src.on('data', ondata);
+
+  function ondata(chunk) {
+    debug('ondata');
+    var ret = dest.write(chunk);
+    debug('dest.write', ret);
+
+    if (ret === false) {
+      // If the user unpiped during `dest.write()`, it is possible
+      // to get stuck in a permanently paused state if that write
+      // also returned false.
+      // => Check whether `dest` is still a piping destination.
+      if ((state.pipesCount === 1 && state.pipes === dest || state.pipesCount > 1 && indexOf(state.pipes, dest) !== -1) && !cleanedUp) {
+        debug('false write response, pause', state.awaitDrain);
+        state.awaitDrain++;
+      }
+
+      src.pause();
+    }
+  } // if the dest has an error, then stop piping into it.
+  // however, don't suppress the throwing behavior for this.
+
+
+  function onerror(er) {
+    debug('onerror', er);
+    unpipe();
+    dest.removeListener('error', onerror);
+    if (EElistenerCount(dest, 'error') === 0) errorOrDestroy(dest, er);
+  } // Make sure our error handler is attached before userland ones.
+
+
+  prependListener(dest, 'error', onerror); // Both close and finish should trigger unpipe, but only once.
+
+  function onclose() {
+    dest.removeListener('finish', onfinish);
+    unpipe();
+  }
+
+  dest.once('close', onclose);
+
+  function onfinish() {
+    debug('onfinish');
+    dest.removeListener('close', onclose);
+    unpipe();
+  }
+
+  dest.once('finish', onfinish);
+
+  function unpipe() {
+    debug('unpipe');
+    src.unpipe(dest);
+  } // tell the dest that it's being piped to
+
+
+  dest.emit('pipe', src); // start the flow if it hasn't been started already.
+
+  if (!state.flowing) {
+    debug('pipe resume');
+    src.resume();
+  }
+
+  return dest;
+};
+
+function pipeOnDrain(src) {
+  return function pipeOnDrainFunctionResult() {
+    var state = src._readableState;
+    debug('pipeOnDrain', state.awaitDrain);
+    if (state.awaitDrain) state.awaitDrain--;
+
+    if (state.awaitDrain === 0 && EElistenerCount(src, 'data')) {
+      state.flowing = true;
+      flow(src);
+    }
+  };
+}
+
+Readable.prototype.unpipe = function (dest) {
+  var state = this._readableState;
+  var unpipeInfo = {
+    hasUnpiped: false
+  }; // if we're not piping anywhere, then do nothing.
+
+  if (state.pipesCount === 0) return this; // just one destination.  most common case.
+
+  if (state.pipesCount === 1) {
+    // passed in one, but it's not the right one.
+    if (dest && dest !== state.pipes) return this;
+    if (!dest) dest = state.pipes; // got a match.
+
+    state.pipes = null;
+    state.pipesCount = 0;
+    state.flowing = false;
+    if (dest) dest.emit('unpipe', this, unpipeInfo);
+    return this;
+  } // slow case. multiple pipe destinations.
+
+
+  if (!dest) {
+    // remove all.
+    var dests = state.pipes;
+    var len = state.pipesCount;
+    state.pipes = null;
+    state.pipesCount = 0;
+    state.flowing = false;
+
+    for (var i = 0; i < len; i++) {
+      dests[i].emit('unpipe', this, {
+        hasUnpiped: false
+      });
+    }
+
+    return this;
+  } // try to find the right one.
+
+
+  var index = indexOf(state.pipes, dest);
+  if (index === -1) return this;
+  state.pipes.splice(index, 1);
+  state.pipesCount -= 1;
+  if (state.pipesCount === 1) state.pipes = state.pipes[0];
+  dest.emit('unpipe', this, unpipeInfo);
+  return this;
+}; // set up data events if they are asked for
+// Ensure readable listeners eventually get something
+
+
+Readable.prototype.on = function (ev, fn) {
+  var res = Stream.prototype.on.call(this, ev, fn);
+  var state = this._readableState;
+
+  if (ev === 'data') {
+    // update readableListening so that resume() may be a no-op
+    // a few lines down. This is needed to support once('readable').
+    state.readableListening = this.listenerCount('readable') > 0; // Try start flowing on next tick if stream isn't explicitly paused
+
+    if (state.flowing !== false) this.resume();
+  } else if (ev === 'readable') {
+    if (!state.endEmitted && !state.readableListening) {
+      state.readableListening = state.needReadable = true;
+      state.flowing = false;
+      state.emittedReadable = false;
+      debug('on readable', state.length, state.reading);
+
+      if (state.length) {
+        emitReadable(this);
+      } else if (!state.reading) {
+        process.nextTick(nReadingNextTick, this);
+      }
+    }
+  }
+
+  return res;
+};
+
+Readable.prototype.addListener = Readable.prototype.on;
+
+Readable.prototype.removeListener = function (ev, fn) {
+  var res = Stream.prototype.removeListener.call(this, ev, fn);
+
+  if (ev === 'readable') {
+    // We need to check if there is someone still listening to
+    // readable and reset the state. However this needs to happen
+    // after readable has been emitted but before I/O (nextTick) to
+    // support once('readable', fn) cycles. This means that calling
+    // resume within the same tick will have no
+    // effect.
+    process.nextTick(updateReadableListening, this);
+  }
+
+  return res;
+};
+
+Readable.prototype.removeAllListeners = function (ev) {
+  var res = Stream.prototype.removeAllListeners.apply(this, arguments);
+
+  if (ev === 'readable' || ev === undefined) {
+    // We need to check if there is someone still listening to
+    // readable and reset the state. However this needs to happen
+    // after readable has been emitted but before I/O (nextTick) to
+    // support once('readable', fn) cycles. This means that calling
+    // resume within the same tick will have no
+    // effect.
+    process.nextTick(updateReadableListening, this);
+  }
+
+  return res;
+};
+
+function updateReadableListening(self) {
+  var state = self._readableState;
+  state.readableListening = self.listenerCount('readable') > 0;
+
+  if (state.resumeScheduled && !state.paused) {
+    // flowing needs to be set to true now, otherwise
+    // the upcoming resume will not flow.
+    state.flowing = true; // crude way to check if we should resume
+  } else if (self.listenerCount('data') > 0) {
+    self.resume();
+  }
+}
+
+function nReadingNextTick(self) {
+  debug('readable nexttick read 0');
+  self.read(0);
+} // pause() and resume() are remnants of the legacy readable stream API
+// If the user uses them, then switch into old mode.
+
+
+Readable.prototype.resume = function () {
+  var state = this._readableState;
+
+  if (!state.flowing) {
+    debug('resume'); // we flow only if there is no one listening
+    // for readable, but we still have to call
+    // resume()
+
+    state.flowing = !state.readableListening;
+    resume(this, state);
+  }
+
+  state.paused = false;
+  return this;
+};
+
+function resume(stream, state) {
+  if (!state.resumeScheduled) {
+    state.resumeScheduled = true;
+    process.nextTick(resume_, stream, state);
+  }
+}
+
+function resume_(stream, state) {
+  debug('resume', state.reading);
+
+  if (!state.reading) {
+    stream.read(0);
+  }
+
+  state.resumeScheduled = false;
+  stream.emit('resume');
+  flow(stream);
+  if (state.flowing && !state.reading) stream.read(0);
+}
+
+Readable.prototype.pause = function () {
+  debug('call pause flowing=%j', this._readableState.flowing);
+
+  if (this._readableState.flowing !== false) {
+    debug('pause');
+    this._readableState.flowing = false;
+    this.emit('pause');
+  }
+
+  this._readableState.paused = true;
+  return this;
+};
+
+function flow(stream) {
+  var state = stream._readableState;
+  debug('flow', state.flowing);
+
+  while (state.flowing && stream.read() !== null) {
+    ;
+  }
+} // wrap an old-style stream as the async data source.
+// This is *not* part of the readable stream interface.
+// It is an ugly unfortunate mess of history.
+
+
+Readable.prototype.wrap = function (stream) {
+  var _this = this;
+
+  var state = this._readableState;
+  var paused = false;
+  stream.on('end', function () {
+    debug('wrapped end');
+
+    if (state.decoder && !state.ended) {
+      var chunk = state.decoder.end();
+      if (chunk && chunk.length) _this.push(chunk);
+    }
+
+    _this.push(null);
+  });
+  stream.on('data', function (chunk) {
+    debug('wrapped data');
+    if (state.decoder) chunk = state.decoder.write(chunk); // don't skip over falsy values in objectMode
+
+    if (state.objectMode && (chunk === null || chunk === undefined)) return;else if (!state.objectMode && (!chunk || !chunk.length)) return;
+
+    var ret = _this.push(chunk);
+
+    if (!ret) {
+      paused = true;
+      stream.pause();
+    }
+  }); // proxy all the other methods.
+  // important when wrapping filters and duplexes.
+
+  for (var i in stream) {
+    if (this[i] === undefined && typeof stream[i] === 'function') {
+      this[i] = function methodWrap(method) {
+        return function methodWrapReturnFunction() {
+          return stream[method].apply(stream, arguments);
+        };
+      }(i);
+    }
+  } // proxy certain important events.
+
+
+  for (var n = 0; n < kProxyEvents.length; n++) {
+    stream.on(kProxyEvents[n], this.emit.bind(this, kProxyEvents[n]));
+  } // when we try to consume some more bytes, simply unpause the
+  // underlying stream.
+
+
+  this._read = function (n) {
+    debug('wrapped _read', n);
+
+    if (paused) {
+      paused = false;
+      stream.resume();
+    }
+  };
+
+  return this;
+};
+
+if (typeof Symbol === 'function') {
+  Readable.prototype[Symbol.asyncIterator] = function () {
+    if (createReadableStreamAsyncIterator === undefined) {
+      createReadableStreamAsyncIterator = __nccwpck_require__(3306);
+    }
+
+    return createReadableStreamAsyncIterator(this);
+  };
+}
+
+Object.defineProperty(Readable.prototype, 'readableHighWaterMark', {
+  // making it explicit this property is not enumerable
+  // because otherwise some prototype manipulation in
+  // userland will fail
+  enumerable: false,
+  get: function get() {
+    return this._readableState.highWaterMark;
+  }
+});
+Object.defineProperty(Readable.prototype, 'readableBuffer', {
+  // making it explicit this property is not enumerable
+  // because otherwise some prototype manipulation in
+  // userland will fail
+  enumerable: false,
+  get: function get() {
+    return this._readableState && this._readableState.buffer;
+  }
+});
+Object.defineProperty(Readable.prototype, 'readableFlowing', {
+  // making it explicit this property is not enumerable
+  // because otherwise some prototype manipulation in
+  // userland will fail
+  enumerable: false,
+  get: function get() {
+    return this._readableState.flowing;
+  },
+  set: function set(state) {
+    if (this._readableState) {
+      this._readableState.flowing = state;
+    }
+  }
+}); // exposed for testing purposes only.
+
+Readable._fromList = fromList;
+Object.defineProperty(Readable.prototype, 'readableLength', {
+  // making it explicit this property is not enumerable
+  // because otherwise some prototype manipulation in
+  // userland will fail
+  enumerable: false,
+  get: function get() {
+    return this._readableState.length;
+  }
+}); // Pluck off n bytes from an array of buffers.
+// Length is the combined lengths of all the buffers in the list.
+// This function is designed to be inlinable, so please take care when making
+// changes to the function body.
+
+function fromList(n, state) {
+  // nothing buffered
+  if (state.length === 0) return null;
+  var ret;
+  if (state.objectMode) ret = state.buffer.shift();else if (!n || n >= state.length) {
+    // read it all, truncate the list
+    if (state.decoder) ret = state.buffer.join('');else if (state.buffer.length === 1) ret = state.buffer.first();else ret = state.buffer.concat(state.length);
+    state.buffer.clear();
+  } else {
+    // read part of list
+    ret = state.buffer.consume(n, state.decoder);
+  }
+  return ret;
+}
+
+function endReadable(stream) {
+  var state = stream._readableState;
+  debug('endReadable', state.endEmitted);
+
+  if (!state.endEmitted) {
+    state.ended = true;
+    process.nextTick(endReadableNT, state, stream);
+  }
+}
+
+function endReadableNT(state, stream) {
+  debug('endReadableNT', state.endEmitted, state.length); // Check that we didn't get one last unshift.
+
+  if (!state.endEmitted && state.length === 0) {
+    state.endEmitted = true;
+    stream.readable = false;
+    stream.emit('end');
+
+    if (state.autoDestroy) {
+      // In case of duplex streams we need a way to detect
+      // if the writable side is ready for autoDestroy as well
+      var wState = stream._writableState;
+
+      if (!wState || wState.autoDestroy && wState.finished) {
+        stream.destroy();
+      }
+    }
+  }
+}
+
+if (typeof Symbol === 'function') {
+  Readable.from = function (iterable, opts) {
+    if (from === undefined) {
+      from = __nccwpck_require__(9082);
+    }
+
+    return from(Readable, iterable, opts);
+  };
+}
+
+function indexOf(xs, x) {
+  for (var i = 0, l = xs.length; i < l; i++) {
+    if (xs[i] === x) return i;
+  }
+
+  return -1;
+}
+
+/***/ }),
+
+/***/ 4415:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+// a transform stream is a readable/writable stream where you do
+// something with the data.  Sometimes it's called a "filter",
+// but that's not a great name for it, since that implies a thing where
+// some bits pass through, and others are simply ignored.  (That would
+// be a valid example of a transform, of course.)
+//
+// While the output is causally related to the input, it's not a
+// necessarily symmetric or synchronous transformation.  For example,
+// a zlib stream might take multiple plain-text writes(), and then
+// emit a single compressed chunk some time in the future.
+//
+// Here's how this works:
+//
+// The Transform stream has all the aspects of the readable and writable
+// stream classes.  When you write(chunk), that calls _write(chunk,cb)
+// internally, and returns false if there's a lot of pending writes
+// buffered up.  When you call read(), that calls _read(n) until
+// there's enough pending readable data buffered up.
+//
+// In a transform stream, the written data is placed in a buffer.  When
+// _read(n) is called, it transforms the queued up data, calling the
+// buffered _write cb's as it consumes chunks.  If consuming a single
+// written chunk would result in multiple output chunks, then the first
+// outputted bit calls the readcb, and subsequent chunks just go into
+// the read buffer, and will cause it to emit 'readable' if necessary.
+//
+// This way, back-pressure is actually determined by the reading side,
+// since _read has to be called to start processing a new chunk.  However,
+// a pathological inflate type of transform can cause excessive buffering
+// here.  For example, imagine a stream where every byte of input is
+// interpreted as an integer from 0-255, and then results in that many
+// bytes of output.  Writing the 4 bytes {ff,ff,ff,ff} would result in
+// 1kb of data being output.  In this case, you could write a very small
+// amount of input, and end up with a very large amount of output.  In
+// such a pathological inflating mechanism, there'd be no way to tell
+// the system to stop doing the transform.  A single 4MB write could
+// cause the system to run out of memory.
+//
+// However, even in such a pathological case, only a single written chunk
+// would be consumed, and then the rest would wait (un-transformed) until
+// the results of the previous transformed chunk were consumed.
+
+
+module.exports = Transform;
+
+var _require$codes = (__nccwpck_require__(7214)/* .codes */ .q),
+    ERR_METHOD_NOT_IMPLEMENTED = _require$codes.ERR_METHOD_NOT_IMPLEMENTED,
+    ERR_MULTIPLE_CALLBACK = _require$codes.ERR_MULTIPLE_CALLBACK,
+    ERR_TRANSFORM_ALREADY_TRANSFORMING = _require$codes.ERR_TRANSFORM_ALREADY_TRANSFORMING,
+    ERR_TRANSFORM_WITH_LENGTH_0 = _require$codes.ERR_TRANSFORM_WITH_LENGTH_0;
+
+var Duplex = __nccwpck_require__(1359);
+
+__nccwpck_require__(4124)(Transform, Duplex);
+
+function afterTransform(er, data) {
+  var ts = this._transformState;
+  ts.transforming = false;
+  var cb = ts.writecb;
+
+  if (cb === null) {
+    return this.emit('error', new ERR_MULTIPLE_CALLBACK());
+  }
+
+  ts.writechunk = null;
+  ts.writecb = null;
+  if (data != null) // single equals check for both `null` and `undefined`
+    this.push(data);
+  cb(er);
+  var rs = this._readableState;
+  rs.reading = false;
+
+  if (rs.needReadable || rs.length < rs.highWaterMark) {
+    this._read(rs.highWaterMark);
+  }
+}
+
+function Transform(options) {
+  if (!(this instanceof Transform)) return new Transform(options);
+  Duplex.call(this, options);
+  this._transformState = {
+    afterTransform: afterTransform.bind(this),
+    needTransform: false,
+    transforming: false,
+    writecb: null,
+    writechunk: null,
+    writeencoding: null
+  }; // start out asking for a readable event once data is transformed.
+
+  this._readableState.needReadable = true; // we have implemented the _read method, and done the other things
+  // that Readable wants before the first _read call, so unset the
+  // sync guard flag.
+
+  this._readableState.sync = false;
+
+  if (options) {
+    if (typeof options.transform === 'function') this._transform = options.transform;
+    if (typeof options.flush === 'function') this._flush = options.flush;
+  } // When the writable side finishes, then flush out anything remaining.
+
+
+  this.on('prefinish', prefinish);
+}
+
+function prefinish() {
+  var _this = this;
+
+  if (typeof this._flush === 'function' && !this._readableState.destroyed) {
+    this._flush(function (er, data) {
+      done(_this, er, data);
+    });
+  } else {
+    done(this, null, null);
+  }
+}
+
+Transform.prototype.push = function (chunk, encoding) {
+  this._transformState.needTransform = false;
+  return Duplex.prototype.push.call(this, chunk, encoding);
+}; // This is the part where you do stuff!
+// override this function in implementation classes.
+// 'chunk' is an input chunk.
+//
+// Call `push(newChunk)` to pass along transformed output
+// to the readable side.  You may call 'push' zero or more times.
+//
+// Call `cb(err)` when you are done with this chunk.  If you pass
+// an error, then that'll put the hurt on the whole operation.  If you
+// never call cb(), then you'll never get another chunk.
+
+
+Transform.prototype._transform = function (chunk, encoding, cb) {
+  cb(new ERR_METHOD_NOT_IMPLEMENTED('_transform()'));
+};
+
+Transform.prototype._write = function (chunk, encoding, cb) {
+  var ts = this._transformState;
+  ts.writecb = cb;
+  ts.writechunk = chunk;
+  ts.writeencoding = encoding;
+
+  if (!ts.transforming) {
+    var rs = this._readableState;
+    if (ts.needTransform || rs.needReadable || rs.length < rs.highWaterMark) this._read(rs.highWaterMark);
+  }
+}; // Doesn't matter what the args are here.
+// _transform does all the work.
+// That we got here means that the readable side wants more data.
+
+
+Transform.prototype._read = function (n) {
+  var ts = this._transformState;
+
+  if (ts.writechunk !== null && !ts.transforming) {
+    ts.transforming = true;
+
+    this._transform(ts.writechunk, ts.writeencoding, ts.afterTransform);
+  } else {
+    // mark that we need a transform, so that any data that comes in
+    // will get processed, now that we've asked for it.
+    ts.needTransform = true;
+  }
+};
+
+Transform.prototype._destroy = function (err, cb) {
+  Duplex.prototype._destroy.call(this, err, function (err2) {
+    cb(err2);
+  });
+};
+
+function done(stream, er, data) {
+  if (er) return stream.emit('error', er);
+  if (data != null) // single equals check for both `null` and `undefined`
+    stream.push(data); // TODO(BridgeAR): Write a test for these two error cases
+  // if there's nothing in the write buffer, then that means
+  // that nothing more will ever be provided
+
+  if (stream._writableState.length) throw new ERR_TRANSFORM_WITH_LENGTH_0();
+  if (stream._transformState.transforming) throw new ERR_TRANSFORM_ALREADY_TRANSFORMING();
+  return stream.push(null);
+}
+
+/***/ }),
+
+/***/ 6993:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+// A bit simpler than readable streams.
+// Implement an async ._write(chunk, encoding, cb), and it'll handle all
+// the drain event emission and buffering.
+
+
+module.exports = Writable;
+/* <replacement> */
+
+function WriteReq(chunk, encoding, cb) {
+  this.chunk = chunk;
+  this.encoding = encoding;
+  this.callback = cb;
+  this.next = null;
+} // It seems a linked list but it is not
+// there will be only 2 of these for each stream
+
+
+function CorkedRequest(state) {
+  var _this = this;
+
+  this.next = null;
+  this.entry = null;
+
+  this.finish = function () {
+    onCorkedFinish(_this, state);
+  };
+}
+/* </replacement> */
+
+/*<replacement>*/
+
+
+var Duplex;
+/*</replacement>*/
+
+Writable.WritableState = WritableState;
+/*<replacement>*/
+
+var internalUtil = {
+  deprecate: __nccwpck_require__(7127)
+};
+/*</replacement>*/
+
+/*<replacement>*/
+
+var Stream = __nccwpck_require__(2387);
+/*</replacement>*/
+
+
+var Buffer = (__nccwpck_require__(4300).Buffer);
+
+var OurUint8Array = global.Uint8Array || function () {};
+
+function _uint8ArrayToBuffer(chunk) {
+  return Buffer.from(chunk);
+}
+
+function _isUint8Array(obj) {
+  return Buffer.isBuffer(obj) || obj instanceof OurUint8Array;
+}
+
+var destroyImpl = __nccwpck_require__(7049);
+
+var _require = __nccwpck_require__(9948),
+    getHighWaterMark = _require.getHighWaterMark;
+
+var _require$codes = (__nccwpck_require__(7214)/* .codes */ .q),
+    ERR_INVALID_ARG_TYPE = _require$codes.ERR_INVALID_ARG_TYPE,
+    ERR_METHOD_NOT_IMPLEMENTED = _require$codes.ERR_METHOD_NOT_IMPLEMENTED,
+    ERR_MULTIPLE_CALLBACK = _require$codes.ERR_MULTIPLE_CALLBACK,
+    ERR_STREAM_CANNOT_PIPE = _require$codes.ERR_STREAM_CANNOT_PIPE,
+    ERR_STREAM_DESTROYED = _require$codes.ERR_STREAM_DESTROYED,
+    ERR_STREAM_NULL_VALUES = _require$codes.ERR_STREAM_NULL_VALUES,
+    ERR_STREAM_WRITE_AFTER_END = _require$codes.ERR_STREAM_WRITE_AFTER_END,
+    ERR_UNKNOWN_ENCODING = _require$codes.ERR_UNKNOWN_ENCODING;
+
+var errorOrDestroy = destroyImpl.errorOrDestroy;
+
+__nccwpck_require__(4124)(Writable, Stream);
+
+function nop() {}
+
+function WritableState(options, stream, isDuplex) {
+  Duplex = Duplex || __nccwpck_require__(1359);
+  options = options || {}; // Duplex streams are both readable and writable, but share
+  // the same options object.
+  // However, some cases require setting options to different
+  // values for the readable and the writable sides of the duplex stream,
+  // e.g. options.readableObjectMode vs. options.writableObjectMode, etc.
+
+  if (typeof isDuplex !== 'boolean') isDuplex = stream instanceof Duplex; // object stream flag to indicate whether or not this stream
+  // contains buffers or objects.
+
+  this.objectMode = !!options.objectMode;
+  if (isDuplex) this.objectMode = this.objectMode || !!options.writableObjectMode; // the point at which write() starts returning false
+  // Note: 0 is a valid value, means that we always return false if
+  // the entire buffer is not flushed immediately on write()
+
+  this.highWaterMark = getHighWaterMark(this, options, 'writableHighWaterMark', isDuplex); // if _final has been called
+
+  this.finalCalled = false; // drain event flag.
+
+  this.needDrain = false; // at the start of calling end()
+
+  this.ending = false; // when end() has been called, and returned
+
+  this.ended = false; // when 'finish' is emitted
+
+  this.finished = false; // has it been destroyed
+
+  this.destroyed = false; // should we decode strings into buffers before passing to _write?
+  // this is here so that some node-core streams can optimize string
+  // handling at a lower level.
+
+  var noDecode = options.decodeStrings === false;
+  this.decodeStrings = !noDecode; // Crypto is kind of old and crusty.  Historically, its default string
+  // encoding is 'binary' so we have to make this configurable.
+  // Everything else in the universe uses 'utf8', though.
+
+  this.defaultEncoding = options.defaultEncoding || 'utf8'; // not an actual buffer we keep track of, but a measurement
+  // of how much we're waiting to get pushed to some underlying
+  // socket or file.
+
+  this.length = 0; // a flag to see when we're in the middle of a write.
+
+  this.writing = false; // when true all writes will be buffered until .uncork() call
+
+  this.corked = 0; // a flag to be able to tell if the onwrite cb is called immediately,
+  // or on a later tick.  We set this to true at first, because any
+  // actions that shouldn't happen until "later" should generally also
+  // not happen before the first write call.
+
+  this.sync = true; // a flag to know if we're processing previously buffered items, which
+  // may call the _write() callback in the same tick, so that we don't
+  // end up in an overlapped onwrite situation.
+
+  this.bufferProcessing = false; // the callback that's passed to _write(chunk,cb)
+
+  this.onwrite = function (er) {
+    onwrite(stream, er);
+  }; // the callback that the user supplies to write(chunk,encoding,cb)
+
+
+  this.writecb = null; // the amount that is being written when _write is called.
+
+  this.writelen = 0;
+  this.bufferedRequest = null;
+  this.lastBufferedRequest = null; // number of pending user-supplied write callbacks
+  // this must be 0 before 'finish' can be emitted
+
+  this.pendingcb = 0; // emit prefinish if the only thing we're waiting for is _write cbs
+  // This is relevant for synchronous Transform streams
+
+  this.prefinished = false; // True if the error was already emitted and should not be thrown again
+
+  this.errorEmitted = false; // Should close be emitted on destroy. Defaults to true.
+
+  this.emitClose = options.emitClose !== false; // Should .destroy() be called after 'finish' (and potentially 'end')
+
+  this.autoDestroy = !!options.autoDestroy; // count buffered requests
+
+  this.bufferedRequestCount = 0; // allocate the first CorkedRequest, there is always
+  // one allocated and free to use, and we maintain at most two
+
+  this.corkedRequestsFree = new CorkedRequest(this);
+}
+
+WritableState.prototype.getBuffer = function getBuffer() {
+  var current = this.bufferedRequest;
+  var out = [];
+
+  while (current) {
+    out.push(current);
+    current = current.next;
+  }
+
+  return out;
+};
+
+(function () {
+  try {
+    Object.defineProperty(WritableState.prototype, 'buffer', {
+      get: internalUtil.deprecate(function writableStateBufferGetter() {
+        return this.getBuffer();
+      }, '_writableState.buffer is deprecated. Use _writableState.getBuffer ' + 'instead.', 'DEP0003')
+    });
+  } catch (_) {}
+})(); // Test _writableState for inheritance to account for Duplex streams,
+// whose prototype chain only points to Readable.
+
+
+var realHasInstance;
+
+if (typeof Symbol === 'function' && Symbol.hasInstance && typeof Function.prototype[Symbol.hasInstance] === 'function') {
+  realHasInstance = Function.prototype[Symbol.hasInstance];
+  Object.defineProperty(Writable, Symbol.hasInstance, {
+    value: function value(object) {
+      if (realHasInstance.call(this, object)) return true;
+      if (this !== Writable) return false;
+      return object && object._writableState instanceof WritableState;
+    }
+  });
+} else {
+  realHasInstance = function realHasInstance(object) {
+    return object instanceof this;
+  };
+}
+
+function Writable(options) {
+  Duplex = Duplex || __nccwpck_require__(1359); // Writable ctor is applied to Duplexes, too.
+  // `realHasInstance` is necessary because using plain `instanceof`
+  // would return false, as no `_writableState` property is attached.
+  // Trying to use the custom `instanceof` for Writable here will also break the
+  // Node.js LazyTransform implementation, which has a non-trivial getter for
+  // `_writableState` that would lead to infinite recursion.
+  // Checking for a Stream.Duplex instance is faster here instead of inside
+  // the WritableState constructor, at least with V8 6.5
+
+  var isDuplex = this instanceof Duplex;
+  if (!isDuplex && !realHasInstance.call(Writable, this)) return new Writable(options);
+  this._writableState = new WritableState(options, this, isDuplex); // legacy.
+
+  this.writable = true;
+
+  if (options) {
+    if (typeof options.write === 'function') this._write = options.write;
+    if (typeof options.writev === 'function') this._writev = options.writev;
+    if (typeof options.destroy === 'function') this._destroy = options.destroy;
+    if (typeof options.final === 'function') this._final = options.final;
+  }
+
+  Stream.call(this);
+} // Otherwise people can pipe Writable streams, which is just wrong.
+
+
+Writable.prototype.pipe = function () {
+  errorOrDestroy(this, new ERR_STREAM_CANNOT_PIPE());
+};
+
+function writeAfterEnd(stream, cb) {
+  var er = new ERR_STREAM_WRITE_AFTER_END(); // TODO: defer error events consistently everywhere, not just the cb
+
+  errorOrDestroy(stream, er);
+  process.nextTick(cb, er);
+} // Checks that a user-supplied chunk is valid, especially for the particular
+// mode the stream is in. Currently this means that `null` is never accepted
+// and undefined/non-string values are only allowed in object mode.
+
+
+function validChunk(stream, state, chunk, cb) {
+  var er;
+
+  if (chunk === null) {
+    er = new ERR_STREAM_NULL_VALUES();
+  } else if (typeof chunk !== 'string' && !state.objectMode) {
+    er = new ERR_INVALID_ARG_TYPE('chunk', ['string', 'Buffer'], chunk);
+  }
+
+  if (er) {
+    errorOrDestroy(stream, er);
+    process.nextTick(cb, er);
+    return false;
+  }
+
+  return true;
+}
+
+Writable.prototype.write = function (chunk, encoding, cb) {
+  var state = this._writableState;
+  var ret = false;
+
+  var isBuf = !state.objectMode && _isUint8Array(chunk);
+
+  if (isBuf && !Buffer.isBuffer(chunk)) {
+    chunk = _uint8ArrayToBuffer(chunk);
+  }
+
+  if (typeof encoding === 'function') {
+    cb = encoding;
+    encoding = null;
+  }
+
+  if (isBuf) encoding = 'buffer';else if (!encoding) encoding = state.defaultEncoding;
+  if (typeof cb !== 'function') cb = nop;
+  if (state.ending) writeAfterEnd(this, cb);else if (isBuf || validChunk(this, state, chunk, cb)) {
+    state.pendingcb++;
+    ret = writeOrBuffer(this, state, isBuf, chunk, encoding, cb);
+  }
+  return ret;
+};
+
+Writable.prototype.cork = function () {
+  this._writableState.corked++;
+};
+
+Writable.prototype.uncork = function () {
+  var state = this._writableState;
+
+  if (state.corked) {
+    state.corked--;
+    if (!state.writing && !state.corked && !state.bufferProcessing && state.bufferedRequest) clearBuffer(this, state);
+  }
+};
+
+Writable.prototype.setDefaultEncoding = function setDefaultEncoding(encoding) {
+  // node::ParseEncoding() requires lower case.
+  if (typeof encoding === 'string') encoding = encoding.toLowerCase();
+  if (!(['hex', 'utf8', 'utf-8', 'ascii', 'binary', 'base64', 'ucs2', 'ucs-2', 'utf16le', 'utf-16le', 'raw'].indexOf((encoding + '').toLowerCase()) > -1)) throw new ERR_UNKNOWN_ENCODING(encoding);
+  this._writableState.defaultEncoding = encoding;
+  return this;
+};
+
+Object.defineProperty(Writable.prototype, 'writableBuffer', {
+  // making it explicit this property is not enumerable
+  // because otherwise some prototype manipulation in
+  // userland will fail
+  enumerable: false,
+  get: function get() {
+    return this._writableState && this._writableState.getBuffer();
+  }
+});
+
+function decodeChunk(state, chunk, encoding) {
+  if (!state.objectMode && state.decodeStrings !== false && typeof chunk === 'string') {
+    chunk = Buffer.from(chunk, encoding);
+  }
+
+  return chunk;
+}
+
+Object.defineProperty(Writable.prototype, 'writableHighWaterMark', {
+  // making it explicit this property is not enumerable
+  // because otherwise some prototype manipulation in
+  // userland will fail
+  enumerable: false,
+  get: function get() {
+    return this._writableState.highWaterMark;
+  }
+}); // if we're already writing something, then just put this
+// in the queue, and wait our turn.  Otherwise, call _write
+// If we return false, then we need a drain event, so set that flag.
+
+function writeOrBuffer(stream, state, isBuf, chunk, encoding, cb) {
+  if (!isBuf) {
+    var newChunk = decodeChunk(state, chunk, encoding);
+
+    if (chunk !== newChunk) {
+      isBuf = true;
+      encoding = 'buffer';
+      chunk = newChunk;
+    }
+  }
+
+  var len = state.objectMode ? 1 : chunk.length;
+  state.length += len;
+  var ret = state.length < state.highWaterMark; // we must ensure that previous needDrain will not be reset to false.
+
+  if (!ret) state.needDrain = true;
+
+  if (state.writing || state.corked) {
+    var last = state.lastBufferedRequest;
+    state.lastBufferedRequest = {
+      chunk: chunk,
+      encoding: encoding,
+      isBuf: isBuf,
+      callback: cb,
+      next: null
+    };
+
+    if (last) {
+      last.next = state.lastBufferedRequest;
+    } else {
+      state.bufferedRequest = state.lastBufferedRequest;
+    }
+
+    state.bufferedRequestCount += 1;
+  } else {
+    doWrite(stream, state, false, len, chunk, encoding, cb);
+  }
+
+  return ret;
+}
+
+function doWrite(stream, state, writev, len, chunk, encoding, cb) {
+  state.writelen = len;
+  state.writecb = cb;
+  state.writing = true;
+  state.sync = true;
+  if (state.destroyed) state.onwrite(new ERR_STREAM_DESTROYED('write'));else if (writev) stream._writev(chunk, state.onwrite);else stream._write(chunk, encoding, state.onwrite);
+  state.sync = false;
+}
+
+function onwriteError(stream, state, sync, er, cb) {
+  --state.pendingcb;
+
+  if (sync) {
+    // defer the callback if we are being called synchronously
+    // to avoid piling up things on the stack
+    process.nextTick(cb, er); // this can emit finish, and it will always happen
+    // after error
+
+    process.nextTick(finishMaybe, stream, state);
+    stream._writableState.errorEmitted = true;
+    errorOrDestroy(stream, er);
+  } else {
+    // the caller expect this to happen before if
+    // it is async
+    cb(er);
+    stream._writableState.errorEmitted = true;
+    errorOrDestroy(stream, er); // this can emit finish, but finish must
+    // always follow error
+
+    finishMaybe(stream, state);
+  }
+}
+
+function onwriteStateUpdate(state) {
+  state.writing = false;
+  state.writecb = null;
+  state.length -= state.writelen;
+  state.writelen = 0;
+}
+
+function onwrite(stream, er) {
+  var state = stream._writableState;
+  var sync = state.sync;
+  var cb = state.writecb;
+  if (typeof cb !== 'function') throw new ERR_MULTIPLE_CALLBACK();
+  onwriteStateUpdate(state);
+  if (er) onwriteError(stream, state, sync, er, cb);else {
+    // Check if we're actually ready to finish, but don't emit yet
+    var finished = needFinish(state) || stream.destroyed;
+
+    if (!finished && !state.corked && !state.bufferProcessing && state.bufferedRequest) {
+      clearBuffer(stream, state);
+    }
+
+    if (sync) {
+      process.nextTick(afterWrite, stream, state, finished, cb);
+    } else {
+      afterWrite(stream, state, finished, cb);
+    }
+  }
+}
+
+function afterWrite(stream, state, finished, cb) {
+  if (!finished) onwriteDrain(stream, state);
+  state.pendingcb--;
+  cb();
+  finishMaybe(stream, state);
+} // Must force callback to be called on nextTick, so that we don't
+// emit 'drain' before the write() consumer gets the 'false' return
+// value, and has a chance to attach a 'drain' listener.
+
+
+function onwriteDrain(stream, state) {
+  if (state.length === 0 && state.needDrain) {
+    state.needDrain = false;
+    stream.emit('drain');
+  }
+} // if there's something in the buffer waiting, then process it
+
+
+function clearBuffer(stream, state) {
+  state.bufferProcessing = true;
+  var entry = state.bufferedRequest;
+
+  if (stream._writev && entry && entry.next) {
+    // Fast case, write everything using _writev()
+    var l = state.bufferedRequestCount;
+    var buffer = new Array(l);
+    var holder = state.corkedRequestsFree;
+    holder.entry = entry;
+    var count = 0;
+    var allBuffers = true;
+
+    while (entry) {
+      buffer[count] = entry;
+      if (!entry.isBuf) allBuffers = false;
+      entry = entry.next;
+      count += 1;
+    }
+
+    buffer.allBuffers = allBuffers;
+    doWrite(stream, state, true, state.length, buffer, '', holder.finish); // doWrite is almost always async, defer these to save a bit of time
+    // as the hot path ends with doWrite
+
+    state.pendingcb++;
+    state.lastBufferedRequest = null;
+
+    if (holder.next) {
+      state.corkedRequestsFree = holder.next;
+      holder.next = null;
+    } else {
+      state.corkedRequestsFree = new CorkedRequest(state);
+    }
+
+    state.bufferedRequestCount = 0;
+  } else {
+    // Slow case, write chunks one-by-one
+    while (entry) {
+      var chunk = entry.chunk;
+      var encoding = entry.encoding;
+      var cb = entry.callback;
+      var len = state.objectMode ? 1 : chunk.length;
+      doWrite(stream, state, false, len, chunk, encoding, cb);
+      entry = entry.next;
+      state.bufferedRequestCount--; // if we didn't call the onwrite immediately, then
+      // it means that we need to wait until it does.
+      // also, that means that the chunk and cb are currently
+      // being processed, so move the buffer counter past them.
+
+      if (state.writing) {
+        break;
+      }
+    }
+
+    if (entry === null) state.lastBufferedRequest = null;
+  }
+
+  state.bufferedRequest = entry;
+  state.bufferProcessing = false;
+}
+
+Writable.prototype._write = function (chunk, encoding, cb) {
+  cb(new ERR_METHOD_NOT_IMPLEMENTED('_write()'));
+};
+
+Writable.prototype._writev = null;
+
+Writable.prototype.end = function (chunk, encoding, cb) {
+  var state = this._writableState;
+
+  if (typeof chunk === 'function') {
+    cb = chunk;
+    chunk = null;
+    encoding = null;
+  } else if (typeof encoding === 'function') {
+    cb = encoding;
+    encoding = null;
+  }
+
+  if (chunk !== null && chunk !== undefined) this.write(chunk, encoding); // .end() fully uncorks
+
+  if (state.corked) {
+    state.corked = 1;
+    this.uncork();
+  } // ignore unnecessary end() calls.
+
+
+  if (!state.ending) endWritable(this, state, cb);
+  return this;
+};
+
+Object.defineProperty(Writable.prototype, 'writableLength', {
+  // making it explicit this property is not enumerable
+  // because otherwise some prototype manipulation in
+  // userland will fail
+  enumerable: false,
+  get: function get() {
+    return this._writableState.length;
+  }
+});
+
+function needFinish(state) {
+  return state.ending && state.length === 0 && state.bufferedRequest === null && !state.finished && !state.writing;
+}
+
+function callFinal(stream, state) {
+  stream._final(function (err) {
+    state.pendingcb--;
+
+    if (err) {
+      errorOrDestroy(stream, err);
+    }
+
+    state.prefinished = true;
+    stream.emit('prefinish');
+    finishMaybe(stream, state);
+  });
+}
+
+function prefinish(stream, state) {
+  if (!state.prefinished && !state.finalCalled) {
+    if (typeof stream._final === 'function' && !state.destroyed) {
+      state.pendingcb++;
+      state.finalCalled = true;
+      process.nextTick(callFinal, stream, state);
+    } else {
+      state.prefinished = true;
+      stream.emit('prefinish');
+    }
+  }
+}
+
+function finishMaybe(stream, state) {
+  var need = needFinish(state);
+
+  if (need) {
+    prefinish(stream, state);
+
+    if (state.pendingcb === 0) {
+      state.finished = true;
+      stream.emit('finish');
+
+      if (state.autoDestroy) {
+        // In case of duplex streams we need a way to detect
+        // if the readable side is ready for autoDestroy as well
+        var rState = stream._readableState;
+
+        if (!rState || rState.autoDestroy && rState.endEmitted) {
+          stream.destroy();
+        }
+      }
+    }
+  }
+
+  return need;
+}
+
+function endWritable(stream, state, cb) {
+  state.ending = true;
+  finishMaybe(stream, state);
+
+  if (cb) {
+    if (state.finished) process.nextTick(cb);else stream.once('finish', cb);
+  }
+
+  state.ended = true;
+  stream.writable = false;
+}
+
+function onCorkedFinish(corkReq, state, err) {
+  var entry = corkReq.entry;
+  corkReq.entry = null;
+
+  while (entry) {
+    var cb = entry.callback;
+    state.pendingcb--;
+    cb(err);
+    entry = entry.next;
+  } // reuse the free corkReq.
+
+
+  state.corkedRequestsFree.next = corkReq;
+}
+
+Object.defineProperty(Writable.prototype, 'destroyed', {
+  // making it explicit this property is not enumerable
+  // because otherwise some prototype manipulation in
+  // userland will fail
+  enumerable: false,
+  get: function get() {
+    if (this._writableState === undefined) {
+      return false;
+    }
+
+    return this._writableState.destroyed;
+  },
+  set: function set(value) {
+    // we ignore the value if the stream
+    // has not been initialized yet
+    if (!this._writableState) {
+      return;
+    } // backward compatibility, the user is explicitly
+    // managing destroyed
+
+
+    this._writableState.destroyed = value;
+  }
+});
+Writable.prototype.destroy = destroyImpl.destroy;
+Writable.prototype._undestroy = destroyImpl.undestroy;
+
+Writable.prototype._destroy = function (err, cb) {
+  cb(err);
+};
+
+/***/ }),
+
+/***/ 3306:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+
+
+var _Object$setPrototypeO;
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+var finished = __nccwpck_require__(6080);
+
+var kLastResolve = Symbol('lastResolve');
+var kLastReject = Symbol('lastReject');
+var kError = Symbol('error');
+var kEnded = Symbol('ended');
+var kLastPromise = Symbol('lastPromise');
+var kHandlePromise = Symbol('handlePromise');
+var kStream = Symbol('stream');
+
+function createIterResult(value, done) {
+  return {
+    value: value,
+    done: done
+  };
+}
+
+function readAndResolve(iter) {
+  var resolve = iter[kLastResolve];
+
+  if (resolve !== null) {
+    var data = iter[kStream].read(); // we defer if data is null
+    // we can be expecting either 'end' or
+    // 'error'
+
+    if (data !== null) {
+      iter[kLastPromise] = null;
+      iter[kLastResolve] = null;
+      iter[kLastReject] = null;
+      resolve(createIterResult(data, false));
+    }
+  }
+}
+
+function onReadable(iter) {
+  // we wait for the next tick, because it might
+  // emit an error with process.nextTick
+  process.nextTick(readAndResolve, iter);
+}
+
+function wrapForNext(lastPromise, iter) {
+  return function (resolve, reject) {
+    lastPromise.then(function () {
+      if (iter[kEnded]) {
+        resolve(createIterResult(undefined, true));
+        return;
+      }
+
+      iter[kHandlePromise](resolve, reject);
+    }, reject);
+  };
+}
+
+var AsyncIteratorPrototype = Object.getPrototypeOf(function () {});
+var ReadableStreamAsyncIteratorPrototype = Object.setPrototypeOf((_Object$setPrototypeO = {
+  get stream() {
+    return this[kStream];
+  },
+
+  next: function next() {
+    var _this = this;
+
+    // if we have detected an error in the meanwhile
+    // reject straight away
+    var error = this[kError];
+
+    if (error !== null) {
+      return Promise.reject(error);
+    }
+
+    if (this[kEnded]) {
+      return Promise.resolve(createIterResult(undefined, true));
+    }
+
+    if (this[kStream].destroyed) {
+      // We need to defer via nextTick because if .destroy(err) is
+      // called, the error will be emitted via nextTick, and
+      // we cannot guarantee that there is no error lingering around
+      // waiting to be emitted.
+      return new Promise(function (resolve, reject) {
+        process.nextTick(function () {
+          if (_this[kError]) {
+            reject(_this[kError]);
+          } else {
+            resolve(createIterResult(undefined, true));
+          }
+        });
+      });
+    } // if we have multiple next() calls
+    // we will wait for the previous Promise to finish
+    // this logic is optimized to support for await loops,
+    // where next() is only called once at a time
+
+
+    var lastPromise = this[kLastPromise];
+    var promise;
+
+    if (lastPromise) {
+      promise = new Promise(wrapForNext(lastPromise, this));
+    } else {
+      // fast path needed to support multiple this.push()
+      // without triggering the next() queue
+      var data = this[kStream].read();
+
+      if (data !== null) {
+        return Promise.resolve(createIterResult(data, false));
+      }
+
+      promise = new Promise(this[kHandlePromise]);
+    }
+
+    this[kLastPromise] = promise;
+    return promise;
+  }
+}, _defineProperty(_Object$setPrototypeO, Symbol.asyncIterator, function () {
+  return this;
+}), _defineProperty(_Object$setPrototypeO, "return", function _return() {
+  var _this2 = this;
+
+  // destroy(err, cb) is a private API
+  // we can guarantee we have that here, because we control the
+  // Readable class this is attached to
+  return new Promise(function (resolve, reject) {
+    _this2[kStream].destroy(null, function (err) {
+      if (err) {
+        reject(err);
+        return;
+      }
+
+      resolve(createIterResult(undefined, true));
+    });
+  });
+}), _Object$setPrototypeO), AsyncIteratorPrototype);
+
+var createReadableStreamAsyncIterator = function createReadableStreamAsyncIterator(stream) {
+  var _Object$create;
+
+  var iterator = Object.create(ReadableStreamAsyncIteratorPrototype, (_Object$create = {}, _defineProperty(_Object$create, kStream, {
+    value: stream,
+    writable: true
+  }), _defineProperty(_Object$create, kLastResolve, {
+    value: null,
+    writable: true
+  }), _defineProperty(_Object$create, kLastReject, {
+    value: null,
+    writable: true
+  }), _defineProperty(_Object$create, kError, {
+    value: null,
+    writable: true
+  }), _defineProperty(_Object$create, kEnded, {
+    value: stream._readableState.endEmitted,
+    writable: true
+  }), _defineProperty(_Object$create, kHandlePromise, {
+    value: function value(resolve, reject) {
+      var data = iterator[kStream].read();
+
+      if (data) {
+        iterator[kLastPromise] = null;
+        iterator[kLastResolve] = null;
+        iterator[kLastReject] = null;
+        resolve(createIterResult(data, false));
+      } else {
+        iterator[kLastResolve] = resolve;
+        iterator[kLastReject] = reject;
+      }
+    },
+    writable: true
+  }), _Object$create));
+  iterator[kLastPromise] = null;
+  finished(stream, function (err) {
+    if (err && err.code !== 'ERR_STREAM_PREMATURE_CLOSE') {
+      var reject = iterator[kLastReject]; // reject if we are waiting for data in the Promise
+      // returned by next() and store the error
+
+      if (reject !== null) {
+        iterator[kLastPromise] = null;
+        iterator[kLastResolve] = null;
+        iterator[kLastReject] = null;
+        reject(err);
+      }
+
+      iterator[kError] = err;
+      return;
+    }
+
+    var resolve = iterator[kLastResolve];
+
+    if (resolve !== null) {
+      iterator[kLastPromise] = null;
+      iterator[kLastResolve] = null;
+      iterator[kLastReject] = null;
+      resolve(createIterResult(undefined, true));
+    }
+
+    iterator[kEnded] = true;
+  });
+  stream.on('readable', onReadable.bind(null, iterator));
+  return iterator;
+};
+
+module.exports = createReadableStreamAsyncIterator;
+
+/***/ }),
+
+/***/ 2746:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+
+
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var _require = __nccwpck_require__(4300),
+    Buffer = _require.Buffer;
+
+var _require2 = __nccwpck_require__(3837),
+    inspect = _require2.inspect;
+
+var custom = inspect && inspect.custom || 'inspect';
+
+function copyBuffer(src, target, offset) {
+  Buffer.prototype.copy.call(src, target, offset);
+}
+
+module.exports =
+/*#__PURE__*/
+function () {
+  function BufferList() {
+    _classCallCheck(this, BufferList);
+
+    this.head = null;
+    this.tail = null;
+    this.length = 0;
+  }
+
+  _createClass(BufferList, [{
+    key: "push",
+    value: function push(v) {
+      var entry = {
+        data: v,
+        next: null
+      };
+      if (this.length > 0) this.tail.next = entry;else this.head = entry;
+      this.tail = entry;
+      ++this.length;
+    }
+  }, {
+    key: "unshift",
+    value: function unshift(v) {
+      var entry = {
+        data: v,
+        next: this.head
+      };
+      if (this.length === 0) this.tail = entry;
+      this.head = entry;
+      ++this.length;
+    }
+  }, {
+    key: "shift",
+    value: function shift() {
+      if (this.length === 0) return;
+      var ret = this.head.data;
+      if (this.length === 1) this.head = this.tail = null;else this.head = this.head.next;
+      --this.length;
+      return ret;
+    }
+  }, {
+    key: "clear",
+    value: function clear() {
+      this.head = this.tail = null;
+      this.length = 0;
+    }
+  }, {
+    key: "join",
+    value: function join(s) {
+      if (this.length === 0) return '';
+      var p = this.head;
+      var ret = '' + p.data;
+
+      while (p = p.next) {
+        ret += s + p.data;
+      }
+
+      return ret;
+    }
+  }, {
+    key: "concat",
+    value: function concat(n) {
+      if (this.length === 0) return Buffer.alloc(0);
+      var ret = Buffer.allocUnsafe(n >>> 0);
+      var p = this.head;
+      var i = 0;
+
+      while (p) {
+        copyBuffer(p.data, ret, i);
+        i += p.data.length;
+        p = p.next;
+      }
+
+      return ret;
+    } // Consumes a specified amount of bytes or characters from the buffered data.
+
+  }, {
+    key: "consume",
+    value: function consume(n, hasStrings) {
+      var ret;
+
+      if (n < this.head.data.length) {
+        // `slice` is the same for buffers and strings.
+        ret = this.head.data.slice(0, n);
+        this.head.data = this.head.data.slice(n);
+      } else if (n === this.head.data.length) {
+        // First chunk is a perfect match.
+        ret = this.shift();
+      } else {
+        // Result spans more than one buffer.
+        ret = hasStrings ? this._getString(n) : this._getBuffer(n);
+      }
+
+      return ret;
+    }
+  }, {
+    key: "first",
+    value: function first() {
+      return this.head.data;
+    } // Consumes a specified amount of characters from the buffered data.
+
+  }, {
+    key: "_getString",
+    value: function _getString(n) {
+      var p = this.head;
+      var c = 1;
+      var ret = p.data;
+      n -= ret.length;
+
+      while (p = p.next) {
+        var str = p.data;
+        var nb = n > str.length ? str.length : n;
+        if (nb === str.length) ret += str;else ret += str.slice(0, n);
+        n -= nb;
+
+        if (n === 0) {
+          if (nb === str.length) {
+            ++c;
+            if (p.next) this.head = p.next;else this.head = this.tail = null;
+          } else {
+            this.head = p;
+            p.data = str.slice(nb);
+          }
+
+          break;
+        }
+
+        ++c;
+      }
+
+      this.length -= c;
+      return ret;
+    } // Consumes a specified amount of bytes from the buffered data.
+
+  }, {
+    key: "_getBuffer",
+    value: function _getBuffer(n) {
+      var ret = Buffer.allocUnsafe(n);
+      var p = this.head;
+      var c = 1;
+      p.data.copy(ret);
+      n -= p.data.length;
+
+      while (p = p.next) {
+        var buf = p.data;
+        var nb = n > buf.length ? buf.length : n;
+        buf.copy(ret, ret.length - n, 0, nb);
+        n -= nb;
+
+        if (n === 0) {
+          if (nb === buf.length) {
+            ++c;
+            if (p.next) this.head = p.next;else this.head = this.tail = null;
+          } else {
+            this.head = p;
+            p.data = buf.slice(nb);
+          }
+
+          break;
+        }
+
+        ++c;
+      }
+
+      this.length -= c;
+      return ret;
+    } // Make sure the linked list only shows the minimal necessary information.
+
+  }, {
+    key: custom,
+    value: function value(_, options) {
+      return inspect(this, _objectSpread({}, options, {
+        // Only inspect one level.
+        depth: 0,
+        // It should not recurse.
+        customInspect: false
+      }));
+    }
+  }]);
+
+  return BufferList;
+}();
+
+/***/ }),
+
+/***/ 7049:
+/***/ ((module) => {
+
+ // undocumented cb() API, needed for core, not for public API
+
+function destroy(err, cb) {
+  var _this = this;
+
+  var readableDestroyed = this._readableState && this._readableState.destroyed;
+  var writableDestroyed = this._writableState && this._writableState.destroyed;
+
+  if (readableDestroyed || writableDestroyed) {
+    if (cb) {
+      cb(err);
+    } else if (err) {
+      if (!this._writableState) {
+        process.nextTick(emitErrorNT, this, err);
+      } else if (!this._writableState.errorEmitted) {
+        this._writableState.errorEmitted = true;
+        process.nextTick(emitErrorNT, this, err);
+      }
+    }
+
+    return this;
+  } // we set destroyed to true before firing error callbacks in order
+  // to make it re-entrance safe in case destroy() is called within callbacks
+
+
+  if (this._readableState) {
+    this._readableState.destroyed = true;
+  } // if this is a duplex stream mark the writable part as destroyed as well
+
+
+  if (this._writableState) {
+    this._writableState.destroyed = true;
+  }
+
+  this._destroy(err || null, function (err) {
+    if (!cb && err) {
+      if (!_this._writableState) {
+        process.nextTick(emitErrorAndCloseNT, _this, err);
+      } else if (!_this._writableState.errorEmitted) {
+        _this._writableState.errorEmitted = true;
+        process.nextTick(emitErrorAndCloseNT, _this, err);
+      } else {
+        process.nextTick(emitCloseNT, _this);
+      }
+    } else if (cb) {
+      process.nextTick(emitCloseNT, _this);
+      cb(err);
+    } else {
+      process.nextTick(emitCloseNT, _this);
+    }
+  });
+
+  return this;
+}
+
+function emitErrorAndCloseNT(self, err) {
+  emitErrorNT(self, err);
+  emitCloseNT(self);
+}
+
+function emitCloseNT(self) {
+  if (self._writableState && !self._writableState.emitClose) return;
+  if (self._readableState && !self._readableState.emitClose) return;
+  self.emit('close');
+}
+
+function undestroy() {
+  if (this._readableState) {
+    this._readableState.destroyed = false;
+    this._readableState.reading = false;
+    this._readableState.ended = false;
+    this._readableState.endEmitted = false;
+  }
+
+  if (this._writableState) {
+    this._writableState.destroyed = false;
+    this._writableState.ended = false;
+    this._writableState.ending = false;
+    this._writableState.finalCalled = false;
+    this._writableState.prefinished = false;
+    this._writableState.finished = false;
+    this._writableState.errorEmitted = false;
+  }
+}
+
+function emitErrorNT(self, err) {
+  self.emit('error', err);
+}
+
+function errorOrDestroy(stream, err) {
+  // We have tests that rely on errors being emitted
+  // in the same tick, so changing this is semver major.
+  // For now when you opt-in to autoDestroy we allow
+  // the error to be emitted nextTick. In a future
+  // semver major update we should change the default to this.
+  var rState = stream._readableState;
+  var wState = stream._writableState;
+  if (rState && rState.autoDestroy || wState && wState.autoDestroy) stream.destroy(err);else stream.emit('error', err);
+}
+
+module.exports = {
+  destroy: destroy,
+  undestroy: undestroy,
+  errorOrDestroy: errorOrDestroy
+};
+
+/***/ }),
+
+/***/ 6080:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+// Ported from https://github.com/mafintosh/end-of-stream with
+// permission from the author, Mathias Buus (@mafintosh).
+
+
+var ERR_STREAM_PREMATURE_CLOSE = (__nccwpck_require__(7214)/* .codes.ERR_STREAM_PREMATURE_CLOSE */ .q.ERR_STREAM_PREMATURE_CLOSE);
+
+function once(callback) {
+  var called = false;
+  return function () {
+    if (called) return;
+    called = true;
+
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    callback.apply(this, args);
+  };
+}
+
+function noop() {}
+
+function isRequest(stream) {
+  return stream.setHeader && typeof stream.abort === 'function';
+}
+
+function eos(stream, opts, callback) {
+  if (typeof opts === 'function') return eos(stream, null, opts);
+  if (!opts) opts = {};
+  callback = once(callback || noop);
+  var readable = opts.readable || opts.readable !== false && stream.readable;
+  var writable = opts.writable || opts.writable !== false && stream.writable;
+
+  var onlegacyfinish = function onlegacyfinish() {
+    if (!stream.writable) onfinish();
+  };
+
+  var writableEnded = stream._writableState && stream._writableState.finished;
+
+  var onfinish = function onfinish() {
+    writable = false;
+    writableEnded = true;
+    if (!readable) callback.call(stream);
+  };
+
+  var readableEnded = stream._readableState && stream._readableState.endEmitted;
+
+  var onend = function onend() {
+    readable = false;
+    readableEnded = true;
+    if (!writable) callback.call(stream);
+  };
+
+  var onerror = function onerror(err) {
+    callback.call(stream, err);
+  };
+
+  var onclose = function onclose() {
+    var err;
+
+    if (readable && !readableEnded) {
+      if (!stream._readableState || !stream._readableState.ended) err = new ERR_STREAM_PREMATURE_CLOSE();
+      return callback.call(stream, err);
+    }
+
+    if (writable && !writableEnded) {
+      if (!stream._writableState || !stream._writableState.ended) err = new ERR_STREAM_PREMATURE_CLOSE();
+      return callback.call(stream, err);
+    }
+  };
+
+  var onrequest = function onrequest() {
+    stream.req.on('finish', onfinish);
+  };
+
+  if (isRequest(stream)) {
+    stream.on('complete', onfinish);
+    stream.on('abort', onclose);
+    if (stream.req) onrequest();else stream.on('request', onrequest);
+  } else if (writable && !stream._writableState) {
+    // legacy streams
+    stream.on('end', onlegacyfinish);
+    stream.on('close', onlegacyfinish);
+  }
+
+  stream.on('end', onend);
+  stream.on('finish', onfinish);
+  if (opts.error !== false) stream.on('error', onerror);
+  stream.on('close', onclose);
+  return function () {
+    stream.removeListener('complete', onfinish);
+    stream.removeListener('abort', onclose);
+    stream.removeListener('request', onrequest);
+    if (stream.req) stream.req.removeListener('finish', onfinish);
+    stream.removeListener('end', onlegacyfinish);
+    stream.removeListener('close', onlegacyfinish);
+    stream.removeListener('finish', onfinish);
+    stream.removeListener('end', onend);
+    stream.removeListener('error', onerror);
+    stream.removeListener('close', onclose);
+  };
+}
+
+module.exports = eos;
+
+/***/ }),
+
+/***/ 9082:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+var ERR_INVALID_ARG_TYPE = (__nccwpck_require__(7214)/* .codes.ERR_INVALID_ARG_TYPE */ .q.ERR_INVALID_ARG_TYPE);
+
+function from(Readable, iterable, opts) {
+  var iterator;
+
+  if (iterable && typeof iterable.next === 'function') {
+    iterator = iterable;
+  } else if (iterable && iterable[Symbol.asyncIterator]) iterator = iterable[Symbol.asyncIterator]();else if (iterable && iterable[Symbol.iterator]) iterator = iterable[Symbol.iterator]();else throw new ERR_INVALID_ARG_TYPE('iterable', ['Iterable'], iterable);
+
+  var readable = new Readable(_objectSpread({
+    objectMode: true
+  }, opts)); // Reading boolean to protect against _read
+  // being called before last iteration completion.
+
+  var reading = false;
+
+  readable._read = function () {
+    if (!reading) {
+      reading = true;
+      next();
+    }
+  };
+
+  function next() {
+    return _next2.apply(this, arguments);
+  }
+
+  function _next2() {
+    _next2 = _asyncToGenerator(function* () {
+      try {
+        var _ref = yield iterator.next(),
+            value = _ref.value,
+            done = _ref.done;
+
+        if (done) {
+          readable.push(null);
+        } else if (readable.push((yield value))) {
+          next();
+        } else {
+          reading = false;
+        }
+      } catch (err) {
+        readable.destroy(err);
+      }
+    });
+    return _next2.apply(this, arguments);
+  }
+
+  return readable;
+}
+
+module.exports = from;
+
+/***/ }),
+
+/***/ 6989:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+// Ported from https://github.com/mafintosh/pump with
+// permission from the author, Mathias Buus (@mafintosh).
+
+
+var eos;
+
+function once(callback) {
+  var called = false;
+  return function () {
+    if (called) return;
+    called = true;
+    callback.apply(void 0, arguments);
+  };
+}
+
+var _require$codes = (__nccwpck_require__(7214)/* .codes */ .q),
+    ERR_MISSING_ARGS = _require$codes.ERR_MISSING_ARGS,
+    ERR_STREAM_DESTROYED = _require$codes.ERR_STREAM_DESTROYED;
+
+function noop(err) {
+  // Rethrow the error if it exists to avoid swallowing it
+  if (err) throw err;
+}
+
+function isRequest(stream) {
+  return stream.setHeader && typeof stream.abort === 'function';
+}
+
+function destroyer(stream, reading, writing, callback) {
+  callback = once(callback);
+  var closed = false;
+  stream.on('close', function () {
+    closed = true;
+  });
+  if (eos === undefined) eos = __nccwpck_require__(6080);
+  eos(stream, {
+    readable: reading,
+    writable: writing
+  }, function (err) {
+    if (err) return callback(err);
+    closed = true;
+    callback();
+  });
+  var destroyed = false;
+  return function (err) {
+    if (closed) return;
+    if (destroyed) return;
+    destroyed = true; // request.destroy just do .end - .abort is what we want
+
+    if (isRequest(stream)) return stream.abort();
+    if (typeof stream.destroy === 'function') return stream.destroy();
+    callback(err || new ERR_STREAM_DESTROYED('pipe'));
+  };
+}
+
+function call(fn) {
+  fn();
+}
+
+function pipe(from, to) {
+  return from.pipe(to);
+}
+
+function popCallback(streams) {
+  if (!streams.length) return noop;
+  if (typeof streams[streams.length - 1] !== 'function') return noop;
+  return streams.pop();
+}
+
+function pipeline() {
+  for (var _len = arguments.length, streams = new Array(_len), _key = 0; _key < _len; _key++) {
+    streams[_key] = arguments[_key];
+  }
+
+  var callback = popCallback(streams);
+  if (Array.isArray(streams[0])) streams = streams[0];
+
+  if (streams.length < 2) {
+    throw new ERR_MISSING_ARGS('streams');
+  }
+
+  var error;
+  var destroys = streams.map(function (stream, i) {
+    var reading = i < streams.length - 1;
+    var writing = i > 0;
+    return destroyer(stream, reading, writing, function (err) {
+      if (!error) error = err;
+      if (err) destroys.forEach(call);
+      if (reading) return;
+      destroys.forEach(call);
+      callback(error);
+    });
+  });
+  return streams.reduce(pipe);
+}
+
+module.exports = pipeline;
+
+/***/ }),
+
+/***/ 9948:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+
+
+var ERR_INVALID_OPT_VALUE = (__nccwpck_require__(7214)/* .codes.ERR_INVALID_OPT_VALUE */ .q.ERR_INVALID_OPT_VALUE);
+
+function highWaterMarkFrom(options, isDuplex, duplexKey) {
+  return options.highWaterMark != null ? options.highWaterMark : isDuplex ? options[duplexKey] : null;
+}
+
+function getHighWaterMark(state, options, duplexKey, isDuplex) {
+  var hwm = highWaterMarkFrom(options, isDuplex, duplexKey);
+
+  if (hwm != null) {
+    if (!(isFinite(hwm) && Math.floor(hwm) === hwm) || hwm < 0) {
+      var name = isDuplex ? duplexKey : 'highWaterMark';
+      throw new ERR_INVALID_OPT_VALUE(name, hwm);
+    }
+
+    return Math.floor(hwm);
+  } // Default value
+
+
+  return state.objectMode ? 16 : 16 * 1024;
+}
+
+module.exports = {
+  getHighWaterMark: getHighWaterMark
+};
+
+/***/ }),
+
+/***/ 2387:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+module.exports = __nccwpck_require__(2781);
+
+
+/***/ }),
+
+/***/ 1642:
+/***/ ((module, exports, __nccwpck_require__) => {
+
+var Stream = __nccwpck_require__(2781);
+if (process.env.READABLE_STREAM === 'disable' && Stream) {
+  module.exports = Stream.Readable;
+  Object.assign(module.exports, Stream);
+  module.exports.Stream = Stream;
+} else {
+  exports = module.exports = __nccwpck_require__(1433);
+  exports.Stream = Stream || exports;
+  exports.Readable = exports;
+  exports.Writable = __nccwpck_require__(6993);
+  exports.Duplex = __nccwpck_require__(1359);
+  exports.Transform = __nccwpck_require__(4415);
+  exports.PassThrough = __nccwpck_require__(1542);
+  exports.finished = __nccwpck_require__(6080);
+  exports.pipeline = __nccwpck_require__(6989);
+}
+
+
+/***/ }),
+
+/***/ 4347:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+module.exports = __nccwpck_require__(6244);
+
+/***/ }),
+
+/***/ 6244:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+var RetryOperation = __nccwpck_require__(5369);
+
+exports.operation = function(options) {
+  var timeouts = exports.timeouts(options);
+  return new RetryOperation(timeouts, {
+      forever: options && options.forever,
+      unref: options && options.unref,
+      maxRetryTime: options && options.maxRetryTime
+  });
+};
+
+exports.timeouts = function(options) {
+  if (options instanceof Array) {
+    return [].concat(options);
+  }
+
+  var opts = {
+    retries: 10,
+    factor: 2,
+    minTimeout: 1 * 1000,
+    maxTimeout: Infinity,
+    randomize: false
+  };
+  for (var key in options) {
+    opts[key] = options[key];
+  }
+
+  if (opts.minTimeout > opts.maxTimeout) {
+    throw new Error('minTimeout is greater than maxTimeout');
+  }
+
+  var timeouts = [];
+  for (var i = 0; i < opts.retries; i++) {
+    timeouts.push(this.createTimeout(i, opts));
+  }
+
+  if (options && options.forever && !timeouts.length) {
+    timeouts.push(this.createTimeout(i, opts));
+  }
+
+  // sort the array numerically ascending
+  timeouts.sort(function(a,b) {
+    return a - b;
+  });
+
+  return timeouts;
+};
+
+exports.createTimeout = function(attempt, opts) {
+  var random = (opts.randomize)
+    ? (Math.random() + 1)
+    : 1;
+
+  var timeout = Math.round(random * opts.minTimeout * Math.pow(opts.factor, attempt));
+  timeout = Math.min(timeout, opts.maxTimeout);
+
+  return timeout;
+};
+
+exports.wrap = function(obj, options, methods) {
+  if (options instanceof Array) {
+    methods = options;
+    options = null;
+  }
+
+  if (!methods) {
+    methods = [];
+    for (var key in obj) {
+      if (typeof obj[key] === 'function') {
+        methods.push(key);
+      }
+    }
+  }
+
+  for (var i = 0; i < methods.length; i++) {
+    var method   = methods[i];
+    var original = obj[method];
+
+    obj[method] = function retryWrapper(original) {
+      var op       = exports.operation(options);
+      var args     = Array.prototype.slice.call(arguments, 1);
+      var callback = args.pop();
+
+      args.push(function(err) {
+        if (op.retry(err)) {
+          return;
+        }
+        if (err) {
+          arguments[0] = op.mainError();
+        }
+        callback.apply(this, arguments);
+      });
+
+      op.attempt(function() {
+        original.apply(obj, args);
+      });
+    }.bind(obj, original);
+    obj[method].options = options;
+  }
+};
+
+
+/***/ }),
+
+/***/ 5369:
+/***/ ((module) => {
+
+function RetryOperation(timeouts, options) {
+  // Compatibility for the old (timeouts, retryForever) signature
+  if (typeof options === 'boolean') {
+    options = { forever: options };
+  }
+
+  this._originalTimeouts = JSON.parse(JSON.stringify(timeouts));
+  this._timeouts = timeouts;
+  this._options = options || {};
+  this._maxRetryTime = options && options.maxRetryTime || Infinity;
+  this._fn = null;
+  this._errors = [];
+  this._attempts = 1;
+  this._operationTimeout = null;
+  this._operationTimeoutCb = null;
+  this._timeout = null;
+  this._operationStart = null;
+
+  if (this._options.forever) {
+    this._cachedTimeouts = this._timeouts.slice(0);
+  }
+}
+module.exports = RetryOperation;
+
+RetryOperation.prototype.reset = function() {
+  this._attempts = 1;
+  this._timeouts = this._originalTimeouts;
+}
+
+RetryOperation.prototype.stop = function() {
+  if (this._timeout) {
+    clearTimeout(this._timeout);
+  }
+
+  this._timeouts       = [];
+  this._cachedTimeouts = null;
+};
+
+RetryOperation.prototype.retry = function(err) {
+  if (this._timeout) {
+    clearTimeout(this._timeout);
+  }
+
+  if (!err) {
+    return false;
+  }
+  var currentTime = new Date().getTime();
+  if (err && currentTime - this._operationStart >= this._maxRetryTime) {
+    this._errors.unshift(new Error('RetryOperation timeout occurred'));
+    return false;
+  }
+
+  this._errors.push(err);
+
+  var timeout = this._timeouts.shift();
+  if (timeout === undefined) {
+    if (this._cachedTimeouts) {
+      // retry forever, only keep last error
+      this._errors.splice(this._errors.length - 1, this._errors.length);
+      this._timeouts = this._cachedTimeouts.slice(0);
+      timeout = this._timeouts.shift();
+    } else {
+      return false;
+    }
+  }
+
+  var self = this;
+  var timer = setTimeout(function() {
+    self._attempts++;
+
+    if (self._operationTimeoutCb) {
+      self._timeout = setTimeout(function() {
+        self._operationTimeoutCb(self._attempts);
+      }, self._operationTimeout);
+
+      if (self._options.unref) {
+          self._timeout.unref();
+      }
+    }
+
+    self._fn(self._attempts);
+  }, timeout);
+
+  if (this._options.unref) {
+      timer.unref();
+  }
+
+  return true;
+};
+
+RetryOperation.prototype.attempt = function(fn, timeoutOps) {
+  this._fn = fn;
+
+  if (timeoutOps) {
+    if (timeoutOps.timeout) {
+      this._operationTimeout = timeoutOps.timeout;
+    }
+    if (timeoutOps.cb) {
+      this._operationTimeoutCb = timeoutOps.cb;
+    }
+  }
+
+  var self = this;
+  if (this._operationTimeoutCb) {
+    this._timeout = setTimeout(function() {
+      self._operationTimeoutCb();
+    }, self._operationTimeout);
+  }
+
+  this._operationStart = new Date().getTime();
+
+  this._fn(this._attempts);
+};
+
+RetryOperation.prototype.try = function(fn) {
+  console.log('Using RetryOperation.try() is deprecated');
+  this.attempt(fn);
+};
+
+RetryOperation.prototype.start = function(fn) {
+  console.log('Using RetryOperation.start() is deprecated');
+  this.attempt(fn);
+};
+
+RetryOperation.prototype.start = RetryOperation.prototype.try;
+
+RetryOperation.prototype.errors = function() {
+  return this._errors;
+};
+
+RetryOperation.prototype.attempts = function() {
+  return this._attempts;
+};
+
+RetryOperation.prototype.mainError = function() {
+  if (this._errors.length === 0) {
+    return null;
+  }
+
+  var counts = {};
+  var mainError = null;
+  var mainErrorCount = 0;
+
+  for (var i = 0; i < this._errors.length; i++) {
+    var error = this._errors[i];
+    var message = error.message;
+    var count = (counts[message] || 0) + 1;
+
+    counts[message] = count;
+
+    if (count >= mainErrorCount) {
+      mainError = error;
+      mainErrorCount = count;
+    }
+  }
+
+  return mainError;
+};
+
+
+/***/ }),
+
+/***/ 1867:
+/***/ ((module, exports, __nccwpck_require__) => {
+
+/*! safe-buffer. MIT License. Feross Aboukhadijeh <https://feross.org/opensource> */
+/* eslint-disable node/no-deprecated-api */
+var buffer = __nccwpck_require__(4300)
+var Buffer = buffer.Buffer
+
+// alternative to using Object.keys for old browsers
+function copyProps (src, dst) {
+  for (var key in src) {
+    dst[key] = src[key]
+  }
+}
+if (Buffer.from && Buffer.alloc && Buffer.allocUnsafe && Buffer.allocUnsafeSlow) {
+  module.exports = buffer
+} else {
+  // Copy properties from require('buffer')
+  copyProps(buffer, exports)
+  exports.Buffer = SafeBuffer
+}
+
+function SafeBuffer (arg, encodingOrOffset, length) {
+  return Buffer(arg, encodingOrOffset, length)
+}
+
+SafeBuffer.prototype = Object.create(Buffer.prototype)
+
+// Copy static methods from Buffer
+copyProps(Buffer, SafeBuffer)
+
+SafeBuffer.from = function (arg, encodingOrOffset, length) {
+  if (typeof arg === 'number') {
+    throw new TypeError('Argument must not be a number')
+  }
+  return Buffer(arg, encodingOrOffset, length)
+}
+
+SafeBuffer.alloc = function (size, fill, encoding) {
+  if (typeof size !== 'number') {
+    throw new TypeError('Argument must be a number')
+  }
+  var buf = Buffer(size)
+  if (fill !== undefined) {
+    if (typeof encoding === 'string') {
+      buf.fill(fill, encoding)
+    } else {
+      buf.fill(fill)
+    }
+  } else {
+    buf.fill(0)
+  }
+  return buf
+}
+
+SafeBuffer.allocUnsafe = function (size) {
+  if (typeof size !== 'number') {
+    throw new TypeError('Argument must be a number')
+  }
+  return Buffer(size)
+}
+
+SafeBuffer.allocUnsafeSlow = function (size) {
+  if (typeof size !== 'number') {
+    throw new TypeError('Argument must be a number')
+  }
+  return buffer.SlowBuffer(size)
+}
+
+
+/***/ }),
+
+/***/ 5118:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+/* eslint-disable node/no-deprecated-api */
+
+
+
+var buffer = __nccwpck_require__(4300)
+var Buffer = buffer.Buffer
+
+var safer = {}
+
+var key
+
+for (key in buffer) {
+  if (!buffer.hasOwnProperty(key)) continue
+  if (key === 'SlowBuffer' || key === 'Buffer') continue
+  safer[key] = buffer[key]
+}
+
+var Safer = safer.Buffer = {}
+for (key in Buffer) {
+  if (!Buffer.hasOwnProperty(key)) continue
+  if (key === 'allocUnsafe' || key === 'allocUnsafeSlow') continue
+  Safer[key] = Buffer[key]
+}
+
+safer.Buffer.prototype = Buffer.prototype
+
+if (!Safer.from || Safer.from === Uint8Array.from) {
+  Safer.from = function (value, encodingOrOffset, length) {
+    if (typeof value === 'number') {
+      throw new TypeError('The "value" argument must not be of type number. Received type ' + typeof value)
+    }
+    if (value && typeof value.length === 'undefined') {
+      throw new TypeError('The first argument must be one of type string, Buffer, ArrayBuffer, Array, or Array-like Object. Received type ' + typeof value)
+    }
+    return Buffer(value, encodingOrOffset, length)
+  }
+}
+
+if (!Safer.alloc) {
+  Safer.alloc = function (size, fill, encoding) {
+    if (typeof size !== 'number') {
+      throw new TypeError('The "size" argument must be of type number. Received type ' + typeof size)
+    }
+    if (size < 0 || size >= 2 * (1 << 30)) {
+      throw new RangeError('The value "' + size + '" is invalid for option "size"')
+    }
+    var buf = Buffer(size)
+    if (!fill || fill.length === 0) {
+      buf.fill(0)
+    } else if (typeof encoding === 'string') {
+      buf.fill(fill, encoding)
+    } else {
+      buf.fill(fill)
+    }
+    return buf
+  }
+}
+
+if (!safer.kStringMaxLength) {
+  try {
+    safer.kStringMaxLength = process.binding('buffer').kStringMaxLength
+  } catch (e) {
+    // we can't determine kStringMaxLength in environments where process.binding
+    // is unsupported, so let's not set it
+  }
+}
+
+if (!safer.constants) {
+  safer.constants = {
+    MAX_LENGTH: safer.kMaxLength
+  }
+  if (safer.kStringMaxLength) {
+    safer.constants.MAX_STRING_LENGTH = safer.kStringMaxLength
+  }
+}
+
+module.exports = safer
+
+
+/***/ }),
+
+/***/ 3232:
+/***/ ((module) => {
+
+const errorCode = {
+  generic: 'ERR_GENERIC_CLIENT',
+  connect: 'ERR_NOT_CONNECTED',
+  badPath: 'ERR_BAD_PATH',
+  permission: 'EACCES',
+  notexist: 'ENOENT',
+  notdir: 'ENOTDIR',
+  badAuth: 'ERR_BAD_AUTH',
+};
+
+const targetType = {
+  writeFile: 1,
+  readFile: 2,
+  writeDir: 3,
+  readDir: 4,
+  readObj: 5,
+  writeObj: 6,
+};
+
+module.exports = {
+  errorCode,
+  targetType,
+};
+
+
+/***/ }),
+
+/***/ 7551:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+
+
+const { Client } = __nccwpck_require__(5869);
+const fs = __nccwpck_require__(7147);
+const concat = __nccwpck_require__(5107);
+const promiseRetry = __nccwpck_require__(4742);
+const { join, parse } = __nccwpck_require__(1017);
+const {
+  addTempListeners,
+  removeTempListeners,
+  haveConnection,
+  normalizeRemotePath,
+  localExists,
+  haveLocalAccess,
+  haveLocalCreate,
+} = __nccwpck_require__(9432);
+const { errorCode } = __nccwpck_require__(3232);
+
+class SftpClient {
+  constructor(clientName) {
+    this.version = '9.0.2';
+    this.client = new Client();
+    this.sftp = undefined;
+    this.clientName = clientName ? clientName : 'sftp';
+    this.endCalled = false;
+    this.errorHandled = false;
+    this.closeHandled = false;
+    this.endHandled = false;
+    this.remotePathSep = '/';
+    this.remotePlatform = 'unix';
+    this.debug = undefined;
+
+    this.client.on('close', () => {
+      if (this.endCalled || this.errorHandled || this.closeHandled) {
+        // we are processing an expected end event or close event handled elsewhere
+        this.debugMsg('Global: Ignoring handled close event');
+      } else {
+        this.debugMsg('Global: Handling unexpected close event');
+        this.sftp = undefined;
+      }
+    });
+
+    this.client.on('end', () => {
+      if (this.endCalled || this.errorHandled || this.endHandled) {
+        // end event expected or handled elsewhere
+        this.debugMsg('Global: Ignoring hanlded end event');
+      } else {
+        this.debugMsg('Global: Handling unexpected end event');
+        this.sftp = undefined;
+      }
+    });
+
+    this.client.on('error', (err) => {
+      if (this.endCalled || this.errorHandled) {
+        // error event expected or handled elsewhere
+        this.debugMsg(`Global: Ignoring handled error: ${err.message}`);
+      } else {
+        this.debugMsg(`Global; Handling unexpected error; ${err.message}`);
+        this.sftp = undefined;
+        console.log(
+          `ssh2-sftp-client: Unexpected error: ${err.message}. Error code: ${err.code}`
+        );
+      }
+    });
+  }
+
+  debugMsg(msg, obj) {
+    if (this.debug) {
+      if (obj) {
+        this.debug(
+          `CLIENT[${this.clientName}]: ${msg} ${JSON.stringify(obj, null, ' ')}`
+        );
+      } else {
+        this.debug(`CLIENT[${this.clientName}]: ${msg}`);
+      }
+    }
+  }
+
+  fmtError(err, name = 'sftp', eCode, retryCount) {
+    let msg = '';
+    let code = '';
+    const retry = retryCount
+      ? ` after ${retryCount} ${retryCount > 1 ? 'attempts' : 'attempt'}`
+      : '';
+
+    if (err === undefined) {
+      msg = `${name}: Undefined error - probably a bug!`;
+      code = errorCode.generic;
+    } else if (typeof err === 'string') {
+      msg = `${name}: ${err}${retry}`;
+      code = eCode ? eCode : errorCode.generic;
+    } else if (err.custom) {
+      msg = `${name}->${err.message}${retry}`;
+      code = err.code;
+    } else {
+      switch (err.code) {
+        case 'ENOTFOUND':
+          msg = `${name}: Address lookup failed for host${retry}`;
+          break;
+        case 'ECONNREFUSED':
+          msg = `${name}: Remote host refused connection${retry}`;
+          break;
+        case 'ECONNRESET':
+          msg = `${name}: Remote host has reset the connection: ${err.message}${retry}`;
+          break;
+        default:
+          msg = `${name}: ${err.message}${retry}`;
+      }
+      code = err.code ? err.code : errorCode.generic;
+    }
+    const newError = new Error(msg);
+    newError.code = code;
+    newError.custom = true;
+    this.debugMsg(`${newError.message} (${newError.code})`);
+    return newError;
+  }
+
+  /**
+   * Add a listner to the client object. This is rarely necessary and can be
+   * the source of errors. It is the client's responsibility to remove the
+   * listeners when no longer required. Failure to do so can result in memory
+   * leaks.
+   *
+   * @param {string} eventType - one of the supported event types
+   * @param {function} callback - function called when event triggers
+   */
+  on(eventType, callback) {
+    this.client.prependListener(eventType, callback);
+  }
+
+  removeListener(eventType, callback) {
+    this.client.removeListener(eventType, callback);
+  }
+
+  _resetEventFlags() {
+    this.closeHandled = false;
+    this.endHandled = false;
+    this.errorHandled = false;
+  }
+
+  /**
+   * @async
+   *
+   * Create a new SFTP connection to a remote SFTP server
+   *
+   * @param {Object} config - an SFTP configuration object
+   *
+   * @return {Promise<Object>} which will resolve to an sftp client object
+   *
+   */
+  getConnection(config) {
+    let doReady, listeners;
+    return new Promise((resolve, reject) => {
+      listeners = addTempListeners(this, 'getConnection', reject);
+      doReady = () => {
+        this.debugMsg('getConnection ready listener: got connection - promise resolved');
+        resolve(true);
+      };
+      this.on('ready', doReady);
+      this.client.connect(config);
+    }).finally(() => {
+      this.removeListener('ready', doReady);
+      removeTempListeners(this, listeners, 'getConnection');
+    });
+  }
+
+  getSftpChannel() {
+    return new Promise((resolve, reject) => {
+      this.client.sftp((err, sftp) => {
+        if (err) {
+          reject(this.fmtError(err, 'getSftpChannel', err.code));
+        } else {
+          this.debugMsg('getSftpChannel: SFTP channel established');
+          this.sftp = sftp;
+          resolve(sftp);
+        }
+      });
+    });
+  }
+
+  /**
+   * @async
+   *
+   * Create a new SFTP connection to a remote SFTP server.
+   * The connection options are the same as those offered
+   * by the underlying SSH2 module.
+   *
+   * @param {Object} config - an SFTP configuration object
+   *
+   * @return {Promise<Object>} which will resolve to an sftp client object
+   *
+   */
+  async connect(config) {
+    let listeners;
+
+    try {
+      listeners = addTempListeners(this, 'connect');
+      if (config.debug) {
+        this.debug = config.debug;
+        this.debugMsg('connect: Debugging turned on');
+        this.debugMsg(`ssh2-sftp-client Version: ${this.version} `, process.versions);
+      }
+      if (this.sftp) {
+        throw this.fmtError(
+          'An existing SFTP connection is already defined',
+          'connect',
+          errorCode.connect
+        );
+      }
+      const retryOpts = {
+        retries: config.retries ?? 1,
+        factor: config.factor ?? 2,
+        minTimeout: config.retry_minTimeout ?? 25000,
+      };
+      await promiseRetry(retryOpts, async (retry, attempt) => {
+        try {
+          this.debugMsg(`connect: Connect attempt ${attempt}`);
+          await this.getConnection(config);
+        } catch (err) {
+          switch (err.code) {
+            case 'ENOTFOUND':
+            case 'ECONNREFUSED':
+            case 'ERR_SOCKET_BAD_PORT':
+              throw err;
+            case undefined: {
+              if (err.message.endsWith('All configured authentication methods failed')) {
+                throw this.fmtError(err.message, 'getConnection', errorCode.badAuth);
+              }
+              retry(err);
+              break;
+            }
+            default:
+              retry(err);
+          }
+        }
+      });
+      const sftp = await this.getSftpChannel();
+      return sftp;
+    } catch (err) {
+      await this.end();
+      throw err.custom ? err : this.fmtError(err, 'connect');
+    } finally {
+      removeTempListeners(this, listeners, 'connect');
+    }
+  }
+
+  /**
+   * @async
+   *
+   * Returns the real absolute path on the remote server. Is able to handle
+   * both '.' and '..' in path names, but not '~'. If the path is relative
+   * then the current working directory is prepended to create an absolute path.
+   * Returns undefined if the path does not exists.
+   *
+   * @param {String} remotePath - remote path, may be relative
+   * @returns {Promise<String>} - remote absolute path or ''
+   */
+  _realPath(rPath) {
+    return new Promise((resolve, reject) => {
+      this.debugMsg(`_realPath -> ${rPath}`);
+      this.sftp.realpath(rPath, (err, absPath) => {
+        if (err) {
+          if (err.code === 2) {
+            this.debugMsg('_realPath <- ""');
+            resolve('');
+          } else {
+            reject(this.fmtError(`${err.message} ${rPath}`, 'realPath', err.code));
+          }
+        }
+        this.debugMsg(`_realPath <- ${absPath}`);
+        resolve(absPath);
+      });
+    });
+  }
+
+  async realPath(remotePath) {
+    let listeners;
+    try {
+      listeners = addTempListeners(this, 'realPath');
+      haveConnection(this, 'realPath');
+      return await this._realPath(remotePath);
+    } catch (e) {
+      throw e.custom
+        ? e
+        : this.fmtError(`${e.message} ${remotePath}`, 'realPath', e.code);
+    } finally {
+      removeTempListeners(this, listeners, 'realPath');
+    }
+  }
+
+  /**
+   * @async
+   *
+   * Return the current workding directory path
+   *
+   * @returns {Promise<String>} - current remote working directory
+   */
+  cwd() {
+    return this.realPath('.');
+  }
+
+  /**
+   * Retrieves attributes for path
+   *
+   * @param {String} remotePath - a string containing the path to a file
+   * @return {Promise<Object>} stats - attributes info
+   */
+  _stat(aPath) {
+    return new Promise((resolve, reject) => {
+      this.debugMsg(`_stat: ${aPath}`);
+      this.sftp.stat(aPath, (err, stats) => {
+        if (err) {
+          if (err.code === 2 || err.code === 4) {
+            reject(this.fmtError(`No such file: ${aPath}`, '_stat', errorCode.notexist));
+          } else {
+            reject(this.fmtError(`${err.message} ${aPath}`, '_stat', err.code));
+          }
+        } else {
+          const result = {
+            mode: stats.mode,
+            uid: stats.uid,
+            gid: stats.gid,
+            size: stats.size,
+            accessTime: stats.atime * 1000,
+            modifyTime: stats.mtime * 1000,
+            isDirectory: stats.isDirectory(),
+            isFile: stats.isFile(),
+            isBlockDevice: stats.isBlockDevice(),
+            isCharacterDevice: stats.isCharacterDevice(),
+            isSymbolicLink: stats.isSymbolicLink(),
+            isFIFO: stats.isFIFO(),
+            isSocket: stats.isSocket(),
+          };
+          this.debugMsg('_stat: stats <- ', result);
+          resolve(result);
+        }
+      });
+    });
+  }
+
+  async stat(remotePath) {
+    let listeners;
+    try {
+      listeners = addTempListeners(this, 'stat');
+      haveConnection(this, 'stat');
+      const absPath = await normalizeRemotePath(this, remotePath);
+      return await this._stat(absPath);
+    } catch (err) {
+      throw err.custom ? err : this.fmtError(err, 'stat', err.code);
+    } finally {
+      removeTempListeners(this, listeners, 'stat');
+    }
+  }
+
+  /**
+   * @async
+   *
+   * Tests to see if an object exists. If it does, return the type of that object
+   * (in the format returned by list). If it does not exist, return false.
+   *
+   * @param {string} remotePath - path to the object on the sftp server.
+   *
+   * @return {Promise<Boolean|String>} returns false if object does not exist. Returns type of
+   *                   object if it does
+   */
+  async _exists(rPath) {
+    try {
+      const absPath = await normalizeRemotePath(this, rPath);
+      this.debugMsg(`exists: ${rPath} -> ${absPath}`);
+      const info = await this._stat(absPath);
+      this.debugMsg('exists: <- ', info);
+      if (info.isDirectory) {
+        this.debugMsg(`exists: ${rPath} = d`);
+        return 'd';
+      }
+      if (info.isSymbolicLink) {
+        this.debugMsg(`exists: ${rPath} = l`);
+        return 'l';
+      }
+      if (info.isFile) {
+        this.debugMsg(`exists: ${rPath} = -`);
+        return '-';
+      }
+      this.debugMsg(`exists: ${rPath} = false`);
+      return false;
+    } catch (err) {
+      if (err.code === errorCode.notexist) {
+        this.debugMsg(`exists: ${rPath} = false errorCode = ${err.code}`);
+        return false;
+      }
+      throw err.custom ? err : this.fmtError(err.message, 'exists', err.code);
+    }
+  }
+
+  async exists(remotePath) {
+    let listeners;
+    try {
+      listeners = addTempListeners(this, 'exists');
+      haveConnection(this, 'exists');
+      if (remotePath === '.') {
+        return 'd';
+      }
+      return await this._exists(remotePath);
+    } catch (err) {
+      throw err.custom ? err : this.fmtError(err, 'exists', err.code);
+    } finally {
+      removeTempListeners(this, listeners, 'exists');
+    }
+  }
+
+  /**
+   * @async
+   *
+   * List contents of a remote directory. If a pattern is provided,
+   * filter the results to only include files with names that match
+   * the supplied pattern. Return value is an array of file entry
+   * objects that include properties for type, name, size, modifyTime,
+   * accessTime, rights {user, group other}, owner and group.
+   *
+   * @param {String} remotePath - path to remote directory
+   * @param {function} filter - a filter function used to select return entries
+   * @returns {Promise<Array>} array of file description objects
+   */
+  _list(remotePath, filter) {
+    return new Promise((resolve, reject) => {
+      this.sftp.readdir(remotePath, (err, fileList) => {
+        if (err) {
+          reject(this.fmtError(`${err.message} ${remotePath}`, 'list', err.code));
+        } else {
+          const reg = /-/gi;
+          const newList = fileList.map((item) => {
+            return {
+              type: item.longname.slice(0, 1),
+              name: item.filename,
+              size: item.attrs.size,
+              modifyTime: item.attrs.mtime * 1000,
+              accessTime: item.attrs.atime * 1000,
+              rights: {
+                user: item.longname.slice(1, 4).replace(reg, ''),
+                group: item.longname.slice(4, 7).replace(reg, ''),
+                other: item.longname.slice(7, 10).replace(reg, ''),
+              },
+              owner: item.attrs.uid,
+              group: item.attrs.gid,
+              longname: item.longname,
+            };
+          });
+          if (filter) {
+            resolve(newList.filter((item) => filter(item)));
+          } else {
+            resolve(newList);
+          }
+        }
+      });
+    });
+  }
+
+  async list(remotePath, filter) {
+    let listeners;
+    try {
+      listeners = addTempListeners(this, 'list');
+      haveConnection(this, 'list');
+      return await this._list(remotePath, filter);
+    } catch (e) {
+      throw e.custom ? e : this.fmtError(`${e.message} ${remotePath}`, 'list', e.code);
+    } finally {
+      removeTempListeners(this, listeners, 'list');
+    }
+  }
+
+  /**
+   * get file
+   *
+   * If a dst argument is provided, it must be either a string, representing the
+   * local path to where the data will be put, a stream, in which case data is
+   * piped into the stream or undefined, in which case the data is returned as
+   * a Buffer object.
+   *
+   * @param {String} remotePath - remote file path
+   * @param {string|stream|undefined} dst - data destination
+   * @param {Object} options - options object with supported properties of readStreamOptions,
+   *                          writeStreamOptions and pipeOptions.
+   *
+   * *Important Note*: The ability to set ''autoClose' on read/write streams and 'end' on pipe() calls
+   * is no longer supported. New methods 'createReadStream()' and 'createWriteStream()' have been
+   * added to support low-level access to stream objects.
+   *
+   * @return {Promise<String|Stream|Buffer>}
+   */
+  _get(rPath, dst, opts) {
+    let rdr, wtr;
+    return new Promise((resolve, reject) => {
+      opts = {
+        ...opts,
+        readStreamOptions: { autoClose: true },
+        writeStreamOptions: { autoClose: true },
+        pipeOptions: { end: true },
+      };
+      rdr = this.sftp.createReadStream(rPath, opts.readStreamOptions);
+      rdr.once('error', (err) => {
+        if (dst && typeof dst !== 'string' && !dst.destroyed) {
+          dst.destroy();
+        }
+        reject(this.fmtError(`${err.message} ${rPath}`, '_get', err.code));
+      });
+      if (dst === undefined) {
+        // no dst specified, return buffer of data
+        this.debugMsg('get resolving buffer of data');
+        wtr = concat((buff) => {
+          resolve(buff);
+        });
+      } else if (typeof dst === 'string') {
+        // dst local file path
+        this.debugMsg('get returning local file');
+        const localCheck = haveLocalCreate(dst);
+        if (!localCheck.status) {
+          reject(
+            this.fmtError(
+              `Bad path: ${dst}: ${localCheck.details}`,
+              'get',
+              localCheck.code
+            )
+          );
+          return;
+        } else {
+          wtr = fs.createWriteStream(dst, opts.writeStreamOptions);
+        }
+      } else {
+        this.debugMsg('get: returning data into supplied stream');
+        wtr = dst;
+      }
+      wtr.once('error', (err) => {
+        reject(
+          this.fmtError(
+            `${err.message} ${typeof dst === 'string' ? dst : '<stream>'}`,
+            'get',
+            err.code
+          )
+        );
+      });
+      rdr.once('end', () => {
+        if (typeof dst === 'string') {
+          this.debugMsg('get: resolving with dst filename');
+          resolve(dst);
+        } else if (dst !== undefined) {
+          this.debugMsg('get: resolving with writer stream object');
+          resolve(wtr);
+        }
+      });
+      rdr.pipe(wtr, opts.pipeOptions);
+    });
+  }
+
+  async get(remotePath, dst, options) {
+    let listeners;
+    try {
+      listeners = addTempListeners(this, 'get');
+      haveConnection(this, 'get');
+      return await this._get(remotePath, dst, options);
+    } catch (e) {
+      throw e.custom ? e : this.fmtError(`${e.message} ${remotePath}`, 'get', e.code);
+    } finally {
+      removeTempListeners(this, listeners, 'get');
+    }
+  }
+
+  /**
+   * Use SSH2 fastGet for downloading the file.
+   * Downloads a file at remotePath to localPath using parallel reads
+   * for faster throughput.
+   *
+   * @param {String} remotePath
+   * @param {String} localPath
+   * @param {Object} options
+   * @return {Promise<String>} the result of downloading the file
+   */
+  _fastGet(rPath, lPath, opts) {
+    return new Promise((resolve, reject) => {
+      this.sftp.fastGet(rPath, lPath, opts, (err) => {
+        if (err) {
+          reject(this.fmtError(`${err.message} Remote: ${rPath} Local: ${lPath}`));
+        }
+        resolve(`${rPath} was successfully download to ${lPath}!`);
+      });
+    });
+  }
+
+  async fastGet(remotePath, localPath, options) {
+    let listeners;
+    try {
+      listeners = addTempListeners(this, 'fastGet');
+      haveConnection(this, 'fastGet');
+      const ftype = await this.exists(remotePath);
+      if (ftype !== '-') {
+        const msg = `${!ftype ? 'No such file ' : 'Not a regular file'} ${remotePath}`;
+        throw this.fmtError(msg, 'fastGet', errorCode.badPath);
+      }
+      const localCheck = haveLocalCreate(localPath);
+      if (!localCheck.status) {
+        throw this.fmtError(
+          `Bad path: ${localPath}: ${localCheck.details}`,
+          'fastGet',
+          errorCode.badPath
+        );
+      }
+      return await this._fastGet(remotePath, localPath, options);
+    } catch (err) {
+      throw this.fmtError(err, 'fastGet');
+    } finally {
+      removeTempListeners(this, listeners, 'fastGet');
+    }
+  }
+
+  /**
+   * Use SSH2 fastPut for uploading the file.
+   * Uploads a file from localPath to remotePath using parallel reads
+   * for faster throughput.
+   *
+   * See 'fastPut' at
+   * https://github.com/mscdex/ssh2-streams/blob/master/SFTPStream.md
+   *
+   * @param {String} localPath
+   * @param {String} remotePath
+   * @param {Object} options
+   * @return {Promise<String>} the result of downloading the file
+   */
+  _fastPut(lPath, rPath, opts) {
+    return new Promise((resolve, reject) => {
+      this.sftp.fastPut(lPath, rPath, opts, (err) => {
+        if (err) {
+          reject(
+            this.fmtError(
+              `${err.message} Local: ${lPath} Remote: ${rPath}`,
+              'fastPut',
+              err.code
+            )
+          );
+        }
+        resolve(`${lPath} was successfully uploaded to ${rPath}!`);
+      });
+    });
+  }
+
+  async fastPut(localPath, remotePath, options) {
+    let listeners;
+    try {
+      listeners = addTempListeners(this, 'fastPut');
+      this.debugMsg(`fastPut -> local ${localPath} remote ${remotePath}`);
+      haveConnection(this, 'fastPut');
+      const localCheck = haveLocalAccess(localPath);
+      if (!localCheck.status) {
+        throw this.fmtError(
+          `Bad path: ${localPath}: ${localCheck.details}`,
+          'fastPut',
+          localCheck.code
+        );
+      } else if (localCheck.status && localExists(localPath) === 'd') {
+        throw this.fmtError(
+          `Bad path: ${localPath} not a regular file`,
+          'fastgPut',
+          errorCode.badPath
+        );
+      }
+      return await this._fastPut(localPath, remotePath, options);
+    } catch (e) {
+      throw e.custom ? e : this.fmtError(e.message, 'fastPut', e.code);
+    } finally {
+      removeTempListeners(this, listeners, 'fastPut');
+    }
+  }
+
+  /**
+   * Create a file on the remote server. The 'src' argument
+   * can be a buffer, string or read stream. If 'src' is a string, it
+   * should be the path to a local file.
+   *
+   * @param  {String|Buffer|stream} localSrc - source data to use
+   * @param  {String} remotePath - path to remote file
+   * @param  {Object} options - options used for read, write stream and pipe configuration
+   *                            value supported by node. Allowed properties are readStreamOptions,
+   *                            writeStreamOptions and pipeOptions.
+   *
+   * *Important Note*: The ability to set ''autoClose' on read/write streams and 'end' on pipe() calls
+   * is no longer supported. New methods 'createReadStream()' and 'createWriteStream()' have been
+   * added to support low-level access to stream objects.
+   *
+   * @return {Promise<String>}
+   */
+  _put(lPath, rPath, opts) {
+    let wtr, rdr;
+    return new Promise((resolve, reject) => {
+      opts = {
+        ...opts,
+        readStreamOptions: { autoClose: true },
+        writeStreamOptions: { autoClose: true },
+        pipeOptions: { end: true },
+      };
+      wtr = this.sftp.createWriteStream(rPath, opts.writeStreamOptions);
+      wtr.once('error', (err) => {
+        reject(this.fmtError(`${err.message} ${rPath}`, 'put', err.code));
+      });
+      wtr.once('close', () => {
+        resolve(`Uploaded data stream to ${rPath}`);
+      });
+      if (lPath instanceof Buffer) {
+        this.debugMsg('put source is a buffer');
+        wtr.end(lPath);
+      } else {
+        rdr =
+          typeof lPath === 'string'
+            ? fs.createReadStream(lPath, opts.readStreamOptions)
+            : lPath;
+        rdr.once('error', (err) => {
+          reject(
+            this.fmtError(
+              `${err.message} ${typeof lPath === 'string' ? lPath : '<stream>'}`,
+              '_put',
+              err.code
+            )
+          );
+        });
+        rdr.pipe(wtr, opts.pipeOptions);
+      }
+    });
+  }
+
+  async put(localSrc, remotePath, options) {
+    let listeners;
+    try {
+      listeners = addTempListeners(this, 'put');
+      haveConnection(this, 'put');
+      if (typeof localSrc === 'string') {
+        const localCheck = haveLocalAccess(localSrc);
+        if (!localCheck.status) {
+          throw this.fmtError(
+            `Bad path: ${localSrc} ${localCheck.details}`,
+            'put',
+            localCheck.code
+          );
+        }
+      }
+      return await this._put(localSrc, remotePath, options);
+    } catch (e) {
+      throw e.custom ? e : this.fmtError(e.message, 'put', e.code);
+    } finally {
+      removeTempListeners(this, listeners, 'put');
+    }
+  }
+
+  /**
+   * Append to an existing remote file
+   *
+   * @param  {Buffer|stream} input
+   * @param  {String} remotePath
+   * @param  {Object} options
+   * @return {Promise<String>}
+   */
+  _append(input, rPath, opts) {
+    return new Promise((resolve, reject) => {
+      this.debugMsg(`append -> remote: ${rPath} `, opts);
+      opts.flags = 'a';
+      const stream = this.sftp.createWriteStream(rPath, opts);
+      stream.on('error', (err) => {
+        reject(this.fmtError(`${err.message} ${rPath}`, 'append', err.code));
+      });
+      stream.on('close', () => {
+        resolve(`Appended data to ${rPath}`);
+      });
+      if (input instanceof Buffer) {
+        stream.write(input);
+        stream.end();
+      } else {
+        input.pipe(stream);
+      }
+    });
+  }
+
+  async append(input, remotePath, options = {}) {
+    let listeners;
+    try {
+      listeners = addTempListeners(this, 'append');
+      if (typeof input === 'string') {
+        throw this.fmtError(
+          'Cannot append one file to another',
+          'append',
+          errorCode.badPath
+        );
+      }
+      haveConnection(this, 'append');
+      const fileType = await this.exists(remotePath);
+      if (fileType && fileType === 'd') {
+        throw this.fmtError(
+          `Bad path: ${remotePath}: cannot append to a directory`,
+          'append',
+          errorCode.badPath
+        );
+      }
+      await this._append(input, remotePath, options);
+    } catch (e) {
+      throw e.custom ? e : this.fmtError(e.message, 'append', e.code);
+    } finally {
+      removeTempListeners(this, listeners, 'append');
+    }
+  }
+
+  /**
+   * @async
+   *
+   * Make a directory on remote server
+   *
+   * @param {string} remotePath - remote directory path.
+   * @param {boolean} recursive - if true, recursively create directories
+   * @return {Promise<String>}
+   */
+  _doMkdir(p) {
+    return new Promise((resolve, reject) => {
+      this.sftp.mkdir(p, (err) => {
+        if (err) {
+          if (err.code === 4) {
+            //fix for windows dodgy error messages
+            reject(
+              this.fmtError(
+                `Bad path: ${p} permission denied`,
+                '_doMkdir',
+                errorCode.badPath
+              )
+            );
+          } else if (err.code === 2) {
+            reject(
+              this.fmtError(
+                `Bad path: ${p} parent not a directory or not exist`,
+                '_doMkdir',
+                errorCode.badPath
+              )
+            );
+          } else {
+            reject(this.fmtError(`${err.message} ${p}`, '_doMkdir', err.code));
+          }
+        } else {
+          resolve(`${p} directory created`);
+        }
+      });
+    });
+  }
+
+  async _mkdir(remotePath, recursive) {
+    try {
+      const rPath = await normalizeRemotePath(this, remotePath);
+      const targetExists = await this.exists(rPath);
+      if (targetExists && targetExists !== 'd') {
+        throw this.fmtError(
+          `Bad path: ${rPath} already exists as a file`,
+          '_mkdir',
+          errorCode.badPath
+        );
+      } else if (targetExists) {
+        return `${rPath} already exists`;
+      }
+      if (!recursive) {
+        return await this._doMkdir(rPath);
+      }
+      const dir = parse(rPath).dir;
+      if (dir) {
+        const dirExists = await this.exists(dir);
+        if (!dirExists) {
+          await this._mkdir(dir, true);
+        } else if (dirExists !== 'd') {
+          throw this.fmtError(
+            `Bad path: ${dir} not a directory`,
+            '_mkdir',
+            errorCode.badPath
+          );
+        }
+      }
+      return await this._doMkdir(rPath);
+    } catch (err) {
+      throw err.custom
+        ? err
+        : this.fmtError(`${err.message} ${remotePath}`, '_mkdir', err.code);
+    }
+  }
+
+  async mkdir(remotePath, recursive = false) {
+    let listeners;
+    try {
+      listeners = addTempListeners(this, '_mkdir');
+      haveConnection(this, 'mkdir');
+      return await this._mkdir(remotePath, recursive);
+    } catch (err) {
+      throw this.fmtError(`${err.message}`, 'mkdir', err.code);
+    } finally {
+      removeTempListeners(this, listeners, 'append');
+    }
+  }
+
+  /**
+   * @async
+   *
+   * Remove directory on remote server
+   *
+   * @param {string} remotePath - path to directory to be removed
+   * @param {boolean} recursive - if true, remove directories/files in target
+   *                             directory
+   * @return {Promise<String>}
+   */
+  async rmdir(remotePath, recursive = false) {
+    const _rmdir = (p) => {
+      return new Promise((resolve, reject) => {
+        this.debugMsg(`rmdir -> ${p}`);
+        this.sftp.rmdir(p, (err) => {
+          if (err) {
+            reject(this.fmtError(`${err.message} ${p}`, 'rmdir', err.code));
+          }
+          resolve('Successfully removed directory');
+        });
+      });
+    };
+
+    const _dormdir = async (p, recur) => {
+      try {
+        if (recur) {
+          const list = await this.list(p);
+          if (list.length) {
+            const files = list.filter((item) => item.type !== 'd');
+            const dirs = list.filter((item) => item.type === 'd');
+            this.debugMsg('rmdir contents (files): ', files);
+            this.debugMsg('rmdir contents (dirs): ', dirs);
+            for (const d of dirs) {
+              await _dormdir(`${p}${this.remotePathSep}${d.name}`, true);
+            }
+            const promiseList = [];
+            for (const f of files) {
+              promiseList.push(this._delete(`${p}${this.remotePathSep}${f.name}`));
+            }
+            await Promise.all(promiseList);
+          }
+        }
+        return await _rmdir(p);
+      } catch (err) {
+        throw err.custom ? err : this.fmtError(err, '_dormdir', err.code);
+      }
+    };
+
+    let listeners;
+    try {
+      listeners = addTempListeners(this, 'rmdir');
+      haveConnection(this, 'rmdir');
+      const absPath = await normalizeRemotePath(this, remotePath);
+      const dirStatus = await this.exists(absPath);
+      if (dirStatus && dirStatus !== 'd') {
+        throw this.fmtError(
+          `Bad path: ${absPath} not a directory`,
+          'rmdir',
+          errorCode.badPath
+        );
+      } else if (!dirStatus) {
+        throw this.fmtError(
+          `Bad path: ${absPath} No such file`,
+          'rmdir',
+          errorCode.badPath
+        );
+      } else {
+        return await _dormdir(absPath, recursive);
+      }
+    } catch (err) {
+      throw err.custom ? err : this.fmtError(err.message, 'rmdir', err.code);
+    } finally {
+      removeTempListeners(this, listeners, 'rmdir');
+    }
+  }
+
+  /**
+   * @async
+   *
+   * Delete a file on the remote SFTP server
+   *
+   * @param {string} remotePath - path to the file to delete
+   * @param {boolean} notFoundOK - if true, ignore errors for missing target.
+   *                               Default is false.
+   * @return {Promise<String>} with string 'Successfully deleted file' once resolved
+   *
+   */
+  _delete(rPath, notFoundOK) {
+    return new Promise((resolve, reject) => {
+      this.sftp.unlink(rPath, (err) => {
+        if (err) {
+          if (notFoundOK && err.code === 2) {
+            resolve(`Successfully deleted ${rPath}`);
+          } else {
+            reject(this.fmtError(`${err.message} ${rPath}`, 'delete', err.code));
+          }
+        }
+        resolve(`Successfully deleted ${rPath}`);
+      });
+    });
+  }
+
+  async delete(remotePath, notFoundOK = false) {
+    let listeners;
+    try {
+      listeners = addTempListeners(this, 'delete');
+      haveConnection(this, 'delete');
+      return await this._delete(remotePath, notFoundOK);
+    } catch (err) {
+      throw err.custom ? err : this.fmtError(err.message, 'delete', err.code);
+    } finally {
+      removeTempListeners(this, listeners, 'delete');
+    }
+  }
+
+  /**
+   * @async
+   *
+   * Rename a file on the remote SFTP repository
+   *
+   * @param {string} fromPath - path to the file to be renamed.
+   * @param {string} toPath - path to the new name.
+   *
+   * @return {Promise<String>}
+   *
+   */
+  _rename(fPath, tPath) {
+    return new Promise((resolve, reject) => {
+      this.sftp.rename(fPath, tPath, (err) => {
+        if (err) {
+          reject(
+            this.fmtError(
+              `${err.message} From: ${fPath} To: ${tPath}`,
+              '_rename',
+              err.code
+            )
+          );
+        }
+        resolve(`Successfully renamed ${fPath} to ${tPath}`);
+      });
+    });
+  }
+
+  async rename(fromPath, toPath) {
+    let listeners;
+    try {
+      listeners = addTempListeners(this, 'rename');
+      haveConnection(this, 'rename');
+      return await this._rename(fromPath, toPath);
+    } catch (err) {
+      throw err.custom
+        ? err
+        : this.fmtError(`${err.message} ${fromPath} ${toPath}`, 'rename', err.code);
+    } finally {
+      removeTempListeners(this, listeners, 'rename');
+    }
+  }
+
+  /**
+   * @async
+   *
+   * Rename a file on the remote SFTP repository using the SSH extension
+   * posix-rename@openssh.com using POSIX atomic rename. (Introduced in SSH 4.8)
+   *
+   * @param {string} fromPath - path to the file to be renamed.
+   * @param {string} toPath - path  the new name.
+   *
+   * @return {Promise<String>}
+   *
+   */
+  _posixRename(fPath, tPath) {
+    return new Promise((resolve, reject) => {
+      this.sftp.ext_openssh_rename(fPath, tPath, (err) => {
+        if (err) {
+          reject(
+            this.fmtError(
+              `${err.message} From: ${fPath} To: ${tPath}`,
+              '_posixRename',
+              err.code
+            )
+          );
+        }
+        resolve(`Successful POSIX rename ${fPath} to ${tPath}`);
+      });
+    });
+  }
+
+  async posixRename(fromPath, toPath) {
+    let listeners;
+    try {
+      listeners = addTempListeners(this, 'posixRename');
+      haveConnection(this, 'posixRename');
+      return await this._posixRename(fromPath, toPath);
+    } catch (err) {
+      throw err.custom
+        ? err
+        : this.fmtError(`${err.message} ${fromPath} ${toPath}`, 'posixRename', err.code);
+    } finally {
+      removeTempListeners(this, listeners, 'posixRename');
+    }
+  }
+
+  /**
+   * @async
+   *
+   * Change the mode of a remote file on the SFTP repository
+   *
+   * @param {string} remotePath - path to the remote target object.
+   * @param {number | string} mode - the new octal mode to set
+   *
+   * @return {Promise<String>}
+   */
+  _chmod(rPath, mode) {
+    return new Promise((resolve, reject) => {
+      this.sftp.chmod(rPath, mode, (err) => {
+        if (err) {
+          reject(this.fmtError(`${err.message} ${rPath}`, '_chmod', err.code));
+        }
+        resolve('Successfully change file mode');
+      });
+    });
+  }
+
+  async chmod(remotePath, mode) {
+    let listeners;
+    try {
+      listeners = addTempListeners(this, 'chmod');
+      haveConnection(this, 'chmod');
+      return await this._chmod(remotePath, mode);
+    } catch (err) {
+      throw err.custom
+        ? err
+        : this.fmtError(`${err.message} ${remotePath}`, 'chmod', err.code);
+    } finally {
+      removeTempListeners(this, listeners, 'chmod');
+    }
+  }
+
+  /**
+   * @async
+   *
+   * Upload the specified source directory to the specified destination
+   * directory. All regular files and sub-directories are uploaded to the remote
+   * server.
+   * @param {String} srcDir - local source directory
+   * @param {String} dstDir - remote destination directory
+   * @param {Object} options - (Optional) An object with 2 supported properties,
+   * 'filter' and 'useFastput'. The first argument is the full path of the item
+   * to be uploaded and the second argument is a boolean, which will be true if
+   * the target path is for a directory. If the function returns true, the item
+   * will be uploaded and excluded when it returns false. The 'useFastput' property is a
+   * boolean value. When true, the 'fastPut()' method will be used to upload files. Default
+   * is to use the slower, but more supported 'put()' method.
+   *
+   * @returns {Promise<String>}
+   */
+  async _uploadDir(srcDir, dstDir, options) {
+    try {
+      const absDstDir = await normalizeRemotePath(this, dstDir);
+      this.debugMsg(`uploadDir <- SRC = ${srcDir} DST = ${absDstDir}`);
+      const srcType = localExists(srcDir);
+      if (!srcType) {
+        throw this.fmtError(
+          `Bad path: ${srcDir} not exist`,
+          '_uploadDir',
+          errorCode.badPath
+        );
+      }
+      if (srcType !== 'd') {
+        throw this.fmtError(
+          `Bad path: ${srcDir}: not a directory`,
+          '_uploadDir',
+          errorCode.badPath
+        );
+      }
+      const dstStatus = await this.exists(absDstDir);
+      if (dstStatus && dstStatus !== 'd') {
+        throw this.fmtError(
+          `Bad path ${absDstDir} Not a directory`,
+          '_uploadDir',
+          errorCode.badPath
+        );
+      }
+      if (!dstStatus) {
+        await this._mkdir(absDstDir, true);
+      }
+      let dirEntries = fs.readdirSync(srcDir, {
+        encoding: 'utf8',
+        withFileTypes: true,
+      });
+      if (options?.filter) {
+        dirEntries = dirEntries.filter((item) =>
+          options.filter(join(srcDir, item.name), item.isDirectory())
+        );
+      }
+      let fileUploads = [];
+      for (const e of dirEntries) {
+        const newSrc = join(srcDir, e.name);
+        const newDst = `${absDstDir}${this.remotePathSep}${e.name}`;
+        if (e.isDirectory()) {
+          await this.uploadDir(newSrc, newDst, options);
+        } else if (e.isFile()) {
+          if (options?.useFastput) {
+            fileUploads.push(this._fastPut(newSrc, newDst));
+          } else {
+            fileUploads.push(this._put(newSrc, newDst));
+          }
+          this.client.emit('upload', { source: newSrc, destination: newDst });
+        } else {
+          this.debugMsg(`uploadDir: File ignored: ${e.name} not a regular file`);
+        }
+        await Promise.all(fileUploads);
+      }
+      return `${srcDir} uploaded to ${absDstDir}`;
+    } catch (err) {
+      throw err.custom
+        ? err
+        : this.fmtError(`${err.message} ${srcDir}`, '_uploadDir', err.code);
+    }
+  }
+
+  async uploadDir(srcDir, dstDir, options) {
+    let listeners;
+    try {
+      listeners = addTempListeners(this, 'uploadDir');
+      this.debugMsg(`uploadDir -> SRC = ${srcDir} DST = ${dstDir}`);
+      haveConnection(this, 'uploadDir');
+      return await this._uploadDir(srcDir, dstDir, options);
+    } catch (err) {
+      throw err.custom ? err : this.fmtError(err, 'uploadDir');
+    } finally {
+      removeTempListeners(this, listeners, 'chmod');
+    }
+  }
+
+  /**
+   * @async
+   *
+   * Download the specified source directory to the specified destination
+   * directory. All regular files and sub-directories are downloaded to the local
+   * file system.
+   * @param {String} srcDir - remote source directory
+   * @param {String} dstDir - local destination directory
+   * @param {Object} options - (Optional) Object with 2 supported properties,
+   * 'filter' and 'useFastget'. The filter property is a function of two
+   * arguments. The first argument is the full path of the item to be downloaded
+   * and the second argument is a boolean, which will be true if the target path
+   * is for a directory. If the function returns true, the item will be
+   * downloaded and excluded if teh function returns false.
+   *
+   * @returns {Promise<String>}
+   */
+  async _downloadDir(srcDir, dstDir, options) {
+    try {
+      let fileList = await this._list(srcDir);
+      if (options?.filter) {
+        fileList = fileList.filter((item) =>
+          options.filter(
+            `${srcDir}${this.remotePathSep}${item.name}`,
+            item.type === 'd' ? true : false
+          )
+        );
+      }
+      const localCheck = haveLocalCreate(dstDir);
+      if (!localCheck.status && localCheck.details === 'permission denied') {
+        throw this.fmtError(
+          `Bad path: ${dstDir}: ${localCheck.details}`,
+          'downloadDir',
+          localCheck.code
+        );
+      } else if (localCheck.status && !localCheck.type) {
+        fs.mkdirSync(dstDir, { recursive: true });
+      } else if (localCheck.status && localCheck.type !== 'd') {
+        throw this.fmtError(
+          `Bad path: ${dstDir}: not a directory`,
+          'downloadDir',
+          errorCode.badPath
+        );
+      }
+      let downloadFiles = [];
+      for (const f of fileList) {
+        const newSrc = `${srcDir}${this.remotePathSep}${f.name}`;
+        const newDst = join(dstDir, f.name);
+        if (f.type === 'd') {
+          await this._downloadDir(newSrc, newDst, options);
+        } else if (f.type === '-') {
+          if (options?.useFasget) {
+            downloadFiles.push(this._fastGet(newSrc, newDst));
+          } else {
+            downloadFiles.push(this._get(newSrc, newDst));
+          }
+          this.client.emit('download', { source: newSrc, destination: newDst });
+        } else {
+          this.debugMsg(`downloadDir: File ignored: ${f.name} not regular file`);
+        }
+      }
+      await Promise.all(downloadFiles);
+      return `${srcDir} downloaded to ${dstDir}`;
+    } catch (err) {
+      throw err.custom
+        ? err
+        : this.fmtError(`${err.message} ${srcDir}`, '_downloadDir', err.code);
+    }
+  }
+
+  async downloadDir(srcDir, dstDir, options) {
+    let listeners;
+    try {
+      listeners = addTempListeners(this, 'downloadDir');
+      haveConnection(this, 'downloadDir');
+      return await this._downloadDir(srcDir, dstDir, options);
+    } catch (err) {
+      throw err.custom ? err : this.fmtError(err, 'downloadDir', err.code);
+    } finally {
+      removeTempListeners(this, listeners, 'downloadDir');
+    }
+  }
+
+  /**
+   *
+   * Returns a read stream object. This is a low level method which will return a read stream
+   * connected to the remote file object specified as an argument. Client code is fully responsible
+   * for managing this stream object i.e. adding any necessary listeners and disposing of the object etc.
+   * See the SSH2 sftp documentation for details on possible options which can be used.
+   *
+   * @param {String} remotePath - path to remote file to attach stream to
+   * @param {Object} options - options to pass to the create stream process
+   *
+   * @returns {Object} a read stream object
+   *
+   */
+  createReadStream(remotePath, options) {
+    let listeners;
+    try {
+      listeners = addTempListeners(this, 'createReadStream');
+      haveConnection(this, 'createReadStream');
+      const stream = this.sftp.createReadStream(remotePath, options);
+      return stream;
+    } catch (err) {
+      throw err.custom ? err : this.fmtError(err.message, 'createReadStream', err.code);
+    } finally {
+      removeTempListeners(this, listeners, 'createReadStreame');
+    }
+  }
+
+  /**
+   *
+   * Create a write stream object connected to a file on the remote sftp server.
+   * This is a low level method which will return a write stream for the remote file specified
+   * in the 'remotePath' argument. Client code to responsible for managing this object once created.
+   * This includes disposing of file handles, setting up any necessary event listeners etc.
+   *
+   * @param {String} remotePath - path to the remote file on the sftp server
+   * @param (Object} options - options to pass to the create write stream process)
+   *
+   * @returns {Object} a stream object
+   *
+   */
+  createWriteStream(remotePath, options) {
+    let listeners;
+    try {
+      listeners = addTempListeners(this, 'createWriteStream');
+      haveConnection(this, 'createWriteStream');
+      const stream = this.sftp.createWriteStream(remotePath, options);
+      return stream;
+    } catch (err) {
+      throw err.custom ? err : this.fmtError(err.message, 'createWriteStream', err.code);
+    } finally {
+      removeTempListeners(this, listeners, 'createWriteStream');
+    }
+  }
+
+  /**
+   * @async
+   *
+   * Make a remote copy of a remote file. Create a copy of a remote file on the remote
+   * server. It is assumed the directory where the copy will be placed already exists.
+   * The destination file must not already exist.
+   *
+   * @param {String} srcPath - path to the remote file to be copied
+   * @param {String} dstPath - destination path for the copy.
+   *
+   * @returns {String}.
+   *
+   */
+  _rcopy(srcPath, dstPath) {
+    return new Promise((resolve, reject) => {
+      const ws = this.sftp.createWriteStream(dstPath);
+      const rs = this.sftp.createReadStream(srcPath);
+      ws.on('error', (err) => {
+        reject(this.fmtError(`${err.message} ${dstPath}`, '_rcopy'));
+      });
+      rs.on('error', (err) => {
+        reject(this.fmtError(`${err.message} ${srcPath}`, '_rcopy'));
+      });
+      ws.on('close', () => {
+        resolve(`${srcPath} copied to ${dstPath}`);
+      });
+      rs.pipe(ws);
+    });
+  }
+
+  async rcopy(src, dst) {
+    let listeners;
+    try {
+      listeners = addTempListeners(this, 'rcopy');
+      haveConnection(this, 'rcopy');
+      const srcPath = await normalizeRemotePath(this, src);
+      const srcExists = await this.exists(srcPath);
+      if (!srcExists) {
+        throw this.fmtError(
+          `Source does not exist ${srcPath}`,
+          'rcopy',
+          errorCode.badPath
+        );
+      }
+      if (srcExists !== '-') {
+        throw this.fmtError(`Source not a file ${srcPath}`, 'rcopy', errorCode.badPath);
+      }
+      const dstPath = await normalizeRemotePath(this, dst);
+      const dstExists = await this.exists(dstPath);
+      if (dstExists) {
+        throw this.fmtError(
+          `Destination already exists ${dstPath}`,
+          'rcopy',
+          errorCode.badPath
+        );
+      }
+      return this._rcopy(srcPath, dstPath);
+    } catch (err) {
+      throw err.custom ? err : this.fmtError(err, 'rcopy');
+    } finally {
+      removeTempListeners(this, listeners, 'rcopy');
+    }
+  }
+  /**
+   * @async
+   *
+   * End the SFTP connection
+   *
+   * @returns {Promise<Boolean>}
+   */
+  end() {
+    let endCloseHandler, listeners;
+    return new Promise((resolve, reject) => {
+      listeners = addTempListeners(this, 'end', reject);
+      this.endCalled = true;
+      endCloseHandler = () => {
+        this.sftp = undefined;
+        this.debugMsg('end: Connection closed');
+        resolve(true);
+      };
+      this.on('close', endCloseHandler);
+      if (this.client.sftp) {
+        this.client.end();
+      } else {
+        // no actual connection exists - just resolve
+        this.debugMsg('end: Called when no connection active');
+        resolve(true);
+      }
+    }).finally(() => {
+      removeTempListeners(this, listeners, 'end');
+      this.removeListener('close', endCloseHandler);
+      this.endCalled = false;
+    });
+  }
+}
+
+module.exports = SftpClient;
+
+
+/***/ }),
+
+/***/ 9432:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+const fs = __nccwpck_require__(7147);
+const path = __nccwpck_require__(1017);
+const { errorCode } = __nccwpck_require__(3232);
+
+/**
+ * Simple default error listener. Will reformat the error message and
+ * throw a new error.
+ *
+ * @param {Error} err - source for defining new error
+ * @throws {Error} Throws new error
+ */
+function errorListener(client, name, reject) {
+  const fn = (err) => {
+    if (client.endCalled || client.errorHandled) {
+      // error already handled or expected - ignore
+      client.debugMsg(`${name} errorListener - ignoring handled error`);
+      return;
+    }
+    client.errorHandled = true;
+    const newError = new Error(`${name}: ${err.message}`);
+    newError.code = err.code;
+    if (reject) {
+      reject(newError);
+    } else {
+      throw newError;
+    }
+  };
+  return fn;
+}
+
+function endListener(client, name, reject) {
+  const fn = function () {
+    client.sftp = undefined;
+    if (client.endCalled || client.endHandled || client.errorHandled) {
+      // end event already handled - ignore
+      client.debugMsg(`${name} endListener - ignoring handled error`);
+      return;
+    }
+    client.endHandled = true;
+    client.debugMsg(`${name} Unexpected end event - ignoring`);
+    // Don't reject/throw error, just log it and move on
+    // after invalidating the connection
+    // const err = new Error(`${name} Unexpected end event raised`);
+    // if (reject) {
+    //   reject(err);
+    // } else {
+    //   throw err;
+    // }
+  };
+  return fn;
+}
+
+function closeListener(client, name, reject) {
+  const fn = function () {
+    client.sftp = undefined;
+    if (
+      client.endCalled ||
+      client.closeHandled ||
+      client.errorHandled ||
+      client.endHandled
+    ) {
+      // handled or expected close event - ignore
+      client.debugMsg(`${name} closeListener - ignoring handled error`);
+      return;
+    }
+    client.closeHandled = true;
+    client.debugMsg(`${name} Unexpected close event raised - ignoring`);
+    // Don't throw/reject on close events. Just invalidate the connection
+    // and move on.
+    // const err = new Error(`${name}: Unexpected close event raised`);
+    // if (reject) {
+    //   reject(err);
+    // } else {
+    //   throw err;
+    // }
+  };
+  return fn;
+}
+
+function addTempListeners(client, name, reject) {
+  const listeners = {
+    end: endListener(client, name, reject),
+    close: closeListener(client, name, reject),
+    error: errorListener(client, name, reject),
+  };
+  client.on('end', listeners.end);
+  client.on('close', listeners.close);
+  client.on('error', listeners.error);
+  client._resetEventFlags();
+  return listeners;
+}
+
+function removeTempListeners(client, listeners, name) {
+  try {
+    client.removeListener('end', listeners.end);
+    client.removeListener('close', listeners.close);
+    client.removeListener('error', listeners.error);
+  } catch (err) {
+    throw new Error(`${name}: Error removing temp listeners: ${err.message}`);
+  }
+}
+
+/**
+ * Checks to verify local object exists. Returns a character string representing the type
+ * type of local object if it exists, false if it doesn't.
+ *
+ * Return codes: l = symbolic link
+ *               - = regular file
+ *               d = directory
+ *               s = socket
+ *
+ * @param {string} filePath - path to local object
+ * @returns {string | boolean} returns a string for object type if it exists, false otherwise
+ */
+function localExists(filePath) {
+  const stats = fs.statSync(filePath, { throwIfNoEntry: false });
+  if (!stats) {
+    return false;
+  } else if (stats.isDirectory()) {
+    return 'd';
+  } else if (stats.isFile()) {
+    return '-';
+  } else {
+    const err = new Error(`Bad path: ${filePath}: target must be a file or directory`);
+    err.code = errorCode.badPath;
+    throw err;
+  }
+}
+
+/**
+ * Verify access to local object. Returns an object with properties for status, type,
+ * details and code.
+ *
+ * return object {
+ *                 status: true if exists and can be accessed, false otherwise
+ *                 type: type of object '-' = file, 'd' = dir, 'l' = link, 's' = socket
+ *                 details: 'access ok' if object can be accessed, 'not found' if
+ *                          object does not exist, 'permission denied' if access denied
+ *                 code: error code if object does not exist or permission denied
+ *              }
+ *
+ * @param {string} filePath = path to local object
+ * @param {string} mode = access mode - either 'r' or 'w'. Defaults to 'r'
+ * @returns {Object} with properties status, type, details and code
+ */
+function haveLocalAccess(filePath, mode = 'r') {
+  const accessMode =
+    fs.constants.F_OK | (mode === 'w') ? fs.constants.W_OK : fs.constants.R_OK;
+
+  try {
+    fs.accessSync(filePath, accessMode);
+    const type = localExists(filePath);
+    return {
+      status: true,
+      type: type,
+      details: 'access OK',
+      code: 0,
+    };
+  } catch (err) {
+    switch (err.errno) {
+      case -2:
+        return {
+          status: false,
+          type: null,
+          details: 'not exist',
+          code: -2,
+        };
+      case -13:
+        return {
+          status: false,
+          type: localExists(filePath),
+          details: 'permission denied',
+          code: -13,
+        };
+      case -20:
+        return {
+          status: false,
+          type: null,
+          details: 'parent not a directory',
+        };
+      default:
+        return {
+          status: false,
+          type: null,
+          details: err.message,
+        };
+    }
+  }
+}
+
+/**
+ * Checks to verify the object specified by filePath can either be written to or created
+ * if it doens't already exist. If it does not exist, checks to see if the parent entry in the
+ * path is a directory and can be written to. Returns an object with the same format as the object
+ * returned by 'haveLocalAccess'.
+ *
+ * @param {string} filePath - path to object to be created or written t
+ * @returns {Object} Object with properties status, type, destils and code
+ */
+function haveLocalCreate(filePath) {
+  const { status, details, type } = haveLocalAccess(filePath, 'w');
+  if (!status && details === 'permission denied') {
+    //throw new Error(`Bad path: ${filePath}: permission denied`);
+    return {
+      status,
+      details,
+      type,
+    };
+  } else if (!status) {
+    const dirPath = path.dirname(filePath);
+    const localCheck = haveLocalAccess(dirPath, 'w');
+    if (localCheck.status && localCheck.type !== 'd') {
+      //throw new Error(`Bad path: ${dirPath}: not a directory`);
+      return {
+        status: false,
+        details: `${dirPath}: not a directory`,
+        type: null,
+      };
+    } else if (!localCheck.status) {
+      //throw new Error(`Bad path: ${dirPath}: ${localCheck.details}`);
+      return {
+        status: localCheck.status,
+        details: `${dirPath}: ${localCheck.details}`,
+        type: null,
+      };
+    } else {
+      return {
+        status: true,
+        details: 'access OK',
+        type: null,
+        code: 0,
+      };
+    }
+  }
+  return { status, details, type };
+}
+
+async function normalizeRemotePath(client, aPath) {
+  try {
+    if (aPath.startsWith('..')) {
+      const root = await client.realPath('..');
+      return root + client.remotePathSep + aPath.slice(3);
+    } else if (aPath.startsWith('.')) {
+      const root = await client.realPath('.');
+      return root + client.remotePathSep + aPath.slice(2);
+    }
+    return aPath;
+  } catch (err) {
+    throw new Error(`normalizeRemotePath: ${err.message}`);
+  }
+}
+
+/**
+ * Check to see if there is an active sftp connection
+ *
+ * @param {Object} client - current sftp object
+ * @param {String} name - name given to this connection
+ * @param {Function} reject - if defined, call this rather than throw
+ *                            an error
+ * @returns {Boolean} True if connection OK
+ * @throws {Error}
+ */
+function haveConnection(client, name, reject) {
+  if (!client.sftp) {
+    const newError = new Error(`${name}: No SFTP connection available`);
+    newError.code = errorCode.connect;
+    if (reject) {
+      reject(newError);
+      return false;
+    } else {
+      throw newError;
+    }
+  }
+  return true;
+}
+
+function sleep(ms) {
+  return new Promise((resolve, reject) => {
+    try {
+      setTimeout(() => {
+        resolve(true);
+      }, ms);
+    } catch (err) {
+      reject(err);
+    }
+  });
+}
+
+module.exports = {
+  errorListener,
+  endListener,
+  closeListener,
+  addTempListeners,
+  removeTempListeners,
+  haveLocalAccess,
+  haveLocalCreate,
+  normalizeRemotePath,
+  localExists,
+  haveConnection,
+  sleep,
+};
+
+
+/***/ }),
+
+/***/ 3204:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
 
 
 const {
@@ -3461,8 +9930,8 @@ const {
 
 const {
   CHANNEL_EXTENDED_DATATYPE: { STDERR },
-} = __nccwpck_require__(8413);
-const { bufferSlice } = __nccwpck_require__(1794);
+} = __nccwpck_require__(6832);
+const { bufferSlice } = __nccwpck_require__(9475);
 
 const PACKET_SIZE = 32 * 1024;
 const MAX_WINDOW = 2 * 1024 * 1024;
@@ -3750,10 +10219,9 @@ module.exports = {
 
 /***/ }),
 
-/***/ 3580:
+/***/ 9054:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const { Socket } = __nccwpck_require__(1808);
@@ -3762,14 +10230,14 @@ const { resolve } = __nccwpck_require__(1017);
 const { readFile } = __nccwpck_require__(7147);
 const { execFile, spawn } = __nccwpck_require__(2081);
 
-const { isParsedKey, parseKey } = __nccwpck_require__(456);
+const { isParsedKey, parseKey } = __nccwpck_require__(2218);
 
 const {
   makeBufferParser,
   readUInt32BE,
   writeUInt32BE,
   writeUInt32LE,
-} = __nccwpck_require__(1794);
+} = __nccwpck_require__(9475);
 
 function once(cb) {
   let called = false;
@@ -4881,10 +11349,9 @@ module.exports = {
 
 /***/ }),
 
-/***/ 2935:
+/***/ 6063:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 // TODO:
 //    * add `.connected` or similar property to allow immediate connection
 //      status checking
@@ -4917,11 +11384,11 @@ const {
   SUPPORTED_KEX,
   SUPPORTED_MAC,
   SUPPORTED_SERVER_HOST_KEY,
-} = __nccwpck_require__(8413);
-const { init: cryptoInit } = __nccwpck_require__(2452);
-const Protocol = __nccwpck_require__(5598);
-const { parseKey } = __nccwpck_require__(456);
-const { SFTP } = __nccwpck_require__(2540);
+} = __nccwpck_require__(6832);
+const { init: cryptoInit } = __nccwpck_require__(5708);
+const Protocol = __nccwpck_require__(9031);
+const { parseKey } = __nccwpck_require__(2218);
+const { SFTP } = __nccwpck_require__(2026);
 const {
   bufferCopy,
   makeBufferParser,
@@ -4929,23 +11396,23 @@ const {
   readUInt32BE,
   sigSSHToASN1,
   writeUInt32BE,
-} = __nccwpck_require__(1794);
+} = __nccwpck_require__(9475);
 
-const { AgentContext, createAgent, isAgent } = __nccwpck_require__(3580);
+const { AgentContext, createAgent, isAgent } = __nccwpck_require__(9054);
 const {
   Channel,
   MAX_WINDOW,
   PACKET_SIZE,
   windowAdjust,
   WINDOW_THRESHOLD,
-} = __nccwpck_require__(4816);
+} = __nccwpck_require__(3204);
 const {
   ChannelManager,
   generateAlgorithmList,
   isWritable,
   onChannelOpenFailure,
   onCHANNEL_CLOSE,
-} = __nccwpck_require__(2195);
+} = __nccwpck_require__(834);
 
 const bufferParser = makeBufferParser();
 const sigParser = makeBufferParser();
@@ -6903,10 +13370,9 @@ module.exports = Client;
 
 /***/ }),
 
-/***/ 7506:
+/***/ 2994:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const { Agent: HttpAgent } = __nccwpck_require__(3685);
@@ -6931,7 +13397,7 @@ for (const ctor of [HttpAgent, HttpsAgent]) {
       const dstPort = options.port;
 
       if (Client === undefined)
-        Client = __nccwpck_require__(2935);
+        Client = __nccwpck_require__(6063);
 
       const client = new Client();
       let triedForward = false;
@@ -6995,10 +13461,9 @@ function decorateStream(stream, ctor, options) {
 
 /***/ }),
 
-/***/ 9236:
+/***/ 5869:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const {
@@ -7008,30 +13473,30 @@ const {
   CygwinAgent,
   OpenSSHAgent,
   PageantAgent,
-} = __nccwpck_require__(3580);
+} = __nccwpck_require__(9054);
 const {
   SSHTTPAgent: HTTPAgent,
   SSHTTPSAgent: HTTPSAgent,
-} = __nccwpck_require__(7506);
-const { parseKey } = __nccwpck_require__(456);
+} = __nccwpck_require__(2994);
+const { parseKey } = __nccwpck_require__(2218);
 const {
   flagsToString,
   OPEN_MODE,
   STATUS_CODE,
   stringToFlags,
-} = __nccwpck_require__(2540);
+} = __nccwpck_require__(2026);
 
 module.exports = {
   AgentProtocol,
   BaseAgent,
   createAgent,
-  Client: __nccwpck_require__(2935),
+  Client: __nccwpck_require__(6063),
   CygwinAgent,
   HTTPAgent,
   HTTPSAgent,
   OpenSSHAgent,
   PageantAgent,
-  Server: __nccwpck_require__(1158),
+  Server: __nccwpck_require__(2986),
   utils: {
     parseKey,
     sftp: {
@@ -7046,10 +13511,9 @@ module.exports = {
 
 /***/ }),
 
-/***/ 5598:
+/***/ 9031:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 /*
   TODO:
     * Replace `buffer._pos` usage in keyParser.js and elsewhere
@@ -7092,24 +13556,24 @@ module.exports = {
 
 const { inspect } = __nccwpck_require__(3837);
 
-const { bindingAvailable, NullCipher, NullDecipher } = __nccwpck_require__(2452);
+const { bindingAvailable, NullCipher, NullDecipher } = __nccwpck_require__(5708);
 const {
   COMPAT_CHECKS,
   DISCONNECT_REASON,
   MESSAGE,
   SIGNALS,
   TERMINAL_MODE,
-} = __nccwpck_require__(8413);
+} = __nccwpck_require__(6832);
 const {
   DEFAULT_KEXINIT,
   KexInit,
   kexinit,
   onKEXPayload,
-} = __nccwpck_require__(7469);
+} = __nccwpck_require__(4126);
 const {
   parseKey,
-} = __nccwpck_require__(456);
-const MESSAGE_HANDLERS = __nccwpck_require__(2894);
+} = __nccwpck_require__(2218);
+const MESSAGE_HANDLERS = __nccwpck_require__(172);
 const {
   bufferCopy,
   bufferFill,
@@ -7117,15 +13581,15 @@ const {
   convertSignature,
   sendPacket,
   writeUInt32BE,
-} = __nccwpck_require__(1794);
+} = __nccwpck_require__(9475);
 const {
   PacketReader,
   PacketWriter,
   ZlibPacketReader,
   ZlibPacketWriter,
-} = __nccwpck_require__(4624);
+} = __nccwpck_require__(6715);
 
-const MODULE_VER = (__nccwpck_require__(9625)/* .version */ .i8);
+const MODULE_VER = (__nccwpck_require__(6674)/* .version */ .i8);
 
 const VALID_DISCONNECT_REASONS = new Map(
   Object.values(DISCONNECT_REASON).map((n) => [n, 1])
@@ -9131,10 +15595,9 @@ module.exports = Protocol;
 
 /***/ }),
 
-/***/ 2540:
+/***/ 2026:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const EventEmitter = __nccwpck_require__(2361);
@@ -9153,7 +15616,7 @@ const {
   bufferSlice,
   makeBufferParser,
   writeUInt32BE,
-} = __nccwpck_require__(1794);
+} = __nccwpck_require__(9475);
 
 const ATTR = {
   SIZE: 0x00000001,
@@ -12545,7 +19008,7 @@ const {
   ERR_INVALID_ARG_TYPE,
   ERR_OUT_OF_RANGE,
   validateNumber
-} = __nccwpck_require__(8567);
+} = __nccwpck_require__(7609);
 
 const kMinPoolSpace = 128;
 
@@ -13003,10 +19466,9 @@ module.exports = {
 
 /***/ }),
 
-/***/ 8413:
+/***/ 6832:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const crypto = __nccwpck_require__(6113);
@@ -13016,7 +19478,7 @@ try {
   cpuInfo = __nccwpck_require__(7295)();
 } catch {}
 
-const { bindingAvailable, CIPHER_INFO, MAC_INFO } = __nccwpck_require__(2452);
+const { bindingAvailable, CIPHER_INFO, MAC_INFO } = __nccwpck_require__(5708);
 
 const eddsaSupported = (() => {
   if (typeof crypto.sign === 'function'
@@ -13364,10 +19826,9 @@ module.exports.DISCONNECT_REASON_BY_VALUE =
 
 /***/ }),
 
-/***/ 2452:
+/***/ 5708:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 // TODO:
 //    * make max packet size configurable
 //    * if decompression is enabled, use `._packet` in decipher instances as
@@ -13380,7 +19841,7 @@ const {
   createCipheriv, createDecipheriv, createHmac, randomFillSync, timingSafeEqual
 } = __nccwpck_require__(6113);
 
-const { readUInt32BE, writeUInt32BE } = __nccwpck_require__(1794);
+const { readUInt32BE, writeUInt32BE } = __nccwpck_require__(9475);
 
 const FastBuffer = Buffer[Symbol.species];
 const MAX_SEQNO = 2 ** 32 - 1;
@@ -14951,7 +21412,7 @@ module.exports = {
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve, reject) => {
       try {
-        POLY1305_WASM_MODULE = await __nccwpck_require__(4850)();
+        POLY1305_WASM_MODULE = await __nccwpck_require__(4989)();
         POLY1305_RESULT_MALLOC = POLY1305_WASM_MODULE._malloc(16);
         poly1305_auth = POLY1305_WASM_MODULE.cwrap(
           'poly1305_auth',
@@ -14974,7 +21435,7 @@ module.exports = {
 
 /***/ }),
 
-/***/ 4850:
+/***/ 4989:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 
@@ -15021,16 +21482,15 @@ else {}
 
 /***/ }),
 
-/***/ 2894:
+/***/ 172:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const MESSAGE_HANDLERS = new Array(256);
 [
-  (__nccwpck_require__(7469).HANDLERS),
-  __nccwpck_require__(7031),
+  (__nccwpck_require__(4126).HANDLERS),
+  __nccwpck_require__(6475),
 ].forEach((handlers) => {
   // eslint-disable-next-line prefer-const
   for (let [type, handler] of Object.entries(handlers)) {
@@ -15045,10 +21505,9 @@ module.exports = MESSAGE_HANDLERS;
 
 /***/ }),
 
-/***/ 7031:
+/***/ 6475:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const {
@@ -15057,18 +21516,18 @@ const {
   doFatalError,
   sigSSHToASN1,
   writeUInt32BE,
-} = __nccwpck_require__(1794);
+} = __nccwpck_require__(9475);
 
 const {
   CHANNEL_OPEN_FAILURE,
   COMPAT,
   MESSAGE,
   TERMINAL_MODE,
-} = __nccwpck_require__(8413);
+} = __nccwpck_require__(6832);
 
 const {
   parseKey,
-} = __nccwpck_require__(456);
+} = __nccwpck_require__(2218);
 
 const TERMINAL_MODE_BY_VALUE =
   Array.from(Object.entries(TERMINAL_MODE))
@@ -16267,10 +22726,9 @@ module.exports = {
 
 /***/ }),
 
-/***/ 7469:
+/***/ 4126:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const {
@@ -16296,14 +22754,14 @@ const {
   DEFAULT_COMPRESSION,
   DISCONNECT_REASON,
   MESSAGE,
-} = __nccwpck_require__(8413);
+} = __nccwpck_require__(6832);
 const {
   CIPHER_INFO,
   createCipher,
   createDecipher,
   MAC_INFO,
-} = __nccwpck_require__(2452);
-const { parseDERKey } = __nccwpck_require__(456);
+} = __nccwpck_require__(5708);
+const { parseDERKey } = __nccwpck_require__(2218);
 const {
   bufferFill,
   bufferParser,
@@ -16312,13 +22770,13 @@ const {
   FastBuffer,
   sigSSHToASN1,
   writeUInt32BE,
-} = __nccwpck_require__(1794);
+} = __nccwpck_require__(9475);
 const {
   PacketReader,
   PacketWriter,
   ZlibPacketReader,
   ZlibPacketWriter,
-} = __nccwpck_require__(4624);
+} = __nccwpck_require__(6715);
 
 let MESSAGE_HANDLERS;
 
@@ -18013,7 +24471,7 @@ function onKEXPayload(state, payload) {
     case MESSAGE.UNIMPLEMENTED:
     case MESSAGE.DEBUG:
       if (!MESSAGE_HANDLERS)
-        MESSAGE_HANDLERS = __nccwpck_require__(2894);
+        MESSAGE_HANDLERS = __nccwpck_require__(172);
       return MESSAGE_HANDLERS[type](this, payload);
     case MESSAGE.KEXINIT:
       if (!state.firstPacket) {
@@ -18106,10 +24564,9 @@ module.exports = {
 
 /***/ }),
 
-/***/ 456:
+/***/ 2218:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 // TODO:
 //    * utilize `crypto.create(Private|Public)Key()` and `keyObject.export()`
 //    * handle multi-line header values (OpenSSH)?
@@ -18132,15 +24589,15 @@ const supportedOpenSSLCiphers = getCiphers();
 const { Ber } = __nccwpck_require__(970);
 const bcrypt_pbkdf = (__nccwpck_require__(5447).pbkdf);
 
-const { CIPHER_INFO } = __nccwpck_require__(2452);
-const { eddsaSupported, SUPPORTED_CIPHER } = __nccwpck_require__(8413);
+const { CIPHER_INFO } = __nccwpck_require__(5708);
+const { eddsaSupported, SUPPORTED_CIPHER } = __nccwpck_require__(6832);
 const {
   bufferSlice,
   makeBufferParser,
   readString,
   readUInt32BE,
   writeUInt32BE,
-} = __nccwpck_require__(1794);
+} = __nccwpck_require__(9475);
 
 const SYM_HASH_ALGO = Symbol('Hash Algorithm');
 const SYM_PRIV_PEM = Symbol('Private key PEM');
@@ -19597,10 +26054,9 @@ module.exports = {
 
 /***/ }),
 
-/***/ 8567:
+/***/ 7609:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const assert = __nccwpck_require__(9491);
@@ -19720,10 +26176,9 @@ exports.validateNumber = function validateNumber(value, name) {
 
 /***/ }),
 
-/***/ 1794:
+/***/ 9475:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const Ber = (__nccwpck_require__(970).Ber);
@@ -19897,7 +26352,7 @@ module.exports = {
   doFatalError: (protocol, msg, level, reason) => {
     let err;
     if (DISCONNECT_REASON === undefined)
-      ({ DISCONNECT_REASON } = __nccwpck_require__(8413));
+      ({ DISCONNECT_REASON } = __nccwpck_require__(6832));
     if (msg instanceof Error) {
       // doFatalError(protocol, err[, reason])
       err = msg;
@@ -20084,10 +26539,9 @@ module.exports = {
 
 /***/ }),
 
-/***/ 4624:
+/***/ 6715:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 const { kMaxLength } = __nccwpck_require__(4300);
@@ -20347,10 +26801,9 @@ module.exports = {
 
 /***/ }),
 
-/***/ 1158:
+/***/ 2986:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 // TODO:
 //   * convert listenerCount() usage to emit() return value checking?
 //   * emit error when connection severed early (e.g. before handshake)
@@ -20376,13 +26829,13 @@ const {
   SUPPORTED_KEX,
   SUPPORTED_MAC,
   SUPPORTED_SERVER_HOST_KEY,
-} = __nccwpck_require__(8413);
-const { init: cryptoInit } = __nccwpck_require__(2452);
-const { KexInit } = __nccwpck_require__(7469);
-const { parseKey } = __nccwpck_require__(456);
-const Protocol = __nccwpck_require__(5598);
-const { SFTP } = __nccwpck_require__(2540);
-const { writeUInt32BE } = __nccwpck_require__(1794);
+} = __nccwpck_require__(6832);
+const { init: cryptoInit } = __nccwpck_require__(5708);
+const { KexInit } = __nccwpck_require__(4126);
+const { parseKey } = __nccwpck_require__(2218);
+const Protocol = __nccwpck_require__(9031);
+const { SFTP } = __nccwpck_require__(2026);
+const { writeUInt32BE } = __nccwpck_require__(9475);
 
 const {
   Channel,
@@ -20390,7 +26843,7 @@ const {
   PACKET_SIZE,
   windowAdjust,
   WINDOW_THRESHOLD,
-} = __nccwpck_require__(4816);
+} = __nccwpck_require__(3204);
 
 const {
   ChannelManager,
@@ -20398,7 +26851,7 @@ const {
   isWritable,
   onChannelOpenFailure,
   onCHANNEL_CLOSE,
-} = __nccwpck_require__(2195);
+} = __nccwpck_require__(834);
 
 const MAX_PENDING_AUTHS = 10;
 
@@ -21722,13 +28175,12 @@ module.exports.IncomingClient = Client;
 
 /***/ }),
 
-/***/ 2195:
+/***/ 834:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
 
 
-const { SFTP } = __nccwpck_require__(2540);
+const { SFTP } = __nccwpck_require__(2026);
 
 const MAX_CHANNEL = 2 ** 32 - 1;
 
@@ -22066,15955 +28518,305 @@ module.exports = {
 
 /***/ }),
 
-/***/ 2068:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-"use strict";
-/* module decorator */ module = __nccwpck_require__.nmd(module);
-
-
-const wrapAnsi16 = (fn, offset) => (...args) => {
-	const code = fn(...args);
-	return `\u001B[${code + offset}m`;
-};
-
-const wrapAnsi256 = (fn, offset) => (...args) => {
-	const code = fn(...args);
-	return `\u001B[${38 + offset};5;${code}m`;
-};
-
-const wrapAnsi16m = (fn, offset) => (...args) => {
-	const rgb = fn(...args);
-	return `\u001B[${38 + offset};2;${rgb[0]};${rgb[1]};${rgb[2]}m`;
-};
-
-const ansi2ansi = n => n;
-const rgb2rgb = (r, g, b) => [r, g, b];
-
-const setLazyProperty = (object, property, get) => {
-	Object.defineProperty(object, property, {
-		get: () => {
-			const value = get();
-
-			Object.defineProperty(object, property, {
-				value,
-				enumerable: true,
-				configurable: true
-			});
-
-			return value;
-		},
-		enumerable: true,
-		configurable: true
-	});
-};
-
-/** @type {typeof import('color-convert')} */
-let colorConvert;
-const makeDynamicStyles = (wrap, targetSpace, identity, isBackground) => {
-	if (colorConvert === undefined) {
-		colorConvert = __nccwpck_require__(6931);
-	}
-
-	const offset = isBackground ? 10 : 0;
-	const styles = {};
-
-	for (const [sourceSpace, suite] of Object.entries(colorConvert)) {
-		const name = sourceSpace === 'ansi16' ? 'ansi' : sourceSpace;
-		if (sourceSpace === targetSpace) {
-			styles[name] = wrap(identity, offset);
-		} else if (typeof suite === 'object') {
-			styles[name] = wrap(suite[targetSpace], offset);
-		}
-	}
-
-	return styles;
-};
-
-function assembleStyles() {
-	const codes = new Map();
-	const styles = {
-		modifier: {
-			reset: [0, 0],
-			// 21 isn't widely supported and 22 does the same thing
-			bold: [1, 22],
-			dim: [2, 22],
-			italic: [3, 23],
-			underline: [4, 24],
-			inverse: [7, 27],
-			hidden: [8, 28],
-			strikethrough: [9, 29]
-		},
-		color: {
-			black: [30, 39],
-			red: [31, 39],
-			green: [32, 39],
-			yellow: [33, 39],
-			blue: [34, 39],
-			magenta: [35, 39],
-			cyan: [36, 39],
-			white: [37, 39],
-
-			// Bright color
-			blackBright: [90, 39],
-			redBright: [91, 39],
-			greenBright: [92, 39],
-			yellowBright: [93, 39],
-			blueBright: [94, 39],
-			magentaBright: [95, 39],
-			cyanBright: [96, 39],
-			whiteBright: [97, 39]
-		},
-		bgColor: {
-			bgBlack: [40, 49],
-			bgRed: [41, 49],
-			bgGreen: [42, 49],
-			bgYellow: [43, 49],
-			bgBlue: [44, 49],
-			bgMagenta: [45, 49],
-			bgCyan: [46, 49],
-			bgWhite: [47, 49],
-
-			// Bright color
-			bgBlackBright: [100, 49],
-			bgRedBright: [101, 49],
-			bgGreenBright: [102, 49],
-			bgYellowBright: [103, 49],
-			bgBlueBright: [104, 49],
-			bgMagentaBright: [105, 49],
-			bgCyanBright: [106, 49],
-			bgWhiteBright: [107, 49]
-		}
-	};
-
-	// Alias bright black as gray (and grey)
-	styles.color.gray = styles.color.blackBright;
-	styles.bgColor.bgGray = styles.bgColor.bgBlackBright;
-	styles.color.grey = styles.color.blackBright;
-	styles.bgColor.bgGrey = styles.bgColor.bgBlackBright;
-
-	for (const [groupName, group] of Object.entries(styles)) {
-		for (const [styleName, style] of Object.entries(group)) {
-			styles[styleName] = {
-				open: `\u001B[${style[0]}m`,
-				close: `\u001B[${style[1]}m`
-			};
-
-			group[styleName] = styles[styleName];
-
-			codes.set(style[0], style[1]);
-		}
-
-		Object.defineProperty(styles, groupName, {
-			value: group,
-			enumerable: false
-		});
-	}
-
-	Object.defineProperty(styles, 'codes', {
-		value: codes,
-		enumerable: false
-	});
-
-	styles.color.close = '\u001B[39m';
-	styles.bgColor.close = '\u001B[49m';
-
-	setLazyProperty(styles.color, 'ansi', () => makeDynamicStyles(wrapAnsi16, 'ansi16', ansi2ansi, false));
-	setLazyProperty(styles.color, 'ansi256', () => makeDynamicStyles(wrapAnsi256, 'ansi256', ansi2ansi, false));
-	setLazyProperty(styles.color, 'ansi16m', () => makeDynamicStyles(wrapAnsi16m, 'rgb', rgb2rgb, false));
-	setLazyProperty(styles.bgColor, 'ansi', () => makeDynamicStyles(wrapAnsi16, 'ansi16', ansi2ansi, true));
-	setLazyProperty(styles.bgColor, 'ansi256', () => makeDynamicStyles(wrapAnsi256, 'ansi256', ansi2ansi, true));
-	setLazyProperty(styles.bgColor, 'ansi16m', () => makeDynamicStyles(wrapAnsi16m, 'rgb', rgb2rgb, true));
-
-	return styles;
-}
-
-// Make the export immutable
-Object.defineProperty(module, 'exports', {
-	enumerable: true,
-	get: assembleStyles
-});
-
-
-/***/ }),
-
-/***/ 9348:
-/***/ ((module) => {
-
-// Copyright 2011 Mark Cavage <mcavage@gmail.com> All rights reserved.
-
-
-module.exports = {
-
-  newInvalidAsn1Error: function (msg) {
-    var e = new Error();
-    e.name = 'InvalidAsn1Error';
-    e.message = msg || '';
-    return e;
-  }
-
-};
-
-
-/***/ }),
-
-/***/ 194:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-// Copyright 2011 Mark Cavage <mcavage@gmail.com> All rights reserved.
-
-var errors = __nccwpck_require__(9348);
-var types = __nccwpck_require__(2473);
-
-var Reader = __nccwpck_require__(290);
-var Writer = __nccwpck_require__(3200);
-
-
-// --- Exports
-
-module.exports = {
-
-  Reader: Reader,
-
-  Writer: Writer
-
-};
-
-for (var t in types) {
-  if (types.hasOwnProperty(t))
-    module.exports[t] = types[t];
-}
-for (var e in errors) {
-  if (errors.hasOwnProperty(e))
-    module.exports[e] = errors[e];
-}
-
-
-/***/ }),
-
-/***/ 290:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-// Copyright 2011 Mark Cavage <mcavage@gmail.com> All rights reserved.
-
-var assert = __nccwpck_require__(9491);
-var Buffer = (__nccwpck_require__(5118).Buffer);
-
-var ASN1 = __nccwpck_require__(2473);
-var errors = __nccwpck_require__(9348);
-
-
-// --- Globals
-
-var newInvalidAsn1Error = errors.newInvalidAsn1Error;
-
-
-
-// --- API
-
-function Reader(data) {
-  if (!data || !Buffer.isBuffer(data))
-    throw new TypeError('data must be a node Buffer');
-
-  this._buf = data;
-  this._size = data.length;
-
-  // These hold the "current" state
-  this._len = 0;
-  this._offset = 0;
-}
-
-Object.defineProperty(Reader.prototype, 'length', {
-  enumerable: true,
-  get: function () { return (this._len); }
-});
-
-Object.defineProperty(Reader.prototype, 'offset', {
-  enumerable: true,
-  get: function () { return (this._offset); }
-});
-
-Object.defineProperty(Reader.prototype, 'remain', {
-  get: function () { return (this._size - this._offset); }
-});
-
-Object.defineProperty(Reader.prototype, 'buffer', {
-  get: function () { return (this._buf.slice(this._offset)); }
-});
-
-
-/**
- * Reads a single byte and advances offset; you can pass in `true` to make this
- * a "peek" operation (i.e., get the byte, but don't advance the offset).
- *
- * @param {Boolean} peek true means don't move offset.
- * @return {Number} the next byte, null if not enough data.
- */
-Reader.prototype.readByte = function (peek) {
-  if (this._size - this._offset < 1)
-    return null;
-
-  var b = this._buf[this._offset] & 0xff;
-
-  if (!peek)
-    this._offset += 1;
-
-  return b;
-};
-
-
-Reader.prototype.peek = function () {
-  return this.readByte(true);
-};
-
-
-/**
- * Reads a (potentially) variable length off the BER buffer.  This call is
- * not really meant to be called directly, as callers have to manipulate
- * the internal buffer afterwards.
- *
- * As a result of this call, you can call `Reader.length`, until the
- * next thing called that does a readLength.
- *
- * @return {Number} the amount of offset to advance the buffer.
- * @throws {InvalidAsn1Error} on bad ASN.1
- */
-Reader.prototype.readLength = function (offset) {
-  if (offset === undefined)
-    offset = this._offset;
-
-  if (offset >= this._size)
-    return null;
-
-  var lenB = this._buf[offset++] & 0xff;
-  if (lenB === null)
-    return null;
-
-  if ((lenB & 0x80) === 0x80) {
-    lenB &= 0x7f;
-
-    if (lenB === 0)
-      throw newInvalidAsn1Error('Indefinite length not supported');
-
-    if (lenB > 4)
-      throw newInvalidAsn1Error('encoding too long');
-
-    if (this._size - offset < lenB)
-      return null;
-
-    this._len = 0;
-    for (var i = 0; i < lenB; i++)
-      this._len = (this._len << 8) + (this._buf[offset++] & 0xff);
-
-  } else {
-    // Wasn't a variable length
-    this._len = lenB;
-  }
-
-  return offset;
-};
-
-
-/**
- * Parses the next sequence in this BER buffer.
- *
- * To get the length of the sequence, call `Reader.length`.
- *
- * @return {Number} the sequence's tag.
- */
-Reader.prototype.readSequence = function (tag) {
-  var seq = this.peek();
-  if (seq === null)
-    return null;
-  if (tag !== undefined && tag !== seq)
-    throw newInvalidAsn1Error('Expected 0x' + tag.toString(16) +
-                              ': got 0x' + seq.toString(16));
-
-  var o = this.readLength(this._offset + 1); // stored in `length`
-  if (o === null)
-    return null;
-
-  this._offset = o;
-  return seq;
-};
-
-
-Reader.prototype.readInt = function () {
-  return this._readTag(ASN1.Integer);
-};
-
-
-Reader.prototype.readBoolean = function () {
-  return (this._readTag(ASN1.Boolean) === 0 ? false : true);
-};
-
-
-Reader.prototype.readEnumeration = function () {
-  return this._readTag(ASN1.Enumeration);
-};
-
-
-Reader.prototype.readString = function (tag, retbuf) {
-  if (!tag)
-    tag = ASN1.OctetString;
-
-  var b = this.peek();
-  if (b === null)
-    return null;
-
-  if (b !== tag)
-    throw newInvalidAsn1Error('Expected 0x' + tag.toString(16) +
-                              ': got 0x' + b.toString(16));
-
-  var o = this.readLength(this._offset + 1); // stored in `length`
-
-  if (o === null)
-    return null;
-
-  if (this.length > this._size - o)
-    return null;
-
-  this._offset = o;
-
-  if (this.length === 0)
-    return retbuf ? Buffer.alloc(0) : '';
-
-  var str = this._buf.slice(this._offset, this._offset + this.length);
-  this._offset += this.length;
-
-  return retbuf ? str : str.toString('utf8');
-};
-
-Reader.prototype.readOID = function (tag) {
-  if (!tag)
-    tag = ASN1.OID;
-
-  var b = this.readString(tag, true);
-  if (b === null)
-    return null;
-
-  var values = [];
-  var value = 0;
-
-  for (var i = 0; i < b.length; i++) {
-    var byte = b[i] & 0xff;
-
-    value <<= 7;
-    value += byte & 0x7f;
-    if ((byte & 0x80) === 0) {
-      values.push(value);
-      value = 0;
-    }
-  }
-
-  value = values.shift();
-  values.unshift(value % 40);
-  values.unshift((value / 40) >> 0);
-
-  return values.join('.');
-};
-
-
-Reader.prototype._readTag = function (tag) {
-  assert.ok(tag !== undefined);
-
-  var b = this.peek();
-
-  if (b === null)
-    return null;
-
-  if (b !== tag)
-    throw newInvalidAsn1Error('Expected 0x' + tag.toString(16) +
-                              ': got 0x' + b.toString(16));
-
-  var o = this.readLength(this._offset + 1); // stored in `length`
-  if (o === null)
-    return null;
-
-  if (this.length > 4)
-    throw newInvalidAsn1Error('Integer too long: ' + this.length);
-
-  if (this.length > this._size - o)
-    return null;
-  this._offset = o;
-
-  var fb = this._buf[this._offset];
-  var value = 0;
-
-  for (var i = 0; i < this.length; i++) {
-    value <<= 8;
-    value |= (this._buf[this._offset++] & 0xff);
-  }
-
-  if ((fb & 0x80) === 0x80 && i !== 4)
-    value -= (1 << (i * 8));
-
-  return value >> 0;
-};
-
-
-
-// --- Exported API
-
-module.exports = Reader;
-
-
-/***/ }),
-
-/***/ 2473:
-/***/ ((module) => {
-
-// Copyright 2011 Mark Cavage <mcavage@gmail.com> All rights reserved.
-
-
-module.exports = {
-  EOC: 0,
-  Boolean: 1,
-  Integer: 2,
-  BitString: 3,
-  OctetString: 4,
-  Null: 5,
-  OID: 6,
-  ObjectDescriptor: 7,
-  External: 8,
-  Real: 9, // float
-  Enumeration: 10,
-  PDV: 11,
-  Utf8String: 12,
-  RelativeOID: 13,
-  Sequence: 16,
-  Set: 17,
-  NumericString: 18,
-  PrintableString: 19,
-  T61String: 20,
-  VideotexString: 21,
-  IA5String: 22,
-  UTCTime: 23,
-  GeneralizedTime: 24,
-  GraphicString: 25,
-  VisibleString: 26,
-  GeneralString: 28,
-  UniversalString: 29,
-  CharacterString: 30,
-  BMPString: 31,
-  Constructor: 32,
-  Context: 128
-};
-
-
-/***/ }),
-
-/***/ 3200:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-// Copyright 2011 Mark Cavage <mcavage@gmail.com> All rights reserved.
-
-var assert = __nccwpck_require__(9491);
-var Buffer = (__nccwpck_require__(5118).Buffer);
-var ASN1 = __nccwpck_require__(2473);
-var errors = __nccwpck_require__(9348);
-
-
-// --- Globals
-
-var newInvalidAsn1Error = errors.newInvalidAsn1Error;
-
-var DEFAULT_OPTS = {
-  size: 1024,
-  growthFactor: 8
-};
-
-
-// --- Helpers
-
-function merge(from, to) {
-  assert.ok(from);
-  assert.equal(typeof (from), 'object');
-  assert.ok(to);
-  assert.equal(typeof (to), 'object');
-
-  var keys = Object.getOwnPropertyNames(from);
-  keys.forEach(function (key) {
-    if (to[key])
-      return;
-
-    var value = Object.getOwnPropertyDescriptor(from, key);
-    Object.defineProperty(to, key, value);
-  });
-
-  return to;
-}
-
-
-
-// --- API
-
-function Writer(options) {
-  options = merge(DEFAULT_OPTS, options || {});
-
-  this._buf = Buffer.alloc(options.size || 1024);
-  this._size = this._buf.length;
-  this._offset = 0;
-  this._options = options;
-
-  // A list of offsets in the buffer where we need to insert
-  // sequence tag/len pairs.
-  this._seq = [];
-}
-
-Object.defineProperty(Writer.prototype, 'buffer', {
-  get: function () {
-    if (this._seq.length)
-      throw newInvalidAsn1Error(this._seq.length + ' unended sequence(s)');
-
-    return (this._buf.slice(0, this._offset));
-  }
-});
-
-Writer.prototype.writeByte = function (b) {
-  if (typeof (b) !== 'number')
-    throw new TypeError('argument must be a Number');
-
-  this._ensure(1);
-  this._buf[this._offset++] = b;
-};
-
-
-Writer.prototype.writeInt = function (i, tag) {
-  if (typeof (i) !== 'number')
-    throw new TypeError('argument must be a Number');
-  if (typeof (tag) !== 'number')
-    tag = ASN1.Integer;
-
-  var sz = 4;
-
-  while ((((i & 0xff800000) === 0) || ((i & 0xff800000) === 0xff800000 >> 0)) &&
-        (sz > 1)) {
-    sz--;
-    i <<= 8;
-  }
-
-  if (sz > 4)
-    throw newInvalidAsn1Error('BER ints cannot be > 0xffffffff');
-
-  this._ensure(2 + sz);
-  this._buf[this._offset++] = tag;
-  this._buf[this._offset++] = sz;
-
-  while (sz-- > 0) {
-    this._buf[this._offset++] = ((i & 0xff000000) >>> 24);
-    i <<= 8;
-  }
-
-};
-
-
-Writer.prototype.writeNull = function () {
-  this.writeByte(ASN1.Null);
-  this.writeByte(0x00);
-};
-
-
-Writer.prototype.writeEnumeration = function (i, tag) {
-  if (typeof (i) !== 'number')
-    throw new TypeError('argument must be a Number');
-  if (typeof (tag) !== 'number')
-    tag = ASN1.Enumeration;
-
-  return this.writeInt(i, tag);
-};
-
-
-Writer.prototype.writeBoolean = function (b, tag) {
-  if (typeof (b) !== 'boolean')
-    throw new TypeError('argument must be a Boolean');
-  if (typeof (tag) !== 'number')
-    tag = ASN1.Boolean;
-
-  this._ensure(3);
-  this._buf[this._offset++] = tag;
-  this._buf[this._offset++] = 0x01;
-  this._buf[this._offset++] = b ? 0xff : 0x00;
-};
-
-
-Writer.prototype.writeString = function (s, tag) {
-  if (typeof (s) !== 'string')
-    throw new TypeError('argument must be a string (was: ' + typeof (s) + ')');
-  if (typeof (tag) !== 'number')
-    tag = ASN1.OctetString;
-
-  var len = Buffer.byteLength(s);
-  this.writeByte(tag);
-  this.writeLength(len);
-  if (len) {
-    this._ensure(len);
-    this._buf.write(s, this._offset);
-    this._offset += len;
-  }
-};
-
-
-Writer.prototype.writeBuffer = function (buf, tag) {
-  if (typeof (tag) !== 'number')
-    throw new TypeError('tag must be a number');
-  if (!Buffer.isBuffer(buf))
-    throw new TypeError('argument must be a buffer');
-
-  this.writeByte(tag);
-  this.writeLength(buf.length);
-  this._ensure(buf.length);
-  buf.copy(this._buf, this._offset, 0, buf.length);
-  this._offset += buf.length;
-};
-
-
-Writer.prototype.writeStringArray = function (strings) {
-  if ((!strings instanceof Array))
-    throw new TypeError('argument must be an Array[String]');
-
-  var self = this;
-  strings.forEach(function (s) {
-    self.writeString(s);
-  });
-};
-
-// This is really to solve DER cases, but whatever for now
-Writer.prototype.writeOID = function (s, tag) {
-  if (typeof (s) !== 'string')
-    throw new TypeError('argument must be a string');
-  if (typeof (tag) !== 'number')
-    tag = ASN1.OID;
-
-  if (!/^([0-9]+\.){3,}[0-9]+$/.test(s))
-    throw new Error('argument is not a valid OID string');
-
-  function encodeOctet(bytes, octet) {
-    if (octet < 128) {
-        bytes.push(octet);
-    } else if (octet < 16384) {
-        bytes.push((octet >>> 7) | 0x80);
-        bytes.push(octet & 0x7F);
-    } else if (octet < 2097152) {
-      bytes.push((octet >>> 14) | 0x80);
-      bytes.push(((octet >>> 7) | 0x80) & 0xFF);
-      bytes.push(octet & 0x7F);
-    } else if (octet < 268435456) {
-      bytes.push((octet >>> 21) | 0x80);
-      bytes.push(((octet >>> 14) | 0x80) & 0xFF);
-      bytes.push(((octet >>> 7) | 0x80) & 0xFF);
-      bytes.push(octet & 0x7F);
-    } else {
-      bytes.push(((octet >>> 28) | 0x80) & 0xFF);
-      bytes.push(((octet >>> 21) | 0x80) & 0xFF);
-      bytes.push(((octet >>> 14) | 0x80) & 0xFF);
-      bytes.push(((octet >>> 7) | 0x80) & 0xFF);
-      bytes.push(octet & 0x7F);
-    }
-  }
-
-  var tmp = s.split('.');
-  var bytes = [];
-  bytes.push(parseInt(tmp[0], 10) * 40 + parseInt(tmp[1], 10));
-  tmp.slice(2).forEach(function (b) {
-    encodeOctet(bytes, parseInt(b, 10));
-  });
-
-  var self = this;
-  this._ensure(2 + bytes.length);
-  this.writeByte(tag);
-  this.writeLength(bytes.length);
-  bytes.forEach(function (b) {
-    self.writeByte(b);
-  });
-};
-
-
-Writer.prototype.writeLength = function (len) {
-  if (typeof (len) !== 'number')
-    throw new TypeError('argument must be a Number');
-
-  this._ensure(4);
-
-  if (len <= 0x7f) {
-    this._buf[this._offset++] = len;
-  } else if (len <= 0xff) {
-    this._buf[this._offset++] = 0x81;
-    this._buf[this._offset++] = len;
-  } else if (len <= 0xffff) {
-    this._buf[this._offset++] = 0x82;
-    this._buf[this._offset++] = len >> 8;
-    this._buf[this._offset++] = len;
-  } else if (len <= 0xffffff) {
-    this._buf[this._offset++] = 0x83;
-    this._buf[this._offset++] = len >> 16;
-    this._buf[this._offset++] = len >> 8;
-    this._buf[this._offset++] = len;
-  } else {
-    throw newInvalidAsn1Error('Length too long (> 4 bytes)');
-  }
-};
-
-Writer.prototype.startSequence = function (tag) {
-  if (typeof (tag) !== 'number')
-    tag = ASN1.Sequence | ASN1.Constructor;
-
-  this.writeByte(tag);
-  this._seq.push(this._offset);
-  this._ensure(3);
-  this._offset += 3;
-};
-
-
-Writer.prototype.endSequence = function () {
-  var seq = this._seq.pop();
-  var start = seq + 3;
-  var len = this._offset - start;
-
-  if (len <= 0x7f) {
-    this._shift(start, len, -2);
-    this._buf[seq] = len;
-  } else if (len <= 0xff) {
-    this._shift(start, len, -1);
-    this._buf[seq] = 0x81;
-    this._buf[seq + 1] = len;
-  } else if (len <= 0xffff) {
-    this._buf[seq] = 0x82;
-    this._buf[seq + 1] = len >> 8;
-    this._buf[seq + 2] = len;
-  } else if (len <= 0xffffff) {
-    this._shift(start, len, 1);
-    this._buf[seq] = 0x83;
-    this._buf[seq + 1] = len >> 16;
-    this._buf[seq + 2] = len >> 8;
-    this._buf[seq + 3] = len;
-  } else {
-    throw newInvalidAsn1Error('Sequence too long');
-  }
-};
-
-
-Writer.prototype._shift = function (start, len, shift) {
-  assert.ok(start !== undefined);
-  assert.ok(len !== undefined);
-  assert.ok(shift);
-
-  this._buf.copy(this._buf, start + shift, start, start + len);
-  this._offset += shift;
-};
-
-Writer.prototype._ensure = function (len) {
-  assert.ok(len);
-
-  if (this._size - this._offset < len) {
-    var sz = this._size * this._options.growthFactor;
-    if (sz - this._offset < len)
-      sz += len;
-
-    var buf = Buffer.alloc(sz);
-
-    this._buf.copy(buf, 0, 0, this._offset);
-    this._buf = buf;
-    this._size = sz;
-  }
-};
-
-
-
-// --- Exported API
-
-module.exports = Writer;
-
-
-/***/ }),
-
-/***/ 970:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-// Copyright 2011 Mark Cavage <mcavage@gmail.com> All rights reserved.
-
-// If you have no idea what ASN.1 or BER is, see this:
-// ftp://ftp.rsa.com/pub/pkcs/ascii/layman.asc
-
-var Ber = __nccwpck_require__(194);
-
-
-
-// --- Exported API
-
-module.exports = {
-
-  Ber: Ber,
-
-  BerReader: Ber.Reader,
-
-  BerWriter: Ber.Writer
-
-};
-
-
-/***/ }),
-
-/***/ 9417:
-/***/ ((module) => {
-
-"use strict";
-
-module.exports = balanced;
-function balanced(a, b, str) {
-  if (a instanceof RegExp) a = maybeMatch(a, str);
-  if (b instanceof RegExp) b = maybeMatch(b, str);
-
-  var r = range(a, b, str);
-
-  return r && {
-    start: r[0],
-    end: r[1],
-    pre: str.slice(0, r[0]),
-    body: str.slice(r[0] + a.length, r[1]),
-    post: str.slice(r[1] + b.length)
-  };
-}
-
-function maybeMatch(reg, str) {
-  var m = str.match(reg);
-  return m ? m[0] : null;
-}
-
-balanced.range = range;
-function range(a, b, str) {
-  var begs, beg, left, right, result;
-  var ai = str.indexOf(a);
-  var bi = str.indexOf(b, ai + 1);
-  var i = ai;
-
-  if (ai >= 0 && bi > 0) {
-    begs = [];
-    left = str.length;
-
-    while (i >= 0 && !result) {
-      if (i == ai) {
-        begs.push(i);
-        ai = str.indexOf(a, i + 1);
-      } else if (begs.length == 1) {
-        result = [ begs.pop(), bi ];
-      } else {
-        beg = begs.pop();
-        if (beg < left) {
-          left = beg;
-          right = bi;
-        }
-
-        bi = str.indexOf(b, i + 1);
-      }
-
-      i = ai < bi && ai >= 0 ? ai : bi;
-    }
-
-    if (begs.length) {
-      result = [ left, right ];
-    }
-  }
-
-  return result;
-}
-
-
-/***/ }),
-
-/***/ 5447:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-"use strict";
-
-
-var crypto_hash_sha512 = (__nccwpck_require__(4498).lowlevel.crypto_hash);
-
-/*
- * This file is a 1:1 port from the OpenBSD blowfish.c and bcrypt_pbkdf.c. As a
- * result, it retains the original copyright and license. The two files are
- * under slightly different (but compatible) licenses, and are here combined in
- * one file.
- *
- * Credit for the actual porting work goes to:
- *  Devi Mandiri <me@devi.web.id>
- */
-
-/*
- * The Blowfish portions are under the following license:
- *
- * Blowfish block cipher for OpenBSD
- * Copyright 1997 Niels Provos <provos@physnet.uni-hamburg.de>
- * All rights reserved.
- *
- * Implementation advice by David Mazieres <dm@lcs.mit.edu>.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 3. The name of the author may not be used to endorse or promote products
- *    derived from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
-
-/*
- * The bcrypt_pbkdf portions are under the following license:
- *
- * Copyright (c) 2013 Ted Unangst <tedu@openbsd.org>
- *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
-
-/*
- * Performance improvements (Javascript-specific):
- *
- * Copyright 2016, Joyent Inc
- * Author: Alex Wilson <alex.wilson@joyent.com>
- *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
-
-// Ported from OpenBSD bcrypt_pbkdf.c v1.9
-
-var BLF_J = 0;
-
-var Blowfish = function() {
-  this.S = [
-    new Uint32Array([
-      0xd1310ba6, 0x98dfb5ac, 0x2ffd72db, 0xd01adfb7,
-      0xb8e1afed, 0x6a267e96, 0xba7c9045, 0xf12c7f99,
-      0x24a19947, 0xb3916cf7, 0x0801f2e2, 0x858efc16,
-      0x636920d8, 0x71574e69, 0xa458fea3, 0xf4933d7e,
-      0x0d95748f, 0x728eb658, 0x718bcd58, 0x82154aee,
-      0x7b54a41d, 0xc25a59b5, 0x9c30d539, 0x2af26013,
-      0xc5d1b023, 0x286085f0, 0xca417918, 0xb8db38ef,
-      0x8e79dcb0, 0x603a180e, 0x6c9e0e8b, 0xb01e8a3e,
-      0xd71577c1, 0xbd314b27, 0x78af2fda, 0x55605c60,
-      0xe65525f3, 0xaa55ab94, 0x57489862, 0x63e81440,
-      0x55ca396a, 0x2aab10b6, 0xb4cc5c34, 0x1141e8ce,
-      0xa15486af, 0x7c72e993, 0xb3ee1411, 0x636fbc2a,
-      0x2ba9c55d, 0x741831f6, 0xce5c3e16, 0x9b87931e,
-      0xafd6ba33, 0x6c24cf5c, 0x7a325381, 0x28958677,
-      0x3b8f4898, 0x6b4bb9af, 0xc4bfe81b, 0x66282193,
-      0x61d809cc, 0xfb21a991, 0x487cac60, 0x5dec8032,
-      0xef845d5d, 0xe98575b1, 0xdc262302, 0xeb651b88,
-      0x23893e81, 0xd396acc5, 0x0f6d6ff3, 0x83f44239,
-      0x2e0b4482, 0xa4842004, 0x69c8f04a, 0x9e1f9b5e,
-      0x21c66842, 0xf6e96c9a, 0x670c9c61, 0xabd388f0,
-      0x6a51a0d2, 0xd8542f68, 0x960fa728, 0xab5133a3,
-      0x6eef0b6c, 0x137a3be4, 0xba3bf050, 0x7efb2a98,
-      0xa1f1651d, 0x39af0176, 0x66ca593e, 0x82430e88,
-      0x8cee8619, 0x456f9fb4, 0x7d84a5c3, 0x3b8b5ebe,
-      0xe06f75d8, 0x85c12073, 0x401a449f, 0x56c16aa6,
-      0x4ed3aa62, 0x363f7706, 0x1bfedf72, 0x429b023d,
-      0x37d0d724, 0xd00a1248, 0xdb0fead3, 0x49f1c09b,
-      0x075372c9, 0x80991b7b, 0x25d479d8, 0xf6e8def7,
-      0xe3fe501a, 0xb6794c3b, 0x976ce0bd, 0x04c006ba,
-      0xc1a94fb6, 0x409f60c4, 0x5e5c9ec2, 0x196a2463,
-      0x68fb6faf, 0x3e6c53b5, 0x1339b2eb, 0x3b52ec6f,
-      0x6dfc511f, 0x9b30952c, 0xcc814544, 0xaf5ebd09,
-      0xbee3d004, 0xde334afd, 0x660f2807, 0x192e4bb3,
-      0xc0cba857, 0x45c8740f, 0xd20b5f39, 0xb9d3fbdb,
-      0x5579c0bd, 0x1a60320a, 0xd6a100c6, 0x402c7279,
-      0x679f25fe, 0xfb1fa3cc, 0x8ea5e9f8, 0xdb3222f8,
-      0x3c7516df, 0xfd616b15, 0x2f501ec8, 0xad0552ab,
-      0x323db5fa, 0xfd238760, 0x53317b48, 0x3e00df82,
-      0x9e5c57bb, 0xca6f8ca0, 0x1a87562e, 0xdf1769db,
-      0xd542a8f6, 0x287effc3, 0xac6732c6, 0x8c4f5573,
-      0x695b27b0, 0xbbca58c8, 0xe1ffa35d, 0xb8f011a0,
-      0x10fa3d98, 0xfd2183b8, 0x4afcb56c, 0x2dd1d35b,
-      0x9a53e479, 0xb6f84565, 0xd28e49bc, 0x4bfb9790,
-      0xe1ddf2da, 0xa4cb7e33, 0x62fb1341, 0xcee4c6e8,
-      0xef20cada, 0x36774c01, 0xd07e9efe, 0x2bf11fb4,
-      0x95dbda4d, 0xae909198, 0xeaad8e71, 0x6b93d5a0,
-      0xd08ed1d0, 0xafc725e0, 0x8e3c5b2f, 0x8e7594b7,
-      0x8ff6e2fb, 0xf2122b64, 0x8888b812, 0x900df01c,
-      0x4fad5ea0, 0x688fc31c, 0xd1cff191, 0xb3a8c1ad,
-      0x2f2f2218, 0xbe0e1777, 0xea752dfe, 0x8b021fa1,
-      0xe5a0cc0f, 0xb56f74e8, 0x18acf3d6, 0xce89e299,
-      0xb4a84fe0, 0xfd13e0b7, 0x7cc43b81, 0xd2ada8d9,
-      0x165fa266, 0x80957705, 0x93cc7314, 0x211a1477,
-      0xe6ad2065, 0x77b5fa86, 0xc75442f5, 0xfb9d35cf,
-      0xebcdaf0c, 0x7b3e89a0, 0xd6411bd3, 0xae1e7e49,
-      0x00250e2d, 0x2071b35e, 0x226800bb, 0x57b8e0af,
-      0x2464369b, 0xf009b91e, 0x5563911d, 0x59dfa6aa,
-      0x78c14389, 0xd95a537f, 0x207d5ba2, 0x02e5b9c5,
-      0x83260376, 0x6295cfa9, 0x11c81968, 0x4e734a41,
-      0xb3472dca, 0x7b14a94a, 0x1b510052, 0x9a532915,
-      0xd60f573f, 0xbc9bc6e4, 0x2b60a476, 0x81e67400,
-      0x08ba6fb5, 0x571be91f, 0xf296ec6b, 0x2a0dd915,
-      0xb6636521, 0xe7b9f9b6, 0xff34052e, 0xc5855664,
-      0x53b02d5d, 0xa99f8fa1, 0x08ba4799, 0x6e85076a]),
-    new Uint32Array([
-      0x4b7a70e9, 0xb5b32944, 0xdb75092e, 0xc4192623,
-      0xad6ea6b0, 0x49a7df7d, 0x9cee60b8, 0x8fedb266,
-      0xecaa8c71, 0x699a17ff, 0x5664526c, 0xc2b19ee1,
-      0x193602a5, 0x75094c29, 0xa0591340, 0xe4183a3e,
-      0x3f54989a, 0x5b429d65, 0x6b8fe4d6, 0x99f73fd6,
-      0xa1d29c07, 0xefe830f5, 0x4d2d38e6, 0xf0255dc1,
-      0x4cdd2086, 0x8470eb26, 0x6382e9c6, 0x021ecc5e,
-      0x09686b3f, 0x3ebaefc9, 0x3c971814, 0x6b6a70a1,
-      0x687f3584, 0x52a0e286, 0xb79c5305, 0xaa500737,
-      0x3e07841c, 0x7fdeae5c, 0x8e7d44ec, 0x5716f2b8,
-      0xb03ada37, 0xf0500c0d, 0xf01c1f04, 0x0200b3ff,
-      0xae0cf51a, 0x3cb574b2, 0x25837a58, 0xdc0921bd,
-      0xd19113f9, 0x7ca92ff6, 0x94324773, 0x22f54701,
-      0x3ae5e581, 0x37c2dadc, 0xc8b57634, 0x9af3dda7,
-      0xa9446146, 0x0fd0030e, 0xecc8c73e, 0xa4751e41,
-      0xe238cd99, 0x3bea0e2f, 0x3280bba1, 0x183eb331,
-      0x4e548b38, 0x4f6db908, 0x6f420d03, 0xf60a04bf,
-      0x2cb81290, 0x24977c79, 0x5679b072, 0xbcaf89af,
-      0xde9a771f, 0xd9930810, 0xb38bae12, 0xdccf3f2e,
-      0x5512721f, 0x2e6b7124, 0x501adde6, 0x9f84cd87,
-      0x7a584718, 0x7408da17, 0xbc9f9abc, 0xe94b7d8c,
-      0xec7aec3a, 0xdb851dfa, 0x63094366, 0xc464c3d2,
-      0xef1c1847, 0x3215d908, 0xdd433b37, 0x24c2ba16,
-      0x12a14d43, 0x2a65c451, 0x50940002, 0x133ae4dd,
-      0x71dff89e, 0x10314e55, 0x81ac77d6, 0x5f11199b,
-      0x043556f1, 0xd7a3c76b, 0x3c11183b, 0x5924a509,
-      0xf28fe6ed, 0x97f1fbfa, 0x9ebabf2c, 0x1e153c6e,
-      0x86e34570, 0xeae96fb1, 0x860e5e0a, 0x5a3e2ab3,
-      0x771fe71c, 0x4e3d06fa, 0x2965dcb9, 0x99e71d0f,
-      0x803e89d6, 0x5266c825, 0x2e4cc978, 0x9c10b36a,
-      0xc6150eba, 0x94e2ea78, 0xa5fc3c53, 0x1e0a2df4,
-      0xf2f74ea7, 0x361d2b3d, 0x1939260f, 0x19c27960,
-      0x5223a708, 0xf71312b6, 0xebadfe6e, 0xeac31f66,
-      0xe3bc4595, 0xa67bc883, 0xb17f37d1, 0x018cff28,
-      0xc332ddef, 0xbe6c5aa5, 0x65582185, 0x68ab9802,
-      0xeecea50f, 0xdb2f953b, 0x2aef7dad, 0x5b6e2f84,
-      0x1521b628, 0x29076170, 0xecdd4775, 0x619f1510,
-      0x13cca830, 0xeb61bd96, 0x0334fe1e, 0xaa0363cf,
-      0xb5735c90, 0x4c70a239, 0xd59e9e0b, 0xcbaade14,
-      0xeecc86bc, 0x60622ca7, 0x9cab5cab, 0xb2f3846e,
-      0x648b1eaf, 0x19bdf0ca, 0xa02369b9, 0x655abb50,
-      0x40685a32, 0x3c2ab4b3, 0x319ee9d5, 0xc021b8f7,
-      0x9b540b19, 0x875fa099, 0x95f7997e, 0x623d7da8,
-      0xf837889a, 0x97e32d77, 0x11ed935f, 0x16681281,
-      0x0e358829, 0xc7e61fd6, 0x96dedfa1, 0x7858ba99,
-      0x57f584a5, 0x1b227263, 0x9b83c3ff, 0x1ac24696,
-      0xcdb30aeb, 0x532e3054, 0x8fd948e4, 0x6dbc3128,
-      0x58ebf2ef, 0x34c6ffea, 0xfe28ed61, 0xee7c3c73,
-      0x5d4a14d9, 0xe864b7e3, 0x42105d14, 0x203e13e0,
-      0x45eee2b6, 0xa3aaabea, 0xdb6c4f15, 0xfacb4fd0,
-      0xc742f442, 0xef6abbb5, 0x654f3b1d, 0x41cd2105,
-      0xd81e799e, 0x86854dc7, 0xe44b476a, 0x3d816250,
-      0xcf62a1f2, 0x5b8d2646, 0xfc8883a0, 0xc1c7b6a3,
-      0x7f1524c3, 0x69cb7492, 0x47848a0b, 0x5692b285,
-      0x095bbf00, 0xad19489d, 0x1462b174, 0x23820e00,
-      0x58428d2a, 0x0c55f5ea, 0x1dadf43e, 0x233f7061,
-      0x3372f092, 0x8d937e41, 0xd65fecf1, 0x6c223bdb,
-      0x7cde3759, 0xcbee7460, 0x4085f2a7, 0xce77326e,
-      0xa6078084, 0x19f8509e, 0xe8efd855, 0x61d99735,
-      0xa969a7aa, 0xc50c06c2, 0x5a04abfc, 0x800bcadc,
-      0x9e447a2e, 0xc3453484, 0xfdd56705, 0x0e1e9ec9,
-      0xdb73dbd3, 0x105588cd, 0x675fda79, 0xe3674340,
-      0xc5c43465, 0x713e38d8, 0x3d28f89e, 0xf16dff20,
-      0x153e21e7, 0x8fb03d4a, 0xe6e39f2b, 0xdb83adf7]),
-    new Uint32Array([
-      0xe93d5a68, 0x948140f7, 0xf64c261c, 0x94692934,
-      0x411520f7, 0x7602d4f7, 0xbcf46b2e, 0xd4a20068,
-      0xd4082471, 0x3320f46a, 0x43b7d4b7, 0x500061af,
-      0x1e39f62e, 0x97244546, 0x14214f74, 0xbf8b8840,
-      0x4d95fc1d, 0x96b591af, 0x70f4ddd3, 0x66a02f45,
-      0xbfbc09ec, 0x03bd9785, 0x7fac6dd0, 0x31cb8504,
-      0x96eb27b3, 0x55fd3941, 0xda2547e6, 0xabca0a9a,
-      0x28507825, 0x530429f4, 0x0a2c86da, 0xe9b66dfb,
-      0x68dc1462, 0xd7486900, 0x680ec0a4, 0x27a18dee,
-      0x4f3ffea2, 0xe887ad8c, 0xb58ce006, 0x7af4d6b6,
-      0xaace1e7c, 0xd3375fec, 0xce78a399, 0x406b2a42,
-      0x20fe9e35, 0xd9f385b9, 0xee39d7ab, 0x3b124e8b,
-      0x1dc9faf7, 0x4b6d1856, 0x26a36631, 0xeae397b2,
-      0x3a6efa74, 0xdd5b4332, 0x6841e7f7, 0xca7820fb,
-      0xfb0af54e, 0xd8feb397, 0x454056ac, 0xba489527,
-      0x55533a3a, 0x20838d87, 0xfe6ba9b7, 0xd096954b,
-      0x55a867bc, 0xa1159a58, 0xcca92963, 0x99e1db33,
-      0xa62a4a56, 0x3f3125f9, 0x5ef47e1c, 0x9029317c,
-      0xfdf8e802, 0x04272f70, 0x80bb155c, 0x05282ce3,
-      0x95c11548, 0xe4c66d22, 0x48c1133f, 0xc70f86dc,
-      0x07f9c9ee, 0x41041f0f, 0x404779a4, 0x5d886e17,
-      0x325f51eb, 0xd59bc0d1, 0xf2bcc18f, 0x41113564,
-      0x257b7834, 0x602a9c60, 0xdff8e8a3, 0x1f636c1b,
-      0x0e12b4c2, 0x02e1329e, 0xaf664fd1, 0xcad18115,
-      0x6b2395e0, 0x333e92e1, 0x3b240b62, 0xeebeb922,
-      0x85b2a20e, 0xe6ba0d99, 0xde720c8c, 0x2da2f728,
-      0xd0127845, 0x95b794fd, 0x647d0862, 0xe7ccf5f0,
-      0x5449a36f, 0x877d48fa, 0xc39dfd27, 0xf33e8d1e,
-      0x0a476341, 0x992eff74, 0x3a6f6eab, 0xf4f8fd37,
-      0xa812dc60, 0xa1ebddf8, 0x991be14c, 0xdb6e6b0d,
-      0xc67b5510, 0x6d672c37, 0x2765d43b, 0xdcd0e804,
-      0xf1290dc7, 0xcc00ffa3, 0xb5390f92, 0x690fed0b,
-      0x667b9ffb, 0xcedb7d9c, 0xa091cf0b, 0xd9155ea3,
-      0xbb132f88, 0x515bad24, 0x7b9479bf, 0x763bd6eb,
-      0x37392eb3, 0xcc115979, 0x8026e297, 0xf42e312d,
-      0x6842ada7, 0xc66a2b3b, 0x12754ccc, 0x782ef11c,
-      0x6a124237, 0xb79251e7, 0x06a1bbe6, 0x4bfb6350,
-      0x1a6b1018, 0x11caedfa, 0x3d25bdd8, 0xe2e1c3c9,
-      0x44421659, 0x0a121386, 0xd90cec6e, 0xd5abea2a,
-      0x64af674e, 0xda86a85f, 0xbebfe988, 0x64e4c3fe,
-      0x9dbc8057, 0xf0f7c086, 0x60787bf8, 0x6003604d,
-      0xd1fd8346, 0xf6381fb0, 0x7745ae04, 0xd736fccc,
-      0x83426b33, 0xf01eab71, 0xb0804187, 0x3c005e5f,
-      0x77a057be, 0xbde8ae24, 0x55464299, 0xbf582e61,
-      0x4e58f48f, 0xf2ddfda2, 0xf474ef38, 0x8789bdc2,
-      0x5366f9c3, 0xc8b38e74, 0xb475f255, 0x46fcd9b9,
-      0x7aeb2661, 0x8b1ddf84, 0x846a0e79, 0x915f95e2,
-      0x466e598e, 0x20b45770, 0x8cd55591, 0xc902de4c,
-      0xb90bace1, 0xbb8205d0, 0x11a86248, 0x7574a99e,
-      0xb77f19b6, 0xe0a9dc09, 0x662d09a1, 0xc4324633,
-      0xe85a1f02, 0x09f0be8c, 0x4a99a025, 0x1d6efe10,
-      0x1ab93d1d, 0x0ba5a4df, 0xa186f20f, 0x2868f169,
-      0xdcb7da83, 0x573906fe, 0xa1e2ce9b, 0x4fcd7f52,
-      0x50115e01, 0xa70683fa, 0xa002b5c4, 0x0de6d027,
-      0x9af88c27, 0x773f8641, 0xc3604c06, 0x61a806b5,
-      0xf0177a28, 0xc0f586e0, 0x006058aa, 0x30dc7d62,
-      0x11e69ed7, 0x2338ea63, 0x53c2dd94, 0xc2c21634,
-      0xbbcbee56, 0x90bcb6de, 0xebfc7da1, 0xce591d76,
-      0x6f05e409, 0x4b7c0188, 0x39720a3d, 0x7c927c24,
-      0x86e3725f, 0x724d9db9, 0x1ac15bb4, 0xd39eb8fc,
-      0xed545578, 0x08fca5b5, 0xd83d7cd3, 0x4dad0fc4,
-      0x1e50ef5e, 0xb161e6f8, 0xa28514d9, 0x6c51133c,
-      0x6fd5c7e7, 0x56e14ec4, 0x362abfce, 0xddc6c837,
-      0xd79a3234, 0x92638212, 0x670efa8e, 0x406000e0]),
-    new Uint32Array([
-      0x3a39ce37, 0xd3faf5cf, 0xabc27737, 0x5ac52d1b,
-      0x5cb0679e, 0x4fa33742, 0xd3822740, 0x99bc9bbe,
-      0xd5118e9d, 0xbf0f7315, 0xd62d1c7e, 0xc700c47b,
-      0xb78c1b6b, 0x21a19045, 0xb26eb1be, 0x6a366eb4,
-      0x5748ab2f, 0xbc946e79, 0xc6a376d2, 0x6549c2c8,
-      0x530ff8ee, 0x468dde7d, 0xd5730a1d, 0x4cd04dc6,
-      0x2939bbdb, 0xa9ba4650, 0xac9526e8, 0xbe5ee304,
-      0xa1fad5f0, 0x6a2d519a, 0x63ef8ce2, 0x9a86ee22,
-      0xc089c2b8, 0x43242ef6, 0xa51e03aa, 0x9cf2d0a4,
-      0x83c061ba, 0x9be96a4d, 0x8fe51550, 0xba645bd6,
-      0x2826a2f9, 0xa73a3ae1, 0x4ba99586, 0xef5562e9,
-      0xc72fefd3, 0xf752f7da, 0x3f046f69, 0x77fa0a59,
-      0x80e4a915, 0x87b08601, 0x9b09e6ad, 0x3b3ee593,
-      0xe990fd5a, 0x9e34d797, 0x2cf0b7d9, 0x022b8b51,
-      0x96d5ac3a, 0x017da67d, 0xd1cf3ed6, 0x7c7d2d28,
-      0x1f9f25cf, 0xadf2b89b, 0x5ad6b472, 0x5a88f54c,
-      0xe029ac71, 0xe019a5e6, 0x47b0acfd, 0xed93fa9b,
-      0xe8d3c48d, 0x283b57cc, 0xf8d56629, 0x79132e28,
-      0x785f0191, 0xed756055, 0xf7960e44, 0xe3d35e8c,
-      0x15056dd4, 0x88f46dba, 0x03a16125, 0x0564f0bd,
-      0xc3eb9e15, 0x3c9057a2, 0x97271aec, 0xa93a072a,
-      0x1b3f6d9b, 0x1e6321f5, 0xf59c66fb, 0x26dcf319,
-      0x7533d928, 0xb155fdf5, 0x03563482, 0x8aba3cbb,
-      0x28517711, 0xc20ad9f8, 0xabcc5167, 0xccad925f,
-      0x4de81751, 0x3830dc8e, 0x379d5862, 0x9320f991,
-      0xea7a90c2, 0xfb3e7bce, 0x5121ce64, 0x774fbe32,
-      0xa8b6e37e, 0xc3293d46, 0x48de5369, 0x6413e680,
-      0xa2ae0810, 0xdd6db224, 0x69852dfd, 0x09072166,
-      0xb39a460a, 0x6445c0dd, 0x586cdecf, 0x1c20c8ae,
-      0x5bbef7dd, 0x1b588d40, 0xccd2017f, 0x6bb4e3bb,
-      0xdda26a7e, 0x3a59ff45, 0x3e350a44, 0xbcb4cdd5,
-      0x72eacea8, 0xfa6484bb, 0x8d6612ae, 0xbf3c6f47,
-      0xd29be463, 0x542f5d9e, 0xaec2771b, 0xf64e6370,
-      0x740e0d8d, 0xe75b1357, 0xf8721671, 0xaf537d5d,
-      0x4040cb08, 0x4eb4e2cc, 0x34d2466a, 0x0115af84,
-      0xe1b00428, 0x95983a1d, 0x06b89fb4, 0xce6ea048,
-      0x6f3f3b82, 0x3520ab82, 0x011a1d4b, 0x277227f8,
-      0x611560b1, 0xe7933fdc, 0xbb3a792b, 0x344525bd,
-      0xa08839e1, 0x51ce794b, 0x2f32c9b7, 0xa01fbac9,
-      0xe01cc87e, 0xbcc7d1f6, 0xcf0111c3, 0xa1e8aac7,
-      0x1a908749, 0xd44fbd9a, 0xd0dadecb, 0xd50ada38,
-      0x0339c32a, 0xc6913667, 0x8df9317c, 0xe0b12b4f,
-      0xf79e59b7, 0x43f5bb3a, 0xf2d519ff, 0x27d9459c,
-      0xbf97222c, 0x15e6fc2a, 0x0f91fc71, 0x9b941525,
-      0xfae59361, 0xceb69ceb, 0xc2a86459, 0x12baa8d1,
-      0xb6c1075e, 0xe3056a0c, 0x10d25065, 0xcb03a442,
-      0xe0ec6e0e, 0x1698db3b, 0x4c98a0be, 0x3278e964,
-      0x9f1f9532, 0xe0d392df, 0xd3a0342b, 0x8971f21e,
-      0x1b0a7441, 0x4ba3348c, 0xc5be7120, 0xc37632d8,
-      0xdf359f8d, 0x9b992f2e, 0xe60b6f47, 0x0fe3f11d,
-      0xe54cda54, 0x1edad891, 0xce6279cf, 0xcd3e7e6f,
-      0x1618b166, 0xfd2c1d05, 0x848fd2c5, 0xf6fb2299,
-      0xf523f357, 0xa6327623, 0x93a83531, 0x56cccd02,
-      0xacf08162, 0x5a75ebb5, 0x6e163697, 0x88d273cc,
-      0xde966292, 0x81b949d0, 0x4c50901b, 0x71c65614,
-      0xe6c6c7bd, 0x327a140a, 0x45e1d006, 0xc3f27b9a,
-      0xc9aa53fd, 0x62a80f00, 0xbb25bfe2, 0x35bdd2f6,
-      0x71126905, 0xb2040222, 0xb6cbcf7c, 0xcd769c2b,
-      0x53113ec0, 0x1640e3d3, 0x38abbd60, 0x2547adf0,
-      0xba38209c, 0xf746ce76, 0x77afa1c5, 0x20756060,
-      0x85cbfe4e, 0x8ae88dd8, 0x7aaaf9b0, 0x4cf9aa7e,
-      0x1948c25c, 0x02fb8a8c, 0x01c36ae4, 0xd6ebe1f9,
-      0x90d4f869, 0xa65cdea0, 0x3f09252d, 0xc208e69f,
-      0xb74e6132, 0xce77e25b, 0x578fdfe3, 0x3ac372e6])
-    ];
-  this.P = new Uint32Array([
-    0x243f6a88, 0x85a308d3, 0x13198a2e, 0x03707344,
-    0xa4093822, 0x299f31d0, 0x082efa98, 0xec4e6c89,
-    0x452821e6, 0x38d01377, 0xbe5466cf, 0x34e90c6c,
-    0xc0ac29b7, 0xc97c50dd, 0x3f84d5b5, 0xb5470917,
-    0x9216d5d9, 0x8979fb1b]);
-};
-
-function F(S, x8, i) {
-  return (((S[0][x8[i+3]] +
-            S[1][x8[i+2]]) ^
-            S[2][x8[i+1]]) +
-            S[3][x8[i]]);
-};
-
-Blowfish.prototype.encipher = function(x, x8) {
-  if (x8 === undefined) {
-    x8 = new Uint8Array(x.buffer);
-    if (x.byteOffset !== 0)
-      x8 = x8.subarray(x.byteOffset);
-  }
-  x[0] ^= this.P[0];
-  for (var i = 1; i < 16; i += 2) {
-    x[1] ^= F(this.S, x8, 0) ^ this.P[i];
-    x[0] ^= F(this.S, x8, 4) ^ this.P[i+1];
-  }
-  var t = x[0];
-  x[0] = x[1] ^ this.P[17];
-  x[1] = t;
-};
-
-Blowfish.prototype.decipher = function(x) {
-  var x8 = new Uint8Array(x.buffer);
-  if (x.byteOffset !== 0)
-    x8 = x8.subarray(x.byteOffset);
-  x[0] ^= this.P[17];
-  for (var i = 16; i > 0; i -= 2) {
-    x[1] ^= F(this.S, x8, 0) ^ this.P[i];
-    x[0] ^= F(this.S, x8, 4) ^ this.P[i-1];
-  }
-  var t = x[0];
-  x[0] = x[1] ^ this.P[0];
-  x[1] = t;
-};
-
-function stream2word(data, databytes){
-  var i, temp = 0;
-  for (i = 0; i < 4; i++, BLF_J++) {
-    if (BLF_J >= databytes) BLF_J = 0;
-    temp = (temp << 8) | data[BLF_J];
-  }
-  return temp;
-};
-
-Blowfish.prototype.expand0state = function(key, keybytes) {
-  var d = new Uint32Array(2), i, k;
-  var d8 = new Uint8Array(d.buffer);
-
-  for (i = 0, BLF_J = 0; i < 18; i++) {
-    this.P[i] ^= stream2word(key, keybytes);
-  }
-  BLF_J = 0;
-
-  for (i = 0; i < 18; i += 2) {
-    this.encipher(d, d8);
-    this.P[i]   = d[0];
-    this.P[i+1] = d[1];
-  }
-
-  for (i = 0; i < 4; i++) {
-    for (k = 0; k < 256; k += 2) {
-      this.encipher(d, d8);
-      this.S[i][k]   = d[0];
-      this.S[i][k+1] = d[1];
-    }
-  }
-};
-
-Blowfish.prototype.expandstate = function(data, databytes, key, keybytes) {
-  var d = new Uint32Array(2), i, k;
-
-  for (i = 0, BLF_J = 0; i < 18; i++) {
-    this.P[i] ^= stream2word(key, keybytes);
-  }
-
-  for (i = 0, BLF_J = 0; i < 18; i += 2) {
-    d[0] ^= stream2word(data, databytes);
-    d[1] ^= stream2word(data, databytes);
-    this.encipher(d);
-    this.P[i]   = d[0];
-    this.P[i+1] = d[1];
-  }
-
-  for (i = 0; i < 4; i++) {
-    for (k = 0; k < 256; k += 2) {
-      d[0] ^= stream2word(data, databytes);
-      d[1] ^= stream2word(data, databytes);
-      this.encipher(d);
-      this.S[i][k]   = d[0];
-      this.S[i][k+1] = d[1];
-    }
-  }
-  BLF_J = 0;
-};
-
-Blowfish.prototype.enc = function(data, blocks) {
-  for (var i = 0; i < blocks; i++) {
-    this.encipher(data.subarray(i*2));
-  }
-};
-
-Blowfish.prototype.dec = function(data, blocks) {
-  for (var i = 0; i < blocks; i++) {
-    this.decipher(data.subarray(i*2));
-  }
-};
-
-var BCRYPT_BLOCKS = 8,
-    BCRYPT_HASHSIZE = 32;
-
-function bcrypt_hash(sha2pass, sha2salt, out) {
-  var state = new Blowfish(),
-      cdata = new Uint32Array(BCRYPT_BLOCKS), i,
-      ciphertext = new Uint8Array([79,120,121,99,104,114,111,109,97,116,105,
-            99,66,108,111,119,102,105,115,104,83,119,97,116,68,121,110,97,109,
-            105,116,101]); //"OxychromaticBlowfishSwatDynamite"
-
-  state.expandstate(sha2salt, 64, sha2pass, 64);
-  for (i = 0; i < 64; i++) {
-    state.expand0state(sha2salt, 64);
-    state.expand0state(sha2pass, 64);
-  }
-
-  for (i = 0; i < BCRYPT_BLOCKS; i++)
-    cdata[i] = stream2word(ciphertext, ciphertext.byteLength);
-  for (i = 0; i < 64; i++)
-    state.enc(cdata, cdata.byteLength / 8);
-
-  for (i = 0; i < BCRYPT_BLOCKS; i++) {
-    out[4*i+3] = cdata[i] >>> 24;
-    out[4*i+2] = cdata[i] >>> 16;
-    out[4*i+1] = cdata[i] >>> 8;
-    out[4*i+0] = cdata[i];
-  }
-};
-
-function bcrypt_pbkdf(pass, passlen, salt, saltlen, key, keylen, rounds) {
-  var sha2pass = new Uint8Array(64),
-      sha2salt = new Uint8Array(64),
-      out = new Uint8Array(BCRYPT_HASHSIZE),
-      tmpout = new Uint8Array(BCRYPT_HASHSIZE),
-      countsalt = new Uint8Array(saltlen+4),
-      i, j, amt, stride, dest, count,
-      origkeylen = keylen;
-
-  if (rounds < 1)
-    return -1;
-  if (passlen === 0 || saltlen === 0 || keylen === 0 ||
-      keylen > (out.byteLength * out.byteLength) || saltlen > (1<<20))
-    return -1;
-
-  stride = Math.floor((keylen + out.byteLength - 1) / out.byteLength);
-  amt = Math.floor((keylen + stride - 1) / stride);
-
-  for (i = 0; i < saltlen; i++)
-    countsalt[i] = salt[i];
-
-  crypto_hash_sha512(sha2pass, pass, passlen);
-
-  for (count = 1; keylen > 0; count++) {
-    countsalt[saltlen+0] = count >>> 24;
-    countsalt[saltlen+1] = count >>> 16;
-    countsalt[saltlen+2] = count >>>  8;
-    countsalt[saltlen+3] = count;
-
-    crypto_hash_sha512(sha2salt, countsalt, saltlen + 4);
-    bcrypt_hash(sha2pass, sha2salt, tmpout);
-    for (i = out.byteLength; i--;)
-      out[i] = tmpout[i];
-
-    for (i = 1; i < rounds; i++) {
-      crypto_hash_sha512(sha2salt, tmpout, tmpout.byteLength);
-      bcrypt_hash(sha2pass, sha2salt, tmpout);
-      for (j = 0; j < out.byteLength; j++)
-        out[j] ^= tmpout[j];
-    }
-
-    amt = Math.min(amt, keylen);
-    for (i = 0; i < amt; i++) {
-      dest = i * stride + (count - 1);
-      if (dest >= origkeylen)
-        break;
-      key[dest] = out[i];
-    }
-    keylen -= i;
-  }
-
-  return 0;
-};
-
-module.exports = {
-      BLOCKS: BCRYPT_BLOCKS,
-      HASHSIZE: BCRYPT_HASHSIZE,
-      hash: bcrypt_hash,
-      pbkdf: bcrypt_pbkdf
-};
-
-
-/***/ }),
-
-/***/ 8818:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-"use strict";
-
-const ansiStyles = __nccwpck_require__(2068);
-const {stdout: stdoutColor, stderr: stderrColor} = __nccwpck_require__(9318);
-const {
-	stringReplaceAll,
-	stringEncaseCRLFWithFirstIndex
-} = __nccwpck_require__(2415);
-
-const {isArray} = Array;
-
-// `supportsColor.level` → `ansiStyles.color[name]` mapping
-const levelMapping = [
-	'ansi',
-	'ansi',
-	'ansi256',
-	'ansi16m'
-];
-
-const styles = Object.create(null);
-
-const applyOptions = (object, options = {}) => {
-	if (options.level && !(Number.isInteger(options.level) && options.level >= 0 && options.level <= 3)) {
-		throw new Error('The `level` option should be an integer from 0 to 3');
-	}
-
-	// Detect level if not set manually
-	const colorLevel = stdoutColor ? stdoutColor.level : 0;
-	object.level = options.level === undefined ? colorLevel : options.level;
-};
-
-class ChalkClass {
-	constructor(options) {
-		// eslint-disable-next-line no-constructor-return
-		return chalkFactory(options);
-	}
-}
-
-const chalkFactory = options => {
-	const chalk = {};
-	applyOptions(chalk, options);
-
-	chalk.template = (...arguments_) => chalkTag(chalk.template, ...arguments_);
-
-	Object.setPrototypeOf(chalk, Chalk.prototype);
-	Object.setPrototypeOf(chalk.template, chalk);
-
-	chalk.template.constructor = () => {
-		throw new Error('`chalk.constructor()` is deprecated. Use `new chalk.Instance()` instead.');
-	};
-
-	chalk.template.Instance = ChalkClass;
-
-	return chalk.template;
-};
-
-function Chalk(options) {
-	return chalkFactory(options);
-}
-
-for (const [styleName, style] of Object.entries(ansiStyles)) {
-	styles[styleName] = {
-		get() {
-			const builder = createBuilder(this, createStyler(style.open, style.close, this._styler), this._isEmpty);
-			Object.defineProperty(this, styleName, {value: builder});
-			return builder;
-		}
-	};
-}
-
-styles.visible = {
-	get() {
-		const builder = createBuilder(this, this._styler, true);
-		Object.defineProperty(this, 'visible', {value: builder});
-		return builder;
-	}
-};
-
-const usedModels = ['rgb', 'hex', 'keyword', 'hsl', 'hsv', 'hwb', 'ansi', 'ansi256'];
-
-for (const model of usedModels) {
-	styles[model] = {
-		get() {
-			const {level} = this;
-			return function (...arguments_) {
-				const styler = createStyler(ansiStyles.color[levelMapping[level]][model](...arguments_), ansiStyles.color.close, this._styler);
-				return createBuilder(this, styler, this._isEmpty);
-			};
-		}
-	};
-}
-
-for (const model of usedModels) {
-	const bgModel = 'bg' + model[0].toUpperCase() + model.slice(1);
-	styles[bgModel] = {
-		get() {
-			const {level} = this;
-			return function (...arguments_) {
-				const styler = createStyler(ansiStyles.bgColor[levelMapping[level]][model](...arguments_), ansiStyles.bgColor.close, this._styler);
-				return createBuilder(this, styler, this._isEmpty);
-			};
-		}
-	};
-}
-
-const proto = Object.defineProperties(() => {}, {
-	...styles,
-	level: {
-		enumerable: true,
-		get() {
-			return this._generator.level;
-		},
-		set(level) {
-			this._generator.level = level;
-		}
-	}
-});
-
-const createStyler = (open, close, parent) => {
-	let openAll;
-	let closeAll;
-	if (parent === undefined) {
-		openAll = open;
-		closeAll = close;
-	} else {
-		openAll = parent.openAll + open;
-		closeAll = close + parent.closeAll;
-	}
-
-	return {
-		open,
-		close,
-		openAll,
-		closeAll,
-		parent
-	};
-};
-
-const createBuilder = (self, _styler, _isEmpty) => {
-	const builder = (...arguments_) => {
-		if (isArray(arguments_[0]) && isArray(arguments_[0].raw)) {
-			// Called as a template literal, for example: chalk.red`2 + 3 = {bold ${2+3}}`
-			return applyStyle(builder, chalkTag(builder, ...arguments_));
-		}
-
-		// Single argument is hot path, implicit coercion is faster than anything
-		// eslint-disable-next-line no-implicit-coercion
-		return applyStyle(builder, (arguments_.length === 1) ? ('' + arguments_[0]) : arguments_.join(' '));
-	};
-
-	// We alter the prototype because we must return a function, but there is
-	// no way to create a function with a different prototype
-	Object.setPrototypeOf(builder, proto);
-
-	builder._generator = self;
-	builder._styler = _styler;
-	builder._isEmpty = _isEmpty;
-
-	return builder;
-};
-
-const applyStyle = (self, string) => {
-	if (self.level <= 0 || !string) {
-		return self._isEmpty ? '' : string;
-	}
-
-	let styler = self._styler;
-
-	if (styler === undefined) {
-		return string;
-	}
-
-	const {openAll, closeAll} = styler;
-	if (string.indexOf('\u001B') !== -1) {
-		while (styler !== undefined) {
-			// Replace any instances already present with a re-opening code
-			// otherwise only the part of the string until said closing code
-			// will be colored, and the rest will simply be 'plain'.
-			string = stringReplaceAll(string, styler.close, styler.open);
-
-			styler = styler.parent;
-		}
-	}
-
-	// We can move both next actions out of loop, because remaining actions in loop won't have
-	// any/visible effect on parts we add here. Close the styling before a linebreak and reopen
-	// after next line to fix a bleed issue on macOS: https://github.com/chalk/chalk/pull/92
-	const lfIndex = string.indexOf('\n');
-	if (lfIndex !== -1) {
-		string = stringEncaseCRLFWithFirstIndex(string, closeAll, openAll, lfIndex);
-	}
-
-	return openAll + string + closeAll;
-};
-
-let template;
-const chalkTag = (chalk, ...strings) => {
-	const [firstString] = strings;
-
-	if (!isArray(firstString) || !isArray(firstString.raw)) {
-		// If chalk() was called by itself or with a string,
-		// return the string itself as a string.
-		return strings.join(' ');
-	}
-
-	const arguments_ = strings.slice(1);
-	const parts = [firstString.raw[0]];
-
-	for (let i = 1; i < firstString.length; i++) {
-		parts.push(
-			String(arguments_[i - 1]).replace(/[{}\\]/g, '\\$&'),
-			String(firstString.raw[i])
-		);
-	}
-
-	if (template === undefined) {
-		template = __nccwpck_require__(500);
-	}
-
-	return template(chalk, parts.join(''));
-};
-
-Object.defineProperties(Chalk.prototype, styles);
-
-const chalk = Chalk(); // eslint-disable-line new-cap
-chalk.supportsColor = stdoutColor;
-chalk.stderr = Chalk({level: stderrColor ? stderrColor.level : 0}); // eslint-disable-line new-cap
-chalk.stderr.supportsColor = stderrColor;
-
-module.exports = chalk;
-
-
-/***/ }),
-
-/***/ 500:
-/***/ ((module) => {
-
-"use strict";
-
-const TEMPLATE_REGEX = /(?:\\(u(?:[a-f\d]{4}|\{[a-f\d]{1,6}\})|x[a-f\d]{2}|.))|(?:\{(~)?(\w+(?:\([^)]*\))?(?:\.\w+(?:\([^)]*\))?)*)(?:[ \t]|(?=\r?\n)))|(\})|((?:.|[\r\n\f])+?)/gi;
-const STYLE_REGEX = /(?:^|\.)(\w+)(?:\(([^)]*)\))?/g;
-const STRING_REGEX = /^(['"])((?:\\.|(?!\1)[^\\])*)\1$/;
-const ESCAPE_REGEX = /\\(u(?:[a-f\d]{4}|{[a-f\d]{1,6}})|x[a-f\d]{2}|.)|([^\\])/gi;
-
-const ESCAPES = new Map([
-	['n', '\n'],
-	['r', '\r'],
-	['t', '\t'],
-	['b', '\b'],
-	['f', '\f'],
-	['v', '\v'],
-	['0', '\0'],
-	['\\', '\\'],
-	['e', '\u001B'],
-	['a', '\u0007']
-]);
-
-function unescape(c) {
-	const u = c[0] === 'u';
-	const bracket = c[1] === '{';
-
-	if ((u && !bracket && c.length === 5) || (c[0] === 'x' && c.length === 3)) {
-		return String.fromCharCode(parseInt(c.slice(1), 16));
-	}
-
-	if (u && bracket) {
-		return String.fromCodePoint(parseInt(c.slice(2, -1), 16));
-	}
-
-	return ESCAPES.get(c) || c;
-}
-
-function parseArguments(name, arguments_) {
-	const results = [];
-	const chunks = arguments_.trim().split(/\s*,\s*/g);
-	let matches;
-
-	for (const chunk of chunks) {
-		const number = Number(chunk);
-		if (!Number.isNaN(number)) {
-			results.push(number);
-		} else if ((matches = chunk.match(STRING_REGEX))) {
-			results.push(matches[2].replace(ESCAPE_REGEX, (m, escape, character) => escape ? unescape(escape) : character));
-		} else {
-			throw new Error(`Invalid Chalk template style argument: ${chunk} (in style '${name}')`);
-		}
-	}
-
-	return results;
-}
-
-function parseStyle(style) {
-	STYLE_REGEX.lastIndex = 0;
-
-	const results = [];
-	let matches;
-
-	while ((matches = STYLE_REGEX.exec(style)) !== null) {
-		const name = matches[1];
-
-		if (matches[2]) {
-			const args = parseArguments(name, matches[2]);
-			results.push([name].concat(args));
-		} else {
-			results.push([name]);
-		}
-	}
-
-	return results;
-}
-
-function buildStyle(chalk, styles) {
-	const enabled = {};
-
-	for (const layer of styles) {
-		for (const style of layer.styles) {
-			enabled[style[0]] = layer.inverse ? null : style.slice(1);
-		}
-	}
-
-	let current = chalk;
-	for (const [styleName, styles] of Object.entries(enabled)) {
-		if (!Array.isArray(styles)) {
-			continue;
-		}
-
-		if (!(styleName in current)) {
-			throw new Error(`Unknown Chalk style: ${styleName}`);
-		}
-
-		current = styles.length > 0 ? current[styleName](...styles) : current[styleName];
-	}
-
-	return current;
-}
-
-module.exports = (chalk, temporary) => {
-	const styles = [];
-	const chunks = [];
-	let chunk = [];
-
-	// eslint-disable-next-line max-params
-	temporary.replace(TEMPLATE_REGEX, (m, escapeCharacter, inverse, style, close, character) => {
-		if (escapeCharacter) {
-			chunk.push(unescape(escapeCharacter));
-		} else if (style) {
-			const string = chunk.join('');
-			chunk = [];
-			chunks.push(styles.length === 0 ? string : buildStyle(chalk, styles)(string));
-			styles.push({inverse, styles: parseStyle(style)});
-		} else if (close) {
-			if (styles.length === 0) {
-				throw new Error('Found extraneous } in Chalk template literal');
-			}
-
-			chunks.push(buildStyle(chalk, styles)(chunk.join('')));
-			chunk = [];
-			styles.pop();
-		} else {
-			chunk.push(character);
-		}
-	});
-
-	chunks.push(chunk.join(''));
-
-	if (styles.length > 0) {
-		const errMessage = `Chalk template literal is missing ${styles.length} closing bracket${styles.length === 1 ? '' : 's'} (\`}\`)`;
-		throw new Error(errMessage);
-	}
-
-	return chunks.join('');
-};
-
-
-/***/ }),
-
-/***/ 2415:
-/***/ ((module) => {
-
-"use strict";
-
-
-const stringReplaceAll = (string, substring, replacer) => {
-	let index = string.indexOf(substring);
-	if (index === -1) {
-		return string;
-	}
-
-	const substringLength = substring.length;
-	let endIndex = 0;
-	let returnValue = '';
-	do {
-		returnValue += string.substr(endIndex, index - endIndex) + substring + replacer;
-		endIndex = index + substringLength;
-		index = string.indexOf(substring, endIndex);
-	} while (index !== -1);
-
-	returnValue += string.substr(endIndex);
-	return returnValue;
-};
-
-const stringEncaseCRLFWithFirstIndex = (string, prefix, postfix, index) => {
-	let endIndex = 0;
-	let returnValue = '';
-	do {
-		const gotCR = string[index - 1] === '\r';
-		returnValue += string.substr(endIndex, (gotCR ? index - 1 : index) - endIndex) + prefix + (gotCR ? '\r\n' : '\n') + postfix;
-		endIndex = index + 1;
-		index = string.indexOf('\n', endIndex);
-	} while (index !== -1);
-
-	returnValue += string.substr(endIndex);
-	return returnValue;
-};
-
-module.exports = {
-	stringReplaceAll,
-	stringEncaseCRLFWithFirstIndex
-};
-
-
-/***/ }),
-
-/***/ 7391:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-/* MIT license */
-/* eslint-disable no-mixed-operators */
-const cssKeywords = __nccwpck_require__(8510);
-
-// NOTE: conversions should only return primitive values (i.e. arrays, or
-//       values that give correct `typeof` results).
-//       do not use box values types (i.e. Number(), String(), etc.)
-
-const reverseKeywords = {};
-for (const key of Object.keys(cssKeywords)) {
-	reverseKeywords[cssKeywords[key]] = key;
-}
-
-const convert = {
-	rgb: {channels: 3, labels: 'rgb'},
-	hsl: {channels: 3, labels: 'hsl'},
-	hsv: {channels: 3, labels: 'hsv'},
-	hwb: {channels: 3, labels: 'hwb'},
-	cmyk: {channels: 4, labels: 'cmyk'},
-	xyz: {channels: 3, labels: 'xyz'},
-	lab: {channels: 3, labels: 'lab'},
-	lch: {channels: 3, labels: 'lch'},
-	hex: {channels: 1, labels: ['hex']},
-	keyword: {channels: 1, labels: ['keyword']},
-	ansi16: {channels: 1, labels: ['ansi16']},
-	ansi256: {channels: 1, labels: ['ansi256']},
-	hcg: {channels: 3, labels: ['h', 'c', 'g']},
-	apple: {channels: 3, labels: ['r16', 'g16', 'b16']},
-	gray: {channels: 1, labels: ['gray']}
-};
-
-module.exports = convert;
-
-// Hide .channels and .labels properties
-for (const model of Object.keys(convert)) {
-	if (!('channels' in convert[model])) {
-		throw new Error('missing channels property: ' + model);
-	}
-
-	if (!('labels' in convert[model])) {
-		throw new Error('missing channel labels property: ' + model);
-	}
-
-	if (convert[model].labels.length !== convert[model].channels) {
-		throw new Error('channel and label counts mismatch: ' + model);
-	}
-
-	const {channels, labels} = convert[model];
-	delete convert[model].channels;
-	delete convert[model].labels;
-	Object.defineProperty(convert[model], 'channels', {value: channels});
-	Object.defineProperty(convert[model], 'labels', {value: labels});
-}
-
-convert.rgb.hsl = function (rgb) {
-	const r = rgb[0] / 255;
-	const g = rgb[1] / 255;
-	const b = rgb[2] / 255;
-	const min = Math.min(r, g, b);
-	const max = Math.max(r, g, b);
-	const delta = max - min;
-	let h;
-	let s;
-
-	if (max === min) {
-		h = 0;
-	} else if (r === max) {
-		h = (g - b) / delta;
-	} else if (g === max) {
-		h = 2 + (b - r) / delta;
-	} else if (b === max) {
-		h = 4 + (r - g) / delta;
-	}
-
-	h = Math.min(h * 60, 360);
-
-	if (h < 0) {
-		h += 360;
-	}
-
-	const l = (min + max) / 2;
-
-	if (max === min) {
-		s = 0;
-	} else if (l <= 0.5) {
-		s = delta / (max + min);
-	} else {
-		s = delta / (2 - max - min);
-	}
-
-	return [h, s * 100, l * 100];
-};
-
-convert.rgb.hsv = function (rgb) {
-	let rdif;
-	let gdif;
-	let bdif;
-	let h;
-	let s;
-
-	const r = rgb[0] / 255;
-	const g = rgb[1] / 255;
-	const b = rgb[2] / 255;
-	const v = Math.max(r, g, b);
-	const diff = v - Math.min(r, g, b);
-	const diffc = function (c) {
-		return (v - c) / 6 / diff + 1 / 2;
-	};
-
-	if (diff === 0) {
-		h = 0;
-		s = 0;
-	} else {
-		s = diff / v;
-		rdif = diffc(r);
-		gdif = diffc(g);
-		bdif = diffc(b);
-
-		if (r === v) {
-			h = bdif - gdif;
-		} else if (g === v) {
-			h = (1 / 3) + rdif - bdif;
-		} else if (b === v) {
-			h = (2 / 3) + gdif - rdif;
-		}
-
-		if (h < 0) {
-			h += 1;
-		} else if (h > 1) {
-			h -= 1;
-		}
-	}
-
-	return [
-		h * 360,
-		s * 100,
-		v * 100
-	];
-};
-
-convert.rgb.hwb = function (rgb) {
-	const r = rgb[0];
-	const g = rgb[1];
-	let b = rgb[2];
-	const h = convert.rgb.hsl(rgb)[0];
-	const w = 1 / 255 * Math.min(r, Math.min(g, b));
-
-	b = 1 - 1 / 255 * Math.max(r, Math.max(g, b));
-
-	return [h, w * 100, b * 100];
-};
-
-convert.rgb.cmyk = function (rgb) {
-	const r = rgb[0] / 255;
-	const g = rgb[1] / 255;
-	const b = rgb[2] / 255;
-
-	const k = Math.min(1 - r, 1 - g, 1 - b);
-	const c = (1 - r - k) / (1 - k) || 0;
-	const m = (1 - g - k) / (1 - k) || 0;
-	const y = (1 - b - k) / (1 - k) || 0;
-
-	return [c * 100, m * 100, y * 100, k * 100];
-};
-
-function comparativeDistance(x, y) {
-	/*
-		See https://en.m.wikipedia.org/wiki/Euclidean_distance#Squared_Euclidean_distance
-	*/
-	return (
-		((x[0] - y[0]) ** 2) +
-		((x[1] - y[1]) ** 2) +
-		((x[2] - y[2]) ** 2)
-	);
-}
-
-convert.rgb.keyword = function (rgb) {
-	const reversed = reverseKeywords[rgb];
-	if (reversed) {
-		return reversed;
-	}
-
-	let currentClosestDistance = Infinity;
-	let currentClosestKeyword;
-
-	for (const keyword of Object.keys(cssKeywords)) {
-		const value = cssKeywords[keyword];
-
-		// Compute comparative distance
-		const distance = comparativeDistance(rgb, value);
-
-		// Check if its less, if so set as closest
-		if (distance < currentClosestDistance) {
-			currentClosestDistance = distance;
-			currentClosestKeyword = keyword;
-		}
-	}
-
-	return currentClosestKeyword;
-};
-
-convert.keyword.rgb = function (keyword) {
-	return cssKeywords[keyword];
-};
-
-convert.rgb.xyz = function (rgb) {
-	let r = rgb[0] / 255;
-	let g = rgb[1] / 255;
-	let b = rgb[2] / 255;
-
-	// Assume sRGB
-	r = r > 0.04045 ? (((r + 0.055) / 1.055) ** 2.4) : (r / 12.92);
-	g = g > 0.04045 ? (((g + 0.055) / 1.055) ** 2.4) : (g / 12.92);
-	b = b > 0.04045 ? (((b + 0.055) / 1.055) ** 2.4) : (b / 12.92);
-
-	const x = (r * 0.4124) + (g * 0.3576) + (b * 0.1805);
-	const y = (r * 0.2126) + (g * 0.7152) + (b * 0.0722);
-	const z = (r * 0.0193) + (g * 0.1192) + (b * 0.9505);
-
-	return [x * 100, y * 100, z * 100];
-};
-
-convert.rgb.lab = function (rgb) {
-	const xyz = convert.rgb.xyz(rgb);
-	let x = xyz[0];
-	let y = xyz[1];
-	let z = xyz[2];
-
-	x /= 95.047;
-	y /= 100;
-	z /= 108.883;
-
-	x = x > 0.008856 ? (x ** (1 / 3)) : (7.787 * x) + (16 / 116);
-	y = y > 0.008856 ? (y ** (1 / 3)) : (7.787 * y) + (16 / 116);
-	z = z > 0.008856 ? (z ** (1 / 3)) : (7.787 * z) + (16 / 116);
-
-	const l = (116 * y) - 16;
-	const a = 500 * (x - y);
-	const b = 200 * (y - z);
-
-	return [l, a, b];
-};
-
-convert.hsl.rgb = function (hsl) {
-	const h = hsl[0] / 360;
-	const s = hsl[1] / 100;
-	const l = hsl[2] / 100;
-	let t2;
-	let t3;
-	let val;
-
-	if (s === 0) {
-		val = l * 255;
-		return [val, val, val];
-	}
-
-	if (l < 0.5) {
-		t2 = l * (1 + s);
-	} else {
-		t2 = l + s - l * s;
-	}
-
-	const t1 = 2 * l - t2;
-
-	const rgb = [0, 0, 0];
-	for (let i = 0; i < 3; i++) {
-		t3 = h + 1 / 3 * -(i - 1);
-		if (t3 < 0) {
-			t3++;
-		}
-
-		if (t3 > 1) {
-			t3--;
-		}
-
-		if (6 * t3 < 1) {
-			val = t1 + (t2 - t1) * 6 * t3;
-		} else if (2 * t3 < 1) {
-			val = t2;
-		} else if (3 * t3 < 2) {
-			val = t1 + (t2 - t1) * (2 / 3 - t3) * 6;
-		} else {
-			val = t1;
-		}
-
-		rgb[i] = val * 255;
-	}
-
-	return rgb;
-};
-
-convert.hsl.hsv = function (hsl) {
-	const h = hsl[0];
-	let s = hsl[1] / 100;
-	let l = hsl[2] / 100;
-	let smin = s;
-	const lmin = Math.max(l, 0.01);
-
-	l *= 2;
-	s *= (l <= 1) ? l : 2 - l;
-	smin *= lmin <= 1 ? lmin : 2 - lmin;
-	const v = (l + s) / 2;
-	const sv = l === 0 ? (2 * smin) / (lmin + smin) : (2 * s) / (l + s);
-
-	return [h, sv * 100, v * 100];
-};
-
-convert.hsv.rgb = function (hsv) {
-	const h = hsv[0] / 60;
-	const s = hsv[1] / 100;
-	let v = hsv[2] / 100;
-	const hi = Math.floor(h) % 6;
-
-	const f = h - Math.floor(h);
-	const p = 255 * v * (1 - s);
-	const q = 255 * v * (1 - (s * f));
-	const t = 255 * v * (1 - (s * (1 - f)));
-	v *= 255;
-
-	switch (hi) {
-		case 0:
-			return [v, t, p];
-		case 1:
-			return [q, v, p];
-		case 2:
-			return [p, v, t];
-		case 3:
-			return [p, q, v];
-		case 4:
-			return [t, p, v];
-		case 5:
-			return [v, p, q];
-	}
-};
-
-convert.hsv.hsl = function (hsv) {
-	const h = hsv[0];
-	const s = hsv[1] / 100;
-	const v = hsv[2] / 100;
-	const vmin = Math.max(v, 0.01);
-	let sl;
-	let l;
-
-	l = (2 - s) * v;
-	const lmin = (2 - s) * vmin;
-	sl = s * vmin;
-	sl /= (lmin <= 1) ? lmin : 2 - lmin;
-	sl = sl || 0;
-	l /= 2;
-
-	return [h, sl * 100, l * 100];
-};
-
-// http://dev.w3.org/csswg/css-color/#hwb-to-rgb
-convert.hwb.rgb = function (hwb) {
-	const h = hwb[0] / 360;
-	let wh = hwb[1] / 100;
-	let bl = hwb[2] / 100;
-	const ratio = wh + bl;
-	let f;
-
-	// Wh + bl cant be > 1
-	if (ratio > 1) {
-		wh /= ratio;
-		bl /= ratio;
-	}
-
-	const i = Math.floor(6 * h);
-	const v = 1 - bl;
-	f = 6 * h - i;
-
-	if ((i & 0x01) !== 0) {
-		f = 1 - f;
-	}
-
-	const n = wh + f * (v - wh); // Linear interpolation
-
-	let r;
-	let g;
-	let b;
-	/* eslint-disable max-statements-per-line,no-multi-spaces */
-	switch (i) {
-		default:
-		case 6:
-		case 0: r = v;  g = n;  b = wh; break;
-		case 1: r = n;  g = v;  b = wh; break;
-		case 2: r = wh; g = v;  b = n; break;
-		case 3: r = wh; g = n;  b = v; break;
-		case 4: r = n;  g = wh; b = v; break;
-		case 5: r = v;  g = wh; b = n; break;
-	}
-	/* eslint-enable max-statements-per-line,no-multi-spaces */
-
-	return [r * 255, g * 255, b * 255];
-};
-
-convert.cmyk.rgb = function (cmyk) {
-	const c = cmyk[0] / 100;
-	const m = cmyk[1] / 100;
-	const y = cmyk[2] / 100;
-	const k = cmyk[3] / 100;
-
-	const r = 1 - Math.min(1, c * (1 - k) + k);
-	const g = 1 - Math.min(1, m * (1 - k) + k);
-	const b = 1 - Math.min(1, y * (1 - k) + k);
-
-	return [r * 255, g * 255, b * 255];
-};
-
-convert.xyz.rgb = function (xyz) {
-	const x = xyz[0] / 100;
-	const y = xyz[1] / 100;
-	const z = xyz[2] / 100;
-	let r;
-	let g;
-	let b;
-
-	r = (x * 3.2406) + (y * -1.5372) + (z * -0.4986);
-	g = (x * -0.9689) + (y * 1.8758) + (z * 0.0415);
-	b = (x * 0.0557) + (y * -0.2040) + (z * 1.0570);
-
-	// Assume sRGB
-	r = r > 0.0031308
-		? ((1.055 * (r ** (1.0 / 2.4))) - 0.055)
-		: r * 12.92;
-
-	g = g > 0.0031308
-		? ((1.055 * (g ** (1.0 / 2.4))) - 0.055)
-		: g * 12.92;
-
-	b = b > 0.0031308
-		? ((1.055 * (b ** (1.0 / 2.4))) - 0.055)
-		: b * 12.92;
-
-	r = Math.min(Math.max(0, r), 1);
-	g = Math.min(Math.max(0, g), 1);
-	b = Math.min(Math.max(0, b), 1);
-
-	return [r * 255, g * 255, b * 255];
-};
-
-convert.xyz.lab = function (xyz) {
-	let x = xyz[0];
-	let y = xyz[1];
-	let z = xyz[2];
-
-	x /= 95.047;
-	y /= 100;
-	z /= 108.883;
-
-	x = x > 0.008856 ? (x ** (1 / 3)) : (7.787 * x) + (16 / 116);
-	y = y > 0.008856 ? (y ** (1 / 3)) : (7.787 * y) + (16 / 116);
-	z = z > 0.008856 ? (z ** (1 / 3)) : (7.787 * z) + (16 / 116);
-
-	const l = (116 * y) - 16;
-	const a = 500 * (x - y);
-	const b = 200 * (y - z);
-
-	return [l, a, b];
-};
-
-convert.lab.xyz = function (lab) {
-	const l = lab[0];
-	const a = lab[1];
-	const b = lab[2];
-	let x;
-	let y;
-	let z;
-
-	y = (l + 16) / 116;
-	x = a / 500 + y;
-	z = y - b / 200;
-
-	const y2 = y ** 3;
-	const x2 = x ** 3;
-	const z2 = z ** 3;
-	y = y2 > 0.008856 ? y2 : (y - 16 / 116) / 7.787;
-	x = x2 > 0.008856 ? x2 : (x - 16 / 116) / 7.787;
-	z = z2 > 0.008856 ? z2 : (z - 16 / 116) / 7.787;
-
-	x *= 95.047;
-	y *= 100;
-	z *= 108.883;
-
-	return [x, y, z];
-};
-
-convert.lab.lch = function (lab) {
-	const l = lab[0];
-	const a = lab[1];
-	const b = lab[2];
-	let h;
-
-	const hr = Math.atan2(b, a);
-	h = hr * 360 / 2 / Math.PI;
-
-	if (h < 0) {
-		h += 360;
-	}
-
-	const c = Math.sqrt(a * a + b * b);
-
-	return [l, c, h];
-};
-
-convert.lch.lab = function (lch) {
-	const l = lch[0];
-	const c = lch[1];
-	const h = lch[2];
-
-	const hr = h / 360 * 2 * Math.PI;
-	const a = c * Math.cos(hr);
-	const b = c * Math.sin(hr);
-
-	return [l, a, b];
-};
-
-convert.rgb.ansi16 = function (args, saturation = null) {
-	const [r, g, b] = args;
-	let value = saturation === null ? convert.rgb.hsv(args)[2] : saturation; // Hsv -> ansi16 optimization
-
-	value = Math.round(value / 50);
-
-	if (value === 0) {
-		return 30;
-	}
-
-	let ansi = 30
-		+ ((Math.round(b / 255) << 2)
-		| (Math.round(g / 255) << 1)
-		| Math.round(r / 255));
-
-	if (value === 2) {
-		ansi += 60;
-	}
-
-	return ansi;
-};
-
-convert.hsv.ansi16 = function (args) {
-	// Optimization here; we already know the value and don't need to get
-	// it converted for us.
-	return convert.rgb.ansi16(convert.hsv.rgb(args), args[2]);
-};
-
-convert.rgb.ansi256 = function (args) {
-	const r = args[0];
-	const g = args[1];
-	const b = args[2];
-
-	// We use the extended greyscale palette here, with the exception of
-	// black and white. normal palette only has 4 greyscale shades.
-	if (r === g && g === b) {
-		if (r < 8) {
-			return 16;
-		}
-
-		if (r > 248) {
-			return 231;
-		}
-
-		return Math.round(((r - 8) / 247) * 24) + 232;
-	}
-
-	const ansi = 16
-		+ (36 * Math.round(r / 255 * 5))
-		+ (6 * Math.round(g / 255 * 5))
-		+ Math.round(b / 255 * 5);
-
-	return ansi;
-};
-
-convert.ansi16.rgb = function (args) {
-	let color = args % 10;
-
-	// Handle greyscale
-	if (color === 0 || color === 7) {
-		if (args > 50) {
-			color += 3.5;
-		}
-
-		color = color / 10.5 * 255;
-
-		return [color, color, color];
-	}
-
-	const mult = (~~(args > 50) + 1) * 0.5;
-	const r = ((color & 1) * mult) * 255;
-	const g = (((color >> 1) & 1) * mult) * 255;
-	const b = (((color >> 2) & 1) * mult) * 255;
-
-	return [r, g, b];
-};
-
-convert.ansi256.rgb = function (args) {
-	// Handle greyscale
-	if (args >= 232) {
-		const c = (args - 232) * 10 + 8;
-		return [c, c, c];
-	}
-
-	args -= 16;
-
-	let rem;
-	const r = Math.floor(args / 36) / 5 * 255;
-	const g = Math.floor((rem = args % 36) / 6) / 5 * 255;
-	const b = (rem % 6) / 5 * 255;
-
-	return [r, g, b];
-};
-
-convert.rgb.hex = function (args) {
-	const integer = ((Math.round(args[0]) & 0xFF) << 16)
-		+ ((Math.round(args[1]) & 0xFF) << 8)
-		+ (Math.round(args[2]) & 0xFF);
-
-	const string = integer.toString(16).toUpperCase();
-	return '000000'.substring(string.length) + string;
-};
-
-convert.hex.rgb = function (args) {
-	const match = args.toString(16).match(/[a-f0-9]{6}|[a-f0-9]{3}/i);
-	if (!match) {
-		return [0, 0, 0];
-	}
-
-	let colorString = match[0];
-
-	if (match[0].length === 3) {
-		colorString = colorString.split('').map(char => {
-			return char + char;
-		}).join('');
-	}
-
-	const integer = parseInt(colorString, 16);
-	const r = (integer >> 16) & 0xFF;
-	const g = (integer >> 8) & 0xFF;
-	const b = integer & 0xFF;
-
-	return [r, g, b];
-};
-
-convert.rgb.hcg = function (rgb) {
-	const r = rgb[0] / 255;
-	const g = rgb[1] / 255;
-	const b = rgb[2] / 255;
-	const max = Math.max(Math.max(r, g), b);
-	const min = Math.min(Math.min(r, g), b);
-	const chroma = (max - min);
-	let grayscale;
-	let hue;
-
-	if (chroma < 1) {
-		grayscale = min / (1 - chroma);
-	} else {
-		grayscale = 0;
-	}
-
-	if (chroma <= 0) {
-		hue = 0;
-	} else
-	if (max === r) {
-		hue = ((g - b) / chroma) % 6;
-	} else
-	if (max === g) {
-		hue = 2 + (b - r) / chroma;
-	} else {
-		hue = 4 + (r - g) / chroma;
-	}
-
-	hue /= 6;
-	hue %= 1;
-
-	return [hue * 360, chroma * 100, grayscale * 100];
-};
-
-convert.hsl.hcg = function (hsl) {
-	const s = hsl[1] / 100;
-	const l = hsl[2] / 100;
-
-	const c = l < 0.5 ? (2.0 * s * l) : (2.0 * s * (1.0 - l));
-
-	let f = 0;
-	if (c < 1.0) {
-		f = (l - 0.5 * c) / (1.0 - c);
-	}
-
-	return [hsl[0], c * 100, f * 100];
-};
-
-convert.hsv.hcg = function (hsv) {
-	const s = hsv[1] / 100;
-	const v = hsv[2] / 100;
-
-	const c = s * v;
-	let f = 0;
-
-	if (c < 1.0) {
-		f = (v - c) / (1 - c);
-	}
-
-	return [hsv[0], c * 100, f * 100];
-};
-
-convert.hcg.rgb = function (hcg) {
-	const h = hcg[0] / 360;
-	const c = hcg[1] / 100;
-	const g = hcg[2] / 100;
-
-	if (c === 0.0) {
-		return [g * 255, g * 255, g * 255];
-	}
-
-	const pure = [0, 0, 0];
-	const hi = (h % 1) * 6;
-	const v = hi % 1;
-	const w = 1 - v;
-	let mg = 0;
-
-	/* eslint-disable max-statements-per-line */
-	switch (Math.floor(hi)) {
-		case 0:
-			pure[0] = 1; pure[1] = v; pure[2] = 0; break;
-		case 1:
-			pure[0] = w; pure[1] = 1; pure[2] = 0; break;
-		case 2:
-			pure[0] = 0; pure[1] = 1; pure[2] = v; break;
-		case 3:
-			pure[0] = 0; pure[1] = w; pure[2] = 1; break;
-		case 4:
-			pure[0] = v; pure[1] = 0; pure[2] = 1; break;
-		default:
-			pure[0] = 1; pure[1] = 0; pure[2] = w;
-	}
-	/* eslint-enable max-statements-per-line */
-
-	mg = (1.0 - c) * g;
-
-	return [
-		(c * pure[0] + mg) * 255,
-		(c * pure[1] + mg) * 255,
-		(c * pure[2] + mg) * 255
-	];
-};
-
-convert.hcg.hsv = function (hcg) {
-	const c = hcg[1] / 100;
-	const g = hcg[2] / 100;
-
-	const v = c + g * (1.0 - c);
-	let f = 0;
-
-	if (v > 0.0) {
-		f = c / v;
-	}
-
-	return [hcg[0], f * 100, v * 100];
-};
-
-convert.hcg.hsl = function (hcg) {
-	const c = hcg[1] / 100;
-	const g = hcg[2] / 100;
-
-	const l = g * (1.0 - c) + 0.5 * c;
-	let s = 0;
-
-	if (l > 0.0 && l < 0.5) {
-		s = c / (2 * l);
-	} else
-	if (l >= 0.5 && l < 1.0) {
-		s = c / (2 * (1 - l));
-	}
-
-	return [hcg[0], s * 100, l * 100];
-};
-
-convert.hcg.hwb = function (hcg) {
-	const c = hcg[1] / 100;
-	const g = hcg[2] / 100;
-	const v = c + g * (1.0 - c);
-	return [hcg[0], (v - c) * 100, (1 - v) * 100];
-};
-
-convert.hwb.hcg = function (hwb) {
-	const w = hwb[1] / 100;
-	const b = hwb[2] / 100;
-	const v = 1 - b;
-	const c = v - w;
-	let g = 0;
-
-	if (c < 1) {
-		g = (v - c) / (1 - c);
-	}
-
-	return [hwb[0], c * 100, g * 100];
-};
-
-convert.apple.rgb = function (apple) {
-	return [(apple[0] / 65535) * 255, (apple[1] / 65535) * 255, (apple[2] / 65535) * 255];
-};
-
-convert.rgb.apple = function (rgb) {
-	return [(rgb[0] / 255) * 65535, (rgb[1] / 255) * 65535, (rgb[2] / 255) * 65535];
-};
-
-convert.gray.rgb = function (args) {
-	return [args[0] / 100 * 255, args[0] / 100 * 255, args[0] / 100 * 255];
-};
-
-convert.gray.hsl = function (args) {
-	return [0, 0, args[0]];
-};
-
-convert.gray.hsv = convert.gray.hsl;
-
-convert.gray.hwb = function (gray) {
-	return [0, 100, gray[0]];
-};
-
-convert.gray.cmyk = function (gray) {
-	return [0, 0, 0, gray[0]];
-};
-
-convert.gray.lab = function (gray) {
-	return [gray[0], 0, 0];
-};
-
-convert.gray.hex = function (gray) {
-	const val = Math.round(gray[0] / 100 * 255) & 0xFF;
-	const integer = (val << 16) + (val << 8) + val;
-
-	const string = integer.toString(16).toUpperCase();
-	return '000000'.substring(string.length) + string;
-};
-
-convert.rgb.gray = function (rgb) {
-	const val = (rgb[0] + rgb[1] + rgb[2]) / 3;
-	return [val / 255 * 100];
-};
-
-
-/***/ }),
-
-/***/ 6931:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-const conversions = __nccwpck_require__(7391);
-const route = __nccwpck_require__(880);
-
-const convert = {};
-
-const models = Object.keys(conversions);
-
-function wrapRaw(fn) {
-	const wrappedFn = function (...args) {
-		const arg0 = args[0];
-		if (arg0 === undefined || arg0 === null) {
-			return arg0;
-		}
-
-		if (arg0.length > 1) {
-			args = arg0;
-		}
-
-		return fn(args);
-	};
-
-	// Preserve .conversion property if there is one
-	if ('conversion' in fn) {
-		wrappedFn.conversion = fn.conversion;
-	}
-
-	return wrappedFn;
-}
-
-function wrapRounded(fn) {
-	const wrappedFn = function (...args) {
-		const arg0 = args[0];
-
-		if (arg0 === undefined || arg0 === null) {
-			return arg0;
-		}
-
-		if (arg0.length > 1) {
-			args = arg0;
-		}
-
-		const result = fn(args);
-
-		// We're assuming the result is an array here.
-		// see notice in conversions.js; don't use box types
-		// in conversion functions.
-		if (typeof result === 'object') {
-			for (let len = result.length, i = 0; i < len; i++) {
-				result[i] = Math.round(result[i]);
-			}
-		}
-
-		return result;
-	};
-
-	// Preserve .conversion property if there is one
-	if ('conversion' in fn) {
-		wrappedFn.conversion = fn.conversion;
-	}
-
-	return wrappedFn;
-}
-
-models.forEach(fromModel => {
-	convert[fromModel] = {};
-
-	Object.defineProperty(convert[fromModel], 'channels', {value: conversions[fromModel].channels});
-	Object.defineProperty(convert[fromModel], 'labels', {value: conversions[fromModel].labels});
-
-	const routes = route(fromModel);
-	const routeModels = Object.keys(routes);
-
-	routeModels.forEach(toModel => {
-		const fn = routes[toModel];
-
-		convert[fromModel][toModel] = wrapRounded(fn);
-		convert[fromModel][toModel].raw = wrapRaw(fn);
-	});
-});
-
-module.exports = convert;
-
-
-/***/ }),
-
-/***/ 880:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-const conversions = __nccwpck_require__(7391);
-
-/*
-	This function routes a model to all other models.
-
-	all functions that are routed have a property `.conversion` attached
-	to the returned synthetic function. This property is an array
-	of strings, each with the steps in between the 'from' and 'to'
-	color models (inclusive).
-
-	conversions that are not possible simply are not included.
-*/
-
-function buildGraph() {
-	const graph = {};
-	// https://jsperf.com/object-keys-vs-for-in-with-closure/3
-	const models = Object.keys(conversions);
-
-	for (let len = models.length, i = 0; i < len; i++) {
-		graph[models[i]] = {
-			// http://jsperf.com/1-vs-infinity
-			// micro-opt, but this is simple.
-			distance: -1,
-			parent: null
-		};
-	}
-
-	return graph;
-}
-
-// https://en.wikipedia.org/wiki/Breadth-first_search
-function deriveBFS(fromModel) {
-	const graph = buildGraph();
-	const queue = [fromModel]; // Unshift -> queue -> pop
-
-	graph[fromModel].distance = 0;
-
-	while (queue.length) {
-		const current = queue.pop();
-		const adjacents = Object.keys(conversions[current]);
-
-		for (let len = adjacents.length, i = 0; i < len; i++) {
-			const adjacent = adjacents[i];
-			const node = graph[adjacent];
-
-			if (node.distance === -1) {
-				node.distance = graph[current].distance + 1;
-				node.parent = current;
-				queue.unshift(adjacent);
-			}
-		}
-	}
-
-	return graph;
-}
-
-function link(from, to) {
-	return function (args) {
-		return to(from(args));
-	};
-}
-
-function wrapConversion(toModel, graph) {
-	const path = [graph[toModel].parent, toModel];
-	let fn = conversions[graph[toModel].parent][toModel];
-
-	let cur = graph[toModel].parent;
-	while (graph[cur].parent) {
-		path.unshift(graph[cur].parent);
-		fn = link(conversions[graph[cur].parent][cur], fn);
-		cur = graph[cur].parent;
-	}
-
-	fn.conversion = path;
-	return fn;
-}
-
-module.exports = function (fromModel) {
-	const graph = deriveBFS(fromModel);
-	const conversion = {};
-
-	const models = Object.keys(graph);
-	for (let len = models.length, i = 0; i < len; i++) {
-		const toModel = models[i];
-		const node = graph[toModel];
-
-		if (node.parent === null) {
-			// No possible conversion, or this node is the source model.
-			continue;
-		}
-
-		conversion[toModel] = wrapConversion(toModel, graph);
-	}
-
-	return conversion;
-};
-
-
-
-/***/ }),
-
-/***/ 8510:
-/***/ ((module) => {
-
-"use strict";
-
-
-module.exports = {
-	"aliceblue": [240, 248, 255],
-	"antiquewhite": [250, 235, 215],
-	"aqua": [0, 255, 255],
-	"aquamarine": [127, 255, 212],
-	"azure": [240, 255, 255],
-	"beige": [245, 245, 220],
-	"bisque": [255, 228, 196],
-	"black": [0, 0, 0],
-	"blanchedalmond": [255, 235, 205],
-	"blue": [0, 0, 255],
-	"blueviolet": [138, 43, 226],
-	"brown": [165, 42, 42],
-	"burlywood": [222, 184, 135],
-	"cadetblue": [95, 158, 160],
-	"chartreuse": [127, 255, 0],
-	"chocolate": [210, 105, 30],
-	"coral": [255, 127, 80],
-	"cornflowerblue": [100, 149, 237],
-	"cornsilk": [255, 248, 220],
-	"crimson": [220, 20, 60],
-	"cyan": [0, 255, 255],
-	"darkblue": [0, 0, 139],
-	"darkcyan": [0, 139, 139],
-	"darkgoldenrod": [184, 134, 11],
-	"darkgray": [169, 169, 169],
-	"darkgreen": [0, 100, 0],
-	"darkgrey": [169, 169, 169],
-	"darkkhaki": [189, 183, 107],
-	"darkmagenta": [139, 0, 139],
-	"darkolivegreen": [85, 107, 47],
-	"darkorange": [255, 140, 0],
-	"darkorchid": [153, 50, 204],
-	"darkred": [139, 0, 0],
-	"darksalmon": [233, 150, 122],
-	"darkseagreen": [143, 188, 143],
-	"darkslateblue": [72, 61, 139],
-	"darkslategray": [47, 79, 79],
-	"darkslategrey": [47, 79, 79],
-	"darkturquoise": [0, 206, 209],
-	"darkviolet": [148, 0, 211],
-	"deeppink": [255, 20, 147],
-	"deepskyblue": [0, 191, 255],
-	"dimgray": [105, 105, 105],
-	"dimgrey": [105, 105, 105],
-	"dodgerblue": [30, 144, 255],
-	"firebrick": [178, 34, 34],
-	"floralwhite": [255, 250, 240],
-	"forestgreen": [34, 139, 34],
-	"fuchsia": [255, 0, 255],
-	"gainsboro": [220, 220, 220],
-	"ghostwhite": [248, 248, 255],
-	"gold": [255, 215, 0],
-	"goldenrod": [218, 165, 32],
-	"gray": [128, 128, 128],
-	"green": [0, 128, 0],
-	"greenyellow": [173, 255, 47],
-	"grey": [128, 128, 128],
-	"honeydew": [240, 255, 240],
-	"hotpink": [255, 105, 180],
-	"indianred": [205, 92, 92],
-	"indigo": [75, 0, 130],
-	"ivory": [255, 255, 240],
-	"khaki": [240, 230, 140],
-	"lavender": [230, 230, 250],
-	"lavenderblush": [255, 240, 245],
-	"lawngreen": [124, 252, 0],
-	"lemonchiffon": [255, 250, 205],
-	"lightblue": [173, 216, 230],
-	"lightcoral": [240, 128, 128],
-	"lightcyan": [224, 255, 255],
-	"lightgoldenrodyellow": [250, 250, 210],
-	"lightgray": [211, 211, 211],
-	"lightgreen": [144, 238, 144],
-	"lightgrey": [211, 211, 211],
-	"lightpink": [255, 182, 193],
-	"lightsalmon": [255, 160, 122],
-	"lightseagreen": [32, 178, 170],
-	"lightskyblue": [135, 206, 250],
-	"lightslategray": [119, 136, 153],
-	"lightslategrey": [119, 136, 153],
-	"lightsteelblue": [176, 196, 222],
-	"lightyellow": [255, 255, 224],
-	"lime": [0, 255, 0],
-	"limegreen": [50, 205, 50],
-	"linen": [250, 240, 230],
-	"magenta": [255, 0, 255],
-	"maroon": [128, 0, 0],
-	"mediumaquamarine": [102, 205, 170],
-	"mediumblue": [0, 0, 205],
-	"mediumorchid": [186, 85, 211],
-	"mediumpurple": [147, 112, 219],
-	"mediumseagreen": [60, 179, 113],
-	"mediumslateblue": [123, 104, 238],
-	"mediumspringgreen": [0, 250, 154],
-	"mediumturquoise": [72, 209, 204],
-	"mediumvioletred": [199, 21, 133],
-	"midnightblue": [25, 25, 112],
-	"mintcream": [245, 255, 250],
-	"mistyrose": [255, 228, 225],
-	"moccasin": [255, 228, 181],
-	"navajowhite": [255, 222, 173],
-	"navy": [0, 0, 128],
-	"oldlace": [253, 245, 230],
-	"olive": [128, 128, 0],
-	"olivedrab": [107, 142, 35],
-	"orange": [255, 165, 0],
-	"orangered": [255, 69, 0],
-	"orchid": [218, 112, 214],
-	"palegoldenrod": [238, 232, 170],
-	"palegreen": [152, 251, 152],
-	"paleturquoise": [175, 238, 238],
-	"palevioletred": [219, 112, 147],
-	"papayawhip": [255, 239, 213],
-	"peachpuff": [255, 218, 185],
-	"peru": [205, 133, 63],
-	"pink": [255, 192, 203],
-	"plum": [221, 160, 221],
-	"powderblue": [176, 224, 230],
-	"purple": [128, 0, 128],
-	"rebeccapurple": [102, 51, 153],
-	"red": [255, 0, 0],
-	"rosybrown": [188, 143, 143],
-	"royalblue": [65, 105, 225],
-	"saddlebrown": [139, 69, 19],
-	"salmon": [250, 128, 114],
-	"sandybrown": [244, 164, 96],
-	"seagreen": [46, 139, 87],
-	"seashell": [255, 245, 238],
-	"sienna": [160, 82, 45],
-	"silver": [192, 192, 192],
-	"skyblue": [135, 206, 235],
-	"slateblue": [106, 90, 205],
-	"slategray": [112, 128, 144],
-	"slategrey": [112, 128, 144],
-	"snow": [255, 250, 250],
-	"springgreen": [0, 255, 127],
-	"steelblue": [70, 130, 180],
-	"tan": [210, 180, 140],
-	"teal": [0, 128, 128],
-	"thistle": [216, 191, 216],
-	"tomato": [255, 99, 71],
-	"turquoise": [64, 224, 208],
-	"violet": [238, 130, 238],
-	"wheat": [245, 222, 179],
-	"white": [255, 255, 255],
-	"whitesmoke": [245, 245, 245],
-	"yellow": [255, 255, 0],
-	"yellowgreen": [154, 205, 50]
-};
-
-
-/***/ }),
-
-/***/ 1621:
-/***/ ((module) => {
-
-"use strict";
-
-
-module.exports = (flag, argv = process.argv) => {
-	const prefix = flag.startsWith('-') ? '' : (flag.length === 1 ? '-' : '--');
-	const position = argv.indexOf(prefix + flag);
-	const terminatorPosition = argv.indexOf('--');
-	return position !== -1 && (terminatorPosition === -1 || position < terminatorPosition);
-};
-
-
-/***/ }),
-
-/***/ 4124:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-try {
-  var util = __nccwpck_require__(3837);
-  /* istanbul ignore next */
-  if (typeof util.inherits !== 'function') throw '';
-  module.exports = util.inherits;
-} catch (e) {
-  /* istanbul ignore next */
-  module.exports = __nccwpck_require__(8544);
-}
-
-
-/***/ }),
-
-/***/ 8544:
-/***/ ((module) => {
-
-if (typeof Object.create === 'function') {
-  // implementation from standard node.js 'util' module
-  module.exports = function inherits(ctor, superCtor) {
-    if (superCtor) {
-      ctor.super_ = superCtor
-      ctor.prototype = Object.create(superCtor.prototype, {
-        constructor: {
-          value: ctor,
-          enumerable: false,
-          writable: true,
-          configurable: true
-        }
-      })
-    }
-  };
-} else {
-  // old school shim for old browsers
-  module.exports = function inherits(ctor, superCtor) {
-    if (superCtor) {
-      ctor.super_ = superCtor
-      var TempCtor = function () {}
-      TempCtor.prototype = superCtor.prototype
-      ctor.prototype = new TempCtor()
-      ctor.prototype.constructor = ctor
-    }
-  }
-}
-
-
-/***/ }),
-
-/***/ 3795:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var inherits = __nccwpck_require__(4124)
-var EventEmitter = (__nccwpck_require__(2361).EventEmitter)
-
-module.exports = Queue
-module.exports["default"] = Queue
-
-function Queue (options) {
-  if (!(this instanceof Queue)) {
-    return new Queue(options)
-  }
-
-  EventEmitter.call(this)
-  options = options || {}
-  this.concurrency = options.concurrency || Infinity
-  this.timeout = options.timeout || 0
-  this.autostart = options.autostart || false
-  this.results = options.results || null
-  this.pending = 0
-  this.session = 0
-  this.running = false
-  this.jobs = []
-  this.timers = {}
-}
-inherits(Queue, EventEmitter)
-
-var arrayMethods = [
-  'pop',
-  'shift',
-  'indexOf',
-  'lastIndexOf'
-]
-
-arrayMethods.forEach(function (method) {
-  Queue.prototype[method] = function () {
-    return Array.prototype[method].apply(this.jobs, arguments)
-  }
-})
-
-Queue.prototype.slice = function (begin, end) {
-  this.jobs = this.jobs.slice(begin, end)
-  return this
-}
-
-Queue.prototype.reverse = function () {
-  this.jobs.reverse()
-  return this
-}
-
-var arrayAddMethods = [
-  'push',
-  'unshift',
-  'splice'
-]
-
-arrayAddMethods.forEach(function (method) {
-  Queue.prototype[method] = function () {
-    var methodResult = Array.prototype[method].apply(this.jobs, arguments)
-    if (this.autostart) {
-      this.start()
-    }
-    return methodResult
-  }
-})
-
-Object.defineProperty(Queue.prototype, 'length', {
-  get: function () {
-    return this.pending + this.jobs.length
-  }
-})
-
-Queue.prototype.start = function (cb) {
-  if (cb) {
-    callOnErrorOrEnd.call(this, cb)
-  }
-
-  this.running = true
-
-  if (this.pending >= this.concurrency) {
-    return
-  }
-
-  if (this.jobs.length === 0) {
-    if (this.pending === 0) {
-      done.call(this)
-    }
-    return
-  }
-
-  var self = this
-  var job = this.jobs.shift()
-  var once = true
-  var session = this.session
-  var timeoutId = null
-  var didTimeout = false
-  var resultIndex = null
-  var timeout = job.hasOwnProperty('timeout') ? job.timeout : this.timeout
-
-  function next (err, result) {
-    if (once && self.session === session) {
-      once = false
-      self.pending--
-      if (timeoutId !== null) {
-        delete self.timers[timeoutId]
-        clearTimeout(timeoutId)
-      }
-
-      if (err) {
-        self.emit('error', err, job)
-      } else if (didTimeout === false) {
-        if (resultIndex !== null) {
-          self.results[resultIndex] = Array.prototype.slice.call(arguments, 1)
-        }
-        self.emit('success', result, job)
-      }
-
-      if (self.session === session) {
-        if (self.pending === 0 && self.jobs.length === 0) {
-          done.call(self)
-        } else if (self.running) {
-          self.start()
-        }
-      }
-    }
-  }
-
-  if (timeout) {
-    timeoutId = setTimeout(function () {
-      didTimeout = true
-      if (self.listeners('timeout').length > 0) {
-        self.emit('timeout', next, job)
-      } else {
-        next()
-      }
-    }, timeout)
-    this.timers[timeoutId] = timeoutId
-  }
-
-  if (this.results) {
-    resultIndex = this.results.length
-    this.results[resultIndex] = null
-  }
-
-  this.pending++
-  self.emit('start', job)
-  var promise = job(next)
-  if (promise && promise.then && typeof promise.then === 'function') {
-    promise.then(function (result) {
-      return next(null, result)
-    }).catch(function (err) {
-      return next(err || true)
-    })
-  }
-
-  if (this.running && this.jobs.length > 0) {
-    this.start()
-  }
-}
-
-Queue.prototype.stop = function () {
-  this.running = false
-}
-
-Queue.prototype.end = function (err) {
-  clearTimers.call(this)
-  this.jobs.length = 0
-  this.pending = 0
-  done.call(this, err)
-}
-
-function clearTimers () {
-  for (var key in this.timers) {
-    var timeoutId = this.timers[key]
-    delete this.timers[key]
-    clearTimeout(timeoutId)
-  }
-}
-
-function callOnErrorOrEnd (cb) {
-  var self = this
-  this.on('error', onerror)
-  this.on('end', onend)
-
-  function onerror (err) { self.end(err) }
-  function onend (err) {
-    self.removeListener('error', onerror)
-    self.removeListener('end', onend)
-    cb(err, this.results)
-  }
-}
-
-function done (err) {
-  this.session++
-  this.running = false
-  this.emit('end', err)
-}
-
-
-/***/ }),
-
-/***/ 5118:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-"use strict";
-/* eslint-disable node/no-deprecated-api */
-
-
-
-var buffer = __nccwpck_require__(4300)
-var Buffer = buffer.Buffer
-
-var safer = {}
-
-var key
-
-for (key in buffer) {
-  if (!buffer.hasOwnProperty(key)) continue
-  if (key === 'SlowBuffer' || key === 'Buffer') continue
-  safer[key] = buffer[key]
-}
-
-var Safer = safer.Buffer = {}
-for (key in Buffer) {
-  if (!Buffer.hasOwnProperty(key)) continue
-  if (key === 'allocUnsafe' || key === 'allocUnsafeSlow') continue
-  Safer[key] = Buffer[key]
-}
-
-safer.Buffer.prototype = Buffer.prototype
-
-if (!Safer.from || Safer.from === Uint8Array.from) {
-  Safer.from = function (value, encodingOrOffset, length) {
-    if (typeof value === 'number') {
-      throw new TypeError('The "value" argument must not be of type number. Received type ' + typeof value)
-    }
-    if (value && typeof value.length === 'undefined') {
-      throw new TypeError('The first argument must be one of type string, Buffer, ArrayBuffer, Array, or Array-like Object. Received type ' + typeof value)
-    }
-    return Buffer(value, encodingOrOffset, length)
-  }
-}
-
-if (!Safer.alloc) {
-  Safer.alloc = function (size, fill, encoding) {
-    if (typeof size !== 'number') {
-      throw new TypeError('The "size" argument must be of type number. Received type ' + typeof size)
-    }
-    if (size < 0 || size >= 2 * (1 << 30)) {
-      throw new RangeError('The value "' + size + '" is invalid for option "size"')
-    }
-    var buf = Buffer(size)
-    if (!fill || fill.length === 0) {
-      buf.fill(0)
-    } else if (typeof encoding === 'string') {
-      buf.fill(fill, encoding)
-    } else {
-      buf.fill(fill)
-    }
-    return buf
-  }
-}
-
-if (!safer.kStringMaxLength) {
-  try {
-    safer.kStringMaxLength = process.binding('buffer').kStringMaxLength
-  } catch (e) {
-    // we can't determine kStringMaxLength in environments where process.binding
-    // is unsupported, so let's not set it
-  }
-}
-
-if (!safer.constants) {
-  safer.constants = {
-    MAX_LENGTH: safer.kMaxLength
-  }
-  if (safer.kStringMaxLength) {
-    safer.constants.MAX_STRING_LENGTH = safer.kStringMaxLength
-  }
-}
-
-module.exports = safer
-
-
-/***/ }),
-
-/***/ 792:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-module.exports = {
-  SFTPStream: __nccwpck_require__(1517),
-  SSH2Stream: __nccwpck_require__(1788),
-  utils: __nccwpck_require__(4928),
-  constants: __nccwpck_require__(4617)
-};
-
-/***/ }),
-
-/***/ 9419:
-/***/ ((module) => {
-
-module.exports = {
-  readUInt32BE: function readUInt32BE(buf, offset) {
-    return buf[offset++] * 16777216
-           + buf[offset++] * 65536
-           + buf[offset++] * 256
-           + buf[offset];
-  },
-  writeUInt32BE: function writeUInt32BE(buf, value, offset) {
-    buf[offset++] = (value >>> 24);
-    buf[offset++] = (value >>> 16);
-    buf[offset++] = (value >>> 8);
-    buf[offset++] = value;
-    return offset;
-  },
-  writeUInt32LE: function writeUInt32LE(buf, value, offset) {
-    buf[offset++] = value;
-    buf[offset++] = (value >>> 8);
-    buf[offset++] = (value >>> 16);
-    buf[offset++] = (value >>> 24);
-    return offset;
-  }
-};
-
-
-/***/ }),
-
-/***/ 4617:
+/***/ 4841:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
-var i;
-var keys;
-var len;
-
-var crypto = __nccwpck_require__(6113);
-var eddsaSupported = (function() {
-  if (typeof crypto.sign === 'function'
-      && typeof crypto.verify === 'function') {
-    var key = '-----BEGIN PRIVATE KEY-----\r\nMC4CAQAwBQYDK2VwBCIEIHKj+sVa9WcD'
-              + '/q2DJUJaf43Kptc8xYuUQA4bOFj9vC8T\r\n-----END PRIVATE KEY-----';
-    var data = Buffer.from('a');
-    var sig;
-    var verified;
-    try {
-      sig = crypto.sign(null, data, key);
-      verified = crypto.verify(null, data, key, sig);
-    } catch (ex) {}
-    return (Buffer.isBuffer(sig) && sig.length === 64 && verified === true);
-  }
-
-  return false;
-})();
-
-var curve25519Supported = (typeof crypto.diffieHellman === 'function'
-                           && typeof crypto.generateKeyPairSync === 'function'
-                           && typeof crypto.createPublicKey === 'function');
-
-var MESSAGE = exports.MESSAGE = {
-  // Transport layer protocol -- generic (1-19)
-  DISCONNECT: 1,
-  IGNORE: 2,
-  UNIMPLEMENTED: 3,
-  DEBUG: 4,
-  SERVICE_REQUEST: 5,
-  SERVICE_ACCEPT: 6,
-
-  // Transport layer protocol -- algorithm negotiation (20-29)
-  KEXINIT: 20,
-  NEWKEYS: 21,
-
-  // Transport layer protocol -- key exchange method-specific (30-49)
-
-  // User auth protocol -- generic (50-59)
-  USERAUTH_REQUEST: 50,
-  USERAUTH_FAILURE: 51,
-  USERAUTH_SUCCESS: 52,
-  USERAUTH_BANNER: 53,
-
-  // User auth protocol -- user auth method-specific (60-79)
-
-  // Connection protocol -- generic (80-89)
-  GLOBAL_REQUEST: 80,
-  REQUEST_SUCCESS: 81,
-  REQUEST_FAILURE: 82,
-
-  // Connection protocol -- channel-related (90-127)
-  CHANNEL_OPEN: 90,
-  CHANNEL_OPEN_CONFIRMATION: 91,
-  CHANNEL_OPEN_FAILURE: 92,
-  CHANNEL_WINDOW_ADJUST: 93,
-  CHANNEL_DATA: 94,
-  CHANNEL_EXTENDED_DATA: 95,
-  CHANNEL_EOF: 96,
-  CHANNEL_CLOSE: 97,
-  CHANNEL_REQUEST: 98,
-  CHANNEL_SUCCESS: 99,
-  CHANNEL_FAILURE: 100
-
-  // Reserved for client protocols (128-191)
-
-  // Local extensions (192-155)
-};
-for (i = 0, keys = Object.keys(MESSAGE), len = keys.length; i < len; ++i)
-  MESSAGE[MESSAGE[keys[i]]] = keys[i];
-// context-specific message codes:
-MESSAGE.KEXDH_INIT = 30;
-MESSAGE.KEXDH_REPLY = 31;
-MESSAGE.KEXDH_GEX_REQUEST = 34;
-MESSAGE.KEXDH_GEX_GROUP = 31;
-MESSAGE.KEXDH_GEX_INIT = 32;
-MESSAGE.KEXDH_GEX_REPLY = 33;
-MESSAGE.KEXECDH_INIT = 30; // included here for completeness
-MESSAGE.KEXECDH_REPLY = 31; // included here for completeness
-MESSAGE.USERAUTH_PASSWD_CHANGEREQ = 60;
-MESSAGE.USERAUTH_PK_OK = 60;
-MESSAGE.USERAUTH_INFO_REQUEST = 60;
-MESSAGE.USERAUTH_INFO_RESPONSE = 61;
-
-var DYNAMIC_KEXDH_MESSAGE = exports.DYNAMIC_KEXDH_MESSAGE = {};
-DYNAMIC_KEXDH_MESSAGE[MESSAGE.KEXDH_GEX_GROUP] = 'KEXDH_GEX_GROUP';
-DYNAMIC_KEXDH_MESSAGE[MESSAGE.KEXDH_GEX_REPLY] = 'KEXDH_GEX_REPLY';
-
-var KEXDH_MESSAGE = exports.KEXDH_MESSAGE = {};
-KEXDH_MESSAGE[MESSAGE.KEXDH_INIT] = 'KEXDH_INIT';
-KEXDH_MESSAGE[MESSAGE.KEXDH_REPLY] = 'KEXDH_REPLY';
-
-var DISCONNECT_REASON = exports.DISCONNECT_REASON = {
-  HOST_NOT_ALLOWED_TO_CONNECT: 1,
-  PROTOCOL_ERROR: 2,
-  KEY_EXCHANGE_FAILED: 3,
-  RESERVED: 4,
-  MAC_ERROR: 5,
-  COMPRESSION_ERROR: 6,
-  SERVICE_NOT_AVAILABLE: 7,
-  PROTOCOL_VERSION_NOT_SUPPORTED: 8,
-  HOST_KEY_NOT_VERIFIABLE: 9,
-  CONNECTION_LOST: 10,
-  BY_APPLICATION: 11,
-  TOO_MANY_CONNECTIONS: 12,
-  AUTH_CANCELED_BY_USER: 13,
-  NO_MORE_AUTH_METHODS_AVAILABLE: 14,
-  ILLEGAL_USER_NAME: 15
-};
-for (i = 0, keys = Object.keys(DISCONNECT_REASON), len = keys.length;
-     i < len;
-     ++i) {
-  DISCONNECT_REASON[DISCONNECT_REASON[keys[i]]] = keys[i];
-}
-
-var CHANNEL_OPEN_FAILURE = exports.CHANNEL_OPEN_FAILURE = {
-  ADMINISTRATIVELY_PROHIBITED: 1,
-  CONNECT_FAILED: 2,
-  UNKNOWN_CHANNEL_TYPE: 3,
-  RESOURCE_SHORTAGE: 4
-};
-for (i = 0, keys = Object.keys(CHANNEL_OPEN_FAILURE), len = keys.length;
-     i < len;
-     ++i) {
-  CHANNEL_OPEN_FAILURE[CHANNEL_OPEN_FAILURE[keys[i]]] = keys[i];
-}
-
-var TERMINAL_MODE = exports.TERMINAL_MODE = {
-  TTY_OP_END: 0,        // Indicates end of options.
-  VINTR: 1,             // Interrupt character; 255 if none. Similarly for the
-                        //  other characters.  Not all of these characters are
-                        //  supported on all systems.
-  VQUIT: 2,             // The quit character (sends SIGQUIT signal on POSIX
-                        //  systems).
-  VERASE: 3,            // Erase the character to left of the cursor.
-  VKILL: 4,             // Kill the current input line.
-  VEOF: 5,              // End-of-file character (sends EOF from the terminal).
-  VEOL: 6,              // End-of-line character in addition to carriage return
-                        //  and/or linefeed.
-  VEOL2: 7,             // Additional end-of-line character.
-  VSTART: 8,            // Continues paused output (normally control-Q).
-  VSTOP: 9,             // Pauses output (normally control-S).
-  VSUSP: 10,            // Suspends the current program.
-  VDSUSP: 11,           // Another suspend character.
-  VREPRINT: 12,         // Reprints the current input line.
-  VWERASE: 13,          // Erases a word left of cursor.
-  VLNEXT: 14,           // Enter the next character typed literally, even if it
-                        //  is a special character
-  VFLUSH: 15,           // Character to flush output.
-  VSWTCH: 16,           // Switch to a different shell layer.
-  VSTATUS: 17,          // Prints system status line (load, command, pid, etc).
-  VDISCARD: 18,         // Toggles the flushing of terminal output.
-  IGNPAR: 30,           // The ignore parity flag.  The parameter SHOULD be 0
-                        //  if this flag is FALSE, and 1 if it is TRUE.
-  PARMRK: 31,           // Mark parity and framing errors.
-  INPCK: 32,            // Enable checking of parity errors.
-  ISTRIP: 33,           // Strip 8th bit off characters.
-  INLCR: 34,            // Map NL into CR on input.
-  IGNCR: 35,            // Ignore CR on input.
-  ICRNL: 36,            // Map CR to NL on input.
-  IUCLC: 37,            // Translate uppercase characters to lowercase.
-  IXON: 38,             // Enable output flow control.
-  IXANY: 39,            // Any char will restart after stop.
-  IXOFF: 40,            // Enable input flow control.
-  IMAXBEL: 41,          // Ring bell on input queue full.
-  ISIG: 50,             // Enable signals INTR, QUIT, [D]SUSP.
-  ICANON: 51,           // Canonicalize input lines.
-  XCASE: 52,            // Enable input and output of uppercase characters by
-                        //  preceding their lowercase equivalents with "\".
-  ECHO: 53,             // Enable echoing.
-  ECHOE: 54,            // Visually erase chars.
-  ECHOK: 55,            // Kill character discards current line.
-  ECHONL: 56,           // Echo NL even if ECHO is off.
-  NOFLSH: 57,           // Don't flush after interrupt.
-  TOSTOP: 58,           // Stop background jobs from output.
-  IEXTEN: 59,           // Enable extensions.
-  ECHOCTL: 60,          // Echo control characters as ^(Char).
-  ECHOKE: 61,           // Visual erase for line kill.
-  PENDIN: 62,           // Retype pending input.
-  OPOST: 70,            // Enable output processing.
-  OLCUC: 71,            // Convert lowercase to uppercase.
-  ONLCR: 72,            // Map NL to CR-NL.
-  OCRNL: 73,            // Translate carriage return to newline (output).
-  ONOCR: 74,            // Translate newline to carriage return-newline
-                        // (output).
-  ONLRET: 75,           // Newline performs a carriage return (output).
-  CS7: 90,              // 7 bit mode.
-  CS8: 91,              // 8 bit mode.
-  PARENB: 92,           // Parity enable.
-  PARODD: 93,           // Odd parity, else even.
-  TTY_OP_ISPEED: 128,   // Specifies the input baud rate in bits per second.
-  TTY_OP_OSPEED: 129    // Specifies the output baud rate in bits per second.
-};
-for (i = 0, keys = Object.keys(TERMINAL_MODE), len = keys.length; i < len; ++i)
-  TERMINAL_MODE[TERMINAL_MODE[keys[i]]] = keys[i];
-
-var CHANNEL_EXTENDED_DATATYPE = exports.CHANNEL_EXTENDED_DATATYPE = {
-  STDERR: 1
-};
-for (i = 0, keys = Object.keys(CHANNEL_EXTENDED_DATATYPE), len = keys.length;
-     i < len;
-     ++i) {
-  CHANNEL_EXTENDED_DATATYPE[CHANNEL_EXTENDED_DATATYPE[keys[i]]] = keys[i];
-}
-
-exports.SIGNALS = ['ABRT', 'ALRM', 'FPE', 'HUP', 'ILL', 'INT',
-                   'QUIT', 'SEGV', 'TERM', 'USR1', 'USR2', 'KILL',
-                   'PIPE'];
-
-var DEFAULT_KEX = [
-  // https://tools.ietf.org/html/rfc5656#section-10.1
-  'ecdh-sha2-nistp256',
-  'ecdh-sha2-nistp384',
-  'ecdh-sha2-nistp521',
-
-  // https://tools.ietf.org/html/rfc4419#section-4
-  'diffie-hellman-group-exchange-sha256',
-
-  'diffie-hellman-group14-sha256',
-  'diffie-hellman-group16-sha512',
-  'diffie-hellman-group18-sha512',
-
-  'diffie-hellman-group14-sha1', // REQUIRED
-];
-if (curve25519Supported) {
-  DEFAULT_KEX.unshift('curve25519-sha256');
-  DEFAULT_KEX.unshift('curve25519-sha256@libssh.org');
-}
-var SUPPORTED_KEX = [
-  // https://tools.ietf.org/html/rfc4419#section-4
-  'diffie-hellman-group-exchange-sha1',
-
-  'diffie-hellman-group1-sha1'  // REQUIRED
-];
-var KEX_BUF = Buffer.from(DEFAULT_KEX.join(','), 'ascii');
-SUPPORTED_KEX = DEFAULT_KEX.concat(SUPPORTED_KEX);
-
-var DEFAULT_SERVER_HOST_KEY = [
-  'ecdsa-sha2-nistp256',
-  'ecdsa-sha2-nistp384',
-  'ecdsa-sha2-nistp521',
-  'ssh-rsa',
-];
-if (eddsaSupported)
-  DEFAULT_SERVER_HOST_KEY.unshift('ssh-ed25519');
-var SUPPORTED_SERVER_HOST_KEY = [
-  'ssh-dss'
-];
-var SERVER_HOST_KEY_BUF = Buffer.from(DEFAULT_SERVER_HOST_KEY.join(','),
-                                      'ascii');
-SUPPORTED_SERVER_HOST_KEY = DEFAULT_SERVER_HOST_KEY.concat(
-  SUPPORTED_SERVER_HOST_KEY
-);
-
-var DEFAULT_CIPHER = [
-  // http://tools.ietf.org/html/rfc4344#section-4
-  'aes128-ctr',
-  'aes192-ctr',
-  'aes256-ctr',
-
-  // http://tools.ietf.org/html/rfc5647
-  'aes128-gcm',
-  'aes128-gcm@openssh.com',
-  'aes256-gcm',
-  'aes256-gcm@openssh.com'
-];
-var SUPPORTED_CIPHER = [
-  'aes256-cbc',
-  'aes192-cbc',
-  'aes128-cbc',
-  'blowfish-cbc',
-  '3des-cbc',
-
-  // http://tools.ietf.org/html/rfc4345#section-4:
-  'arcfour256',
-  'arcfour128',
-
-  'cast128-cbc',
-  'arcfour'
-];
-var CIPHER_BUF = Buffer.from(DEFAULT_CIPHER.join(','), 'ascii');
-SUPPORTED_CIPHER = DEFAULT_CIPHER.concat(SUPPORTED_CIPHER);
-
-var DEFAULT_HMAC = [
-  'hmac-sha2-256',
-  'hmac-sha2-512',
-  'hmac-sha1',
-];
-var SUPPORTED_HMAC = [
-  'hmac-md5',
-  'hmac-sha2-256-96', // first 96 bits of HMAC-SHA256
-  'hmac-sha2-512-96', // first 96 bits of HMAC-SHA512
-  'hmac-ripemd160',
-  'hmac-sha1-96',     // first 96 bits of HMAC-SHA1
-  'hmac-md5-96'       // first 96 bits of HMAC-MD5
-];
-var HMAC_BUF = Buffer.from(DEFAULT_HMAC.join(','), 'ascii');
-SUPPORTED_HMAC = DEFAULT_HMAC.concat(SUPPORTED_HMAC);
-
-var DEFAULT_COMPRESS = [
-  'none',
-  'zlib@openssh.com', // ZLIB (LZ77) compression, except
-                      // compression/decompression does not start until after
-                      // successful user authentication
-  'zlib'              // ZLIB (LZ77) compression
-];
-var SUPPORTED_COMPRESS = [];
-var COMPRESS_BUF = Buffer.from(DEFAULT_COMPRESS.join(','), 'ascii');
-SUPPORTED_COMPRESS = DEFAULT_COMPRESS.concat(SUPPORTED_COMPRESS);
-
-function makeCipherInfo(blockLen, keyLen, ivLen, authLen, discardLen, stream) {
-  return {
-    blockLen: blockLen,
-    keyLen: keyLen,
-    ivLen: ivLen === 0 ? blockLen : ivLen,
-    authLen: authLen,
-    discardLen: discardLen,
-    stream: stream,
-  };
-}
-exports.CIPHER_INFO = {
-  'aes128-gcm': makeCipherInfo(16, 16, 12, 16, 0, false),
-  'aes256-gcm': makeCipherInfo(16, 32, 12, 16, 0, false),
-  'aes128-gcm@openssh.com': makeCipherInfo(16, 16, 12, 16, 0, false),
-  'aes256-gcm@openssh.com': makeCipherInfo(16, 32, 12, 16, 0, false),
-
-  'aes128-cbc': makeCipherInfo(16, 16, 0, 0, 0, false),
-  'aes192-cbc': makeCipherInfo(16, 24, 0, 0, 0, false),
-  'aes256-cbc': makeCipherInfo(16, 32, 0, 0, 0, false),
-  'rijndael-cbc@lysator.liu.se': makeCipherInfo(16, 32, 0, 0, 0, false),
-  '3des-cbc': makeCipherInfo(8, 24, 0, 0, 0, false),
-  'blowfish-cbc': makeCipherInfo(8, 16, 0, 0, 0, false),
-  'idea-cbc': makeCipherInfo(8, 16, 0, 0, 0, false),
-  'cast128-cbc': makeCipherInfo(8, 16, 0, 0, 0, false),
-  'camellia128-cbc': makeCipherInfo(16, 16, 0, 0, 0, false),
-  'camellia192-cbc': makeCipherInfo(16, 24, 0, 0, 0, false),
-  'camellia256-cbc': makeCipherInfo(16, 32, 0, 0, 0, false),
-  'camellia128-cbc@openssh.com': makeCipherInfo(16, 16, 0, 0, 0, false),
-  'camellia192-cbc@openssh.com': makeCipherInfo(16, 24, 0, 0, 0, false),
-  'camellia256-cbc@openssh.com': makeCipherInfo(16, 32, 0, 0, 0, false),
-
-  'aes128-ctr': makeCipherInfo(16, 16, 0, 0, 0, false),
-  'aes192-ctr': makeCipherInfo(16, 24, 0, 0, 0, false),
-  'aes256-ctr': makeCipherInfo(16, 32, 0, 0, 0, false),
-  '3des-ctr': makeCipherInfo(8, 24, 0, 0, 0, false),
-  'blowfish-ctr': makeCipherInfo(8, 16, 0, 0, 0, false),
-  'cast128-ctr': makeCipherInfo(8, 16, 0, 0, 0, false),
-  'camellia128-ctr': makeCipherInfo(16, 16, 0, 0, 0, false),
-  'camellia192-ctr': makeCipherInfo(16, 24, 0, 0, 0, false),
-  'camellia256-ctr': makeCipherInfo(16, 32, 0, 0, 0, false),
-  'camellia128-ctr@openssh.com': makeCipherInfo(16, 16, 0, 0, 0, false),
-  'camellia192-ctr@openssh.com': makeCipherInfo(16, 24, 0, 0, 0, false),
-  'camellia256-ctr@openssh.com': makeCipherInfo(16, 32, 0, 0, 0, false),
-
-  /* The "arcfour128" algorithm is the RC4 cipher, as described in
-     [SCHNEIER], using a 128-bit key.  The first 1536 bytes of keystream
-     generated by the cipher MUST be discarded, and the first byte of the
-     first encrypted packet MUST be encrypted using the 1537th byte of
-     keystream.
-
-     -- http://tools.ietf.org/html/rfc4345#section-4 */
-  'arcfour': makeCipherInfo(8, 16, 0, 0, 1536, true),
-  'arcfour128': makeCipherInfo(8, 16, 0, 0, 1536, true),
-  'arcfour256': makeCipherInfo(8, 32, 0, 0, 1536, true),
-  'arcfour512': makeCipherInfo(8, 64, 0, 0, 1536, true),
-};
-
-function makeHMACInfo(len, actualLen) {
-  return { len: len, actualLen: actualLen };
-}
-exports.HMAC_INFO = {
-  'hmac-md5': makeHMACInfo(16, 16),
-  'hmac-md5-96': makeHMACInfo(16, 12),
-  'hmac-ripemd160': makeHMACInfo(20, 20),
-  'hmac-sha1': makeHMACInfo(20, 20),
-  'hmac-sha1-96': makeHMACInfo(20, 12),
-  'hmac-sha2-256': makeHMACInfo(32, 32),
-  'hmac-sha2-256-96': makeHMACInfo(32, 12),
-  'hmac-sha2-512': makeHMACInfo(64, 64),
-  'hmac-sha2-512-96': makeHMACInfo(64, 12),
-};
-
-exports.ALGORITHMS = {
-  KEX: DEFAULT_KEX,
-  KEX_BUF: KEX_BUF,
-  SUPPORTED_KEX: SUPPORTED_KEX,
-
-  SERVER_HOST_KEY: DEFAULT_SERVER_HOST_KEY,
-  SERVER_HOST_KEY_BUF: SERVER_HOST_KEY_BUF,
-  SUPPORTED_SERVER_HOST_KEY: SUPPORTED_SERVER_HOST_KEY,
-
-  CIPHER: DEFAULT_CIPHER,
-  CIPHER_BUF: CIPHER_BUF,
-  SUPPORTED_CIPHER: SUPPORTED_CIPHER,
-
-  HMAC: DEFAULT_HMAC,
-  HMAC_BUF: HMAC_BUF,
-  SUPPORTED_HMAC: SUPPORTED_HMAC,
-
-  COMPRESS: DEFAULT_COMPRESS,
-  COMPRESS_BUF: COMPRESS_BUF,
-  SUPPORTED_COMPRESS: SUPPORTED_COMPRESS
-};
-exports.SSH_TO_OPENSSL = {
-  // ECDH key exchange
-  'ecdh-sha2-nistp256': 'prime256v1', // OpenSSL's name for 'secp256r1'
-  'ecdh-sha2-nistp384': 'secp384r1',
-  'ecdh-sha2-nistp521': 'secp521r1',
-  // Ciphers
-  'aes128-gcm': 'aes-128-gcm',
-  'aes256-gcm': 'aes-256-gcm',
-  'aes128-gcm@openssh.com': 'aes-128-gcm',
-  'aes256-gcm@openssh.com': 'aes-256-gcm',
-  '3des-cbc': 'des-ede3-cbc',
-  'blowfish-cbc': 'bf-cbc',
-  'aes256-cbc': 'aes-256-cbc',
-  'aes192-cbc': 'aes-192-cbc',
-  'aes128-cbc': 'aes-128-cbc',
-  'idea-cbc': 'idea-cbc',
-  'cast128-cbc': 'cast-cbc',
-  'rijndael-cbc@lysator.liu.se': 'aes-256-cbc',
-  'arcfour128': 'rc4',
-  'arcfour256': 'rc4',
-  'arcfour512': 'rc4',
-  'arcfour': 'rc4',
-  'camellia128-cbc': 'camellia-128-cbc',
-  'camellia192-cbc': 'camellia-192-cbc',
-  'camellia256-cbc': 'camellia-256-cbc',
-  'camellia128-cbc@openssh.com': 'camellia-128-cbc',
-  'camellia192-cbc@openssh.com': 'camellia-192-cbc',
-  'camellia256-cbc@openssh.com': 'camellia-256-cbc',
-  '3des-ctr': 'des-ede3',
-  'blowfish-ctr': 'bf-ecb',
-  'aes256-ctr': 'aes-256-ctr',
-  'aes192-ctr': 'aes-192-ctr',
-  'aes128-ctr': 'aes-128-ctr',
-  'cast128-ctr': 'cast5-ecb',
-  'camellia128-ctr': 'camellia-128-ecb',
-  'camellia192-ctr': 'camellia-192-ecb',
-  'camellia256-ctr': 'camellia-256-ecb',
-  'camellia128-ctr@openssh.com': 'camellia-128-ecb',
-  'camellia192-ctr@openssh.com': 'camellia-192-ecb',
-  'camellia256-ctr@openssh.com': 'camellia-256-ecb',
-  // HMAC
-  'hmac-sha1-96': 'sha1',
-  'hmac-sha1': 'sha1',
-  'hmac-sha2-256': 'sha256',
-  'hmac-sha2-256-96': 'sha256',
-  'hmac-sha2-512': 'sha512',
-  'hmac-sha2-512-96': 'sha512',
-  'hmac-md5-96': 'md5',
-  'hmac-md5': 'md5',
-  'hmac-ripemd160': 'ripemd160'
-};
-
-var BUGS = exports.BUGS = {
-  BAD_DHGEX: 1,
-  OLD_EXIT: 2,
-  DYN_RPORT_BUG: 4
-};
-
-exports.BUGGY_IMPLS = [
-  [ 'Cisco-1.25', BUGS.BAD_DHGEX ],
-  [ /^[0-9.]+$/, BUGS.OLD_EXIT ], // old SSH.com implementations
-  [ /^OpenSSH_5\.\d+/, BUGS.DYN_RPORT_BUG ]
-];
-
-exports.EDDSA_SUPPORTED = eddsaSupported;
-exports.CURVE25519_SUPPORTED = curve25519Supported;
-
-
-/***/ }),
-
-/***/ 4950:
-/***/ ((module) => {
-
-// Copyright (c) 2005  Tom Wu
-// All Rights Reserved.
-// See "LICENSE" for details.
-
-// Basic JavaScript BN library - subset useful for RSA encryption.
-
-// Bits per digit
-var dbits;
-
-// JavaScript engine analysis
-var canary = 0xdeadbeefcafe;
-var j_lm = ((canary&0xffffff)==0xefcafe);
-
-// (public) Constructor
-function BigInteger(a,b,c) {
-  if(a != null)
-    if("number" == typeof a) this.fromNumber(a,b,c);
-    else if(b == null && "string" != typeof a) this.fromString(a,256);
-    else this.fromString(a,b);
-}
-
-// return new, unset BigInteger
-function nbi() { return new BigInteger(null); }
-
-// am: Compute w_j += (x*this_i), propagate carries,
-// c is initial carry, returns final carry.
-// c < 3*dvalue, x < 2*dvalue, this_i < dvalue
-// We need to select the fastest one that works in this environment.
-
-// Set max digit bits to 28 since some
-// browsers slow down when dealing with 32-bit numbers.
-function am3(i,x,w,j,c,n) {
-  var xl = x&0x3fff, xh = x>>14;
-  while(--n >= 0) {
-    var l = this[i]&0x3fff;
-    var h = this[i++]>>14;
-    var m = xh*l+h*xl;
-    l = xl*l+((m&0x3fff)<<14)+w[j]+c;
-    c = (l>>28)+(m>>14)+xh*h;
-    w[j++] = l&0xfffffff;
-  }
-  return c;
-}
-BigInteger.prototype.am = am3;
-dbits = 28;
-
-BigInteger.prototype.DB = dbits;
-BigInteger.prototype.DM = ((1<<dbits)-1);
-BigInteger.prototype.DV = (1<<dbits);
-
-var BI_FP = 52;
-BigInteger.prototype.FV = Math.pow(2,BI_FP);
-BigInteger.prototype.F1 = BI_FP-dbits;
-BigInteger.prototype.F2 = 2*dbits-BI_FP;
-
-// Digit conversions
-var BI_RM = "0123456789abcdefghijklmnopqrstuvwxyz";
-var BI_RC = new Array();
-var rr,vv;
-rr = "0".charCodeAt(0);
-for(vv = 0; vv <= 9; ++vv) BI_RC[rr++] = vv;
-rr = "a".charCodeAt(0);
-for(vv = 10; vv < 36; ++vv) BI_RC[rr++] = vv;
-rr = "A".charCodeAt(0);
-for(vv = 10; vv < 36; ++vv) BI_RC[rr++] = vv;
-
-function int2char(n) { return BI_RM.charAt(n); }
-function intAt(s,i) {
-  var c = BI_RC[s.charCodeAt(i)];
-  return (c==null)?-1:c;
-}
-
-// (protected) copy this to r
-function bnpCopyTo(r) {
-  for(var i = this.t-1; i >= 0; --i) r[i] = this[i];
-  r.t = this.t;
-  r.s = this.s;
-}
-
-// (protected) set from integer value x, -DV <= x < DV
-function bnpFromInt(x) {
-  this.t = 1;
-  this.s = (x<0)?-1:0;
-  if(x > 0) this[0] = x;
-  else if(x < -1) this[0] = x+this.DV;
-  else this.t = 0;
-}
-
-// return bigint initialized to value
-function nbv(i) { var r = nbi(); r.fromInt(i); return r; }
-
-// (protected) set from string and radix
-function bnpFromString(s,b) {
-  var k;
-  if(b == 16) k = 4;
-  else if(b == 8) k = 3;
-  else if(b == 256) k = 8; // byte array
-  else if(b == 2) k = 1;
-  else if(b == 32) k = 5;
-  else if(b == 4) k = 2;
-  else { this.fromRadix(s,b); return; }
-  this.t = 0;
-  this.s = 0;
-  var i = s.length, mi = false, sh = 0;
-  while(--i >= 0) {
-    var x = (k==8)?s[i]&0xff:intAt(s,i);
-    if(x < 0) {
-      if(s.charAt(i) == "-") mi = true;
-      continue;
-    }
-    mi = false;
-    if(sh == 0)
-      this[this.t++] = x;
-    else if(sh+k > this.DB) {
-      this[this.t-1] |= (x&((1<<(this.DB-sh))-1))<<sh;
-      this[this.t++] = (x>>(this.DB-sh));
-    }
-    else
-      this[this.t-1] |= x<<sh;
-    sh += k;
-    if(sh >= this.DB) sh -= this.DB;
-  }
-  if(k == 8 && (s[0]&0x80) != 0) {
-    this.s = -1;
-    if(sh > 0) this[this.t-1] |= ((1<<(this.DB-sh))-1)<<sh;
-  }
-  this.clamp();
-  if(mi) BigInteger.ZERO.subTo(this,this);
-}
-
-// (protected) clamp off excess high words
-function bnpClamp() {
-  var c = this.s&this.DM;
-  while(this.t > 0 && this[this.t-1] == c) --this.t;
-}
-
-// (public) return string representation in given radix
-function bnToString(b) {
-  if(this.s < 0) return "-"+this.negate().toString(b);
-  var k;
-  if(b == 16) k = 4;
-  else if(b == 8) k = 3;
-  else if(b == 2) k = 1;
-  else if(b == 32) k = 5;
-  else if(b == 4) k = 2;
-  else return this.toRadix(b);
-  var km = (1<<k)-1, d, m = false, r = "", i = this.t;
-  var p = this.DB-(i*this.DB)%k;
-  if(i-- > 0) {
-    if(p < this.DB && (d = this[i]>>p) > 0) { m = true; r = int2char(d); }
-    while(i >= 0) {
-      if(p < k) {
-        d = (this[i]&((1<<p)-1))<<(k-p);
-        d |= this[--i]>>(p+=this.DB-k);
-      }
-      else {
-        d = (this[i]>>(p-=k))&km;
-        if(p <= 0) { p += this.DB; --i; }
-      }
-      if(d > 0) m = true;
-      if(m) r += int2char(d);
-    }
-  }
-  return m?r:"0";
-}
-
-// (public) -this
-function bnNegate() { var r = nbi(); BigInteger.ZERO.subTo(this,r); return r; }
-
-// (public) |this|
-function bnAbs() { return (this.s<0)?this.negate():this; }
-
-// (public) return + if this > a, - if this < a, 0 if equal
-function bnCompareTo(a) {
-  var r = this.s-a.s;
-  if(r != 0) return r;
-  var i = this.t;
-  r = i-a.t;
-  if(r != 0) return (this.s<0)?-r:r;
-  while(--i >= 0) if((r=this[i]-a[i]) != 0) return r;
-  return 0;
-}
-
-// returns bit length of the integer x
-function nbits(x) {
-  var r = 1, t;
-  if((t=x>>>16) != 0) { x = t; r += 16; }
-  if((t=x>>8) != 0) { x = t; r += 8; }
-  if((t=x>>4) != 0) { x = t; r += 4; }
-  if((t=x>>2) != 0) { x = t; r += 2; }
-  if((t=x>>1) != 0) { x = t; r += 1; }
-  return r;
-}
-
-// (public) return the number of bits in "this"
-function bnBitLength() {
-  if(this.t <= 0) return 0;
-  return this.DB*(this.t-1)+nbits(this[this.t-1]^(this.s&this.DM));
-}
-
-// (protected) r = this << n*DB
-function bnpDLShiftTo(n,r) {
-  var i;
-  for(i = this.t-1; i >= 0; --i) r[i+n] = this[i];
-  for(i = n-1; i >= 0; --i) r[i] = 0;
-  r.t = this.t+n;
-  r.s = this.s;
-}
-
-// (protected) r = this >> n*DB
-function bnpDRShiftTo(n,r) {
-  for(var i = n; i < this.t; ++i) r[i-n] = this[i];
-  r.t = Math.max(this.t-n,0);
-  r.s = this.s;
-}
-
-// (protected) r = this << n
-function bnpLShiftTo(n,r) {
-  var bs = n%this.DB;
-  var cbs = this.DB-bs;
-  var bm = (1<<cbs)-1;
-  var ds = Math.floor(n/this.DB), c = (this.s<<bs)&this.DM, i;
-  for(i = this.t-1; i >= 0; --i) {
-    r[i+ds+1] = (this[i]>>cbs)|c;
-    c = (this[i]&bm)<<bs;
-  }
-  for(i = ds-1; i >= 0; --i) r[i] = 0;
-  r[ds] = c;
-  r.t = this.t+ds+1;
-  r.s = this.s;
-  r.clamp();
-}
-
-// (protected) r = this >> n
-function bnpRShiftTo(n,r) {
-  r.s = this.s;
-  var ds = Math.floor(n/this.DB);
-  if(ds >= this.t) { r.t = 0; return; }
-  var bs = n%this.DB;
-  var cbs = this.DB-bs;
-  var bm = (1<<bs)-1;
-  r[0] = this[ds]>>bs;
-  for(var i = ds+1; i < this.t; ++i) {
-    r[i-ds-1] |= (this[i]&bm)<<cbs;
-    r[i-ds] = this[i]>>bs;
-  }
-  if(bs > 0) r[this.t-ds-1] |= (this.s&bm)<<cbs;
-  r.t = this.t-ds;
-  r.clamp();
-}
-
-// (protected) r = this - a
-function bnpSubTo(a,r) {
-  var i = 0, c = 0, m = Math.min(a.t,this.t);
-  while(i < m) {
-    c += this[i]-a[i];
-    r[i++] = c&this.DM;
-    c >>= this.DB;
-  }
-  if(a.t < this.t) {
-    c -= a.s;
-    while(i < this.t) {
-      c += this[i];
-      r[i++] = c&this.DM;
-      c >>= this.DB;
-    }
-    c += this.s;
-  }
-  else {
-    c += this.s;
-    while(i < a.t) {
-      c -= a[i];
-      r[i++] = c&this.DM;
-      c >>= this.DB;
-    }
-    c -= a.s;
-  }
-  r.s = (c<0)?-1:0;
-  if(c < -1) r[i++] = this.DV+c;
-  else if(c > 0) r[i++] = c;
-  r.t = i;
-  r.clamp();
-}
-
-// (protected) r = this * a, r != this,a (HAC 14.12)
-// "this" should be the larger one if appropriate.
-function bnpMultiplyTo(a,r) {
-  var x = this.abs(), y = a.abs();
-  var i = x.t;
-  r.t = i+y.t;
-  while(--i >= 0) r[i] = 0;
-  for(i = 0; i < y.t; ++i) r[i+x.t] = x.am(0,y[i],r,i,0,x.t);
-  r.s = 0;
-  r.clamp();
-  if(this.s != a.s) BigInteger.ZERO.subTo(r,r);
-}
-
-// (protected) r = this^2, r != this (HAC 14.16)
-function bnpSquareTo(r) {
-  var x = this.abs();
-  var i = r.t = 2*x.t;
-  while(--i >= 0) r[i] = 0;
-  for(i = 0; i < x.t-1; ++i) {
-    var c = x.am(i,x[i],r,2*i,0,1);
-    if((r[i+x.t]+=x.am(i+1,2*x[i],r,2*i+1,c,x.t-i-1)) >= x.DV) {
-      r[i+x.t] -= x.DV;
-      r[i+x.t+1] = 1;
-    }
-  }
-  if(r.t > 0) r[r.t-1] += x.am(i,x[i],r,2*i,0,1);
-  r.s = 0;
-  r.clamp();
-}
-
-// (protected) divide this by m, quotient and remainder to q, r (HAC 14.20)
-// r != q, this != m.  q or r may be null.
-function bnpDivRemTo(m,q,r) {
-  var pm = m.abs();
-  if(pm.t <= 0) return;
-  var pt = this.abs();
-  if(pt.t < pm.t) {
-    if(q != null) q.fromInt(0);
-    if(r != null) this.copyTo(r);
-    return;
-  }
-  if(r == null) r = nbi();
-  var y = nbi(), ts = this.s, ms = m.s;
-  var nsh = this.DB-nbits(pm[pm.t-1]);   // normalize modulus
-  if(nsh > 0) { pm.lShiftTo(nsh,y); pt.lShiftTo(nsh,r); }
-  else { pm.copyTo(y); pt.copyTo(r); }
-  var ys = y.t;
-  var y0 = y[ys-1];
-  if(y0 == 0) return;
-  var yt = y0*(1<<this.F1)+((ys>1)?y[ys-2]>>this.F2:0);
-  var d1 = this.FV/yt, d2 = (1<<this.F1)/yt, e = 1<<this.F2;
-  var i = r.t, j = i-ys, t = (q==null)?nbi():q;
-  y.dlShiftTo(j,t);
-  if(r.compareTo(t) >= 0) {
-    r[r.t++] = 1;
-    r.subTo(t,r);
-  }
-  BigInteger.ONE.dlShiftTo(ys,t);
-  t.subTo(y,y);  // "negative" y so we can replace sub with am later
-  while(y.t < ys) y[y.t++] = 0;
-  while(--j >= 0) {
-    // Estimate quotient digit
-    var qd = (r[--i]==y0)?this.DM:Math.floor(r[i]*d1+(r[i-1]+e)*d2);
-    if((r[i]+=y.am(0,qd,r,j,0,ys)) < qd) {   // Try it out
-      y.dlShiftTo(j,t);
-      r.subTo(t,r);
-      while(r[i] < --qd) r.subTo(t,r);
-    }
-  }
-  if(q != null) {
-    r.drShiftTo(ys,q);
-    if(ts != ms) BigInteger.ZERO.subTo(q,q);
-  }
-  r.t = ys;
-  r.clamp();
-  if(nsh > 0) r.rShiftTo(nsh,r); // Denormalize remainder
-  if(ts < 0) BigInteger.ZERO.subTo(r,r);
-}
-
-// (public) this mod a
-function bnMod(a) {
-  var r = nbi();
-  this.abs().divRemTo(a,null,r);
-  if(this.s < 0 && r.compareTo(BigInteger.ZERO) > 0) a.subTo(r,r);
-  return r;
-}
-
-// Modular reduction using "classic" algorithm
-function Classic(m) { this.m = m; }
-function cConvert(x) {
-  if(x.s < 0 || x.compareTo(this.m) >= 0) return x.mod(this.m);
-  else return x;
-}
-function cRevert(x) { return x; }
-function cReduce(x) { x.divRemTo(this.m,null,x); }
-function cMulTo(x,y,r) { x.multiplyTo(y,r); this.reduce(r); }
-function cSqrTo(x,r) { x.squareTo(r); this.reduce(r); }
-
-Classic.prototype.convert = cConvert;
-Classic.prototype.revert = cRevert;
-Classic.prototype.reduce = cReduce;
-Classic.prototype.mulTo = cMulTo;
-Classic.prototype.sqrTo = cSqrTo;
-
-// (protected) return "-1/this % 2^DB"; useful for Mont. reduction
-// justification:
-//         xy == 1 (mod m)
-//         xy =  1+km
-//   xy(2-xy) = (1+km)(1-km)
-// x[y(2-xy)] = 1-k^2m^2
-// x[y(2-xy)] == 1 (mod m^2)
-// if y is 1/x mod m, then y(2-xy) is 1/x mod m^2
-// should reduce x and y(2-xy) by m^2 at each step to keep size bounded.
-// JS multiply "overflows" differently from C/C++, so care is needed here.
-function bnpInvDigit() {
-  if(this.t < 1) return 0;
-  var x = this[0];
-  if((x&1) == 0) return 0;
-  var y = x&3;       // y == 1/x mod 2^2
-  y = (y*(2-(x&0xf)*y))&0xf; // y == 1/x mod 2^4
-  y = (y*(2-(x&0xff)*y))&0xff;   // y == 1/x mod 2^8
-  y = (y*(2-(((x&0xffff)*y)&0xffff)))&0xffff;    // y == 1/x mod 2^16
-  // last step - calculate inverse mod DV directly;
-  // assumes 16 < DB <= 32 and assumes ability to handle 48-bit ints
-  y = (y*(2-x*y%this.DV))%this.DV;       // y == 1/x mod 2^dbits
-  // we really want the negative inverse, and -DV < y < DV
-  return (y>0)?this.DV-y:-y;
-}
-
-// Montgomery reduction
-function Montgomery(m) {
-  this.m = m;
-  this.mp = m.invDigit();
-  this.mpl = this.mp&0x7fff;
-  this.mph = this.mp>>15;
-  this.um = (1<<(m.DB-15))-1;
-  this.mt2 = 2*m.t;
-}
-
-// xR mod m
-function montConvert(x) {
-  var r = nbi();
-  x.abs().dlShiftTo(this.m.t,r);
-  r.divRemTo(this.m,null,r);
-  if(x.s < 0 && r.compareTo(BigInteger.ZERO) > 0) this.m.subTo(r,r);
-  return r;
-}
-
-// x/R mod m
-function montRevert(x) {
-  var r = nbi();
-  x.copyTo(r);
-  this.reduce(r);
-  return r;
-}
-
-// x = x/R mod m (HAC 14.32)
-function montReduce(x) {
-  while(x.t <= this.mt2) // pad x so am has enough room later
-    x[x.t++] = 0;
-  for(var i = 0; i < this.m.t; ++i) {
-    // faster way of calculating u0 = x[i]*mp mod DV
-    var j = x[i]&0x7fff;
-    var u0 = (j*this.mpl+(((j*this.mph+(x[i]>>15)*this.mpl)&this.um)<<15))&x.DM;
-    // use am to combine the multiply-shift-add into one call
-    j = i+this.m.t;
-    x[j] += this.m.am(0,u0,x,i,0,this.m.t);
-    // propagate carry
-    while(x[j] >= x.DV) { x[j] -= x.DV; x[++j]++; }
-  }
-  x.clamp();
-  x.drShiftTo(this.m.t,x);
-  if(x.compareTo(this.m) >= 0) x.subTo(this.m,x);
-}
-
-// r = "x^2/R mod m"; x != r
-function montSqrTo(x,r) { x.squareTo(r); this.reduce(r); }
-
-// r = "xy/R mod m"; x,y != r
-function montMulTo(x,y,r) { x.multiplyTo(y,r); this.reduce(r); }
-
-Montgomery.prototype.convert = montConvert;
-Montgomery.prototype.revert = montRevert;
-Montgomery.prototype.reduce = montReduce;
-Montgomery.prototype.mulTo = montMulTo;
-Montgomery.prototype.sqrTo = montSqrTo;
-
-// (protected) true iff this is even
-function bnpIsEven() { return ((this.t>0)?(this[0]&1):this.s) == 0; }
-
-// (protected) this^e, e < 2^32, doing sqr and mul with "r" (HAC 14.79)
-function bnpExp(e,z) {
-  if(e > 0xffffffff || e < 1) return BigInteger.ONE;
-  var r = nbi(), r2 = nbi(), g = z.convert(this), i = nbits(e)-1;
-  g.copyTo(r);
-  while(--i >= 0) {
-    z.sqrTo(r,r2);
-    if((e&(1<<i)) > 0) z.mulTo(r2,g,r);
-    else { var t = r; r = r2; r2 = t; }
-  }
-  return z.revert(r);
-}
-
-// (public) this^e % m, 0 <= e < 2^32
-function bnModPowInt(e,m) {
-  var z;
-  if(e < 256 || m.isEven()) z = new Classic(m); else z = new Montgomery(m);
-  return this.exp(e,z);
-}
-
-// protected
-BigInteger.prototype.copyTo = bnpCopyTo;
-BigInteger.prototype.fromInt = bnpFromInt;
-BigInteger.prototype.fromString = bnpFromString;
-BigInteger.prototype.clamp = bnpClamp;
-BigInteger.prototype.dlShiftTo = bnpDLShiftTo;
-BigInteger.prototype.drShiftTo = bnpDRShiftTo;
-BigInteger.prototype.lShiftTo = bnpLShiftTo;
-BigInteger.prototype.rShiftTo = bnpRShiftTo;
-BigInteger.prototype.subTo = bnpSubTo;
-BigInteger.prototype.multiplyTo = bnpMultiplyTo;
-BigInteger.prototype.squareTo = bnpSquareTo;
-BigInteger.prototype.divRemTo = bnpDivRemTo;
-BigInteger.prototype.invDigit = bnpInvDigit;
-BigInteger.prototype.isEven = bnpIsEven;
-BigInteger.prototype.exp = bnpExp;
-
-// public
-BigInteger.prototype.toString = bnToString;
-BigInteger.prototype.negate = bnNegate;
-BigInteger.prototype.abs = bnAbs;
-BigInteger.prototype.compareTo = bnCompareTo;
-BigInteger.prototype.bitLength = bnBitLength;
-BigInteger.prototype.mod = bnMod;
-BigInteger.prototype.modPowInt = bnModPowInt;
-
-// "constants"
-BigInteger.ZERO = nbv(0);
-BigInteger.ONE = nbv(1);
-
-// Copyright (c) 2005-2009  Tom Wu
-// All Rights Reserved.
-// See "LICENSE" for details.
-
-// Extended JavaScript BN functions, required for RSA private ops.
-
-// Version 1.1: new BigInteger("0", 10) returns "proper" zero
-// Version 1.2: square() API, isProbablePrime fix
-
-// (public)
-function bnClone() { var r = nbi(); this.copyTo(r); return r; }
-
-// (public) return value as integer
-function bnIntValue() {
-  if(this.s < 0) {
-    if(this.t == 1) return this[0]-this.DV;
-    else if(this.t == 0) return -1;
-  }
-  else if(this.t == 1) return this[0];
-  else if(this.t == 0) return 0;
-  // assumes 16 < DB < 32
-  return ((this[1]&((1<<(32-this.DB))-1))<<this.DB)|this[0];
-}
-
-// (public) return value as byte
-function bnByteValue() { return (this.t==0)?this.s:(this[0]<<24)>>24; }
-
-// (public) return value as short (assumes DB>=16)
-function bnShortValue() { return (this.t==0)?this.s:(this[0]<<16)>>16; }
-
-// (protected) return x s.t. r^x < DV
-function bnpChunkSize(r) { return Math.floor(Math.LN2*this.DB/Math.log(r)); }
-
-// (public) 0 if this == 0, 1 if this > 0
-function bnSigNum() {
-  if(this.s < 0) return -1;
-  else if(this.t <= 0 || (this.t == 1 && this[0] <= 0)) return 0;
-  else return 1;
-}
-
-// (protected) convert to radix string
-function bnpToRadix(b) {
-  if(b == null) b = 10;
-  if(this.signum() == 0 || b < 2 || b > 36) return "0";
-  var cs = this.chunkSize(b);
-  var a = Math.pow(b,cs);
-  var d = nbv(a), y = nbi(), z = nbi(), r = "";
-  this.divRemTo(d,y,z);
-  while(y.signum() > 0) {
-    r = (a+z.intValue()).toString(b).substr(1) + r;
-    y.divRemTo(d,y,z);
-  }
-  return z.intValue().toString(b) + r;
-}
-
-// (protected) convert from radix string
-function bnpFromRadix(s,b) {
-  this.fromInt(0);
-  if(b == null) b = 10;
-  var cs = this.chunkSize(b);
-  var d = Math.pow(b,cs), mi = false, j = 0, w = 0;
-  for(var i = 0; i < s.length; ++i) {
-    var x = intAt(s,i);
-    if(x < 0) {
-      if(s.charAt(i) == "-" && this.signum() == 0) mi = true;
-      continue;
-    }
-    w = b*w+x;
-    if(++j >= cs) {
-      this.dMultiply(d);
-      this.dAddOffset(w,0);
-      j = 0;
-      w = 0;
-    }
-  }
-  if(j > 0) {
-    this.dMultiply(Math.pow(b,j));
-    this.dAddOffset(w,0);
-  }
-  if(mi) BigInteger.ZERO.subTo(this,this);
-}
-
-// (protected) alternate constructor
-function bnpFromNumber(a,b,c) {
-  if("number" == typeof b) {
-    // new BigInteger(int,int,RNG)
-    if(a < 2) this.fromInt(1);
-    else {
-      this.fromNumber(a,c);
-      if(!this.testBit(a-1))  // force MSB set
-        this.bitwiseTo(BigInteger.ONE.shiftLeft(a-1),op_or,this);
-      if(this.isEven()) this.dAddOffset(1,0); // force odd
-      while(!this.isProbablePrime(b)) {
-        this.dAddOffset(2,0);
-        if(this.bitLength() > a) this.subTo(BigInteger.ONE.shiftLeft(a-1),this);
-      }
-    }
-  }
-  else {
-    // new BigInteger(int,RNG)
-    var x = new Array(), t = a&7;
-    x.length = (a>>3)+1;
-    b.nextBytes(x);
-    if(t > 0) x[0] &= ((1<<t)-1); else x[0] = 0;
-    this.fromString(x,256);
-  }
-}
-
-// (public) convert to bigendian byte array
-function bnToByteArray() {
-  var i = this.t, r = new Array();
-  r[0] = this.s;
-  var p = this.DB-(i*this.DB)%8, d, k = 0;
-  if(i-- > 0) {
-    if(p < this.DB && (d = this[i]>>p) != (this.s&this.DM)>>p)
-      r[k++] = d|(this.s<<(this.DB-p));
-    while(i >= 0) {
-      if(p < 8) {
-        d = (this[i]&((1<<p)-1))<<(8-p);
-        d |= this[--i]>>(p+=this.DB-8);
-      }
-      else {
-        d = (this[i]>>(p-=8))&0xff;
-        if(p <= 0) { p += this.DB; --i; }
-      }
-      if((d&0x80) != 0) d |= -256;
-      if(k == 0 && (this.s&0x80) != (d&0x80)) ++k;
-      if(k > 0 || d != this.s) r[k++] = d;
-    }
-  }
-  return r;
-}
-
-function bnEquals(a) { return(this.compareTo(a)==0); }
-function bnMin(a) { return(this.compareTo(a)<0)?this:a; }
-function bnMax(a) { return(this.compareTo(a)>0)?this:a; }
-
-// (protected) r = this op a (bitwise)
-function bnpBitwiseTo(a,op,r) {
-  var i, f, m = Math.min(a.t,this.t);
-  for(i = 0; i < m; ++i) r[i] = op(this[i],a[i]);
-  if(a.t < this.t) {
-    f = a.s&this.DM;
-    for(i = m; i < this.t; ++i) r[i] = op(this[i],f);
-    r.t = this.t;
-  }
-  else {
-    f = this.s&this.DM;
-    for(i = m; i < a.t; ++i) r[i] = op(f,a[i]);
-    r.t = a.t;
-  }
-  r.s = op(this.s,a.s);
-  r.clamp();
-}
-
-// (public) this & a
-function op_and(x,y) { return x&y; }
-function bnAnd(a) { var r = nbi(); this.bitwiseTo(a,op_and,r); return r; }
-
-// (public) this | a
-function op_or(x,y) { return x|y; }
-function bnOr(a) { var r = nbi(); this.bitwiseTo(a,op_or,r); return r; }
-
-// (public) this ^ a
-function op_xor(x,y) { return x^y; }
-function bnXor(a) { var r = nbi(); this.bitwiseTo(a,op_xor,r); return r; }
-
-// (public) this & ~a
-function op_andnot(x,y) { return x&~y; }
-function bnAndNot(a) { var r = nbi(); this.bitwiseTo(a,op_andnot,r); return r; }
-
-// (public) ~this
-function bnNot() {
-  var r = nbi();
-  for(var i = 0; i < this.t; ++i) r[i] = this.DM&~this[i];
-  r.t = this.t;
-  r.s = ~this.s;
-  return r;
-}
-
-// (public) this << n
-function bnShiftLeft(n) {
-  var r = nbi();
-  if(n < 0) this.rShiftTo(-n,r); else this.lShiftTo(n,r);
-  return r;
-}
-
-// (public) this >> n
-function bnShiftRight(n) {
-  var r = nbi();
-  if(n < 0) this.lShiftTo(-n,r); else this.rShiftTo(n,r);
-  return r;
-}
-
-// return index of lowest 1-bit in x, x < 2^31
-function lbit(x) {
-  if(x == 0) return -1;
-  var r = 0;
-  if((x&0xffff) == 0) { x >>= 16; r += 16; }
-  if((x&0xff) == 0) { x >>= 8; r += 8; }
-  if((x&0xf) == 0) { x >>= 4; r += 4; }
-  if((x&3) == 0) { x >>= 2; r += 2; }
-  if((x&1) == 0) ++r;
-  return r;
-}
-
-// (public) returns index of lowest 1-bit (or -1 if none)
-function bnGetLowestSetBit() {
-  for(var i = 0; i < this.t; ++i)
-    if(this[i] != 0) return i*this.DB+lbit(this[i]);
-  if(this.s < 0) return this.t*this.DB;
-  return -1;
-}
-
-// return number of 1 bits in x
-function cbit(x) {
-  var r = 0;
-  while(x != 0) { x &= x-1; ++r; }
-  return r;
-}
-
-// (public) return number of set bits
-function bnBitCount() {
-  var r = 0, x = this.s&this.DM;
-  for(var i = 0; i < this.t; ++i) r += cbit(this[i]^x);
-  return r;
-}
-
-// (public) true iff nth bit is set
-function bnTestBit(n) {
-  var j = Math.floor(n/this.DB);
-  if(j >= this.t) return(this.s!=0);
-  return((this[j]&(1<<(n%this.DB)))!=0);
-}
-
-// (protected) this op (1<<n)
-function bnpChangeBit(n,op) {
-  var r = BigInteger.ONE.shiftLeft(n);
-  this.bitwiseTo(r,op,r);
-  return r;
-}
-
-// (public) this | (1<<n)
-function bnSetBit(n) { return this.changeBit(n,op_or); }
-
-// (public) this & ~(1<<n)
-function bnClearBit(n) { return this.changeBit(n,op_andnot); }
-
-// (public) this ^ (1<<n)
-function bnFlipBit(n) { return this.changeBit(n,op_xor); }
-
-// (protected) r = this + a
-function bnpAddTo(a,r) {
-  var i = 0, c = 0, m = Math.min(a.t,this.t);
-  while(i < m) {
-    c += this[i]+a[i];
-    r[i++] = c&this.DM;
-    c >>= this.DB;
-  }
-  if(a.t < this.t) {
-    c += a.s;
-    while(i < this.t) {
-      c += this[i];
-      r[i++] = c&this.DM;
-      c >>= this.DB;
-    }
-    c += this.s;
-  }
-  else {
-    c += this.s;
-    while(i < a.t) {
-      c += a[i];
-      r[i++] = c&this.DM;
-      c >>= this.DB;
-    }
-    c += a.s;
-  }
-  r.s = (c<0)?-1:0;
-  if(c > 0) r[i++] = c;
-  else if(c < -1) r[i++] = this.DV+c;
-  r.t = i;
-  r.clamp();
-}
-
-// (public) this + a
-function bnAdd(a) { var r = nbi(); this.addTo(a,r); return r; }
-
-// (public) this - a
-function bnSubtract(a) { var r = nbi(); this.subTo(a,r); return r; }
-
-// (public) this * a
-function bnMultiply(a) { var r = nbi(); this.multiplyTo(a,r); return r; }
-
-// (public) this^2
-function bnSquare() { var r = nbi(); this.squareTo(r); return r; }
-
-// (public) this / a
-function bnDivide(a) { var r = nbi(); this.divRemTo(a,r,null); return r; }
-
-// (public) this % a
-function bnRemainder(a) { var r = nbi(); this.divRemTo(a,null,r); return r; }
-
-// (public) [this/a,this%a]
-function bnDivideAndRemainder(a) {
-  var q = nbi(), r = nbi();
-  this.divRemTo(a,q,r);
-  return new Array(q,r);
-}
-
-// (protected) this *= n, this >= 0, 1 < n < DV
-function bnpDMultiply(n) {
-  this[this.t] = this.am(0,n-1,this,0,0,this.t);
-  ++this.t;
-  this.clamp();
-}
-
-// (protected) this += n << w words, this >= 0
-function bnpDAddOffset(n,w) {
-  if(n == 0) return;
-  while(this.t <= w) this[this.t++] = 0;
-  this[w] += n;
-  while(this[w] >= this.DV) {
-    this[w] -= this.DV;
-    if(++w >= this.t) this[this.t++] = 0;
-    ++this[w];
-  }
-}
-
-// A "null" reducer
-function NullExp() {}
-function nNop(x) { return x; }
-function nMulTo(x,y,r) { x.multiplyTo(y,r); }
-function nSqrTo(x,r) { x.squareTo(r); }
-
-NullExp.prototype.convert = nNop;
-NullExp.prototype.revert = nNop;
-NullExp.prototype.mulTo = nMulTo;
-NullExp.prototype.sqrTo = nSqrTo;
-
-// (public) this^e
-function bnPow(e) { return this.exp(e,new NullExp()); }
-
-// (protected) r = lower n words of "this * a", a.t <= n
-// "this" should be the larger one if appropriate.
-function bnpMultiplyLowerTo(a,n,r) {
-  var i = Math.min(this.t+a.t,n);
-  r.s = 0; // assumes a,this >= 0
-  r.t = i;
-  while(i > 0) r[--i] = 0;
-  var j;
-  for(j = r.t-this.t; i < j; ++i) r[i+this.t] = this.am(0,a[i],r,i,0,this.t);
-  for(j = Math.min(a.t,n); i < j; ++i) this.am(0,a[i],r,i,0,n-i);
-  r.clamp();
-}
-
-// (protected) r = "this * a" without lower n words, n > 0
-// "this" should be the larger one if appropriate.
-function bnpMultiplyUpperTo(a,n,r) {
-  --n;
-  var i = r.t = this.t+a.t-n;
-  r.s = 0; // assumes a,this >= 0
-  while(--i >= 0) r[i] = 0;
-  for(i = Math.max(n-this.t,0); i < a.t; ++i)
-    r[this.t+i-n] = this.am(n-i,a[i],r,0,0,this.t+i-n);
-  r.clamp();
-  r.drShiftTo(1,r);
-}
-
-// Barrett modular reduction
-function Barrett(m) {
-  // setup Barrett
-  this.r2 = nbi();
-  this.q3 = nbi();
-  BigInteger.ONE.dlShiftTo(2*m.t,this.r2);
-  this.mu = this.r2.divide(m);
-  this.m = m;
-}
-
-function barrettConvert(x) {
-  if(x.s < 0 || x.t > 2*this.m.t) return x.mod(this.m);
-  else if(x.compareTo(this.m) < 0) return x;
-  else { var r = nbi(); x.copyTo(r); this.reduce(r); return r; }
-}
-
-function barrettRevert(x) { return x; }
-
-// x = x mod m (HAC 14.42)
-function barrettReduce(x) {
-  x.drShiftTo(this.m.t-1,this.r2);
-  if(x.t > this.m.t+1) { x.t = this.m.t+1; x.clamp(); }
-  this.mu.multiplyUpperTo(this.r2,this.m.t+1,this.q3);
-  this.m.multiplyLowerTo(this.q3,this.m.t+1,this.r2);
-  while(x.compareTo(this.r2) < 0) x.dAddOffset(1,this.m.t+1);
-  x.subTo(this.r2,x);
-  while(x.compareTo(this.m) >= 0) x.subTo(this.m,x);
-}
-
-// r = x^2 mod m; x != r
-function barrettSqrTo(x,r) { x.squareTo(r); this.reduce(r); }
-
-// r = x*y mod m; x,y != r
-function barrettMulTo(x,y,r) { x.multiplyTo(y,r); this.reduce(r); }
-
-Barrett.prototype.convert = barrettConvert;
-Barrett.prototype.revert = barrettRevert;
-Barrett.prototype.reduce = barrettReduce;
-Barrett.prototype.mulTo = barrettMulTo;
-Barrett.prototype.sqrTo = barrettSqrTo;
-
-// (public) this^e % m (HAC 14.85)
-function bnModPow(e,m) {
-  var i = e.bitLength(), k, r = nbv(1), z;
-  if(i <= 0) return r;
-  else if(i < 18) k = 1;
-  else if(i < 48) k = 3;
-  else if(i < 144) k = 4;
-  else if(i < 768) k = 5;
-  else k = 6;
-  if(i < 8)
-    z = new Classic(m);
-  else if(m.isEven())
-    z = new Barrett(m);
-  else
-    z = new Montgomery(m);
-
-  // precomputation
-  var g = new Array(), n = 3, k1 = k-1, km = (1<<k)-1;
-  g[1] = z.convert(this);
-  if(k > 1) {
-    var g2 = nbi();
-    z.sqrTo(g[1],g2);
-    while(n <= km) {
-      g[n] = nbi();
-      z.mulTo(g2,g[n-2],g[n]);
-      n += 2;
-    }
-  }
-
-  var j = e.t-1, w, is1 = true, r2 = nbi(), t;
-  i = nbits(e[j])-1;
-  while(j >= 0) {
-    if(i >= k1) w = (e[j]>>(i-k1))&km;
-    else {
-      w = (e[j]&((1<<(i+1))-1))<<(k1-i);
-      if(j > 0) w |= e[j-1]>>(this.DB+i-k1);
-    }
-
-    n = k;
-    while((w&1) == 0) { w >>= 1; --n; }
-    if((i -= n) < 0) { i += this.DB; --j; }
-    if(is1) {  // ret == 1, don't bother squaring or multiplying it
-      g[w].copyTo(r);
-      is1 = false;
-    }
-    else {
-      while(n > 1) { z.sqrTo(r,r2); z.sqrTo(r2,r); n -= 2; }
-      if(n > 0) z.sqrTo(r,r2); else { t = r; r = r2; r2 = t; }
-      z.mulTo(r2,g[w],r);
-    }
-
-    while(j >= 0 && (e[j]&(1<<i)) == 0) {
-      z.sqrTo(r,r2); t = r; r = r2; r2 = t;
-      if(--i < 0) { i = this.DB-1; --j; }
-    }
-  }
-  return z.revert(r);
-}
-
-// (public) gcd(this,a) (HAC 14.54)
-function bnGCD(a) {
-  var x = (this.s<0)?this.negate():this.clone();
-  var y = (a.s<0)?a.negate():a.clone();
-  if(x.compareTo(y) < 0) { var t = x; x = y; y = t; }
-  var i = x.getLowestSetBit(), g = y.getLowestSetBit();
-  if(g < 0) return x;
-  if(i < g) g = i;
-  if(g > 0) {
-    x.rShiftTo(g,x);
-    y.rShiftTo(g,y);
-  }
-  while(x.signum() > 0) {
-    if((i = x.getLowestSetBit()) > 0) x.rShiftTo(i,x);
-    if((i = y.getLowestSetBit()) > 0) y.rShiftTo(i,y);
-    if(x.compareTo(y) >= 0) {
-      x.subTo(y,x);
-      x.rShiftTo(1,x);
-    }
-    else {
-      y.subTo(x,y);
-      y.rShiftTo(1,y);
-    }
-  }
-  if(g > 0) y.lShiftTo(g,y);
-  return y;
-}
-
-// (protected) this % n, n < 2^26
-function bnpModInt(n) {
-  if(n <= 0) return 0;
-  var d = this.DV%n, r = (this.s<0)?n-1:0;
-  if(this.t > 0)
-    if(d == 0) r = this[0]%n;
-    else for(var i = this.t-1; i >= 0; --i) r = (d*r+this[i])%n;
-  return r;
-}
-
-// (public) 1/this % m (HAC 14.61)
-function bnModInverse(m) {
-  var ac = m.isEven();
-  if((this.isEven() && ac) || m.signum() == 0) return BigInteger.ZERO;
-  var u = m.clone(), v = this.clone();
-  var a = nbv(1), b = nbv(0), c = nbv(0), d = nbv(1);
-  while(u.signum() != 0) {
-    while(u.isEven()) {
-      u.rShiftTo(1,u);
-      if(ac) {
-        if(!a.isEven() || !b.isEven()) { a.addTo(this,a); b.subTo(m,b); }
-        a.rShiftTo(1,a);
-      }
-      else if(!b.isEven()) b.subTo(m,b);
-      b.rShiftTo(1,b);
-    }
-    while(v.isEven()) {
-      v.rShiftTo(1,v);
-      if(ac) {
-        if(!c.isEven() || !d.isEven()) { c.addTo(this,c); d.subTo(m,d); }
-        c.rShiftTo(1,c);
-      }
-      else if(!d.isEven()) d.subTo(m,d);
-      d.rShiftTo(1,d);
-    }
-    if(u.compareTo(v) >= 0) {
-      u.subTo(v,u);
-      if(ac) a.subTo(c,a);
-      b.subTo(d,b);
-    }
-    else {
-      v.subTo(u,v);
-      if(ac) c.subTo(a,c);
-      d.subTo(b,d);
-    }
-  }
-  if(v.compareTo(BigInteger.ONE) != 0) return BigInteger.ZERO;
-  if(d.compareTo(m) >= 0) return d.subtract(m);
-  if(d.signum() < 0) d.addTo(m,d); else return d;
-  if(d.signum() < 0) return d.add(m); else return d;
-}
-
-var lowprimes = [2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89,97,101,103,107,109,113,127,131,137,139,149,151,157,163,167,173,179,181,191,193,197,199,211,223,227,229,233,239,241,251,257,263,269,271,277,281,283,293,307,311,313,317,331,337,347,349,353,359,367,373,379,383,389,397,401,409,419,421,431,433,439,443,449,457,461,463,467,479,487,491,499,503,509,521,523,541,547,557,563,569,571,577,587,593,599,601,607,613,617,619,631,641,643,647,653,659,661,673,677,683,691,701,709,719,727,733,739,743,751,757,761,769,773,787,797,809,811,821,823,827,829,839,853,857,859,863,877,881,883,887,907,911,919,929,937,941,947,953,967,971,977,983,991,997];
-var lplim = (1<<26)/lowprimes[lowprimes.length-1];
-
-// (public) test primality with certainty >= 1-.5^t
-function bnIsProbablePrime(t) {
-  var i, x = this.abs();
-  if(x.t == 1 && x[0] <= lowprimes[lowprimes.length-1]) {
-    for(i = 0; i < lowprimes.length; ++i)
-      if(x[0] == lowprimes[i]) return true;
-    return false;
-  }
-  if(x.isEven()) return false;
-  i = 1;
-  while(i < lowprimes.length) {
-    var m = lowprimes[i], j = i+1;
-    while(j < lowprimes.length && m < lplim) m *= lowprimes[j++];
-    m = x.modInt(m);
-    while(i < j) if(m%lowprimes[i++] == 0) return false;
-  }
-  return x.millerRabin(t);
-}
-
-// (protected) true if probably prime (HAC 4.24, Miller-Rabin)
-function bnpMillerRabin(t) {
-  var n1 = this.subtract(BigInteger.ONE);
-  var k = n1.getLowestSetBit();
-  if(k <= 0) return false;
-  var r = n1.shiftRight(k);
-  t = (t+1)>>1;
-  if(t > lowprimes.length) t = lowprimes.length;
-  var a = nbi();
-  for(var i = 0; i < t; ++i) {
-    //Pick bases at random, instead of starting at 2
-    a.fromInt(lowprimes[Math.floor(Math.random()*lowprimes.length)]);
-    var y = a.modPow(r,this);
-    if(y.compareTo(BigInteger.ONE) != 0 && y.compareTo(n1) != 0) {
-      var j = 1;
-      while(j++ < k && y.compareTo(n1) != 0) {
-        y = y.modPowInt(2,this);
-        if(y.compareTo(BigInteger.ONE) == 0) return false;
-      }
-      if(y.compareTo(n1) != 0) return false;
-    }
-  }
-  return true;
-}
-
-// protected
-BigInteger.prototype.chunkSize = bnpChunkSize;
-BigInteger.prototype.toRadix = bnpToRadix;
-BigInteger.prototype.fromRadix = bnpFromRadix;
-BigInteger.prototype.fromNumber = bnpFromNumber;
-BigInteger.prototype.bitwiseTo = bnpBitwiseTo;
-BigInteger.prototype.changeBit = bnpChangeBit;
-BigInteger.prototype.addTo = bnpAddTo;
-BigInteger.prototype.dMultiply = bnpDMultiply;
-BigInteger.prototype.dAddOffset = bnpDAddOffset;
-BigInteger.prototype.multiplyLowerTo = bnpMultiplyLowerTo;
-BigInteger.prototype.multiplyUpperTo = bnpMultiplyUpperTo;
-BigInteger.prototype.modInt = bnpModInt;
-BigInteger.prototype.millerRabin = bnpMillerRabin;
-
-// public
-BigInteger.prototype.clone = bnClone;
-BigInteger.prototype.intValue = bnIntValue;
-BigInteger.prototype.byteValue = bnByteValue;
-BigInteger.prototype.shortValue = bnShortValue;
-BigInteger.prototype.signum = bnSigNum;
-BigInteger.prototype.toByteArray = bnToByteArray;
-BigInteger.prototype.equals = bnEquals;
-BigInteger.prototype.min = bnMin;
-BigInteger.prototype.max = bnMax;
-BigInteger.prototype.and = bnAnd;
-BigInteger.prototype.or = bnOr;
-BigInteger.prototype.xor = bnXor;
-BigInteger.prototype.andNot = bnAndNot;
-BigInteger.prototype.not = bnNot;
-BigInteger.prototype.shiftLeft = bnShiftLeft;
-BigInteger.prototype.shiftRight = bnShiftRight;
-BigInteger.prototype.getLowestSetBit = bnGetLowestSetBit;
-BigInteger.prototype.bitCount = bnBitCount;
-BigInteger.prototype.testBit = bnTestBit;
-BigInteger.prototype.setBit = bnSetBit;
-BigInteger.prototype.clearBit = bnClearBit;
-BigInteger.prototype.flipBit = bnFlipBit;
-BigInteger.prototype.add = bnAdd;
-BigInteger.prototype.subtract = bnSubtract;
-BigInteger.prototype.multiply = bnMultiply;
-BigInteger.prototype.divide = bnDivide;
-BigInteger.prototype.remainder = bnRemainder;
-BigInteger.prototype.divideAndRemainder = bnDivideAndRemainder;
-BigInteger.prototype.modPow = bnModPow;
-BigInteger.prototype.modInverse = bnModInverse;
-BigInteger.prototype.pow = bnPow;
-BigInteger.prototype.gcd = bnGCD;
-BigInteger.prototype.isProbablePrime = bnIsProbablePrime;
-
-// JSBN-specific extension
-BigInteger.prototype.square = bnSquare;
-
-// Expose the Barrett function
-BigInteger.prototype.Barrett = Barrett
-
-// BigInteger interfaces not implemented in jsbn:
-
-// BigInteger(int signum, byte[] magnitude)
-// double doubleValue()
-// float floatValue()
-// int hashCode()
-// long longValue()
-// static BigInteger valueOf(long val)
-
-module.exports = BigInteger;
-
-
-
-/***/ }),
-
-/***/ 8820:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-// TODO:
-//    * utilize `crypto.create(Private|Public)Key()` and `keyObject.export()`
-//    * handle multi-line header values (OpenSSH)?
-//    * more thorough validation?
-
-var crypto = __nccwpck_require__(6113);
-var cryptoSign = crypto.sign;
-var cryptoVerify = crypto.verify;
-var createSign = crypto.createSign;
-var createVerify = crypto.createVerify;
-var createDecipheriv = crypto.createDecipheriv;
-var createHash = crypto.createHash;
-var createHmac = crypto.createHmac;
-var supportedOpenSSLCiphers = crypto.getCiphers();
-
-var utils;
-var Ber = (__nccwpck_require__(970).Ber);
-var bcrypt_pbkdf = (__nccwpck_require__(5447).pbkdf);
-
-var bufferHelpers = __nccwpck_require__(9419);
-var readUInt32BE = bufferHelpers.readUInt32BE;
-var writeUInt32BE = bufferHelpers.writeUInt32BE;
-var constants = __nccwpck_require__(4617);
-var SUPPORTED_CIPHER = constants.ALGORITHMS.SUPPORTED_CIPHER;
-var CIPHER_INFO = constants.CIPHER_INFO;
-var SSH_TO_OPENSSL = constants.SSH_TO_OPENSSL;
-var EDDSA_SUPPORTED = constants.EDDSA_SUPPORTED;
-
-var SYM_HASH_ALGO = Symbol('Hash Algorithm');
-var SYM_PRIV_PEM = Symbol('Private key PEM');
-var SYM_PUB_PEM = Symbol('Public key PEM');
-var SYM_PUB_SSH = Symbol('Public key SSH');
-var SYM_DECRYPTED = Symbol('Decrypted Key');
-
-// Create OpenSSL cipher name -> SSH cipher name conversion table
-var CIPHER_INFO_OPENSSL = Object.create(null);
-(function() {
-  var keys = Object.keys(CIPHER_INFO);
-  for (var i = 0; i < keys.length; ++i) {
-    var cipherName = SSH_TO_OPENSSL[keys[i]];
-    if (!cipherName || CIPHER_INFO_OPENSSL[cipherName])
-      continue;
-    CIPHER_INFO_OPENSSL[cipherName] = CIPHER_INFO[keys[i]];
-  }
-})();
-
-var trimStart = (function() {
-  if (typeof String.prototype.trimStart === 'function') {
-    return function trimStart(str) {
-      return str.trimStart();
-    };
-  }
-
-  return function trimStart(str) {
-    var start = 0;
-    for (var i = 0; i < str.length; ++i) {
-      switch (str.charCodeAt(i)) {
-        case 32: // ' '
-        case 9: // '\t'
-        case 13: // '\r'
-        case 10: // '\n'
-        case 12: // '\f'
-          ++start;
-          continue;
-      }
-      break;
-    }
-    if (start === 0)
-      return str;
-    return str.slice(start);
-  };
-})();
-
-function makePEM(type, data) {
-  data = data.toString('base64');
-  return '-----BEGIN ' + type + ' KEY-----\n'
-         + data.replace(/.{64}/g, '$&\n')
-         + (data.length % 64 ? '\n' : '')
-         + '-----END ' + type + ' KEY-----';
-}
-
-function combineBuffers(buf1, buf2) {
-  var result = Buffer.allocUnsafe(buf1.length + buf2.length);
-  buf1.copy(result, 0);
-  buf2.copy(result, buf1.length);
-  return result;
-}
-
-function skipFields(buf, nfields) {
-  var bufLen = buf.length;
-  var pos = (buf._pos || 0);
-  for (var i = 0; i < nfields; ++i) {
-    var left = (bufLen - pos);
-    if (pos >= bufLen || left < 4)
-      return false;
-    var len = readUInt32BE(buf, pos);
-    if (left < 4 + len)
-      return false;
-    pos += 4 + len;
-  }
-  buf._pos = pos;
-  return true;
-}
-
-function genOpenSSLRSAPub(n, e) {
-  var asnWriter = new Ber.Writer();
-  asnWriter.startSequence();
-    // algorithm
-    asnWriter.startSequence();
-      asnWriter.writeOID('1.2.840.113549.1.1.1'); // rsaEncryption
-      // algorithm parameters (RSA has none)
-      asnWriter.writeNull();
-    asnWriter.endSequence();
-
-    // subjectPublicKey
-    asnWriter.startSequence(Ber.BitString);
-      asnWriter.writeByte(0x00);
-      asnWriter.startSequence();
-        asnWriter.writeBuffer(n, Ber.Integer);
-        asnWriter.writeBuffer(e, Ber.Integer);
-      asnWriter.endSequence();
-    asnWriter.endSequence();
-  asnWriter.endSequence();
-  return makePEM('PUBLIC', asnWriter.buffer);
-}
-
-function genOpenSSHRSAPub(n, e) {
-  var publicKey = Buffer.allocUnsafe(4 + 7 // "ssh-rsa"
-                                     + 4 + n.length
-                                     + 4 + e.length);
-
-  writeUInt32BE(publicKey, 7, 0);
-  publicKey.write('ssh-rsa', 4, 7, 'ascii');
-
-  var i = 4 + 7;
-  writeUInt32BE(publicKey, e.length, i);
-  e.copy(publicKey, i += 4);
-
-  writeUInt32BE(publicKey, n.length, i += e.length);
-  n.copy(publicKey, i + 4);
-
-  return publicKey;
-}
-
-var genOpenSSLRSAPriv = (function() {
-  function genRSAASN1Buf(n, e, d, p, q, dmp1, dmq1, iqmp) {
-    var asnWriter = new Ber.Writer();
-    asnWriter.startSequence();
-      asnWriter.writeInt(0x00, Ber.Integer);
-      asnWriter.writeBuffer(n, Ber.Integer);
-      asnWriter.writeBuffer(e, Ber.Integer);
-      asnWriter.writeBuffer(d, Ber.Integer);
-      asnWriter.writeBuffer(p, Ber.Integer);
-      asnWriter.writeBuffer(q, Ber.Integer);
-      asnWriter.writeBuffer(dmp1, Ber.Integer);
-      asnWriter.writeBuffer(dmq1, Ber.Integer);
-      asnWriter.writeBuffer(iqmp, Ber.Integer);
-    asnWriter.endSequence();
-    return asnWriter.buffer;
-  }
-
-  function bigIntFromBuffer(buf) {
-    return BigInt('0x' + buf.toString('hex'));
-  }
-
-  function bigIntToBuffer(bn) {
-    var hex = bn.toString(16);
-    if ((hex.length & 1) !== 0) {
-      hex = '0' + hex;
-    } else {
-      var sigbit = hex.charCodeAt(0);
-      // BER/DER integers require leading zero byte to denote a positive value
-      // when first byte >= 0x80
-      if (sigbit === 56 || (sigbit >= 97 && sigbit <= 102))
-        hex = '00' + hex;
-    }
-    return Buffer.from(hex, 'hex');
-  }
-
-  // Feature detect native BigInt availability and use it when possible
-  try {
-    var code = [
-      'return function genOpenSSLRSAPriv(n, e, d, iqmp, p, q) {',
-      '  var bn_d = bigIntFromBuffer(d);',
-      '  var dmp1 = bigIntToBuffer(bn_d % (bigIntFromBuffer(p) - 1n));',
-      '  var dmq1 = bigIntToBuffer(bn_d % (bigIntFromBuffer(q) - 1n));',
-      '  return makePEM(\'RSA PRIVATE\', '
-        + 'genRSAASN1Buf(n, e, d, p, q, dmp1, dmq1, iqmp));',
-      '};'
-    ].join('\n');
-    return new Function(
-      'bigIntFromBuffer, bigIntToBuffer, makePEM, genRSAASN1Buf',
-      code
-    )(bigIntFromBuffer, bigIntToBuffer, makePEM, genRSAASN1Buf);
-  } catch (ex) {
-    return (function() {
-      var BigInteger = __nccwpck_require__(4950);
-      return function genOpenSSLRSAPriv(n, e, d, iqmp, p, q) {
-        var pbi = new BigInteger(p, 256);
-        var qbi = new BigInteger(q, 256);
-        var dbi = new BigInteger(d, 256);
-        var dmp1bi = dbi.mod(pbi.subtract(BigInteger.ONE));
-        var dmq1bi = dbi.mod(qbi.subtract(BigInteger.ONE));
-        var dmp1 = Buffer.from(dmp1bi.toByteArray());
-        var dmq1 = Buffer.from(dmq1bi.toByteArray());
-        return makePEM('RSA PRIVATE',
-                       genRSAASN1Buf(n, e, d, p, q, dmp1, dmq1, iqmp));
-      };
-    })();
-  }
-})();
-
-function genOpenSSLDSAPub(p, q, g, y) {
-  var asnWriter = new Ber.Writer();
-  asnWriter.startSequence();
-    // algorithm
-    asnWriter.startSequence();
-      asnWriter.writeOID('1.2.840.10040.4.1'); // id-dsa
-      // algorithm parameters
-      asnWriter.startSequence();
-        asnWriter.writeBuffer(p, Ber.Integer);
-        asnWriter.writeBuffer(q, Ber.Integer);
-        asnWriter.writeBuffer(g, Ber.Integer);
-      asnWriter.endSequence();
-    asnWriter.endSequence();
-
-    // subjectPublicKey
-    asnWriter.startSequence(Ber.BitString);
-      asnWriter.writeByte(0x00);
-      asnWriter.writeBuffer(y, Ber.Integer);
-    asnWriter.endSequence();
-  asnWriter.endSequence();
-  return makePEM('PUBLIC', asnWriter.buffer);
-}
-
-function genOpenSSHDSAPub(p, q, g, y) {
-  var publicKey = Buffer.allocUnsafe(4 + 7 // ssh-dss
-                                     + 4 + p.length
-                                     + 4 + q.length
-                                     + 4 + g.length
-                                     + 4 + y.length);
-
-  writeUInt32BE(publicKey, 7, 0);
-  publicKey.write('ssh-dss', 4, 7, 'ascii');
-
-  var i = 4 + 7;
-  writeUInt32BE(publicKey, p.length, i);
-  p.copy(publicKey, i += 4);
-
-  writeUInt32BE(publicKey, q.length, i += p.length);
-  q.copy(publicKey, i += 4);
-
-  writeUInt32BE(publicKey, g.length, i += q.length);
-  g.copy(publicKey, i += 4);
-
-  writeUInt32BE(publicKey, y.length, i += g.length);
-  y.copy(publicKey, i + 4);
-
-  return publicKey;
-}
-
-function genOpenSSLDSAPriv(p, q, g, y, x) {
-  var asnWriter = new Ber.Writer();
-  asnWriter.startSequence();
-    asnWriter.writeInt(0x00, Ber.Integer);
-    asnWriter.writeBuffer(p, Ber.Integer);
-    asnWriter.writeBuffer(q, Ber.Integer);
-    asnWriter.writeBuffer(g, Ber.Integer);
-    asnWriter.writeBuffer(y, Ber.Integer);
-    asnWriter.writeBuffer(x, Ber.Integer);
-  asnWriter.endSequence();
-  return makePEM('DSA PRIVATE', asnWriter.buffer);
-}
-
-function genOpenSSLEdPub(pub) {
-  var asnWriter = new Ber.Writer();
-  asnWriter.startSequence();
-    // algorithm
-    asnWriter.startSequence();
-      asnWriter.writeOID('1.3.101.112'); // id-Ed25519
-    asnWriter.endSequence();
-
-    // PublicKey
-    asnWriter.startSequence(Ber.BitString);
-      asnWriter.writeByte(0x00);
-      // XXX: hack to write a raw buffer without a tag -- yuck
-      asnWriter._ensure(pub.length);
-      pub.copy(asnWriter._buf, asnWriter._offset, 0, pub.length);
-      asnWriter._offset += pub.length;
-    asnWriter.endSequence();
-  asnWriter.endSequence();
-  return makePEM('PUBLIC', asnWriter.buffer);
-}
-
-function genOpenSSHEdPub(pub) {
-  var publicKey = Buffer.allocUnsafe(4 + 11 // ssh-ed25519
-                                     + 4 + pub.length);
-
-  writeUInt32BE(publicKey, 11, 0);
-  publicKey.write('ssh-ed25519', 4, 11, 'ascii');
-
-  writeUInt32BE(publicKey, pub.length, 15);
-  pub.copy(publicKey, 19);
-
-  return publicKey;
-}
-
-function genOpenSSLEdPriv(priv) {
-  var asnWriter = new Ber.Writer();
-  asnWriter.startSequence();
-    // version
-    asnWriter.writeInt(0x00, Ber.Integer);
-
-    // algorithm
-    asnWriter.startSequence();
-      asnWriter.writeOID('1.3.101.112'); // id-Ed25519
-    asnWriter.endSequence();
-
-    // PrivateKey
-    asnWriter.startSequence(Ber.OctetString);
-      asnWriter.writeBuffer(priv, Ber.OctetString);
-    asnWriter.endSequence();
-  asnWriter.endSequence();
-  return makePEM('PRIVATE', asnWriter.buffer);
-}
-
-function genOpenSSLECDSAPub(oid, Q) {
-  var asnWriter = new Ber.Writer();
-  asnWriter.startSequence();
-    // algorithm
-    asnWriter.startSequence();
-      asnWriter.writeOID('1.2.840.10045.2.1'); // id-ecPublicKey
-      // algorithm parameters (namedCurve)
-      asnWriter.writeOID(oid);
-    asnWriter.endSequence();
-
-    // subjectPublicKey
-    asnWriter.startSequence(Ber.BitString);
-      asnWriter.writeByte(0x00);
-      // XXX: hack to write a raw buffer without a tag -- yuck
-      asnWriter._ensure(Q.length);
-      Q.copy(asnWriter._buf, asnWriter._offset, 0, Q.length);
-      asnWriter._offset += Q.length;
-      // end hack
-    asnWriter.endSequence();
-  asnWriter.endSequence();
-  return makePEM('PUBLIC', asnWriter.buffer);
-}
-
-function genOpenSSHECDSAPub(oid, Q) {
-  var curveName;
-  switch (oid) {
-    case '1.2.840.10045.3.1.7':
-      // prime256v1/secp256r1
-      curveName = 'nistp256';
-      break;
-    case '1.3.132.0.34':
-      // secp384r1
-      curveName = 'nistp384';
-      break;
-    case '1.3.132.0.35':
-      // secp521r1
-      curveName = 'nistp521';
-      break;
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
+
+/*<replacement>*/
+
+var Buffer = (__nccwpck_require__(1867).Buffer);
+/*</replacement>*/
+
+var isEncoding = Buffer.isEncoding || function (encoding) {
+  encoding = '' + encoding;
+  switch (encoding && encoding.toLowerCase()) {
+    case 'hex':case 'utf8':case 'utf-8':case 'ascii':case 'binary':case 'base64':case 'ucs2':case 'ucs-2':case 'utf16le':case 'utf-16le':case 'raw':
+      return true;
     default:
-      return;
+      return false;
   }
-
-  var publicKey = Buffer.allocUnsafe(4 + 19 // ecdsa-sha2-<curve name>
-                                     + 4 + 8 // <curve name>
-                                     + 4 + Q.length);
-
-  writeUInt32BE(publicKey, 19, 0);
-  publicKey.write('ecdsa-sha2-' + curveName, 4, 19, 'ascii');
-
-  writeUInt32BE(publicKey, 8, 23);
-  publicKey.write(curveName, 27, 8, 'ascii');
-
-  writeUInt32BE(publicKey, Q.length, 35);
-  Q.copy(publicKey, 39);
-
-  return publicKey;
-}
-
-function genOpenSSLECDSAPriv(oid, pub, priv) {
-  var asnWriter = new Ber.Writer();
-  asnWriter.startSequence();
-    // version
-    asnWriter.writeInt(0x01, Ber.Integer);
-    // privateKey
-    asnWriter.writeBuffer(priv, Ber.OctetString);
-    // parameters (optional)
-    asnWriter.startSequence(0xA0);
-      asnWriter.writeOID(oid);
-    asnWriter.endSequence();
-    // publicKey (optional)
-    asnWriter.startSequence(0xA1);
-      asnWriter.startSequence(Ber.BitString);
-        asnWriter.writeByte(0x00);
-        // XXX: hack to write a raw buffer without a tag -- yuck
-        asnWriter._ensure(pub.length);
-        pub.copy(asnWriter._buf, asnWriter._offset, 0, pub.length);
-        asnWriter._offset += pub.length;
-        // end hack
-      asnWriter.endSequence();
-    asnWriter.endSequence();
-  asnWriter.endSequence();
-  return makePEM('EC PRIVATE', asnWriter.buffer);
-}
-
-function genOpenSSLECDSAPubFromPriv(curveName, priv) {
-  var tempECDH = crypto.createECDH(curveName);
-  tempECDH.setPrivateKey(priv);
-  return tempECDH.getPublicKey();
-}
-
-var baseKeySign = (function() {
-  if (typeof cryptoSign === 'function') {
-    return function sign(data) {
-      var pem = this[SYM_PRIV_PEM];
-      if (pem === null)
-        return new Error('No private key available');
-      try {
-        return cryptoSign(this[SYM_HASH_ALGO], data, pem);
-      } catch (ex) {
-        return ex;
-      }
-    };
-  } else {
-    function trySign(signature, privKey) {
-      try {
-        return signature.sign(privKey);
-      } catch (ex) {
-        return ex;
-      }
-    }
-
-    return function sign(data) {
-      var pem = this[SYM_PRIV_PEM];
-      if (pem === null)
-        return new Error('No private key available');
-      var signature = createSign(this[SYM_HASH_ALGO]);
-      signature.update(data);
-      return trySign(signature, pem);
-    };
-  }
-})();
-
-var baseKeyVerify = (function() {
-  if (typeof cryptoVerify === 'function') {
-    return function verify(data, signature) {
-      var pem = this[SYM_PUB_PEM];
-      if (pem === null)
-        return new Error('No public key available');
-      try {
-        return cryptoVerify(this[SYM_HASH_ALGO], data, pem, signature);
-      } catch (ex) {
-        return ex;
-      }
-    };
-  } else {
-    function tryVerify(verifier, pubKey, signature) {
-      try {
-        return verifier.verify(pubKey, signature);
-      } catch (ex) {
-        return ex;
-      }
-    }
-
-    return function verify(data, signature) {
-      var pem = this[SYM_PUB_PEM];
-      if (pem === null)
-        return new Error('No public key available');
-      var verifier = createVerify(this[SYM_HASH_ALGO]);
-      verifier.update(data);
-      return tryVerify(verifier, pem, signature);
-    };
-  }
-})();
-
-var BaseKey = {
-  sign: baseKeySign,
-  verify: baseKeyVerify,
-  getPrivatePEM: function getPrivatePEM() {
-    return this[SYM_PRIV_PEM];
-  },
-  getPublicPEM: function getPublicPEM() {
-    return this[SYM_PUB_PEM];
-  },
-  getPublicSSH: function getPublicSSH() {
-    return this[SYM_PUB_SSH];
-  },
 };
 
-
-
-function OpenSSH_Private(type, comment, privPEM, pubPEM, pubSSH, algo, decrypted) {
-  this.type = type;
-  this.comment = comment;
-  this[SYM_PRIV_PEM] = privPEM;
-  this[SYM_PUB_PEM] = pubPEM;
-  this[SYM_PUB_SSH] = pubSSH;
-  this[SYM_HASH_ALGO] = algo;
-  this[SYM_DECRYPTED] = decrypted;
-}
-OpenSSH_Private.prototype = BaseKey;
-(function() {
-  var regexp = /^-----BEGIN OPENSSH PRIVATE KEY-----(?:\r\n|\n)([\s\S]+)(?:\r\n|\n)-----END OPENSSH PRIVATE KEY-----$/;
-  OpenSSH_Private.parse = function(str, passphrase) {
-    var m = regexp.exec(str);
-    if (m === null)
-      return null;
-    var ret;
-    var data = Buffer.from(m[1], 'base64');
-    if (data.length < 31) // magic (+ magic null term.) + minimum field lengths
-      return new Error('Malformed OpenSSH private key');
-    var magic = data.toString('ascii', 0, 15);
-    if (magic !== 'openssh-key-v1\0')
-      return new Error('Unsupported OpenSSH key magic: ' + magic);
-
-    // avoid cyclic require by requiring on first use
-    if (!utils)
-      utils = __nccwpck_require__(4928);
-
-    var cipherName = utils.readString(data, 15, 'ascii');
-    if (cipherName === false)
-      return new Error('Malformed OpenSSH private key');
-    if (cipherName !== 'none' && SUPPORTED_CIPHER.indexOf(cipherName) === -1)
-      return new Error('Unsupported cipher for OpenSSH key: ' + cipherName);
-
-    var kdfName = utils.readString(data, data._pos, 'ascii');
-    if (kdfName === false)
-      return new Error('Malformed OpenSSH private key');
-    if (kdfName !== 'none') {
-      if (cipherName === 'none')
-        return new Error('Malformed OpenSSH private key');
-      if (kdfName !== 'bcrypt')
-        return new Error('Unsupported kdf name for OpenSSH key: ' + kdfName);
-      if (!passphrase) {
-        return new Error(
-          'Encrypted private OpenSSH key detected, but no passphrase given'
-        );
-      }
-    } else if (cipherName !== 'none') {
-      return new Error('Malformed OpenSSH private key');
-    }
-
-    var encInfo;
-    var cipherKey;
-    var cipherIV;
-    if (cipherName !== 'none')
-      encInfo = CIPHER_INFO[cipherName];
-    var kdfOptions = utils.readString(data, data._pos);
-    if (kdfOptions === false)
-      return new Error('Malformed OpenSSH private key');
-    if (kdfOptions.length) {
-      switch (kdfName) {
-        case 'none':
-          return new Error('Malformed OpenSSH private key');
-        case 'bcrypt':
-          /*
-            string salt
-            uint32 rounds
-          */
-          var salt = utils.readString(kdfOptions, 0);
-          if (salt === false || kdfOptions._pos + 4 > kdfOptions.length)
-            return new Error('Malformed OpenSSH private key');
-          var rounds = readUInt32BE(kdfOptions, kdfOptions._pos);
-          var gen = Buffer.allocUnsafe(encInfo.keyLen + encInfo.ivLen);
-          var r = bcrypt_pbkdf(passphrase,
-                               passphrase.length,
-                               salt,
-                               salt.length,
-                               gen,
-                               gen.length,
-                               rounds);
-          if (r !== 0)
-            return new Error('Failed to generate information to decrypt key');
-          cipherKey = gen.slice(0, encInfo.keyLen);
-          cipherIV = gen.slice(encInfo.keyLen);
-          break;
-      }
-    } else if (kdfName !== 'none') {
-      return new Error('Malformed OpenSSH private key');
-    }
-
-    var keyCount = utils.readInt(data, data._pos);
-    if (keyCount === false)
-      return new Error('Malformed OpenSSH private key');
-    data._pos += 4;
-
-    if (keyCount > 0) {
-      // TODO: place sensible limit on max `keyCount`
-
-      // Read public keys first
-      for (var i = 0; i < keyCount; ++i) {
-        var pubData = utils.readString(data, data._pos);
-        if (pubData === false)
-          return new Error('Malformed OpenSSH private key');
-        var type = utils.readString(pubData, 0, 'ascii');
-        if (type === false)
-          return new Error('Malformed OpenSSH private key');
-      }
-
-      var privBlob = utils.readString(data, data._pos);
-      if (privBlob === false)
-        return new Error('Malformed OpenSSH private key');
-
-      if (cipherKey !== undefined) {
-        // encrypted private key(s)
-        if (privBlob.length < encInfo.blockLen
-            || (privBlob.length % encInfo.blockLen) !== 0) {
-          return new Error('Malformed OpenSSH private key');
-        }
-        try {
-          var options = { authTagLength: encInfo.authLen };
-          var decipher = createDecipheriv(SSH_TO_OPENSSL[cipherName],
-                                          cipherKey,
-                                          cipherIV,
-                                          options);
-          if (encInfo.authLen > 0) {
-            if (data.length - data._pos < encInfo.authLen)
-              return new Error('Malformed OpenSSH private key');
-            decipher.setAuthTag(
-              data.slice(data._pos, data._pos += encInfo.authLen)
-            );
-          }
-          privBlob = combineBuffers(decipher.update(privBlob),
-                                    decipher.final());
-        } catch (ex) {
-          return ex;
-        }
-      }
-      // Nothing should we follow the private key(s), except a possible
-      // authentication tag for relevant ciphers
-      if (data._pos !== data.length)
-        return new Error('Malformed OpenSSH private key');
-
-      ret = parseOpenSSHPrivKeys(privBlob, keyCount, cipherKey !== undefined);
-    } else {
-      ret = [];
-    }
-    return ret;
-  };
-
-  function parseOpenSSHPrivKeys(data, nkeys, decrypted) {
-    var keys = [];
-    /*
-      uint32	checkint
-      uint32	checkint
-      string	privatekey1
-      string	comment1
-      string	privatekey2
-      string	comment2
-      ...
-      string	privatekeyN
-      string	commentN
-      char	1
-      char	2
-      char	3
-      ...
-      char	padlen % 255
-    */
-    if (data.length < 8)
-      return new Error('Malformed OpenSSH private key');
-    var check1 = readUInt32BE(data, 0);
-    var check2 = readUInt32BE(data, 4);
-    if (check1 !== check2) {
-      if (decrypted)
-        return new Error('OpenSSH key integrity check failed -- bad passphrase?');
-      return new Error('OpenSSH key integrity check failed');
-    }
-    data._pos = 8;
-    var i;
-    var oid;
-    for (i = 0; i < nkeys; ++i) {
-      var algo = undefined;
-      var privPEM = undefined;
-      var pubPEM = undefined;
-      var pubSSH = undefined;
-      // The OpenSSH documentation for the key format actually lies, the entirety
-      // of the private key content is not contained with a string field, it's
-      // actually the literal contents of the private key, so to be able to find
-      // the end of the key data you need to know the layout/format of each key
-      // type ...
-      var type = utils.readString(data, data._pos, 'ascii');
-      if (type === false)
-        return new Error('Malformed OpenSSH private key');
-
-      switch (type) {
-        case 'ssh-rsa':
-          /*
-            string  n -- public
-            string  e -- public
-            string  d -- private
-            string  iqmp -- private
-            string  p -- private
-            string  q -- private
-          */
-          var n = utils.readString(data, data._pos);
-          if (n === false)
-            return new Error('Malformed OpenSSH private key');
-          var e = utils.readString(data, data._pos);
-          if (e === false)
-            return new Error('Malformed OpenSSH private key');
-          var d = utils.readString(data, data._pos);
-          if (d === false)
-            return new Error('Malformed OpenSSH private key');
-          var iqmp = utils.readString(data, data._pos);
-          if (iqmp === false)
-            return new Error('Malformed OpenSSH private key');
-          var p = utils.readString(data, data._pos);
-          if (p === false)
-            return new Error('Malformed OpenSSH private key');
-          var q = utils.readString(data, data._pos);
-          if (q === false)
-            return new Error('Malformed OpenSSH private key');
-
-          pubPEM = genOpenSSLRSAPub(n, e);
-          pubSSH = genOpenSSHRSAPub(n, e);
-          privPEM = genOpenSSLRSAPriv(n, e, d, iqmp, p, q);
-          algo = 'sha1';
-          break;
-        case 'ssh-dss':
-          /*
-            string  p -- public
-            string  q -- public
-            string  g -- public
-            string  y -- public
-            string  x -- private
-          */
-          var p = utils.readString(data, data._pos);
-          if (p === false)
-            return new Error('Malformed OpenSSH private key');
-          var q = utils.readString(data, data._pos);
-          if (q === false)
-            return new Error('Malformed OpenSSH private key');
-          var g = utils.readString(data, data._pos);
-          if (g === false)
-            return new Error('Malformed OpenSSH private key');
-          var y = utils.readString(data, data._pos);
-          if (y === false)
-            return new Error('Malformed OpenSSH private key');
-          var x = utils.readString(data, data._pos);
-          if (x === false)
-            return new Error('Malformed OpenSSH private key');
-
-          pubPEM = genOpenSSLDSAPub(p, q, g, y);
-          pubSSH = genOpenSSHDSAPub(p, q, g, y);
-          privPEM = genOpenSSLDSAPriv(p, q, g, y, x);
-          algo = 'sha1';
-          break;
-        case 'ssh-ed25519':
-          if (!EDDSA_SUPPORTED)
-            return new Error('Unsupported OpenSSH private key type: ' + type);
-          /*
-            * string  public key
-            * string  private key + public key
-          */
-          var edpub = utils.readString(data, data._pos);
-          if (edpub === false || edpub.length !== 32)
-            return new Error('Malformed OpenSSH private key');
-          var edpriv = utils.readString(data, data._pos);
-          if (edpriv === false || edpriv.length !== 64)
-            return new Error('Malformed OpenSSH private key');
-
-          pubPEM = genOpenSSLEdPub(edpub);
-          pubSSH = genOpenSSHEdPub(edpub);
-          privPEM = genOpenSSLEdPriv(edpriv.slice(0, 32));
-          algo = null;
-          break;
-        case 'ecdsa-sha2-nistp256':
-          algo = 'sha256';
-          oid = '1.2.840.10045.3.1.7';
-        case 'ecdsa-sha2-nistp384':
-          if (algo === undefined) {
-            algo = 'sha384';
-            oid = '1.3.132.0.34';
-          }
-        case 'ecdsa-sha2-nistp521':
-          if (algo === undefined) {
-            algo = 'sha512';
-            oid = '1.3.132.0.35';
-          }
-          /*
-            string  curve name
-            string  Q -- public
-            string  d -- private
-          */
-          // TODO: validate curve name against type
-          if (!skipFields(data, 1)) // Skip curve name
-            return new Error('Malformed OpenSSH private key');
-          var ecpub = utils.readString(data, data._pos);
-          if (ecpub === false)
-            return new Error('Malformed OpenSSH private key');
-          var ecpriv = utils.readString(data, data._pos);
-          if (ecpriv === false)
-            return new Error('Malformed OpenSSH private key');
-
-          pubPEM = genOpenSSLECDSAPub(oid, ecpub);
-          pubSSH = genOpenSSHECDSAPub(oid, ecpub);
-          privPEM = genOpenSSLECDSAPriv(oid, ecpub, ecpriv);
-          break;
-        default:
-          return new Error('Unsupported OpenSSH private key type: ' + type);
-      }
-
-      var privComment = utils.readString(data, data._pos, 'utf8');
-      if (privComment === false)
-        return new Error('Malformed OpenSSH private key');
-
-      keys.push(
-        new OpenSSH_Private(type, privComment, privPEM, pubPEM, pubSSH, algo,
-                            decrypted)
-      );
-    }
-    var cnt = 0;
-    for (i = data._pos; i < data.length; ++i) {
-      if (data[i] !== (++cnt % 255))
-        return new Error('Malformed OpenSSH private key');
-    }
-
-    return keys;
-  }
-})();
-
-
-
-function OpenSSH_Old_Private(type, comment, privPEM, pubPEM, pubSSH, algo, decrypted) {
-  this.type = type;
-  this.comment = comment;
-  this[SYM_PRIV_PEM] = privPEM;
-  this[SYM_PUB_PEM] = pubPEM;
-  this[SYM_PUB_SSH] = pubSSH;
-  this[SYM_HASH_ALGO] = algo;
-  this[SYM_DECRYPTED] = decrypted;
-}
-OpenSSH_Old_Private.prototype = BaseKey;
-(function() {
-  var regexp = /^-----BEGIN (RSA|DSA|EC) PRIVATE KEY-----(?:\r\n|\n)((?:[^:]+:\s*[\S].*(?:\r\n|\n))*)([\s\S]+)(?:\r\n|\n)-----END (RSA|DSA|EC) PRIVATE KEY-----$/;
-  OpenSSH_Old_Private.parse = function(str, passphrase) {
-    var m = regexp.exec(str);
-    if (m === null)
-      return null;
-    var privBlob = Buffer.from(m[3], 'base64');
-    var headers = m[2];
-    var decrypted = false;
-    if (headers !== undefined) {
-      // encrypted key
-      headers = headers.split(/\r\n|\n/g);
-      for (var i = 0; i < headers.length; ++i) {
-        var header = headers[i];
-        var sepIdx = header.indexOf(':');
-        if (header.slice(0, sepIdx) === 'DEK-Info') {
-          var val = header.slice(sepIdx + 2);
-          sepIdx = val.indexOf(',');
-          if (sepIdx === -1)
-            continue;
-          var cipherName = val.slice(0, sepIdx).toLowerCase();
-          if (supportedOpenSSLCiphers.indexOf(cipherName) === -1) {
-            return new Error(
-              'Cipher ('
-              + cipherName
-              + ') not supported for encrypted OpenSSH private key'
-            );
-          }
-          var encInfo = CIPHER_INFO_OPENSSL[cipherName];
-          if (!encInfo) {
-            return new Error(
-              'Cipher ('
-              + cipherName
-              + ') not supported for encrypted OpenSSH private key'
-            );
-          }
-          var cipherIV = Buffer.from(val.slice(sepIdx + 1), 'hex');
-          if (cipherIV.length !== encInfo.ivLen)
-            return new Error('Malformed encrypted OpenSSH private key');
-          if (!passphrase) {
-            return new Error(
-              'Encrypted OpenSSH private key detected, but no passphrase given'
-            );
-          }
-          var cipherKey = createHash('md5')
-                            .update(passphrase)
-                            .update(cipherIV.slice(0, 8))
-                            .digest();
-          while (cipherKey.length < encInfo.keyLen) {
-            cipherKey = combineBuffers(
-              cipherKey,
-              (createHash('md5')
-                .update(cipherKey)
-                .update(passphrase)
-                .update(cipherIV)
-                .digest()).slice(0, 8)
-            );
-          }
-          if (cipherKey.length > encInfo.keyLen)
-            cipherKey = cipherKey.slice(0, encInfo.keyLen);
-          try {
-            var decipher = createDecipheriv(cipherName, cipherKey, cipherIV);
-            decipher.setAutoPadding(false);
-            privBlob = combineBuffers(decipher.update(privBlob),
-                                      decipher.final());
-            decrypted = true;
-          } catch (ex) {
-            return ex;
-          }
-        }
-      }
-    }
-
-    var type;
-    var privPEM;
-    var pubPEM;
-    var pubSSH;
-    var algo;
-    var reader;
-    var errMsg = 'Malformed OpenSSH private key';
-    if (decrypted)
-      errMsg += '. Bad passphrase?';
-    switch (m[1]) {
-      case 'RSA':
-        type = 'ssh-rsa';
-        privPEM = makePEM('RSA PRIVATE', privBlob);
-        try {
-          reader = new Ber.Reader(privBlob);
-          reader.readSequence();
-          reader.readInt(); // skip version
-          var n = reader.readString(Ber.Integer, true);
-          if (n === null)
-            return new Error(errMsg);
-          var e = reader.readString(Ber.Integer, true);
-          if (e === null)
-            return new Error(errMsg);
-          pubPEM = genOpenSSLRSAPub(n, e);
-          pubSSH = genOpenSSHRSAPub(n, e);
-        } catch (ex) {
-          return new Error(errMsg);
-        }
-        algo = 'sha1';
-        break;
-      case 'DSA':
-        type = 'ssh-dss';
-        privPEM = makePEM('DSA PRIVATE', privBlob);
-        try {
-          reader = new Ber.Reader(privBlob);
-          reader.readSequence();
-          reader.readInt(); // skip version
-          var p = reader.readString(Ber.Integer, true);
-          if (p === null)
-            return new Error(errMsg);
-          var q = reader.readString(Ber.Integer, true);
-          if (q === null)
-            return new Error(errMsg);
-          var g = reader.readString(Ber.Integer, true);
-          if (g === null)
-            return new Error(errMsg);
-          var y = reader.readString(Ber.Integer, true);
-          if (y === null)
-            return new Error(errMsg);
-          pubPEM = genOpenSSLDSAPub(p, q, g, y);
-          pubSSH = genOpenSSHDSAPub(p, q, g, y);
-        } catch (ex) {
-          return new Error(errMsg);
-        }
-        algo = 'sha1';
-        break;
-      case 'EC':
-        var ecSSLName;
-        var ecPriv;
-        try {
-          reader = new Ber.Reader(privBlob);
-          reader.readSequence();
-          reader.readInt(); // skip version
-          ecPriv = reader.readString(Ber.OctetString, true);
-          reader.readByte(); // Skip "complex" context type byte
-          var offset = reader.readLength(); // Skip context length
-          if (offset !== null) {
-            reader._offset = offset;
-            var oid = reader.readOID();
-            if (oid === null)
-              return new Error(errMsg);
-            switch (oid) {
-              case '1.2.840.10045.3.1.7':
-                // prime256v1/secp256r1
-                ecSSLName = 'prime256v1';
-                type = 'ecdsa-sha2-nistp256';
-                algo = 'sha256';
-                break;
-              case '1.3.132.0.34':
-                // secp384r1
-                ecSSLName = 'secp384r1';
-                type = 'ecdsa-sha2-nistp384';
-                algo = 'sha384';
-                break;
-              case '1.3.132.0.35':
-                // secp521r1
-                ecSSLName = 'secp521r1';
-                type = 'ecdsa-sha2-nistp521';
-                algo = 'sha512';
-                break;
-              default:
-                return new Error('Unsupported private key EC OID: ' + oid);
-            }
-          } else {
-            return new Error(errMsg);
-          }
-        } catch (ex) {
-          return new Error(errMsg);
-        }
-        privPEM = makePEM('EC PRIVATE', privBlob);
-        var pubBlob = genOpenSSLECDSAPubFromPriv(ecSSLName, ecPriv);
-        pubPEM = genOpenSSLECDSAPub(oid, pubBlob);
-        pubSSH = genOpenSSHECDSAPub(oid, pubBlob);
-        break;
-    }
-
-    return new OpenSSH_Old_Private(type, '', privPEM, pubPEM, pubSSH, algo,
-                                   decrypted);
-  };
-})();
-
-
-
-function PPK_Private(type, comment, privPEM, pubPEM, pubSSH, algo, decrypted) {
-  this.type = type;
-  this.comment = comment;
-  this[SYM_PRIV_PEM] = privPEM;
-  this[SYM_PUB_PEM] = pubPEM;
-  this[SYM_PUB_SSH] = pubSSH;
-  this[SYM_HASH_ALGO] = algo;
-  this[SYM_DECRYPTED] = decrypted;
-}
-PPK_Private.prototype = BaseKey;
-(function() {
-  var EMPTY_PASSPHRASE = Buffer.alloc(0);
-  var PPK_IV = Buffer.from([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
-  var PPK_PP1 = Buffer.from([0, 0, 0, 0]);
-  var PPK_PP2 = Buffer.from([0, 0, 0, 1]);
-  var regexp = /^PuTTY-User-Key-File-2: (ssh-(?:rsa|dss))\r?\nEncryption: (aes256-cbc|none)\r?\nComment: ([^\r\n]*)\r?\nPublic-Lines: \d+\r?\n([\s\S]+?)\r?\nPrivate-Lines: \d+\r?\n([\s\S]+?)\r?\nPrivate-MAC: ([^\r\n]+)/;
-  PPK_Private.parse = function(str, passphrase) {
-    var m = regexp.exec(str);
-    if (m === null)
-      return null;
-    // m[1] = key type
-    // m[2] = encryption type
-    // m[3] = comment
-    // m[4] = base64-encoded public key data:
-    //         for "ssh-rsa":
-    //          string "ssh-rsa"
-    //          mpint  e    (public exponent)
-    //          mpint  n    (modulus)
-    //         for "ssh-dss":
-    //          string "ssh-dss"
-    //          mpint p     (modulus)
-    //          mpint q     (prime)
-    //          mpint g     (base number)
-    //          mpint y     (public key parameter: g^x mod p)
-    // m[5] = base64-encoded private key data:
-    //         for "ssh-rsa":
-    //          mpint  d    (private exponent)
-    //          mpint  p    (prime 1)
-    //          mpint  q    (prime 2)
-    //          mpint  iqmp ([inverse of q] mod p)
-    //         for "ssh-dss":
-    //          mpint x     (private key parameter)
-    // m[6] = SHA1 HMAC over:
-    //          string  name of algorithm ("ssh-dss", "ssh-rsa")
-    //          string  encryption type
-    //          string  comment
-    //          string  public key data
-    //          string  private-plaintext (including the final padding)
-    var cipherName = m[2];
-    var encrypted = (cipherName !== 'none');
-    if (encrypted && !passphrase) {
-      return new Error(
-        'Encrypted PPK private key detected, but no passphrase given'
-      );
-    }
-
-    var privBlob = Buffer.from(m[5], 'base64');
-
-    if (encrypted) {
-      var encInfo = CIPHER_INFO[cipherName];
-      var cipherKey = combineBuffers(
-        createHash('sha1').update(PPK_PP1).update(passphrase).digest(),
-        createHash('sha1').update(PPK_PP2).update(passphrase).digest()
-      );
-      if (cipherKey.length > encInfo.keyLen)
-        cipherKey = cipherKey.slice(0, encInfo.keyLen);
-      try {
-        var decipher = createDecipheriv(SSH_TO_OPENSSL[cipherName],
-                                        cipherKey,
-                                        PPK_IV);
-        decipher.setAutoPadding(false);
-        privBlob = combineBuffers(decipher.update(privBlob),
-                                  decipher.final());
-        decrypted = true;
-      } catch (ex) {
-        return ex;
-      }
-    }
-
-    var type = m[1];
-    var comment = m[3];
-    var pubBlob = Buffer.from(m[4], 'base64');
-
-    var mac = m[6];
-    var typeLen = type.length;
-    var cipherNameLen = cipherName.length;
-    var commentLen = Buffer.byteLength(comment);
-    var pubLen = pubBlob.length;
-    var privLen = privBlob.length;
-    var macData = Buffer.allocUnsafe(4 + typeLen
-                                     + 4 + cipherNameLen
-                                     + 4 + commentLen
-                                     + 4 + pubLen
-                                     + 4 + privLen);
-    var p = 0;
-
-    writeUInt32BE(macData, typeLen, p);
-    macData.write(type, p += 4, typeLen, 'ascii');
-    writeUInt32BE(macData, cipherNameLen, p += typeLen);
-    macData.write(cipherName, p += 4, cipherNameLen, 'ascii');
-    writeUInt32BE(macData, commentLen, p += cipherNameLen);
-    macData.write(comment, p += 4, commentLen, 'utf8');
-    writeUInt32BE(macData, pubLen, p += commentLen);
-    pubBlob.copy(macData, p += 4);
-    writeUInt32BE(macData, privLen, p += pubLen);
-    privBlob.copy(macData, p + 4);
-
-    if (!passphrase)
-      passphrase = EMPTY_PASSPHRASE;
-
-    var calcMAC = createHmac('sha1',
-                             createHash('sha1')
-                               .update('putty-private-key-file-mac-key')
-                               .update(passphrase)
-                               .digest())
-                    .update(macData)
-                    .digest('hex');
-
-    if (calcMAC !== mac) {
-      if (encrypted) {
-        return new Error(
-          'PPK private key integrity check failed -- bad passphrase?'
-        );
-      } else {
-        return new Error('PPK private key integrity check failed');
-      }
-    }
-
-    // avoid cyclic require by requiring on first use
-    if (!utils)
-      utils = __nccwpck_require__(4928);
-
-    var pubPEM;
-    var pubSSH;
-    var privPEM;
-    pubBlob._pos = 0;
-    skipFields(pubBlob, 1); // skip (duplicate) key type
-    switch (type) {
-      case 'ssh-rsa':
-        var e = utils.readString(pubBlob, pubBlob._pos);
-        if (e === false)
-          return new Error('Malformed PPK public key');
-        var n = utils.readString(pubBlob, pubBlob._pos);
-        if (n === false)
-          return new Error('Malformed PPK public key');
-        var d = utils.readString(privBlob, 0);
-        if (d === false)
-          return new Error('Malformed PPK private key');
-        var p = utils.readString(privBlob, privBlob._pos);
-        if (p === false)
-          return new Error('Malformed PPK private key');
-        var q = utils.readString(privBlob, privBlob._pos);
-        if (q === false)
-          return new Error('Malformed PPK private key');
-        var iqmp = utils.readString(privBlob, privBlob._pos);
-        if (iqmp === false)
-          return new Error('Malformed PPK private key');
-        pubPEM = genOpenSSLRSAPub(n, e);
-        pubSSH = genOpenSSHRSAPub(n, e);
-        privPEM = genOpenSSLRSAPriv(n, e, d, iqmp, p, q);
-        break;
-      case 'ssh-dss':
-        var p = utils.readString(pubBlob, pubBlob._pos);
-        if (p === false)
-          return new Error('Malformed PPK public key');
-        var q = utils.readString(pubBlob, pubBlob._pos);
-        if (q === false)
-          return new Error('Malformed PPK public key');
-        var g = utils.readString(pubBlob, pubBlob._pos);
-        if (g === false)
-          return new Error('Malformed PPK public key');
-        var y = utils.readString(pubBlob, pubBlob._pos);
-        if (y === false)
-          return new Error('Malformed PPK public key');
-        var x = utils.readString(privBlob, 0);
-        if (x === false)
-          return new Error('Malformed PPK private key');
-
-        pubPEM = genOpenSSLDSAPub(p, q, g, y);
-        pubSSH = genOpenSSHDSAPub(p, q, g, y);
-        privPEM = genOpenSSLDSAPriv(p, q, g, y, x);
-        break;
-    }
-
-    return new PPK_Private(type, comment, privPEM, pubPEM, pubSSH, 'sha1',
-                           encrypted);
-  };
-})();
-
-
-function parseDER(data, baseType, comment, fullType) {
-  // avoid cyclic require by requiring on first use
-  if (!utils)
-    utils = __nccwpck_require__(4928);
-
-  var algo;
-  var pubPEM = null;
-  var pubSSH = null;
-  switch (baseType) {
-    case 'ssh-rsa':
-      var e = utils.readString(data, data._pos);
-      if (e === false)
-        return new Error('Malformed OpenSSH public key');
-      var n = utils.readString(data, data._pos);
-      if (n === false)
-        return new Error('Malformed OpenSSH public key');
-      pubPEM = genOpenSSLRSAPub(n, e);
-      pubSSH = genOpenSSHRSAPub(n, e);
-      algo = 'sha1';
-      break;
-    case 'ssh-dss':
-      var p = utils.readString(data, data._pos);
-      if (p === false)
-        return new Error('Malformed OpenSSH public key');
-      var q = utils.readString(data, data._pos);
-      if (q === false)
-        return new Error('Malformed OpenSSH public key');
-      var g = utils.readString(data, data._pos);
-      if (g === false)
-        return new Error('Malformed OpenSSH public key');
-      var y = utils.readString(data, data._pos);
-      if (y === false)
-        return new Error('Malformed OpenSSH public key');
-      pubPEM = genOpenSSLDSAPub(p, q, g, y);
-      pubSSH = genOpenSSHDSAPub(p, q, g, y);
-      algo = 'sha1';
-      break;
-    case 'ssh-ed25519':
-      var edpub = utils.readString(data, data._pos);
-      if (edpub === false || edpub.length !== 32)
-        return new Error('Malformed OpenSSH public key');
-      pubPEM = genOpenSSLEdPub(edpub);
-      pubSSH = genOpenSSHEdPub(edpub);
-      algo = null;
-      break;
-    case 'ecdsa-sha2-nistp256':
-      algo = 'sha256';
-      oid = '1.2.840.10045.3.1.7';
-    case 'ecdsa-sha2-nistp384':
-      if (algo === undefined) {
-        algo = 'sha384';
-        oid = '1.3.132.0.34';
-      }
-    case 'ecdsa-sha2-nistp521':
-      if (algo === undefined) {
-        algo = 'sha512';
-        oid = '1.3.132.0.35';
-      }
-      // TODO: validate curve name against type
-      if (!skipFields(data, 1)) // Skip curve name
-        return new Error('Malformed OpenSSH public key');
-      var ecpub = utils.readString(data, data._pos);
-      if (ecpub === false)
-        return new Error('Malformed OpenSSH public key');
-      pubPEM = genOpenSSLECDSAPub(oid, ecpub);
-      pubSSH = genOpenSSHECDSAPub(oid, ecpub);
-      break;
-    default:
-      return new Error('Unsupported OpenSSH public key type: ' + baseType);
-  }
-
-  return new OpenSSH_Public(fullType, comment, pubPEM, pubSSH, algo);
-}
-function OpenSSH_Public(type, comment, pubPEM, pubSSH, algo) {
-  this.type = type;
-  this.comment = comment;
-  this[SYM_PRIV_PEM] = null;
-  this[SYM_PUB_PEM] = pubPEM;
-  this[SYM_PUB_SSH] = pubSSH;
-  this[SYM_HASH_ALGO] = algo;
-  this[SYM_DECRYPTED] = false;
-}
-OpenSSH_Public.prototype = BaseKey;
-(function() {
-  var regexp;
-  if (EDDSA_SUPPORTED)
-    regexp = /^(((?:ssh-(?:rsa|dss|ed25519))|ecdsa-sha2-nistp(?:256|384|521))(?:-cert-v0[01]@openssh.com)?) ([A-Z0-9a-z\/+=]+)(?:$|\s+([\S].*)?)$/;
-  else
-    regexp = /^(((?:ssh-(?:rsa|dss))|ecdsa-sha2-nistp(?:256|384|521))(?:-cert-v0[01]@openssh.com)?) ([A-Z0-9a-z\/+=]+)(?:$|\s+([\S].*)?)$/;
-  OpenSSH_Public.parse = function(str) {
-    var m = regexp.exec(str);
-    if (m === null)
-      return null;
-    // m[1] = full type
-    // m[2] = base type
-    // m[3] = base64-encoded public key
-    // m[4] = comment
-
-    // avoid cyclic require by requiring on first use
-    if (!utils)
-      utils = __nccwpck_require__(4928);
-
-    var fullType = m[1];
-    var baseType = m[2];
-    var data = Buffer.from(m[3], 'base64');
-    var comment = (m[4] || '');
-
-    var type = utils.readString(data, data._pos, 'ascii');
-    if (type === false || type.indexOf(baseType) !== 0)
-      return new Error('Malformed OpenSSH public key');
-
-    return parseDER(data, baseType, comment, fullType);
-  };
-})();
-
-
-
-function RFC4716_Public(type, comment, pubPEM, pubSSH, algo) {
-  this.type = type;
-  this.comment = comment;
-  this[SYM_PRIV_PEM] = null;
-  this[SYM_PUB_PEM] = pubPEM;
-  this[SYM_PUB_SSH] = pubSSH;
-  this[SYM_HASH_ALGO] = algo;
-  this[SYM_DECRYPTED] = false;
-}
-RFC4716_Public.prototype = BaseKey;
-(function() {
-  var regexp = /^---- BEGIN SSH2 PUBLIC KEY ----(?:\r\n|\n)((?:(?:[\x21-\x7E]+?):(?:(?:.*?\\\r?\n)*.*)(?:\r\n|\n))*)((?:[A-Z0-9a-z\/+=]+(?:\r\n|\n))+)---- END SSH2 PUBLIC KEY ----$/;
-  var RE_HEADER = /^([\x21-\x7E]+?):((?:.*?\\\r?\n)*.*)$/gm;
-  var RE_HEADER_ENDS = /\\\r?\n/g;
-  RFC4716_Public.parse = function(str) {
-    var m = regexp.exec(str);
-    if (m === null)
-      return null;
-    // m[1] = header(s)
-    // m[2] = base64-encoded public key
-
-    var headers = m[1];
-    var data = Buffer.from(m[2], 'base64');
-    var comment = '';
-
-    if (headers !== undefined) {
-      while (m = RE_HEADER.exec(headers)) {
-        if (m[1].toLowerCase() === 'comment') {
-          comment = trimStart(m[2].replace(RE_HEADER_ENDS, ''));
-          if (comment.length > 1
-              && comment.charCodeAt(0) === 34/*'"'*/
-              && comment.charCodeAt(comment.length - 1) === 34/*'"'*/) {
-            comment = comment.slice(1, -1);
-          }
-        }
-      }
-    }
-
-    // avoid cyclic require by requiring on first use
-    if (!utils)
-      utils = __nccwpck_require__(4928);
-
-    var type = utils.readString(data, 0, 'ascii');
-    if (type === false)
-      return new Error('Malformed RFC4716 public key');
-
-    var pubPEM = null;
-    var pubSSH = null;
-    switch (type) {
-      case 'ssh-rsa':
-        var e = utils.readString(data, data._pos);
-        if (e === false)
-          return new Error('Malformed RFC4716 public key');
-        var n = utils.readString(data, data._pos);
-        if (n === false)
-          return new Error('Malformed RFC4716 public key');
-        pubPEM = genOpenSSLRSAPub(n, e);
-        pubSSH = genOpenSSHRSAPub(n, e);
-        break;
-      case 'ssh-dss':
-        var p = utils.readString(data, data._pos);
-        if (p === false)
-          return new Error('Malformed RFC4716 public key');
-        var q = utils.readString(data, data._pos);
-        if (q === false)
-          return new Error('Malformed RFC4716 public key');
-        var g = utils.readString(data, data._pos);
-        if (g === false)
-          return new Error('Malformed RFC4716 public key');
-        var y = utils.readString(data, data._pos);
-        if (y === false)
-          return new Error('Malformed RFC4716 public key');
-        pubPEM = genOpenSSLDSAPub(p, q, g, y);
-        pubSSH = genOpenSSHDSAPub(p, q, g, y);
-        break;
+function _normalizeEncoding(enc) {
+  if (!enc) return 'utf8';
+  var retried;
+  while (true) {
+    switch (enc) {
+      case 'utf8':
+      case 'utf-8':
+        return 'utf8';
+      case 'ucs2':
+      case 'ucs-2':
+      case 'utf16le':
+      case 'utf-16le':
+        return 'utf16le';
+      case 'latin1':
+      case 'binary':
+        return 'latin1';
+      case 'base64':
+      case 'ascii':
+      case 'hex':
+        return enc;
       default:
-        return new Error('Malformed RFC4716 public key');
+        if (retried) return; // undefined
+        enc = ('' + enc).toLowerCase();
+        retried = true;
     }
-
-    return new RFC4716_Public(type, comment, pubPEM, pubSSH, 'sha1');
-  };
-})();
-
-
-
-module.exports = {
-  parseDERKey: function parseDERKey(data, type) {
-    return parseDER(data, type, '', type);
-  },
-  parseKey: function parseKey(data, passphrase) {
-    if (Buffer.isBuffer(data))
-      data = data.toString('utf8').trim();
-    else if (typeof data !== 'string')
-      return new Error('Key data must be a Buffer or string');
-    else
-      data = data.trim();
-
-    // intentional !=
-    if (passphrase != undefined) {
-      if (typeof passphrase === 'string')
-        passphrase = Buffer.from(passphrase);
-      else if (!Buffer.isBuffer(passphrase))
-        return new Error('Passphrase must be a string or Buffer when supplied');
-    }
-
-    var ret;
-
-    // Private keys
-    if ((ret = OpenSSH_Private.parse(data, passphrase)) !== null)
-      return ret;
-    if ((ret = OpenSSH_Old_Private.parse(data, passphrase)) !== null)
-      return ret;
-    if ((ret = PPK_Private.parse(data, passphrase)) !== null)
-      return ret;
-
-    // Public keys
-    if ((ret = OpenSSH_Public.parse(data)) !== null)
-      return ret;
-    if ((ret = RFC4716_Public.parse(data)) !== null)
-      return ret;
-
-    return new Error('Unsupported key format');
   }
+};
+
+// Do not cache `Buffer.isEncoding` when checking encoding names as some
+// modules monkey-patch it to support additional encodings
+function normalizeEncoding(enc) {
+  var nenc = _normalizeEncoding(enc);
+  if (typeof nenc !== 'string' && (Buffer.isEncoding === isEncoding || !isEncoding(enc))) throw new Error('Unknown encoding: ' + enc);
+  return nenc || enc;
 }
 
-
-/***/ }),
-
-/***/ 5265:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-
-var inspect = (__nccwpck_require__(3837).inspect);
-
-function assert(value, message) {
-  if (!value)
-    throw new ERR_INTERNAL_ASSERTION(message);
-}
-assert.fail = function fail(message) {
-  throw new ERR_INTERNAL_ASSERTION(message);
-};
-
-// Only use this for integers! Decimal numbers do not work with this function.
-function addNumericalSeparator(val) {
-  var res = '';
-  var i = val.length;
-  var start = val[0] === '-' ? 1 : 0;
-  for (; i >= start + 4; i -= 3)
-    res = `_${val.slice(i - 3, i)}${res}`;
-  return `${val.slice(0, i)}${res}`;
-}
-
-function oneOf(expected, thing) {
-  assert(typeof thing === 'string', '`thing` has to be of type string');
-  if (Array.isArray(expected)) {
-    var len = expected.length;
-    assert(len > 0, 'At least one expected value needs to be specified');
-    expected = expected.map((i) => String(i));
-    if (len > 2) {
-      return `one of ${thing} ${expected.slice(0, len - 1).join(', ')}, or `
-              + expected[len - 1];
-    } else if (len === 2) {
-      return `one of ${thing} ${expected[0]} or ${expected[1]}`;
-    } else {
-      return `of ${thing} ${expected[0]}`;
-    }
-  } else {
-    return `of ${thing} ${String(expected)}`;
-  }
-}
-
-
-
-exports.ERR_INTERNAL_ASSERTION = class ERR_INTERNAL_ASSERTION extends Error {
-  constructor(message) {
-    super();
-    Error.captureStackTrace(this, ERR_INTERNAL_ASSERTION);
-
-    var suffix = 'This is caused by either a bug in ssh2-streams '
-                 + 'or incorrect usage of ssh2-streams internals.\n'
-                 + 'Please open an issue with this stack trace at '
-                 + 'https://github.com/mscdex/ssh2-streams/issues\n';
-
-    this.message = (message === undefined ? suffix : `${message}\n${suffix}`);
-  }
-};
-
-var MAX_32BIT_INT = Math.pow(2, 32);
-var MAX_32BIT_BIGINT = (function() {
-  try {
-    return new Function('return 2n ** 32n')();
-  } catch (ex) {}
-})();
-exports.ERR_OUT_OF_RANGE = class ERR_OUT_OF_RANGE extends RangeError {
-  constructor(str, range, input, replaceDefaultBoolean) {
-    super();
-    Error.captureStackTrace(this, ERR_OUT_OF_RANGE);
-
-    assert(range, 'Missing "range" argument');
-    var msg = (replaceDefaultBoolean
-               ? str
-               : `The value of "${str}" is out of range.`);
-    var received;
-    if (Number.isInteger(input) && Math.abs(input) > MAX_32BIT_INT) {
-      received = addNumericalSeparator(String(input));
-    } else if (typeof input === 'bigint') {
-      received = String(input);
-      if (input > MAX_32BIT_BIGINT || input < -MAX_32BIT_BIGINT)
-        received = addNumericalSeparator(received);
-      received += 'n';
-    } else {
-      received = inspect(input);
-    }
-    msg += ` It must be ${range}. Received ${received}`;
-
-    this.message = msg;
-  }
-};
-
-exports.ERR_INVALID_ARG_TYPE = class ERR_INVALID_ARG_TYPE extends TypeError {
-  constructor(name, expected, actual) {
-    super();
-    Error.captureStackTrace(this, ERR_INVALID_ARG_TYPE);
-
-    assert(typeof name === 'string', `'name' must be a string`);
-
-    // determiner: 'must be' or 'must not be'
-    var determiner;
-    if (typeof expected === 'string' && expected.startsWith('not ')) {
-      determiner = 'must not be';
-      expected = expected.replace(/^not /, '');
-    } else {
-      determiner = 'must be';
-    }
-
-    var msg;
-    if (name.endsWith(' argument')) {
-      // For cases like 'first argument'
-      msg = `The ${name} ${determiner} ${oneOf(expected, 'type')}`;
-    } else {
-      var type = (name.includes('.') ? 'property' : 'argument');
-      msg = `The "${name}" ${type} ${determiner} ${oneOf(expected, 'type')}`;
-    }
-
-    msg += `. Received type ${typeof actual}`;
-
-    this.message = msg;
-  }
-};
-
-exports.validateNumber = function validateNumber(value, name) {
-  if (typeof value !== 'number')
-    throw new ERR_INVALID_ARG_TYPE(name, 'number', value);
-};
-
-
-// =============================================================================
-// Following code is only needed to support node v6.x ....
-
-// Undocumented cb() API, needed for core, not for public API
-exports.destroyImpl = function destroy(err, cb) {
-  const readableDestroyed = this._readableState &&
-    this._readableState.destroyed;
-  const writableDestroyed = this._writableState &&
-    this._writableState.destroyed;
-
-  if (readableDestroyed || writableDestroyed) {
-    if (cb) {
-      cb(err);
-    } else if (err) {
-      if (!this._writableState) {
-        process.nextTick(emitErrorNT, this, err);
-      } else if (!this._writableState.errorEmitted) {
-        this._writableState.errorEmitted = true;
-        process.nextTick(emitErrorNT, this, err);
-      }
-    }
-
-    return this;
-  }
-
-  // We set destroyed to true before firing error callbacks in order
-  // to make it re-entrance safe in case destroy() is called within callbacks
-
-  if (this._readableState) {
-    this._readableState.destroyed = true;
-  }
-
-  // If this is a duplex stream mark the writable part as destroyed as well
-  if (this._writableState) {
-    this._writableState.destroyed = true;
-  }
-
-  this._destroy(err || null, (err) => {
-    if (!cb && err) {
-      if (!this._writableState) {
-        process.nextTick(emitErrorAndCloseNT, this, err);
-      } else if (!this._writableState.errorEmitted) {
-        this._writableState.errorEmitted = true;
-        process.nextTick(emitErrorAndCloseNT, this, err);
-      } else {
-        process.nextTick(emitCloseNT, this);
-      }
-    } else if (cb) {
-      process.nextTick(emitCloseNT, this);
-      cb(err);
-    } else {
-      process.nextTick(emitCloseNT, this);
-    }
-  });
-
-  return this;
-};
-
-function emitErrorAndCloseNT(self, err) {
-  emitErrorNT(self, err);
-  emitCloseNT(self);
-}
-
-function emitCloseNT(self) {
-  if (self._writableState && !self._writableState.emitClose)
-    return;
-  if (self._readableState && !self._readableState.emitClose)
-    return;
-  self.emit('close');
-}
-// =============================================================================
-
-
-/***/ }),
-
-/***/ 1517:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-// TODO: support EXTENDED request packets
-
-var TransformStream = (__nccwpck_require__(2781).Transform);
-var ReadableStream = (__nccwpck_require__(2781).Readable);
-var WritableStream = (__nccwpck_require__(2781).Writable);
-var constants = (__nccwpck_require__(7147).constants) || process.binding('constants');
-var util = __nccwpck_require__(3837);
-var inherits = util.inherits;
-var isDate = util.isDate;
-var listenerCount = (__nccwpck_require__(2361).EventEmitter.listenerCount);
-var fs = __nccwpck_require__(7147);
-
-var readString = (__nccwpck_require__(4928).readString);
-var readInt = (__nccwpck_require__(4928).readInt);
-var readUInt32BE = (__nccwpck_require__(9419).readUInt32BE);
-var writeUInt32BE = (__nccwpck_require__(9419).writeUInt32BE);
-
-var ATTR = {
-  SIZE: 0x00000001,
-  UIDGID: 0x00000002,
-  PERMISSIONS: 0x00000004,
-  ACMODTIME: 0x00000008,
-  EXTENDED: 0x80000000
-};
-
-var STATUS_CODE = {
-  OK: 0,
-  EOF: 1,
-  NO_SUCH_FILE: 2,
-  PERMISSION_DENIED: 3,
-  FAILURE: 4,
-  BAD_MESSAGE: 5,
-  NO_CONNECTION: 6,
-  CONNECTION_LOST: 7,
-  OP_UNSUPPORTED: 8
-};
-Object.keys(STATUS_CODE).forEach(function(key) {
-  STATUS_CODE[STATUS_CODE[key]] = key;
-});
-var STATUS_CODE_STR = {
-  0: 'No error',
-  1: 'End of file',
-  2: 'No such file or directory',
-  3: 'Permission denied',
-  4: 'Failure',
-  5: 'Bad message',
-  6: 'No connection',
-  7: 'Connection lost',
-  8: 'Operation unsupported'
-};
-SFTPStream.STATUS_CODE = STATUS_CODE;
-
-var REQUEST = {
-  INIT: 1,
-  OPEN: 3,
-  CLOSE: 4,
-  READ: 5,
-  WRITE: 6,
-  LSTAT: 7,
-  FSTAT: 8,
-  SETSTAT: 9,
-  FSETSTAT: 10,
-  OPENDIR: 11,
-  READDIR: 12,
-  REMOVE: 13,
-  MKDIR: 14,
-  RMDIR: 15,
-  REALPATH: 16,
-  STAT: 17,
-  RENAME: 18,
-  READLINK: 19,
-  SYMLINK: 20,
-  EXTENDED: 200
-};
-Object.keys(REQUEST).forEach(function(key) {
-  REQUEST[REQUEST[key]] = key;
-});
-
-var RESPONSE = {
-  VERSION: 2,
-  STATUS: 101,
-  HANDLE: 102,
-  DATA: 103,
-  NAME: 104,
-  ATTRS: 105,
-  EXTENDED: 201
-};
-Object.keys(RESPONSE).forEach(function(key) {
-  RESPONSE[RESPONSE[key]] = key;
-});
-
-var OPEN_MODE = {
-  READ: 0x00000001,
-  WRITE: 0x00000002,
-  APPEND: 0x00000004,
-  CREAT: 0x00000008,
-  TRUNC: 0x00000010,
-  EXCL: 0x00000020
-};
-SFTPStream.OPEN_MODE = OPEN_MODE;
-
-var MAX_PKT_LEN = 34000;
-var MAX_REQID = Math.pow(2, 32) - 1;
-var CLIENT_VERSION_BUFFER = Buffer.from([0, 0, 0, 5 /* length */,
-                                         REQUEST.INIT,
-                                         0, 0, 0, 3 /* version */]);
-var SERVER_VERSION_BUFFER = Buffer.from([0, 0, 0, 5 /* length */,
-                                         RESPONSE.VERSION,
-                                         0, 0, 0, 3 /* version */]);
-/*
-  http://tools.ietf.org/html/draft-ietf-secsh-filexfer-02:
-
-     The maximum size of a packet is in practice determined by the client
-     (the maximum size of read or write requests that it sends, plus a few
-     bytes of packet overhead).  All servers SHOULD support packets of at
-     least 34000 bytes (where the packet size refers to the full length,
-     including the header above).  This should allow for reads and writes
-     of at most 32768 bytes.
-
-  OpenSSH caps this to 256kb instead of the ~34kb as mentioned in the sftpv3
-  spec.
-*/
-var RE_OPENSSH = /^SSH-2.0-(?:OpenSSH|dropbear)/;
-var OPENSSH_MAX_DATA_LEN = (256 * 1024) - (2 * 1024)/*account for header data*/;
-
-function DEBUG_NOOP(msg) {}
-
-function SFTPStream(cfg, remoteIdentRaw) {
-  if (typeof cfg === 'string' && !remoteIdentRaw) {
-    remoteIdentRaw = cfg;
-    cfg = undefined;
-  }
-  if (typeof cfg !== 'object' || !cfg)
-    cfg = {};
-
-  TransformStream.call(this, {
-    highWaterMark: (typeof cfg.highWaterMark === 'number'
-                    ? cfg.highWaterMark
-                    : 32 * 1024)
-  });
-
-  this.debug = (typeof cfg.debug === 'function' ? cfg.debug : DEBUG_NOOP);
-  this.server = (cfg.server ? true : false);
-  this._isOpenSSH = (remoteIdentRaw && RE_OPENSSH.test(remoteIdentRaw));
-  this._needContinue = false;
-  this._state = {
-    // common
-    status: 'packet_header',
-    writeReqid: -1,
-    pktLeft: undefined,
-    pktHdrBuf: Buffer.allocUnsafe(9), // room for pktLen + pktType + req id
-    pktBuf: undefined,
-    pktType: undefined,
-    version: undefined,
-    extensions: {},
-
-    // client
-    maxDataLen: (this._isOpenSSH ? OPENSSH_MAX_DATA_LEN : 32768),
-    requests: {}
-  };
-
-  var self = this;
-  this.on('end', function() {
-    self.readable = false;
-  }).on('finish', onFinish)
-    .on('prefinish', onFinish);
-  function onFinish() {
-    self.writable = false;
-    self._cleanup(false);
-  }
-
-  if (!this.server)
-    this.push(CLIENT_VERSION_BUFFER);
-}
-inherits(SFTPStream, TransformStream);
-
-SFTPStream.prototype.__read = TransformStream.prototype._read;
-SFTPStream.prototype._read = function(n) {
-  if (this._needContinue) {
-    this._needContinue = false;
-    this.emit('continue');
-  }
-  return this.__read(n);
-};
-SFTPStream.prototype.__push = TransformStream.prototype.push;
-SFTPStream.prototype.push = function(chunk, encoding) {
-  if (!this.readable)
-    return false;
-  if (chunk === null)
-    this.readable = false;
-  var ret = this.__push(chunk, encoding);
-  this._needContinue = (ret === false);
-  return ret;
-};
-
-SFTPStream.prototype._cleanup = function(callback) {
-  var state = this._state;
-
-  state.pktBuf = undefined; // give GC something to do
-
-  var requests = state.requests;
-  var keys = Object.keys(requests);
-  var len = keys.length;
-  if (len) {
-    if (this.readable) {
-      var err = new Error('SFTP session ended early');
-      for (var i = 0, cb; i < len; ++i)
-        (cb = requests[keys[i]].cb) && cb(err);
-    }
-    state.requests = {};
-  }
-
-  if (this.readable)
-    this.push(null);
-  if (!this._readableState.endEmitted && !this._readableState.flowing) {
-    // Ugh!
-    this.resume();
-  }
-  if (callback !== false) {
-    this.debug('DEBUG[SFTP]: Parser: Malformed packet');
-    callback && callback(new Error('Malformed packet'));
-  }
-};
-
-SFTPStream.prototype._transform = function(chunk, encoding, callback) {
-  var state = this._state;
-  var server = this.server;
-  var status = state.status;
-  var pktType = state.pktType;
-  var pktBuf = state.pktBuf;
-  var pktLeft = state.pktLeft;
-  var version = state.version;
-  var pktHdrBuf = state.pktHdrBuf;
-  var requests = state.requests;
-  var debug = this.debug;
-  var chunkLen = chunk.length;
-  var chunkPos = 0;
-  var buffer;
-  var chunkLeft;
-  var id;
-
-  while (true) {
-    if (status === 'discard') {
-      chunkLeft = (chunkLen - chunkPos);
-      if (pktLeft <= chunkLeft) {
-        chunkPos += pktLeft;
-        pktLeft = 0;
-        status = 'packet_header';
-        buffer = pktBuf = undefined;
-      } else {
-        pktLeft -= chunkLeft;
-        break;
-      }
-    } else if (pktBuf !== undefined) {
-      chunkLeft = (chunkLen - chunkPos);
-      if (pktLeft <= chunkLeft) {
-        chunk.copy(pktBuf,
-                   pktBuf.length - pktLeft,
-                   chunkPos,
-                   chunkPos + pktLeft);
-        chunkPos += pktLeft;
-        pktLeft = 0;
-        buffer = pktBuf;
-        pktBuf = undefined;
-        continue;
-      } else {
-        chunk.copy(pktBuf, pktBuf.length - pktLeft, chunkPos);
-        pktLeft -= chunkLeft;
-        break;
-      }
-    } else if (status === 'packet_header') {
-      if (!buffer) {
-        pktLeft = 5;
-        pktBuf = pktHdrBuf;
-      } else {
-        // here we read the right-most 5 bytes from buffer (pktHdrBuf)
-        pktLeft = readUInt32BE(buffer, 4) - 1; // account for type byte
-        pktType = buffer[8];
-
-        if (server) {
-          if (version === undefined && pktType !== REQUEST.INIT) {
-            debug('DEBUG[SFTP]: Parser: Unexpected packet before init');
-            this._cleanup(false);
-            return callback(new Error('Unexpected packet before init'));
-          } else if (version !== undefined && pktType === REQUEST.INIT) {
-            debug('DEBUG[SFTP]: Parser: Unexpected duplicate init');
-            status = 'bad_pkt';
-          } else if (pktLeft > MAX_PKT_LEN) {
-            var msg = 'Packet length ('
-                      + pktLeft
-                      + ') exceeds max length ('
-                      + MAX_PKT_LEN
-                      + ')';
-            debug('DEBUG[SFTP]: Parser: ' + msg);
-            this._cleanup(false);
-            return callback(new Error(msg));
-          } else if (pktType === REQUEST.EXTENDED) {
-            status = 'bad_pkt';
-          } else if (REQUEST[pktType] === undefined) {
-            debug('DEBUG[SFTP]: Parser: Unsupported packet type: ' + pktType);
-            status = 'discard';
-          }
-        } else if (version === undefined && pktType !== RESPONSE.VERSION) {
-          debug('DEBUG[SFTP]: Parser: Unexpected packet before version');
-          this._cleanup(false);
-          return callback(new Error('Unexpected packet before version'));
-        } else if (version !== undefined && pktType === RESPONSE.VERSION) {
-          debug('DEBUG[SFTP]: Parser: Unexpected duplicate version');
-          status = 'bad_pkt';
-        } else if (RESPONSE[pktType] === undefined) {
-          status = 'discard';
-        }
-
-        if (status === 'bad_pkt') {
-          // Copy original packet info to left of pktHdrBuf
-          writeUInt32BE(pktHdrBuf, pktLeft + 1, 0);
-          pktHdrBuf[4] = pktType;
-
-          pktLeft = 4;
-          pktBuf = pktHdrBuf;
-        } else {
-          pktBuf = Buffer.allocUnsafe(pktLeft);
-          status = 'payload';
-        }
-      }
-    } else if (status === 'payload') {
-      if (pktType === RESPONSE.VERSION || pktType === REQUEST.INIT) {
-        /*
-          uint32 version
-          <extension data>
-        */
-        version = state.version = readInt(buffer, 0, this, callback);
-        if (version === false)
-          return;
-        if (version < 3) {
-          this._cleanup(false);
-          return callback(new Error('Incompatible SFTP version: ' + version));
-        } else if (server)
-          this.push(SERVER_VERSION_BUFFER);
-
-        var buflen = buffer.length;
-        var extname;
-        var extdata;
-        buffer._pos = 4;
-        while (buffer._pos < buflen) {
-          extname = readString(buffer, buffer._pos, 'ascii', this, callback);
-          if (extname === false)
-            return;
-          extdata = readString(buffer, buffer._pos, 'ascii', this, callback);
-          if (extdata === false)
-            return;
-          if (state.extensions[extname])
-            state.extensions[extname].push(extdata);
-          else
-            state.extensions[extname] = [ extdata ];
-        }
-
-        this.emit('ready');
-      } else {
-        /*
-          All other packets (client and server) begin with a (client) request
-          id:
-          uint32     id
-        */
-        id = readInt(buffer, 0, this, callback);
-        if (id === false)
-          return;
-
-        var filename;
-        var attrs;
-        var handle;
-        var data;
-
-        if (!server) {
-          var req = requests[id];
-          var cb = req && req.cb;
-          debug('DEBUG[SFTP]: Parser: Response: ' + RESPONSE[pktType]);
-          if (req && cb) {
-            if (pktType === RESPONSE.STATUS) {
-              /*
-                uint32     error/status code
-                string     error message (ISO-10646 UTF-8)
-                string     language tag
-              */
-              var code = readInt(buffer, 4, this, callback);
-              if (code === false)
-                return;
-              if (code === STATUS_CODE.OK) {
-                cb();
-              } else {
-                // We borrow OpenSSH behavior here, specifically we make the
-                // message and language fields optional, despite the
-                // specification requiring them (even if they are empty). This
-                // helps to avoid problems with buggy implementations that do
-                // not fully conform to the SFTP(v3) specification.
-                var msg;
-                var lang = '';
-                if (buffer.length >= 12) {
-                  msg = readString(buffer, 8, 'utf8', this, callback);
-                  if (msg === false)
-                    return;
-                  if ((buffer._pos + 4) < buffer.length) {
-                    lang = readString(buffer,
-                                      buffer._pos,
-                                      'ascii',
-                                      this,
-                                      callback);
-                    if (lang === false)
-                      return;
-                  }
-                }
-                var err = new Error(msg
-                                    || STATUS_CODE_STR[code]
-                                    || 'Unknown status');
-                err.code = code;
-                err.lang = lang;
-                cb(err);
-              }
-            } else if (pktType === RESPONSE.HANDLE) {
-              /*
-                string     handle
-              */
-              handle = readString(buffer, 4, this, callback);
-              if (handle === false)
-                return;
-              cb(undefined, handle);
-            } else if (pktType === RESPONSE.DATA) {
-              /*
-                string     data
-              */
-              if (req.buffer) {
-                // we have already pre-allocated space to store the data
-                var dataLen = readInt(buffer, 4, this, callback);
-                if (dataLen === false)
-                  return;
-                var reqBufLen = req.buffer.length;
-                if (dataLen > reqBufLen) {
-                  // truncate response data to fit expected size
-                  writeUInt32BE(buffer, reqBufLen, 4);
-                }
-                data = readString(buffer, 4, req.buffer, this, callback);
-                if (data === false)
-                  return;
-                cb(undefined, data, dataLen);
-              } else {
-                data = readString(buffer, 4, this, callback);
-                if (data === false)
-                  return;
-                cb(undefined, data);
-              }
-            } else if (pktType === RESPONSE.NAME) {
-              /*
-                uint32     count
-                repeats count times:
-                        string     filename
-                        string     longname
-                        ATTRS      attrs
-              */
-              var namesLen = readInt(buffer, 4, this, callback);
-              if (namesLen === false)
-                return;
-              var names = [],
-                  longname;
-              buffer._pos = 8;
-              for (var i = 0; i < namesLen; ++i) {
-                // we are going to assume UTF-8 for filenames despite the SFTPv3
-                // spec not specifying an encoding because the specs for newer
-                // versions of the protocol all explicitly specify UTF-8 for
-                // filenames
-                filename = readString(buffer,
-                                      buffer._pos,
-                                      'utf8',
-                                      this,
-                                      callback);
-                if (filename === false)
-                  return;
-                // `longname` only exists in SFTPv3 and since it typically will
-                // contain the filename, we assume it is also UTF-8
-                longname = readString(buffer,
-                                      buffer._pos,
-                                      'utf8',
-                                      this,
-                                      callback);
-                if (longname === false)
-                  return;
-                attrs = readAttrs(buffer, buffer._pos, this, callback);
-                if (attrs === false)
-                  return;
-                names.push({
-                  filename: filename,
-                  longname: longname,
-                  attrs: attrs
-                });
-              }
-              cb(undefined, names);
-            } else if (pktType === RESPONSE.ATTRS) {
-              /*
-                ATTRS      attrs
-              */
-              attrs = readAttrs(buffer, 4, this, callback);
-              if (attrs === false)
-                return;
-              cb(undefined, attrs);
-            } else if (pktType === RESPONSE.EXTENDED) {
-              if (req.extended) {
-                switch (req.extended) {
-                  case 'statvfs@openssh.com':
-                  case 'fstatvfs@openssh.com':
-                    /*
-                      uint64    f_bsize   // file system block size
-                      uint64    f_frsize  // fundamental fs block size
-                      uint64    f_blocks  // number of blocks (unit f_frsize)
-                      uint64    f_bfree   // free blocks in file system
-                      uint64    f_bavail  // free blocks for non-root
-                      uint64    f_files   // total file inodes
-                      uint64    f_ffree   // free file inodes
-                      uint64    f_favail  // free file inodes for to non-root
-                      uint64    f_fsid    // file system id
-                      uint64    f_flag    // bit mask of f_flag values
-                      uint64    f_namemax // maximum filename length
-                    */
-                    var stats = {
-                      f_bsize: undefined,
-                      f_frsize: undefined,
-                      f_blocks: undefined,
-                      f_bfree: undefined,
-                      f_bavail: undefined,
-                      f_files: undefined,
-                      f_ffree: undefined,
-                      f_favail: undefined,
-                      f_sid: undefined,
-                      f_flag: undefined,
-                      f_namemax: undefined
-                    };
-                    stats.f_bsize = readUInt64BE(buffer, 4, this, callback);
-                    if (stats.f_bsize === false)
-                      return;
-                    stats.f_frsize = readUInt64BE(buffer, 12, this, callback);
-                    if (stats.f_frsize === false)
-                      return;
-                    stats.f_blocks = readUInt64BE(buffer, 20, this, callback);
-                    if (stats.f_blocks === false)
-                      return;
-                    stats.f_bfree = readUInt64BE(buffer, 28, this, callback);
-                    if (stats.f_bfree === false)
-                      return;
-                    stats.f_bavail = readUInt64BE(buffer, 36, this, callback);
-                    if (stats.f_bavail === false)
-                      return;
-                    stats.f_files = readUInt64BE(buffer, 44, this, callback);
-                    if (stats.f_files === false)
-                      return;
-                    stats.f_ffree = readUInt64BE(buffer, 52, this, callback);
-                    if (stats.f_ffree === false)
-                      return;
-                    stats.f_favail = readUInt64BE(buffer, 60, this, callback);
-                    if (stats.f_favail === false)
-                      return;
-                    stats.f_sid = readUInt64BE(buffer, 68, this, callback);
-                    if (stats.f_sid === false)
-                      return;
-                    stats.f_flag = readUInt64BE(buffer, 76, this, callback);
-                    if (stats.f_flag === false)
-                      return;
-                    stats.f_namemax = readUInt64BE(buffer, 84, this, callback);
-                    if (stats.f_namemax === false)
-                      return;
-                    cb(undefined, stats);
-                  break;
-                }
-              }
-              // XXX: at least provide the raw buffer data to the callback in
-              // case of unexpected extended response?
-              cb();
-            }
-          }
-          if (req)
-            delete requests[id];
-        } else {
-          // server
-          var evName = REQUEST[pktType];
-          var offset;
-          var path;
-
-          debug('DEBUG[SFTP]: Parser: Request: ' + evName);
-          if (listenerCount(this, evName)) {
-            if (pktType === REQUEST.OPEN) {
-              /*
-                string        filename
-                uint32        pflags
-                ATTRS         attrs
-              */
-              filename = readString(buffer, 4, 'utf8', this, callback);
-              if (filename === false)
-                return;
-              var pflags = readInt(buffer, buffer._pos, this, callback);
-              if (pflags === false)
-                return;
-              attrs = readAttrs(buffer, buffer._pos + 4, this, callback);
-              if (attrs === false)
-                return;
-              this.emit(evName, id, filename, pflags, attrs);
-            } else if (pktType === REQUEST.CLOSE
-                       || pktType === REQUEST.FSTAT
-                       || pktType === REQUEST.READDIR) {
-              /*
-                string     handle
-              */
-              handle = readString(buffer, 4, this, callback);
-              if (handle === false)
-                return;
-              this.emit(evName, id, handle);
-            } else if (pktType === REQUEST.READ) {
-              /*
-                string     handle
-                uint64     offset
-                uint32     len
-              */
-              handle = readString(buffer, 4, this, callback);
-              if (handle === false)
-                return;
-              offset = readUInt64BE(buffer, buffer._pos, this, callback);
-              if (offset === false)
-                return;
-              var len = readInt(buffer, buffer._pos, this, callback);
-              if (len === false)
-                return;
-              this.emit(evName, id, handle, offset, len);
-            } else if (pktType === REQUEST.WRITE) {
-              /*
-                string     handle
-                uint64     offset
-                string     data
-              */
-              handle = readString(buffer, 4, this, callback);
-              if (handle === false)
-                return;
-              offset = readUInt64BE(buffer, buffer._pos, this, callback);
-              if (offset === false)
-                return;
-              data = readString(buffer, buffer._pos, this, callback);
-              if (data === false)
-                return;
-              this.emit(evName, id, handle, offset, data);
-            } else if (pktType === REQUEST.LSTAT
-                       || pktType === REQUEST.STAT
-                       || pktType === REQUEST.OPENDIR
-                       || pktType === REQUEST.REMOVE
-                       || pktType === REQUEST.RMDIR
-                       || pktType === REQUEST.REALPATH
-                       || pktType === REQUEST.READLINK) {
-              /*
-                string     path
-              */
-              path = readString(buffer, 4, 'utf8', this, callback);
-              if (path === false)
-                return;
-              this.emit(evName, id, path);
-            } else if (pktType === REQUEST.SETSTAT
-                       || pktType === REQUEST.MKDIR) {
-              /*
-                string     path
-                ATTRS      attrs
-              */
-              path = readString(buffer, 4, 'utf8', this, callback);
-              if (path === false)
-                return;
-              attrs = readAttrs(buffer, buffer._pos, this, callback);
-              if (attrs === false)
-                return;
-              this.emit(evName, id, path, attrs);
-            } else if (pktType === REQUEST.FSETSTAT) {
-              /*
-                string     handle
-                ATTRS      attrs
-              */
-              handle = readString(buffer, 4, this, callback);
-              if (handle === false)
-                return;
-              attrs = readAttrs(buffer, buffer._pos, this, callback);
-              if (attrs === false)
-                return;
-              this.emit(evName, id, handle, attrs);
-            } else if (pktType === REQUEST.RENAME
-                       || pktType === REQUEST.SYMLINK) {
-              /*
-                RENAME:
-                  string     oldpath
-                  string     newpath
-                SYMLINK:
-                  string     linkpath
-                  string     targetpath
-              */
-              var str1;
-              var str2;
-              str1 = readString(buffer, 4, 'utf8', this, callback);
-              if (str1 === false)
-                return;
-              str2 = readString(buffer, buffer._pos, 'utf8', this, callback);
-              if (str2 === false)
-                return;
-              if (pktType === REQUEST.SYMLINK && this._isOpenSSH) {
-                // OpenSSH has linkpath and targetpath positions switched
-                this.emit(evName, id, str2, str1);
-              } else
-                this.emit(evName, id, str1, str2);
-            }
-          } else {
-            // automatically reject request if no handler for request type
-            this.status(id, STATUS_CODE.OP_UNSUPPORTED);
-          }
-        }
-      }
-
-      // prepare for next packet
-      status = 'packet_header';
-      buffer = pktBuf = undefined;
-    } else if (status === 'bad_pkt') {
-      if (server && buffer[4] !== REQUEST.INIT) {
-        var errCode = (buffer[4] === REQUEST.EXTENDED
-                       ? STATUS_CODE.OP_UNSUPPORTED
-                       : STATUS_CODE.FAILURE);
-
-        // no request id for init/version packets, so we have no way to send a
-        // status response, so we just close up shop ...
-        if (buffer[4] === REQUEST.INIT || buffer[4] === RESPONSE.VERSION)
-          return this._cleanup(callback);
-
-        id = readInt(buffer, 5, this, callback);
-        if (id === false)
-          return;
-        this.status(id, errCode);
-      }
-
-      // by this point we have already read the type byte and the id bytes, so
-      // we subtract those from the number of bytes to skip
-      pktLeft = readUInt32BE(buffer, 0) - 5;
-
-      status = 'discard';
-    }
-
-    if (chunkPos >= chunkLen)
+// StringDecoder provides an interface for efficiently splitting a series of
+// buffers into a series of JS strings without breaking apart multi-byte
+// characters.
+exports.s = StringDecoder;
+function StringDecoder(encoding) {
+  this.encoding = normalizeEncoding(encoding);
+  var nb;
+  switch (this.encoding) {
+    case 'utf16le':
+      this.text = utf16Text;
+      this.end = utf16End;
+      nb = 4;
       break;
-  }
-
-  state.status = status;
-  state.pktType = pktType;
-  state.pktBuf = pktBuf;
-  state.pktLeft = pktLeft;
-  state.version = version;
-
-  callback();
-};
-
-// client
-SFTPStream.prototype.createReadStream = function(path, options) {
-  if (this.server)
-    throw new Error('Client-only method called in server mode');
-
-  return new ReadStream(this, path, options);
-};
-SFTPStream.prototype.createWriteStream = function(path, options) {
-  if (this.server)
-    throw new Error('Client-only method called in server mode');
-
-  return new WriteStream(this, path, options);
-};
-SFTPStream.prototype.open = function(path, flags_, attrs, cb) {
-  if (this.server)
-    throw new Error('Client-only method called in server mode');
-
-  var state = this._state;
-
-  if (typeof attrs === 'function') {
-    cb = attrs;
-    attrs = undefined;
-  }
-
-  var flags = (typeof flags_ === 'number' ? flags_ : stringToFlags(flags_));
-  if (flags === null)
-    throw new Error('Unknown flags string: ' + flags_);
-
-  var attrFlags = 0;
-  var attrBytes = 0;
-  if (typeof attrs === 'string' || typeof attrs === 'number') {
-    attrs = { mode: attrs };
-  }
-  if (typeof attrs === 'object' && attrs !== null) {
-    attrs = attrsToBytes(attrs);
-    attrFlags = attrs.flags;
-    attrBytes = attrs.nbytes;
-    attrs = attrs.bytes;
-  }
-
-  /*
-    uint32        id
-    string        filename
-    uint32        pflags
-    ATTRS         attrs
-  */
-  var pathlen = Buffer.byteLength(path);
-  var p = 9;
-  var buf = Buffer.allocUnsafe(4 + 1 + 4 + 4 + pathlen + 4 + 4 + attrBytes);
-
-  writeUInt32BE(buf, buf.length - 4, 0);
-  buf[4] = REQUEST.OPEN;
-  var reqid = state.writeReqid = (state.writeReqid + 1) % MAX_REQID;
-  writeUInt32BE(buf, reqid, 5);
-
-  writeUInt32BE(buf, pathlen, p);
-  buf.write(path, p += 4, pathlen, 'utf8');
-  writeUInt32BE(buf, flags, p += pathlen);
-  writeUInt32BE(buf, attrFlags, p += 4);
-  if (attrs && attrFlags) {
-    p += 4;
-    for (var i = 0, len = attrs.length; i < len; ++i)
-      for (var j = 0, len2 = attrs[i].length; j < len2; ++j)
-        buf[p++] = attrs[i][j];
-  }
-  state.requests[reqid] = { cb: cb };
-
-  this.debug('DEBUG[SFTP]: Outgoing: Writing OPEN');
-  return this.push(buf);
-};
-SFTPStream.prototype.close = function(handle, cb) {
-  if (this.server)
-    throw new Error('Client-only method called in server mode');
-  else if (!Buffer.isBuffer(handle))
-    throw new Error('handle is not a Buffer');
-
-  var state = this._state;
-
-  /*
-    uint32     id
-    string     handle
-  */
-  var handlelen = handle.length;
-  var p = 9;
-  var buf = Buffer.allocUnsafe(4 + 1 + 4 + 4 + handlelen);
-
-  writeUInt32BE(buf, buf.length - 4, 0);
-  buf[4] = REQUEST.CLOSE;
-  var reqid = state.writeReqid = (state.writeReqid + 1) % MAX_REQID;
-  writeUInt32BE(buf, reqid, 5);
-
-  writeUInt32BE(buf, handlelen, p);
-  handle.copy(buf, p += 4);
-
-  state.requests[reqid] = { cb: cb };
-
-  this.debug('DEBUG[SFTP]: Outgoing: Writing CLOSE');
-  return this.push(buf);
-};
-SFTPStream.prototype.readData = function(handle, buf, off, len, position, cb) {
-  if (this.server)
-    throw new Error('Client-only method called in server mode');
-  else if (!Buffer.isBuffer(handle))
-    throw new Error('handle is not a Buffer');
-  else if (!Buffer.isBuffer(buf))
-    throw new Error('buffer is not a Buffer');
-  else if (off >= buf.length)
-    throw new Error('offset is out of bounds');
-  else if (off + len > buf.length)
-    throw new Error('length extends beyond buffer');
-  else if (position === null)
-    throw new Error('null position currently unsupported');
-
-  var state = this._state;
-
-  /*
-    uint32     id
-    string     handle
-    uint64     offset
-    uint32     len
-  */
-  var handlelen = handle.length;
-  var p = 9;
-  var pos = position;
-  var out = Buffer.allocUnsafe(4 + 1 + 4 + 4 + handlelen + 8 + 4);
-
-  writeUInt32BE(out, out.length - 4, 0);
-  out[4] = REQUEST.READ;
-  var reqid = state.writeReqid = (state.writeReqid + 1) % MAX_REQID;
-  writeUInt32BE(out, reqid, 5);
-
-  writeUInt32BE(out, handlelen, p);
-  handle.copy(out, p += 4);
-  p += handlelen;
-  for (var i = 7; i >= 0; --i) {
-    out[p + i] = pos & 0xFF;
-    pos /= 256;
-  }
-  writeUInt32BE(out, len, p += 8);
-
-  state.requests[reqid] = {
-    cb: function(err, data, nb) {
-      if (err) {
-        if (cb._wantEOFError || err.code !== STATUS_CODE.EOF)
-          return cb(err);
-      } else if (nb > len) {
-        return cb(new Error('Received more data than requested'));
-      }
-      cb(undefined, nb || 0, data, position);
-    },
-    buffer: buf.slice(off, off + len)
-  };
-
-  this.debug('DEBUG[SFTP]: Outgoing: Writing READ');
-  return this.push(out);
-};
-SFTPStream.prototype.writeData = function(handle, buf, off, len, position, cb) {
-  if (this.server)
-    throw new Error('Client-only method called in server mode');
-  else if (!Buffer.isBuffer(handle))
-    throw new Error('handle is not a Buffer');
-  else if (!Buffer.isBuffer(buf))
-    throw new Error('buffer is not a Buffer');
-  else if (off > buf.length)
-    throw new Error('offset is out of bounds');
-  else if (off + len > buf.length)
-    throw new Error('length extends beyond buffer');
-  else if (position === null)
-    throw new Error('null position currently unsupported');
-
-  var self = this;
-  var state = this._state;
-
-  if (!len) {
-    cb && process.nextTick(function() { cb(undefined, 0); });
-    return;
-  }
-
-  var overflow = (len > state.maxDataLen
-                  ? len - state.maxDataLen
-                  : 0);
-  var origPosition = position;
-
-  if (overflow)
-    len = state.maxDataLen;
-
-  /*
-    uint32     id
-    string     handle
-    uint64     offset
-    string     data
-  */
-  var handlelen = handle.length;
-  var p = 9;
-  var out = Buffer.allocUnsafe(4 + 1 + 4 + 4 + handlelen + 8 + 4 + len);
-
-  writeUInt32BE(out, out.length - 4, 0);
-  out[4] = REQUEST.WRITE;
-  var reqid = state.writeReqid = (state.writeReqid + 1) % MAX_REQID;
-  writeUInt32BE(out, reqid, 5);
-
-  writeUInt32BE(out, handlelen, p);
-  handle.copy(out, p += 4);
-  p += handlelen;
-  for (var i = 7; i >= 0; --i) {
-    out[p + i] = position & 0xFF;
-    position /= 256;
-  }
-  writeUInt32BE(out, len, p += 8);
-  buf.copy(out, p += 4, off, off + len);
-
-  state.requests[reqid] = {
-    cb: function(err) {
-      if (err)
-        cb && cb(err);
-      else if (overflow) {
-        self.writeData(handle,
-                       buf,
-                       off + len,
-                       overflow,
-                       origPosition + len,
-                       cb);
-      } else
-        cb && cb(undefined, off + len);
-    }
-  };
-
-  this.debug('DEBUG[SFTP]: Outgoing: Writing WRITE');
-  return this.push(out);
-};
-function tryCreateBuffer(size) {
-  try {
-    return Buffer.allocUnsafe(size);
-  } catch (ex) {
-    return ex;
-  }
-}
-function fastXfer(src, dst, srcPath, dstPath, opts, cb) {
-  var concurrency = 64;
-  var chunkSize = 32768;
-  //var preserve = false;
-  var onstep;
-  var mode;
-  var fileSize;
-
-  if (typeof opts === 'function') {
-    cb = opts;
-  } else if (typeof opts === 'object' && opts !== null) {
-    if (typeof opts.concurrency === 'number'
-        && opts.concurrency > 0
-        && !isNaN(opts.concurrency))
-      concurrency = opts.concurrency;
-    if (typeof opts.chunkSize === 'number'
-        && opts.chunkSize > 0
-        && !isNaN(opts.chunkSize))
-      chunkSize = opts.chunkSize;
-    if (typeof opts.fileSize === 'number'
-        && opts.fileSize > 0
-        && !isNaN(opts.fileSize))
-      fileSize = opts.fileSize;
-    if (typeof opts.step === 'function')
-      onstep = opts.step;
-    //preserve = (opts.preserve ? true : false);
-    if (typeof opts.mode === 'string' || typeof opts.mode === 'number')
-      mode = modeNum(opts.mode);
-  }
-
-  // internal state variables
-  var fsize;
-  var pdst = 0;
-  var total = 0;
-  var hadError = false;
-  var srcHandle;
-  var dstHandle;
-  var readbuf;
-  var bufsize = chunkSize * concurrency;
-
-  function onerror(err) {
-    if (hadError)
+    case 'utf8':
+      this.fillLast = utf8FillLast;
+      nb = 4;
+      break;
+    case 'base64':
+      this.text = base64Text;
+      this.end = base64End;
+      nb = 3;
+      break;
+    default:
+      this.write = simpleWrite;
+      this.end = simpleEnd;
       return;
-
-    hadError = true;
-
-    var left = 0;
-    var cbfinal;
-
-    if (srcHandle || dstHandle) {
-      cbfinal = function() {
-        if (--left === 0)
-          cb(err);
-      };
-      if (srcHandle && (src === fs || src.writable))
-        ++left;
-      if (dstHandle && (dst === fs || dst.writable))
-        ++left;
-      if (srcHandle && (src === fs || src.writable))
-        src.close(srcHandle, cbfinal);
-      if (dstHandle && (dst === fs || dst.writable))
-        dst.close(dstHandle, cbfinal);
-    } else
-      cb(err);
   }
-
-  src.open(srcPath, 'r', function(err, sourceHandle) {
-    if (err)
-      return onerror(err);
-
-    srcHandle = sourceHandle;
-
-    if (fileSize === undefined)
-      src.fstat(srcHandle, tryStat);
-    else
-      tryStat(null, { size: fileSize });
-
-    function tryStat(err, attrs) {
-      if (err) {
-        if (src !== fs) {
-          // Try stat() for sftp servers that may not support fstat() for
-          // whatever reason
-          src.stat(srcPath, function(err_, attrs_) {
-            if (err_)
-              return onerror(err);
-            tryStat(null, attrs_);
-          });
-          return;
-        }
-        return onerror(err);
-      }
-      fsize = attrs.size;
-
-      dst.open(dstPath, 'w', function(err, destHandle) {
-        if (err)
-          return onerror(err);
-
-        dstHandle = destHandle;
-
-        if (fsize <= 0)
-          return onerror();
-
-        // Use less memory where possible
-        while (bufsize > fsize) {
-          if (concurrency === 1) {
-            bufsize = fsize;
-            break;
-          }
-          bufsize -= chunkSize;
-          --concurrency;
-        }
-
-        readbuf = tryCreateBuffer(bufsize);
-        if (readbuf instanceof Error)
-          return onerror(readbuf);
-
-        if (mode !== undefined) {
-          dst.fchmod(dstHandle, mode, function tryAgain(err) {
-            if (err) {
-              // Try chmod() for sftp servers that may not support fchmod() for
-              // whatever reason
-              dst.chmod(dstPath, mode, function(err_) {
-                tryAgain();
-              });
-              return;
-            }
-            startReads();
-          });
-        } else {
-          startReads();
-        }
-
-        function onread(err, nb, data, dstpos, datapos, origChunkLen) {
-          if (err)
-            return onerror(err);
-
-          datapos = datapos || 0;
-
-          if (src === fs)
-            dst.writeData(dstHandle, readbuf, datapos, nb, dstpos, writeCb);
-          else
-            dst.write(dstHandle, readbuf, datapos, nb, dstpos, writeCb);
-
-          function writeCb(err) {
-            if (err)
-              return onerror(err);
-
-            total += nb;
-            onstep && onstep(total, nb, fsize);
-
-            if (nb < origChunkLen)
-              return singleRead(datapos, dstpos + nb, origChunkLen - nb);
-
-            if (total === fsize) {
-              dst.close(dstHandle, function(err) {
-                dstHandle = undefined;
-                if (err)
-                  return onerror(err);
-                src.close(srcHandle, function(err) {
-                  srcHandle = undefined;
-                  if (err)
-                    return onerror(err);
-                  cb();
-                });
-              });
-              return;
-            }
-
-            if (pdst >= fsize)
-              return;
-
-            var chunk = (pdst + chunkSize > fsize ? fsize - pdst : chunkSize);
-            singleRead(datapos, pdst, chunk);
-            pdst += chunk;
-          }
-        }
-
-        function makeCb(psrc, pdst, chunk) {
-          return function(err, nb, data) {
-            onread(err, nb, data, pdst, psrc, chunk);
-          };
-        }
-
-        function singleRead(psrc, pdst, chunk) {
-          if (src === fs) {
-            src.read(srcHandle,
-                     readbuf,
-                     psrc,
-                     chunk,
-                     pdst,
-                     makeCb(psrc, pdst, chunk));
-          } else {
-            src.readData(srcHandle,
-                         readbuf,
-                         psrc,
-                         chunk,
-                         pdst,
-                         makeCb(psrc, pdst, chunk));
-          }
-        }
-
-        function startReads() {
-          var reads = 0;
-          var psrc = 0;
-          while (pdst < fsize && reads < concurrency) {
-            var chunk = (pdst + chunkSize > fsize ? fsize - pdst : chunkSize);
-            singleRead(psrc, pdst, chunk);
-            psrc += chunk;
-            pdst += chunk;
-            ++reads;
-          }
-        }
-      });
-    }
-  });
-}
-SFTPStream.prototype.fastGet = function(remotePath, localPath, opts, cb) {
-  if (this.server)
-    throw new Error('Client-only method called in server mode');
-
-  fastXfer(this, fs, remotePath, localPath, opts, cb);
-};
-SFTPStream.prototype.fastPut = function(localPath, remotePath, opts, cb) {
-  if (this.server)
-    throw new Error('Client-only method called in server mode');
-
-  fastXfer(fs, this, localPath, remotePath, opts, cb);
-};
-SFTPStream.prototype.readFile = function(path, options, callback_) {
-  if (this.server)
-    throw new Error('Client-only method called in server mode');
-
-  var callback;
-  if (typeof callback_ === 'function') {
-    callback = callback_;
-  } else if (typeof options === 'function') {
-    callback = options;
-    options = undefined;
-  }
-
-  var self = this;
-
-  if (typeof options === 'string')
-    options = { encoding: options, flag: 'r' };
-  else if (!options)
-    options = { encoding: null, flag: 'r' };
-  else if (typeof options !== 'object')
-    throw new TypeError('Bad arguments');
-
-  var encoding = options.encoding;
-  if (encoding && !Buffer.isEncoding(encoding))
-    throw new Error('Unknown encoding: ' + encoding);
-
-  // first, stat the file, so we know the size.
-  var size;
-  var buffer; // single buffer with file data
-  var buffers; // list for when size is unknown
-  var pos = 0;
-  var handle;
-
-  // SFTPv3 does not support using -1 for read position, so we have to track
-  // read position manually
-  var bytesRead = 0;
-
-  var flag = options.flag || 'r';
-  this.open(path, flag, 438 /*=0666*/, function(er, handle_) {
-    if (er)
-      return callback && callback(er);
-    handle = handle_;
-
-    self.fstat(handle, function tryStat(er, st) {
-      if (er) {
-        // Try stat() for sftp servers that may not support fstat() for
-        // whatever reason
-        self.stat(path, function(er_, st_) {
-          if (er_) {
-            return self.close(handle, function() {
-              callback && callback(er);
-            });
-          }
-          tryStat(null, st_);
-        });
-        return;
-      }
-
-      size = st.size || 0;
-      if (size === 0) {
-        // the kernel lies about many files.
-        // Go ahead and try to read some bytes.
-        buffers = [];
-        return read();
-      }
-
-      buffer = Buffer.allocUnsafe(size);
-      read();
-    });
-  });
-
-  function read() {
-    if (size === 0) {
-      buffer = Buffer.allocUnsafe(8192);
-      self.readData(handle, buffer, 0, 8192, bytesRead, afterRead);
-    } else {
-      self.readData(handle, buffer, pos, size - pos, bytesRead, afterRead);
-    }
-  }
-
-  function afterRead(er, nbytes) {
-    var eof;
-    if (er) {
-      eof = (er.code === STATUS_CODE.EOF);
-      if (!eof) {
-        return self.close(handle, function() {
-          return callback && callback(er);
-        });
-      }
-    } else {
-      eof = false;
-    }
-
-    if (eof || (size === 0 && nbytes === 0))
-      return close();
-
-    bytesRead += nbytes;
-    pos += nbytes;
-    if (size !== 0) {
-      if (pos === size)
-        close();
-      else
-        read();
-    } else {
-      // unknown size, just read until we don't get bytes.
-      buffers.push(buffer.slice(0, nbytes));
-      read();
-    }
-  }
-  afterRead._wantEOFError = true;
-
-  function close() {
-    self.close(handle, function(er) {
-      if (size === 0) {
-        // collected the data into the buffers list.
-        buffer = Buffer.concat(buffers, pos);
-      } else if (pos < size) {
-        buffer = buffer.slice(0, pos);
-      }
-
-      if (encoding)
-        buffer = buffer.toString(encoding);
-      return callback && callback(er, buffer);
-    });
-  }
-};
-function writeAll(self, handle, buffer, offset, length, position, callback_) {
-  var callback = (typeof callback_ === 'function' ? callback_ : undefined);
-
-  self.writeData(handle,
-                 buffer,
-                 offset,
-                 length,
-                 position,
-                 function(writeErr, written) {
-    if (writeErr) {
-      return self.close(handle, function() {
-        callback && callback(writeErr);
-      });
-    }
-    if (written === length)
-      self.close(handle, callback);
-    else {
-      offset += written;
-      length -= written;
-      position += written;
-      writeAll(self, handle, buffer, offset, length, position, callback);
-    }
-  });
-}
-SFTPStream.prototype.writeFile = function(path, data, options, callback_) {
-  if (this.server)
-    throw new Error('Client-only method called in server mode');
-
-  var callback;
-  if (typeof callback_ === 'function') {
-    callback = callback_;
-  } else if (typeof options === 'function') {
-    callback = options;
-    options = undefined;
-  }
-  var self = this;
-
-  if (typeof options === 'string')
-    options = { encoding: options, mode: 438, flag: 'w' };
-  else if (!options)
-    options = { encoding: 'utf8', mode: 438 /*=0666*/, flag: 'w' };
-  else if (typeof options !== 'object')
-    throw new TypeError('Bad arguments');
-
-  if (options.encoding && !Buffer.isEncoding(options.encoding))
-    throw new Error('Unknown encoding: ' + options.encoding);
-
-  var flag = options.flag || 'w';
-  this.open(path, flag, options.mode, function(openErr, handle) {
-    if (openErr)
-      callback && callback(openErr);
-    else {
-      var buffer = (Buffer.isBuffer(data)
-                    ? data
-                    : Buffer.from('' + data, options.encoding || 'utf8'));
-      var position = (/a/.test(flag) ? null : 0);
-
-      // SFTPv3 does not support the notion of 'current position'
-      // (null position), so we just attempt to append to the end of the file
-      // instead
-      if (position === null) {
-        self.fstat(handle, function tryStat(er, st) {
-          if (er) {
-            // Try stat() for sftp servers that may not support fstat() for
-            // whatever reason
-            self.stat(path, function(er_, st_) {
-              if (er_) {
-                return self.close(handle, function() {
-                  callback && callback(er);
-                });
-              }
-              tryStat(null, st_);
-            });
-            return;
-          }
-          writeAll(self, handle, buffer, 0, buffer.length, st.size, callback);
-        });
-        return;
-      }
-      writeAll(self, handle, buffer, 0, buffer.length, position, callback);
-    }
-  });
-};
-SFTPStream.prototype.appendFile = function(path, data, options, callback_) {
-  if (this.server)
-    throw new Error('Client-only method called in server mode');
-
-  var callback;
-  if (typeof callback_ === 'function') {
-    callback = callback_;
-  } else if (typeof options === 'function') {
-    callback = options;
-    options = undefined;
-  }
-
-  if (typeof options === 'string')
-    options = { encoding: options, mode: 438, flag: 'a' };
-  else if (!options)
-    options = { encoding: 'utf8', mode: 438 /*=0666*/, flag: 'a' };
-  else if (typeof options !== 'object')
-    throw new TypeError('Bad arguments');
-
-  if (!options.flag)
-    options = util._extend({ flag: 'a' }, options);
-  this.writeFile(path, data, options, callback);
-};
-SFTPStream.prototype.exists = function(path, cb) {
-  if (this.server)
-    throw new Error('Client-only method called in server mode');
-
-  this.stat(path, function(err) {
-    cb && cb(err ? false : true);
-  });
-};
-SFTPStream.prototype.unlink = function(filename, cb) {
-  if (this.server)
-    throw new Error('Client-only method called in server mode');
-
-  var state = this._state;
-
-  /*
-    uint32     id
-    string     filename
-  */
-  var fnamelen = Buffer.byteLength(filename);
-  var p = 9;
-  var buf = Buffer.allocUnsafe(4 + 1 + 4 + 4 + fnamelen);
-
-  writeUInt32BE(buf, buf.length - 4, 0);
-  buf[4] = REQUEST.REMOVE;
-  var reqid = state.writeReqid = (state.writeReqid + 1) % MAX_REQID;
-  writeUInt32BE(buf, reqid, 5);
-
-  writeUInt32BE(buf, fnamelen, p);
-  buf.write(filename, p += 4, fnamelen, 'utf8');
-
-  state.requests[reqid] = { cb: cb };
-
-  this.debug('DEBUG[SFTP]: Outgoing: Writing REMOVE');
-  return this.push(buf);
-};
-SFTPStream.prototype.rename = function(oldPath, newPath, cb) {
-  if (this.server)
-    throw new Error('Client-only method called in server mode');
-
-  var state = this._state;
-
-  /*
-    uint32     id
-    string     oldpath
-    string     newpath
-  */
-  var oldlen = Buffer.byteLength(oldPath);
-  var newlen = Buffer.byteLength(newPath);
-  var p = 9;
-  var buf = Buffer.allocUnsafe(4 + 1 + 4 + 4 + oldlen + 4 + newlen);
-
-  writeUInt32BE(buf, buf.length - 4, 0);
-  buf[4] = REQUEST.RENAME;
-  var reqid = state.writeReqid = (state.writeReqid + 1) % MAX_REQID;
-  writeUInt32BE(buf, reqid, 5);
-
-  writeUInt32BE(buf, oldlen, p);
-  buf.write(oldPath, p += 4, oldlen, 'utf8');
-  writeUInt32BE(buf, newlen, p += oldlen);
-  buf.write(newPath, p += 4, newlen, 'utf8');
-
-  state.requests[reqid] = { cb: cb };
-
-  this.debug('DEBUG[SFTP]: Outgoing: Writing RENAME');
-  return this.push(buf);
-};
-SFTPStream.prototype.mkdir = function(path, attrs, cb) {
-  if (this.server)
-    throw new Error('Client-only method called in server mode');
-
-  var flags = 0;
-  var attrBytes = 0;
-  var state = this._state;
-
-  if (typeof attrs === 'function') {
-    cb = attrs;
-    attrs = undefined;
-  }
-  if (typeof attrs === 'object' && attrs !== null) {
-    attrs = attrsToBytes(attrs);
-    flags = attrs.flags;
-    attrBytes = attrs.nbytes;
-    attrs = attrs.bytes;
-  }
-
-  /*
-    uint32     id
-    string     path
-    ATTRS      attrs
-  */
-  var pathlen = Buffer.byteLength(path);
-  var p = 9;
-  var buf = Buffer.allocUnsafe(4 + 1 + 4 + 4 + pathlen + 4 + attrBytes);
-
-  writeUInt32BE(buf, buf.length - 4, 0);
-  buf[4] = REQUEST.MKDIR;
-  var reqid = state.writeReqid = (state.writeReqid + 1) % MAX_REQID;
-  writeUInt32BE(buf, reqid, 5);
-
-  writeUInt32BE(buf, pathlen, p);
-  buf.write(path, p += 4, pathlen, 'utf8');
-  writeUInt32BE(buf, flags, p += pathlen);
-  if (flags) {
-    p += 4;
-    for (var i = 0, len = attrs.length; i < len; ++i)
-      for (var j = 0, len2 = attrs[i].length; j < len2; ++j)
-        buf[p++] = attrs[i][j];
-  }
-
-  state.requests[reqid] = { cb: cb };
-
-  this.debug('DEBUG[SFTP]: Outgoing: Writing MKDIR');
-  return this.push(buf);
-};
-SFTPStream.prototype.rmdir = function(path, cb) {
-  if (this.server)
-    throw new Error('Client-only method called in server mode');
-
-  var state = this._state;
-
-  /*
-    uint32     id
-    string     path
-  */
-  var pathlen = Buffer.byteLength(path);
-  var p = 9;
-  var buf = Buffer.allocUnsafe(4 + 1 + 4 + 4 + pathlen);
-
-  writeUInt32BE(buf, buf.length - 4, 0);
-  buf[4] = REQUEST.RMDIR;
-  var reqid = state.writeReqid = (state.writeReqid + 1) % MAX_REQID;
-  writeUInt32BE(buf, reqid, 5);
-
-  writeUInt32BE(buf, pathlen, p);
-  buf.write(path, p += 4, pathlen, 'utf8');
-
-  state.requests[reqid] = { cb: cb };
-
-  this.debug('DEBUG[SFTP]: Outgoing: Writing RMDIR');
-  return this.push(buf);
-};
-SFTPStream.prototype.readdir = function(where, opts, cb) {
-  if (this.server)
-    throw new Error('Client-only method called in server mode');
-
-  var state = this._state;
-  var doFilter;
-
-  if (typeof opts === 'function') {
-    cb = opts;
-    opts = {};
-  }
-  if (typeof opts !== 'object' || opts === null)
-    opts = {};
-
-  doFilter = (opts && opts.full ? false : true);
-
-  if (!Buffer.isBuffer(where) && typeof where !== 'string')
-    throw new Error('missing directory handle or path');
-
-  if (typeof where === 'string') {
-    var self = this;
-    var entries = [];
-    var e = 0;
-
-    return this.opendir(where, function reread(err, handle) {
-      if (err)
-        return cb(err);
-
-      self.readdir(handle, opts, function(err, list) {
-        var eof = (err && err.code === STATUS_CODE.EOF);
-
-        if (err && !eof) {
-          return self.close(handle, function() {
-            cb(err);
-          });
-        } else if (eof) {
-          return self.close(handle, function(err) {
-            if (err)
-              return cb(err);
-            cb(undefined, entries);
-          });
-        }
-
-        for (var i = 0, len = list.length; i < len; ++i, ++e)
-          entries[e] = list[i];
-
-        reread(undefined, handle);
-      });
-    });
-  }
-
-  /*
-    uint32     id
-    string     handle
-  */
-  var handlelen = where.length;
-  var p = 9;
-  var buf = Buffer.allocUnsafe(4 + 1 + 4 + 4 + handlelen);
-
-  writeUInt32BE(buf, buf.length - 4, 0);
-  buf[4] = REQUEST.READDIR;
-  var reqid = state.writeReqid = (state.writeReqid + 1) % MAX_REQID;
-  writeUInt32BE(buf, reqid, 5);
-
-  writeUInt32BE(buf, handlelen, p);
-  where.copy(buf, p += 4);
-
-  state.requests[reqid] = {
-    cb: (doFilter
-         ? function(err, list) {
-             if (err)
-               return cb(err);
-
-             for (var i = list.length - 1; i >= 0; --i) {
-               if (list[i].filename === '.' || list[i].filename === '..')
-                 list.splice(i, 1);
-             }
-
-             cb(undefined, list);
-           }
-         : cb)
-  };
-
-  this.debug('DEBUG[SFTP]: Outgoing: Writing READDIR');
-  return this.push(buf);
-};
-SFTPStream.prototype.fstat = function(handle, cb) {
-  if (this.server)
-    throw new Error('Client-only method called in server mode');
-  else if (!Buffer.isBuffer(handle))
-    throw new Error('handle is not a Buffer');
-
-  var state = this._state;
-
-  /*
-    uint32     id
-    string     handle
-  */
-  var handlelen = handle.length;
-  var p = 9;
-  var buf = Buffer.allocUnsafe(4 + 1 + 4 + 4 + handlelen);
-
-  writeUInt32BE(buf, buf.length - 4, 0);
-  buf[4] = REQUEST.FSTAT;
-  var reqid = state.writeReqid = (state.writeReqid + 1) % MAX_REQID;
-  writeUInt32BE(buf, reqid, 5);
-
-  writeUInt32BE(buf, handlelen, p);
-  handle.copy(buf, p += 4);
-
-  state.requests[reqid] = { cb: cb };
-
-  this.debug('DEBUG[SFTP]: Outgoing: Writing FSTAT');
-  return this.push(buf);
-};
-SFTPStream.prototype.stat = function(path, cb) {
-  if (this.server)
-    throw new Error('Client-only method called in server mode');
-
-  var state = this._state;
-
-  /*
-    uint32     id
-    string     path
-  */
-  var pathlen = Buffer.byteLength(path);
-  var p = 9;
-  var buf = Buffer.allocUnsafe(4 + 1 + 4 + 4 + pathlen);
-
-  writeUInt32BE(buf, buf.length - 4, 0);
-  buf[4] = REQUEST.STAT;
-  var reqid = state.writeReqid = (state.writeReqid + 1) % MAX_REQID;
-  writeUInt32BE(buf, reqid, 5);
-
-  writeUInt32BE(buf, pathlen, p);
-  buf.write(path, p += 4, pathlen, 'utf8');
-
-  state.requests[reqid] = { cb: cb };
-
-  this.debug('DEBUG[SFTP]: Outgoing: Writing STAT');
-  return this.push(buf);
-};
-SFTPStream.prototype.lstat = function(path, cb) {
-  if (this.server)
-    throw new Error('Client-only method called in server mode');
-
-  var state = this._state;
-
-  /*
-    uint32     id
-    string     path
-  */
-  var pathlen = Buffer.byteLength(path);
-  var p = 9;
-  var buf = Buffer.allocUnsafe(4 + 1 + 4 + 4 + pathlen);
-
-  writeUInt32BE(buf, buf.length - 4, 0);
-  buf[4] = REQUEST.LSTAT;
-  var reqid = state.writeReqid = (state.writeReqid + 1) % MAX_REQID;
-  writeUInt32BE(buf, reqid, 5);
-
-  writeUInt32BE(buf, pathlen, p);
-  buf.write(path, p += 4, pathlen, 'utf8');
-
-  state.requests[reqid] = { cb: cb };
-
-  this.debug('DEBUG[SFTP]: Outgoing: Writing LSTAT');
-  return this.push(buf);
-};
-SFTPStream.prototype.opendir = function(path, cb) {
-  if (this.server)
-    throw new Error('Client-only method called in server mode');
-
-  var state = this._state;
-
-  /*
-    uint32     id
-    string     path
-  */
-  var pathlen = Buffer.byteLength(path);
-  var p = 9;
-  var buf = Buffer.allocUnsafe(4 + 1 + 4 + 4 + pathlen);
-
-  writeUInt32BE(buf, buf.length - 4, 0);
-  buf[4] = REQUEST.OPENDIR;
-  var reqid = state.writeReqid = (state.writeReqid + 1) % MAX_REQID;
-  writeUInt32BE(buf, reqid, 5);
-
-  writeUInt32BE(buf, pathlen, p);
-  buf.write(path, p += 4, pathlen, 'utf8');
-
-  state.requests[reqid] = { cb: cb };
-
-  this.debug('DEBUG[SFTP]: Outgoing: Writing OPENDIR');
-  return this.push(buf);
-};
-SFTPStream.prototype.setstat = function(path, attrs, cb) {
-  if (this.server)
-    throw new Error('Client-only method called in server mode');
-
-  var flags = 0;
-  var attrBytes = 0;
-  var state = this._state;
-
-  if (typeof attrs === 'object' && attrs !== null) {
-    attrs = attrsToBytes(attrs);
-    flags = attrs.flags;
-    attrBytes = attrs.nbytes;
-    attrs = attrs.bytes;
-  } else if (typeof attrs === 'function')
-    cb = attrs;
-
-  /*
-    uint32     id
-    string     path
-    ATTRS      attrs
-  */
-  var pathlen = Buffer.byteLength(path);
-  var p = 9;
-  var buf = Buffer.allocUnsafe(4 + 1 + 4 + 4 + pathlen + 4 + attrBytes);
-
-  writeUInt32BE(buf, buf.length - 4, 0);
-  buf[4] = REQUEST.SETSTAT;
-  var reqid = state.writeReqid = (state.writeReqid + 1) % MAX_REQID;
-  writeUInt32BE(buf, reqid, 5);
-
-  writeUInt32BE(buf, pathlen, p);
-  buf.write(path, p += 4, pathlen, 'utf8');
-  writeUInt32BE(buf, flags, p += pathlen);
-  if (flags) {
-    p += 4;
-    for (var i = 0, len = attrs.length; i < len; ++i)
-      for (var j = 0, len2 = attrs[i].length; j < len2; ++j)
-        buf[p++] = attrs[i][j];
-  }
-
-  state.requests[reqid] = { cb: cb };
-
-  this.debug('DEBUG[SFTP]: Outgoing: Writing SETSTAT');
-  return this.push(buf);
-};
-SFTPStream.prototype.fsetstat = function(handle, attrs, cb) {
-  if (this.server)
-    throw new Error('Client-only method called in server mode');
-  else if (!Buffer.isBuffer(handle))
-    throw new Error('handle is not a Buffer');
-
-  var flags = 0;
-  var attrBytes = 0;
-  var state = this._state;
-
-  if (typeof attrs === 'object' && attrs !== null) {
-    attrs = attrsToBytes(attrs);
-    flags = attrs.flags;
-    attrBytes = attrs.nbytes;
-    attrs = attrs.bytes;
-  } else if (typeof attrs === 'function')
-    cb = attrs;
-
-  /*
-    uint32     id
-    string     handle
-    ATTRS      attrs
-  */
-  var handlelen = handle.length;
-  var p = 9;
-  var buf = Buffer.allocUnsafe(4 + 1 + 4 + 4 + handlelen + 4 + attrBytes);
-
-  writeUInt32BE(buf, buf.length - 4, 0);
-  buf[4] = REQUEST.FSETSTAT;
-  var reqid = state.writeReqid = (state.writeReqid + 1) % MAX_REQID;
-  writeUInt32BE(buf, reqid, 5);
-
-  writeUInt32BE(buf, handlelen, p);
-  handle.copy(buf, p += 4);
-  writeUInt32BE(buf, flags, p += handlelen);
-  if (flags) {
-    p += 4;
-    for (var i = 0, len = attrs.length; i < len; ++i)
-      for (var j = 0, len2 = attrs[i].length; j < len2; ++j)
-        buf[p++] = attrs[i][j];
-  }
-
-  state.requests[reqid] = { cb: cb };
-
-  this.debug('DEBUG[SFTP]: Outgoing: Writing FSETSTAT');
-  return this.push(buf);
-};
-SFTPStream.prototype.futimes = function(handle, atime, mtime, cb) {
-  return this.fsetstat(handle, {
-    atime: toUnixTimestamp(atime),
-    mtime: toUnixTimestamp(mtime)
-  }, cb);
-};
-SFTPStream.prototype.utimes = function(path, atime, mtime, cb) {
-  return this.setstat(path, {
-    atime: toUnixTimestamp(atime),
-    mtime: toUnixTimestamp(mtime)
-  }, cb);
-};
-SFTPStream.prototype.fchown = function(handle, uid, gid, cb) {
-  return this.fsetstat(handle, {
-    uid: uid,
-    gid: gid
-  }, cb);
-};
-SFTPStream.prototype.chown = function(path, uid, gid, cb) {
-  return this.setstat(path, {
-    uid: uid,
-    gid: gid
-  }, cb);
-};
-SFTPStream.prototype.fchmod = function(handle, mode, cb) {
-  return this.fsetstat(handle, {
-    mode: mode
-  }, cb);
-};
-SFTPStream.prototype.chmod = function(path, mode, cb) {
-  return this.setstat(path, {
-    mode: mode
-  }, cb);
-};
-SFTPStream.prototype.readlink = function(path, cb) {
-  if (this.server)
-    throw new Error('Client-only method called in server mode');
-
-  var state = this._state;
-
-  /*
-    uint32     id
-    string     path
-  */
-  var pathlen = Buffer.byteLength(path);
-  var p = 9;
-  var buf = Buffer.allocUnsafe(4 + 1 + 4 + 4 + pathlen);
-
-  writeUInt32BE(buf, buf.length - 4, 0);
-  buf[4] = REQUEST.READLINK;
-  var reqid = state.writeReqid = (state.writeReqid + 1) % MAX_REQID;
-  writeUInt32BE(buf, reqid, 5);
-
-  writeUInt32BE(buf, pathlen, p);
-  buf.write(path, p += 4, pathlen, 'utf8');
-
-  state.requests[reqid] = {
-    cb: function(err, names) {
-      if (err)
-        return cb(err);
-      else if (!names || !names.length)
-        return cb(new Error('Response missing link info'));
-      cb(undefined, names[0].filename);
-    }
-  };
-
-  this.debug('DEBUG[SFTP]: Outgoing: Writing READLINK');
-  return this.push(buf);
-};
-SFTPStream.prototype.symlink = function(targetPath, linkPath, cb) {
-  if (this.server)
-    throw new Error('Client-only method called in server mode');
-
-  var state = this._state;
-
-  /*
-    uint32     id
-    string     linkpath
-    string     targetpath
-  */
-  var linklen = Buffer.byteLength(linkPath);
-  var targetlen = Buffer.byteLength(targetPath);
-  var p = 9;
-  var buf = Buffer.allocUnsafe(4 + 1 + 4 + 4 + linklen + 4 + targetlen);
-
-  writeUInt32BE(buf, buf.length - 4, 0);
-  buf[4] = REQUEST.SYMLINK;
-  var reqid = state.writeReqid = (state.writeReqid + 1) % MAX_REQID;
-  writeUInt32BE(buf, reqid, 5);
-
-  if (this._isOpenSSH) {
-    // OpenSSH has linkpath and targetpath positions switched
-    writeUInt32BE(buf, targetlen, p);
-    buf.write(targetPath, p += 4, targetlen, 'utf8');
-    writeUInt32BE(buf, linklen, p += targetlen);
-    buf.write(linkPath, p += 4, linklen, 'utf8');
-  } else {
-    writeUInt32BE(buf, linklen, p);
-    buf.write(linkPath, p += 4, linklen, 'utf8');
-    writeUInt32BE(buf, targetlen, p += linklen);
-    buf.write(targetPath, p += 4, targetlen, 'utf8');
-  }
-
-  state.requests[reqid] = { cb: cb };
-
-  this.debug('DEBUG[SFTP]: Outgoing: Writing SYMLINK');
-  return this.push(buf);
-};
-SFTPStream.prototype.realpath = function(path, cb) {
-  if (this.server)
-    throw new Error('Client-only method called in server mode');
-
-  var state = this._state;
-
-  /*
-    uint32     id
-    string     path
-  */
-  var pathlen = Buffer.byteLength(path);
-  var p = 9;
-  var buf = Buffer.allocUnsafe(4 + 1 + 4 + 4 + pathlen);
-
-  writeUInt32BE(buf, buf.length - 4, 0);
-  buf[4] = REQUEST.REALPATH;
-  var reqid = state.writeReqid = (state.writeReqid + 1) % MAX_REQID;
-  writeUInt32BE(buf, reqid, 5);
-
-  writeUInt32BE(buf, pathlen, p);
-  buf.write(path, p += 4, pathlen, 'utf8');
-
-  state.requests[reqid] = {
-    cb: function(err, names) {
-      if (err)
-        return cb(err);
-      else if (!names || !names.length)
-        return cb(new Error('Response missing path info'));
-      cb(undefined, names[0].filename);
-    }
-  };
-
-  this.debug('DEBUG[SFTP]: Outgoing: Writing REALPATH');
-  return this.push(buf);
-};
-// extended requests
-SFTPStream.prototype.ext_openssh_rename = function(oldPath, newPath, cb) {
-  var state = this._state;
-
-  if (this.server)
-    throw new Error('Client-only method called in server mode');
-  else if (!state.extensions['posix-rename@openssh.com']
-           || state.extensions['posix-rename@openssh.com'].indexOf('1') === -1)
-    throw new Error('Server does not support this extended request');
-
-  /*
-    uint32    id
-    string    "posix-rename@openssh.com"
-    string    oldpath
-    string    newpath
-  */
-  var oldlen = Buffer.byteLength(oldPath);
-  var newlen = Buffer.byteLength(newPath);
-  var p = 9;
-  var buf = Buffer.allocUnsafe(4 + 1 + 4 + 4 + 24 + 4 + oldlen + 4 + newlen);
-
-  writeUInt32BE(buf, buf.length - 4, 0);
-  buf[4] = REQUEST.EXTENDED;
-  var reqid = state.writeReqid = (state.writeReqid + 1) % MAX_REQID;
-  writeUInt32BE(buf, reqid, 5);
-  writeUInt32BE(buf, 24, p);
-  buf.write('posix-rename@openssh.com', p += 4, 24, 'ascii');
-
-  writeUInt32BE(buf, oldlen, p += 24);
-  buf.write(oldPath, p += 4, oldlen, 'utf8');
-  writeUInt32BE(buf, newlen, p += oldlen);
-  buf.write(newPath, p += 4, newlen, 'utf8');
-
-  state.requests[reqid] = { cb: cb };
-
-  this.debug('DEBUG[SFTP]: Outgoing: Writing posix-rename@openssh.com');
-  return this.push(buf);
-};
-SFTPStream.prototype.ext_openssh_statvfs = function(path, cb) {
-  var state = this._state;
-
-  if (this.server)
-    throw new Error('Client-only method called in server mode');
-  else if (!state.extensions['statvfs@openssh.com']
-           || state.extensions['statvfs@openssh.com'].indexOf('2') === -1)
-    throw new Error('Server does not support this extended request');
-
-  /*
-    uint32    id
-    string    "statvfs@openssh.com"
-    string    path
-  */
-  var pathlen = Buffer.byteLength(path);
-  var p = 9;
-  var buf = Buffer.allocUnsafe(4 + 1 + 4 + 4 + 19 + 4 + pathlen);
-
-  writeUInt32BE(buf, buf.length - 4, 0);
-  buf[4] = REQUEST.EXTENDED;
-  var reqid = state.writeReqid = (state.writeReqid + 1) % MAX_REQID;
-  writeUInt32BE(buf, reqid, 5);
-  writeUInt32BE(buf, 19, p);
-  buf.write('statvfs@openssh.com', p += 4, 19, 'ascii');
-
-  writeUInt32BE(buf, pathlen, p += 19);
-  buf.write(path, p += 4, pathlen, 'utf8');
-
-  state.requests[reqid] = {
-    extended: 'statvfs@openssh.com',
-    cb: cb
-  };
-
-  this.debug('DEBUG[SFTP]: Outgoing: Writing statvfs@openssh.com');
-  return this.push(buf);
-};
-SFTPStream.prototype.ext_openssh_fstatvfs = function(handle, cb) {
-  var state = this._state;
-
-  if (this.server)
-    throw new Error('Client-only method called in server mode');
-  else if (!state.extensions['fstatvfs@openssh.com']
-           || state.extensions['fstatvfs@openssh.com'].indexOf('2') === -1)
-    throw new Error('Server does not support this extended request');
-  else if (!Buffer.isBuffer(handle))
-    throw new Error('handle is not a Buffer');
-
-  /*
-    uint32    id
-    string    "fstatvfs@openssh.com"
-    string    handle
-  */
-  var handlelen = handle.length;
-  var p = 9;
-  var buf = Buffer.allocUnsafe(4 + 1 + 4 + 4 + 20 + 4 + handlelen);
-
-  writeUInt32BE(buf, buf.length - 4, 0);
-  buf[4] = REQUEST.EXTENDED;
-  var reqid = state.writeReqid = (state.writeReqid + 1) % MAX_REQID;
-  writeUInt32BE(buf, reqid, 5);
-  writeUInt32BE(buf, 20, p);
-  buf.write('fstatvfs@openssh.com', p += 4, 20, 'ascii');
-
-  writeUInt32BE(buf, handlelen, p += 20);
-  buf.write(handle, p += 4, handlelen, 'utf8');
-
-  state.requests[reqid] = {
-    extended: 'fstatvfs@openssh.com',
-    cb: cb
-  };
-
-  this.debug('DEBUG[SFTP]: Outgoing: Writing fstatvfs@openssh.com');
-  return this.push(buf);
-};
-SFTPStream.prototype.ext_openssh_hardlink = function(oldPath, newPath, cb) {
-  var state = this._state;
-
-  if (this.server)
-    throw new Error('Client-only method called in server mode');
-  else if (!state.extensions['hardlink@openssh.com']
-           || state.extensions['hardlink@openssh.com'].indexOf('1') === -1)
-    throw new Error('Server does not support this extended request');
-
-  /*
-    uint32    id
-    string    "hardlink@openssh.com"
-    string    oldpath
-    string    newpath
-  */
-  var oldlen = Buffer.byteLength(oldPath);
-  var newlen = Buffer.byteLength(newPath);
-  var p = 9;
-  var buf = Buffer.allocUnsafe(4 + 1 + 4 + 4 + 20 + 4 + oldlen + 4 + newlen);
-
-  writeUInt32BE(buf, buf.length - 4, 0);
-  buf[4] = REQUEST.EXTENDED;
-  var reqid = state.writeReqid = (state.writeReqid + 1) % MAX_REQID;
-  writeUInt32BE(buf, reqid, 5);
-  writeUInt32BE(buf, 20, p);
-  buf.write('hardlink@openssh.com', p += 4, 20, 'ascii');
-
-  writeUInt32BE(buf, oldlen, p += 20);
-  buf.write(oldPath, p += 4, oldlen, 'utf8');
-  writeUInt32BE(buf, newlen, p += oldlen);
-  buf.write(newPath, p += 4, newlen, 'utf8');
-
-  state.requests[reqid] = { cb: cb };
-
-  this.debug('DEBUG[SFTP]: Outgoing: Writing hardlink@openssh.com');
-  return this.push(buf);
-};
-SFTPStream.prototype.ext_openssh_fsync = function(handle, cb) {
-  var state = this._state;
-
-  if (this.server)
-    throw new Error('Client-only method called in server mode');
-  else if (!state.extensions['fsync@openssh.com']
-           || state.extensions['fsync@openssh.com'].indexOf('1') === -1)
-    throw new Error('Server does not support this extended request');
-  else if (!Buffer.isBuffer(handle))
-    throw new Error('handle is not a Buffer');
-
-  /*
-    uint32    id
-    string    "fsync@openssh.com"
-    string    handle
-  */
-  var handlelen = handle.length;
-  var p = 9;
-  var buf = Buffer.allocUnsafe(4 + 1 + 4 + 4 + 17 + 4 + handlelen);
-
-  writeUInt32BE(buf, buf.length - 4, 0);
-  buf[4] = REQUEST.EXTENDED;
-  var reqid = state.writeReqid = (state.writeReqid + 1) % MAX_REQID;
-  writeUInt32BE(buf, reqid, 5);
-  writeUInt32BE(buf, 17, p);
-  buf.write('fsync@openssh.com', p += 4, 17, 'ascii');
-
-  writeUInt32BE(buf, handlelen, p += 17);
-  buf.write(handle, p += 4, handlelen, 'utf8');
-
-  state.requests[reqid] = { cb: cb };
-
-  this.debug('DEBUG[SFTP]: Outgoing: Writing fsync@openssh.com');
-  return this.push(buf);
-};
-
-// server
-SFTPStream.prototype.status = function(id, code, message, lang) {
-  if (!this.server)
-    throw new Error('Server-only method called in client mode');
-
-  if (!STATUS_CODE[code] || typeof code !== 'number')
-    throw new Error('Bad status code: ' + code);
-
-  message || (message = '');
-  lang || (lang = '');
-
-  var msgLen = Buffer.byteLength(message);
-  var langLen = Buffer.byteLength(lang);
-  var buf = Buffer.allocUnsafe(4 + 1 + 4 + 4 + 4 + msgLen + 4 + langLen);
-
-  writeUInt32BE(buf, buf.length - 4, 0);
-  buf[4] = RESPONSE.STATUS;
-  writeUInt32BE(buf, id, 5);
-
-  writeUInt32BE(buf, code, 9);
-
-  writeUInt32BE(buf, msgLen, 13);
-  if (msgLen)
-    buf.write(message, 17, msgLen, 'utf8');
-
-  writeUInt32BE(buf, langLen, 17 + msgLen);
-  if (langLen)
-    buf.write(lang, 17 + msgLen + 4, langLen, 'ascii');
-
-  this.debug('DEBUG[SFTP]: Outgoing: Writing STATUS');
-  return this.push(buf);
-};
-SFTPStream.prototype.handle = function(id, handle) {
-  if (!this.server)
-    throw new Error('Server-only method called in client mode');
-
-  if (!Buffer.isBuffer(handle))
-    throw new Error('handle is not a Buffer');
-
-  var handleLen = handle.length;
-
-  if (handleLen > 256)
-    throw new Error('handle too large (> 256 bytes)');
-
-  var buf = Buffer.allocUnsafe(4 + 1 + 4 + 4 + handleLen);
-
-  writeUInt32BE(buf, buf.length - 4, 0);
-  buf[4] = RESPONSE.HANDLE;
-  writeUInt32BE(buf, id, 5);
-
-  writeUInt32BE(buf, handleLen, 9);
-  if (handleLen)
-    handle.copy(buf, 13);
-
-  this.debug('DEBUG[SFTP]: Outgoing: Writing HANDLE');
-  return this.push(buf);
-};
-SFTPStream.prototype.data = function(id, data, encoding) {
-  if (!this.server)
-    throw new Error('Server-only method called in client mode');
-
-  var isBuffer = Buffer.isBuffer(data);
-
-  if (!isBuffer && typeof data !== 'string')
-    throw new Error('data is not a Buffer or string');
-
-  if (!isBuffer)
-    encoding || (encoding = 'utf8');
-
-  var dataLen = (isBuffer ? data.length : Buffer.byteLength(data, encoding));
-  var buf = Buffer.allocUnsafe(4 + 1 + 4 + 4 + dataLen);
-
-  writeUInt32BE(buf, buf.length - 4, 0);
-  buf[4] = RESPONSE.DATA;
-  writeUInt32BE(buf, id, 5);
-
-  writeUInt32BE(buf, dataLen, 9);
-  if (dataLen) {
-    if (isBuffer)
-      data.copy(buf, 13);
-    else
-      buf.write(data, 13, dataLen, encoding);
-  }
-
-  this.debug('DEBUG[SFTP]: Outgoing: Writing DATA');
-  return this.push(buf);
-};
-SFTPStream.prototype.name = function(id, names) {
-  if (!this.server)
-    throw new Error('Server-only method called in client mode');
-
-  if (!Array.isArray(names)) {
-    if (typeof names !== 'object' || names === null)
-      throw new Error('names is not an object or array');
-    names = [ names ];
-  }
-
-  var count = names.length;
-  var namesLen = 0;
-  var nameAttrs;
-  var attrs = [];
-  var name;
-  var filename;
-  var longname;
-  var attr;
-  var len;
-  var len2;
-  var buf;
-  var p;
-  var i;
-  var j;
-  var k;
-
-  for (i = 0; i < count; ++i) {
-    name = names[i];
-    filename = (!name || !name.filename || typeof name.filename !== 'string'
-                ? ''
-                : name.filename);
-    namesLen += 4 + Buffer.byteLength(filename);
-    longname = (!name || !name.longname || typeof name.longname !== 'string'
-                ? ''
-                : name.longname);
-    namesLen += 4 + Buffer.byteLength(longname);
-
-    if (typeof name.attrs === 'object' && name.attrs !== null) {
-      nameAttrs = attrsToBytes(name.attrs);
-      namesLen += 4 + nameAttrs.nbytes;
-      attrs.push(nameAttrs);
-    } else {
-      namesLen += 4;
-      attrs.push(null);
-    }
-  }
-
-  buf = Buffer.allocUnsafe(4 + 1 + 4 + 4 + namesLen);
-
-  writeUInt32BE(buf, buf.length - 4, 0);
-  buf[4] = RESPONSE.NAME;
-  writeUInt32BE(buf, id, 5);
-
-  writeUInt32BE(buf, count, 9);
-
-  p = 13;
-
-  for (i = 0; i < count; ++i) {
-    name = names[i];
-
-    filename = (!name || !name.filename || typeof name.filename !== 'string'
-                ? ''
-                : name.filename);
-    len = Buffer.byteLength(filename);
-    writeUInt32BE(buf, len, p);
-    p += 4;
-    if (len) {
-      buf.write(filename, p, len, 'utf8');
-      p += len;
-    }
-
-    longname = (!name || !name.longname || typeof name.longname !== 'string'
-                ? ''
-                : name.longname);
-    len = Buffer.byteLength(longname);
-    writeUInt32BE(buf, len, p);
-    p += 4;
-    if (len) {
-      buf.write(longname, p, len, 'utf8');
-      p += len;
-    }
-
-    attr = attrs[i];
-    if (attr) {
-      writeUInt32BE(buf, attr.flags, p);
-      p += 4;
-      if (attr.flags && attr.bytes) {
-        var bytes = attr.bytes;
-        for (j = 0, len = bytes.length; j < len; ++j)
-          for (k = 0, len2 = bytes[j].length; k < len2; ++k)
-            buf[p++] = bytes[j][k];
-      }
-    } else {
-      writeUInt32BE(buf, 0, p);
-      p += 4;
-    }
-  }
-
-  this.debug('DEBUG[SFTP]: Outgoing: Writing NAME');
-  return this.push(buf);
-};
-SFTPStream.prototype.attrs = function(id, attrs) {
-  if (!this.server)
-    throw new Error('Server-only method called in client mode');
-
-  if (typeof attrs !== 'object' || attrs === null)
-    throw new Error('attrs is not an object');
-
-  var info = attrsToBytes(attrs);
-  var buf = Buffer.allocUnsafe(4 + 1 + 4 + 4 + info.nbytes);
-  var p = 13;
-
-  writeUInt32BE(buf, buf.length - 4, 0);
-  buf[4] = RESPONSE.ATTRS;
-  writeUInt32BE(buf, id, 5);
-
-  writeUInt32BE(buf, info.flags, 9);
-
-  if (info.flags && info.bytes) {
-    var bytes = info.bytes;
-    for (var j = 0, len = bytes.length; j < len; ++j)
-      for (var k = 0, len2 = bytes[j].length; k < len2; ++k)
-        buf[p++] = bytes[j][k];
-  }
-
-  this.debug('DEBUG[SFTP]: Outgoing: Writing ATTRS');
-  return this.push(buf);
-};
-
-function readAttrs(buf, p, stream, callback) {
-  /*
-    uint32   flags
-    uint64   size           present only if flag SSH_FILEXFER_ATTR_SIZE
-    uint32   uid            present only if flag SSH_FILEXFER_ATTR_UIDGID
-    uint32   gid            present only if flag SSH_FILEXFER_ATTR_UIDGID
-    uint32   permissions    present only if flag SSH_FILEXFER_ATTR_PERMISSIONS
-    uint32   atime          present only if flag SSH_FILEXFER_ACMODTIME
-    uint32   mtime          present only if flag SSH_FILEXFER_ACMODTIME
-    uint32   extended_count present only if flag SSH_FILEXFER_ATTR_EXTENDED
-    string   extended_type
-    string   extended_data
-    ...      more extended data (extended_type - extended_data pairs),
-               so that number of pairs equals extended_count
-  */
-  var flags = readUInt32BE(buf, p);
-  var attrs = new Stats();
-
-  p += 4;
-
-  if (flags & ATTR.SIZE) {
-    var size = readUInt64BE(buf, p, stream, callback);
-    if (size === false)
-      return false;
-    attrs.size = size;
-    p += 8;
-  }
-  if (flags & ATTR.UIDGID) {
-    var uid;
-    var gid;
-    uid = readInt(buf, p, this, callback);
-    if (uid === false)
-      return false;
-    attrs.uid = uid;
-    p += 4;
-    gid = readInt(buf, p, this, callback);
-    if (gid === false)
-      return false;
-    attrs.gid = gid;
-    p += 4;
-  }
-  if (flags & ATTR.PERMISSIONS) {
-    var mode = readInt(buf, p, this, callback);
-    if (mode === false)
-      return false;
-    attrs.mode = mode;
-    // backwards compatibility
-    attrs.permissions = mode;
-    p += 4;
-  }
-  if (flags & ATTR.ACMODTIME) {
-    var atime;
-    var mtime;
-    atime = readInt(buf, p, this, callback);
-    if (atime === false)
-      return false;
-    attrs.atime = atime;
-    p += 4;
-    mtime = readInt(buf, p, this, callback);
-    if (mtime === false)
-      return false;
-    attrs.mtime = mtime;
-    p += 4;
-  }
-  if (flags & ATTR.EXTENDED) {
-    // TODO: read/parse extended data
-    var extcount = readInt(buf, p, this, callback);
-    if (extcount === false)
-      return false;
-    p += 4;
-    for (var i = 0, len; i < extcount; ++i) {
-      len = readInt(buf, p, this, callback);
-      if (len === false)
-        return false;
-      p += 4 + len;
-    }
-  }
-
-  buf._pos = p;
-
-  return attrs;
+  this.lastNeed = 0;
+  this.lastTotal = 0;
+  this.lastChar = Buffer.allocUnsafe(nb);
 }
 
-function readUInt64BE(buffer, p, stream, callback) {
-  if ((buffer.length - p) < 8) {
-    stream && stream._cleanup(callback);
-    return false;
-  }
-
-  var val = 0;
-
-  for (var len = p + 8; p < len; ++p) {
-    val *= 256;
-    val += buffer[p];
-  }
-
-  buffer._pos = p;
-
-  return val;
-}
-
-function attrsToBytes(attrs) {
-  var flags = 0;
-  var attrBytes = 0;
-  var ret = [];
-  var i = 0;
-
-  if (typeof attrs !== 'object' || attrs === null)
-    return { flags: flags, nbytes: attrBytes, bytes: ret };
-
-  if (typeof attrs.size === 'number') {
-    flags |= ATTR.SIZE;
-    attrBytes += 8;
-    var sizeBytes = new Array(8);
-    var val = attrs.size;
-    for (i = 7; i >= 0; --i) {
-      sizeBytes[i] = val & 0xFF;
-      val /= 256;
-    }
-    ret.push(sizeBytes);
-  }
-  if (typeof attrs.uid === 'number' && typeof attrs.gid === 'number') {
-    flags |= ATTR.UIDGID;
-    attrBytes += 8;
-    ret.push([(attrs.uid >> 24) & 0xFF, (attrs.uid >> 16) & 0xFF,
-              (attrs.uid >> 8) & 0xFF, attrs.uid & 0xFF]);
-    ret.push([(attrs.gid >> 24) & 0xFF, (attrs.gid >> 16) & 0xFF,
-              (attrs.gid >> 8) & 0xFF, attrs.gid & 0xFF]);
-  }
-  if (typeof attrs.permissions === 'number'
-      || typeof attrs.permissions === 'string'
-      || typeof attrs.mode === 'number'
-      || typeof attrs.mode === 'string') {
-    var mode = modeNum(attrs.mode || attrs.permissions);
-    flags |= ATTR.PERMISSIONS;
-    attrBytes += 4;
-    ret.push([(mode >> 24) & 0xFF,
-              (mode >> 16) & 0xFF,
-              (mode >> 8) & 0xFF,
-              mode & 0xFF]);
-  }
-  if ((typeof attrs.atime === 'number' || isDate(attrs.atime))
-      && (typeof attrs.mtime === 'number' || isDate(attrs.mtime))) {
-    var atime = toUnixTimestamp(attrs.atime);
-    var mtime = toUnixTimestamp(attrs.mtime);
-
-    flags |= ATTR.ACMODTIME;
-    attrBytes += 8;
-    ret.push([(atime >> 24) & 0xFF, (atime >> 16) & 0xFF,
-              (atime >> 8) & 0xFF, atime & 0xFF]);
-    ret.push([(mtime >> 24) & 0xFF, (mtime >> 16) & 0xFF,
-              (mtime >> 8) & 0xFF, mtime & 0xFF]);
-  }
-  // TODO: extended attributes
-
-  return { flags: flags, nbytes: attrBytes, bytes: ret };
-}
-
-function toUnixTimestamp(time) {
-  if (typeof time === 'number' && !isNaN(time))
-    return time;
-  else if (isDate(time))
-    return parseInt(time.getTime() / 1000, 10);
-  throw new Error('Cannot parse time: ' + time);
-}
-
-function modeNum(mode) {
-  if (typeof mode === 'number' && !isNaN(mode))
-    return mode;
-  else if (typeof mode === 'string')
-    return modeNum(parseInt(mode, 8));
-  throw new Error('Cannot parse mode: ' + mode);
-}
-
-var stringFlagMap = {
-  'r': OPEN_MODE.READ,
-  'r+': OPEN_MODE.READ | OPEN_MODE.WRITE,
-  'w': OPEN_MODE.TRUNC | OPEN_MODE.CREAT | OPEN_MODE.WRITE,
-  'wx': OPEN_MODE.TRUNC | OPEN_MODE.CREAT | OPEN_MODE.WRITE | OPEN_MODE.EXCL,
-  'xw': OPEN_MODE.TRUNC | OPEN_MODE.CREAT | OPEN_MODE.WRITE | OPEN_MODE.EXCL,
-  'w+': OPEN_MODE.TRUNC | OPEN_MODE.CREAT | OPEN_MODE.READ | OPEN_MODE.WRITE,
-  'wx+': OPEN_MODE.TRUNC | OPEN_MODE.CREAT | OPEN_MODE.READ | OPEN_MODE.WRITE
-         | OPEN_MODE.EXCL,
-  'xw+': OPEN_MODE.TRUNC | OPEN_MODE.CREAT | OPEN_MODE.READ | OPEN_MODE.WRITE
-         | OPEN_MODE.EXCL,
-  'a': OPEN_MODE.APPEND | OPEN_MODE.CREAT | OPEN_MODE.WRITE,
-  'ax': OPEN_MODE.APPEND | OPEN_MODE.CREAT | OPEN_MODE.WRITE | OPEN_MODE.EXCL,
-  'xa': OPEN_MODE.APPEND | OPEN_MODE.CREAT | OPEN_MODE.WRITE | OPEN_MODE.EXCL,
-  'a+': OPEN_MODE.APPEND | OPEN_MODE.CREAT | OPEN_MODE.READ | OPEN_MODE.WRITE,
-  'ax+': OPEN_MODE.APPEND | OPEN_MODE.CREAT | OPEN_MODE.READ | OPEN_MODE.WRITE
-         | OPEN_MODE.EXCL,
-  'xa+': OPEN_MODE.APPEND | OPEN_MODE.CREAT | OPEN_MODE.READ | OPEN_MODE.WRITE
-         | OPEN_MODE.EXCL
-};
-var stringFlagMapKeys = Object.keys(stringFlagMap);
-
-function stringToFlags(str) {
-  var flags = stringFlagMap[str];
-  if (flags !== undefined)
-    return flags;
-  return null;
-}
-SFTPStream.stringToFlags = stringToFlags;
-
-function flagsToString(flags) {
-  for (var i = 0; i < stringFlagMapKeys.length; ++i) {
-    var key = stringFlagMapKeys[i];
-    if (stringFlagMap[key] === flags)
-      return key;
-  }
-  return null;
-}
-SFTPStream.flagsToString = flagsToString;
-
-function Stats(initial) {
-  this.mode = (initial && initial.mode);
-  this.permissions = this.mode; // backwards compatiblity
-  this.uid = (initial && initial.uid);
-  this.gid = (initial && initial.gid);
-  this.size = (initial && initial.size);
-  this.atime = (initial && initial.atime);
-  this.mtime = (initial && initial.mtime);
-}
-Stats.prototype._checkModeProperty = function(property) {
-  return ((this.mode & constants.S_IFMT) === property);
-};
-Stats.prototype.isDirectory = function() {
-  return this._checkModeProperty(constants.S_IFDIR);
-};
-Stats.prototype.isFile = function() {
-  return this._checkModeProperty(constants.S_IFREG);
-};
-Stats.prototype.isBlockDevice = function() {
-  return this._checkModeProperty(constants.S_IFBLK);
-};
-Stats.prototype.isCharacterDevice = function() {
-  return this._checkModeProperty(constants.S_IFCHR);
-};
-Stats.prototype.isSymbolicLink = function() {
-  return this._checkModeProperty(constants.S_IFLNK);
-};
-Stats.prototype.isFIFO = function() {
-  return this._checkModeProperty(constants.S_IFIFO);
-};
-Stats.prototype.isSocket = function() {
-  return this._checkModeProperty(constants.S_IFSOCK);
-};
-SFTPStream.Stats = Stats;
-
-// =============================================================================
-// ReadStream/WriteStream-related
-var fsCompat = __nccwpck_require__(5265);
-var validateNumber = fsCompat.validateNumber;
-var destroyImpl = fsCompat.destroyImpl;
-var ERR_OUT_OF_RANGE = fsCompat.ERR_OUT_OF_RANGE;
-var ERR_INVALID_ARG_TYPE = fsCompat.ERR_INVALID_ARG_TYPE;
-
-var kMinPoolSpace = 128;
-
-var pool;
-// It can happen that we expect to read a large chunk of data, and reserve
-// a large chunk of the pool accordingly, but the read() call only filled
-// a portion of it. If a concurrently executing read() then uses the same pool,
-// the "reserved" portion cannot be used, so we allow it to be re-used as a
-// new pool later.
-var poolFragments = [];
-
-function allocNewPool(poolSize) {
-  if (poolFragments.length > 0)
-    pool = poolFragments.pop();
-  else
-    pool = Buffer.allocUnsafe(poolSize);
-  pool.used = 0;
-}
-
-// Check the `this.start` and `this.end` of stream.
-function checkPosition(pos, name) {
-  if (!Number.isSafeInteger(pos)) {
-    validateNumber(pos, name);
-    if (!Number.isInteger(pos))
-      throw new ERR_OUT_OF_RANGE(name, 'an integer', pos);
-    throw new ERR_OUT_OF_RANGE(name, '>= 0 and <= 2 ** 53 - 1', pos);
-  }
-  if (pos < 0)
-    throw new ERR_OUT_OF_RANGE(name, '>= 0 and <= 2 ** 53 - 1', pos);
-}
-
-function roundUpToMultipleOf8(n) {
-  return (n + 7) & ~7;  // Align to 8 byte boundary.
-}
-
-function ReadStream(sftp, path, options) {
-  if (options === undefined)
-    options = {};
-  else if (typeof options === 'string')
-    options = { encoding: options };
-  else if (options === null || typeof options !== 'object')
-    throw new TypeError('"options" argument must be a string or an object');
-  else
-    options = Object.create(options);
-
-  // A little bit bigger buffer and water marks by default
-  if (options.highWaterMark === undefined)
-    options.highWaterMark = 64 * 1024;
-
-  // For backwards compat do not emit close on destroy.
-  options.emitClose = false;
-
-  ReadableStream.call(this, options);
-
-  this.path = path;
-  this.flags = options.flags === undefined ? 'r' : options.flags;
-  this.mode = options.mode === undefined ? 0o666 : options.mode;
-
-  this.start = options.start;
-  this.end = options.end;
-  this.autoClose = options.autoClose === undefined ? true : options.autoClose;
-  this.pos = 0;
-  this.bytesRead = 0;
-  this.closed = false;
-
-  this.handle = options.handle === undefined ? null : options.handle;
-  this.sftp = sftp;
-  this._opening = false;
-
-  if (this.start !== undefined) {
-    checkPosition(this.start, 'start');
-
-    this.pos = this.start;
-  }
-
-  if (this.end === undefined) {
-    this.end = Infinity;
-  } else if (this.end !== Infinity) {
-    checkPosition(this.end, 'end');
-
-    if (this.start !== undefined && this.start > this.end) {
-      throw new ERR_OUT_OF_RANGE(
-        'start',
-        `<= "end" (here: ${this.end})`,
-        this.start
-      );
-    }
-  }
-
-  this.on('end', function() {
-    if (this.autoClose)
-      this.destroy();
-  });
-
-  if (!Buffer.isBuffer(this.handle))
-    this.open();
-}
-inherits(ReadStream, ReadableStream);
-
-ReadStream.prototype.open = function() {
-  if (this._opening)
-    return;
-
-  this._opening = true;
-
-  this.sftp.open(this.path, this.flags, this.mode, (er, handle) => {
-    this._opening = false;
-
-    if (er) {
-      this.emit('error', er);
-      if (this.autoClose)
-        this.destroy();
-      return;
-    }
-
-    this.handle = handle;
-    this.emit('open', handle);
-    this.emit('ready');
-    // start the flow of data.
-    this.read();
-  });
-};
-
-ReadStream.prototype._read = function(n) {
-  if (!Buffer.isBuffer(this.handle)) {
-    return this.once('open', function() {
-      this._read(n);
-    });
-  }
-
-  // XXX: safe to remove this?
-  if (this.destroyed)
-    return;
-
-  if (!pool || pool.length - pool.used < kMinPoolSpace) {
-    // discard the old pool.
-    allocNewPool(this.readableHighWaterMark
-                 || this._readableState.highWaterMark);
-  }
-
-  // Grab another reference to the pool in the case that while we're
-  // in the thread pool another read() finishes up the pool, and
-  // allocates a new one.
-  var thisPool = pool;
-  var toRead = Math.min(pool.length - pool.used, n);
-  var start = pool.used;
-
-  if (this.end !== undefined)
-    toRead = Math.min(this.end - this.pos + 1, toRead);
-
-  // Already read everything we were supposed to read!
-  // treat as EOF.
-  if (toRead <= 0)
-    return this.push(null);
-
-  // the actual read.
-  this.sftp.readData(this.handle,
-                     pool,
-                     pool.used,
-                     toRead,
-                     this.pos,
-                     (er, bytesRead) => {
-    if (er) {
-      this.emit('error', er);
-      if (this.autoClose)
-        this.destroy();
-      return;
-    }
-    var b = null;
-
-    // Now that we know how much data we have actually read, re-wind the
-    // 'used' field if we can, and otherwise allow the remainder of our
-    // reservation to be used as a new pool later.
-    if (start + toRead === thisPool.used && thisPool === pool) {
-      var newUsed = thisPool.used + bytesRead - toRead;
-      thisPool.used = roundUpToMultipleOf8(newUsed);
-    } else {
-      // Round down to the next lowest multiple of 8 to ensure the new pool
-      // fragment start and end positions are aligned to an 8 byte boundary.
-      var alignedEnd = (start + toRead) & ~7;
-      var alignedStart = roundUpToMultipleOf8(start + bytesRead);
-      if (alignedEnd - alignedStart >= kMinPoolSpace)
-        poolFragments.push(thisPool.slice(alignedStart, alignedEnd));
-    }
-
-    if (bytesRead > 0) {
-      this.bytesRead += bytesRead;
-      b = thisPool.slice(start, start + bytesRead);
-    }
-
-    // Move the pool positions, and internal position for reading.
-    this.pos += bytesRead;
-
-    this.push(b);
-  });
-
-  pool.used = roundUpToMultipleOf8(pool.used + toRead);
-};
-
-if (typeof ReadableStream.prototype.destroy !== 'function')
-  ReadStream.prototype.destroy = destroyImpl;
-
-ReadStream.prototype._destroy = function(err, cb) {
-  if (this._opening && !Buffer.isBuffer(this.handle)) {
-    this.once('open', closeStream.bind(null, this, cb, err));
-    return;
-  }
-
-  closeStream(this, cb, err);
-  this.handle = null;
-  this._opening = false;
-};
-
-function closeStream(stream, cb, err) {
-  if (!stream.handle)
-    return onclose();
-
-  stream.sftp.close(stream.handle, onclose);
-
-  function onclose(er) {
-    er = er || err;
-    cb(er);
-    stream.closed = true;
-    if (!er)
-      stream.emit('close');
-  }
-}
-
-ReadStream.prototype.close = function(cb) {
-  this.destroy(null, cb);
-};
-
-Object.defineProperty(ReadStream.prototype, 'pending', {
-  get() { return this.handle === null; },
-  configurable: true
-});
-
-function WriteStream(sftp, path, options) {
-  if (options === undefined)
-    options = {};
-  else if (typeof options === 'string')
-    options = { encoding: options };
-  else if (options === null || typeof options !== 'object')
-    throw new TypeError('"options" argument must be a string or an object');
-  else
-    options = Object.create(options);
-
-  // For backwards compat do not emit close on destroy.
-  options.emitClose = false;
-
-  WritableStream.call(this, options);
-
-  this.path = path;
-  this.flags = options.flags === undefined ? 'w' : options.flags;
-  this.mode = options.mode === undefined ? 0o666 : options.mode;
-
-  this.start = options.start;
-  this.autoClose = options.autoClose === undefined ? true : options.autoClose;
-  this.pos = 0;
-  this.bytesWritten = 0;
-  this.closed = false;
-
-  this.handle = options.handle === undefined ? null : options.handle;
-  this.sftp = sftp;
-  this._opening = false;
-
-  if (this.start !== undefined) {
-    checkPosition(this.start, 'start');
-
-    this.pos = this.start;
-  }
-
-  if (options.encoding)
-    this.setDefaultEncoding(options.encoding);
-
-  // Node v6.x only
-  this.on('finish', function() {
-    if (this._writableState.finalCalled)
-      return;
-    if (this.autoClose)
-      this.destroy();
-  });
-
-  if (!Buffer.isBuffer(this.handle))
-    this.open();
-}
-inherits(WriteStream, WritableStream);
-
-WriteStream.prototype._final = function(cb) {
-  if (this.autoClose)
-    this.destroy();
-  cb();
-};
-
-WriteStream.prototype.open = function() {
-  if (this._opening)
-    return;
-
-  this._opening = true;
-
-  this.sftp.open(this.path, this.flags, this.mode, (er, handle) => {
-    this._opening = false;
-
-    if (er) {
-      this.emit('error', er);
-      if (this.autoClose)
-        this.destroy();
-      return;
-    }
-
-    this.handle = handle;
-
-    var tryAgain = (err) => {
-      if (err) {
-        // Try chmod() for sftp servers that may not support fchmod() for
-        // whatever reason
-        this.sftp.chmod(this.path, this.mode, (err_) => {
-          tryAgain();
-        });
-        return;
-      }
-
-      // SFTPv3 requires absolute offsets, no matter the open flag used
-      if (this.flags[0] === 'a') {
-        var tryStat = (err, st) => {
-          if (err) {
-            // Try stat() for sftp servers that may not support fstat() for
-            // whatever reason
-            this.sftp.stat(this.path, (err_, st_) => {
-              if (err_) {
-                this.destroy();
-                this.emit('error', err);
-                return;
-              }
-              tryStat(null, st_);
-            });
-            return;
-          }
-
-          this.pos = st.size;
-          this.emit('open', handle);
-          this.emit('ready');
-        };
-
-        this.sftp.fstat(handle, tryStat);
-        return;
-      }
-
-      this.emit('open', handle);
-      this.emit('ready');
-    };
-
-    this.sftp.fchmod(handle, this.mode, tryAgain);
-  });
-};
-
-WriteStream.prototype._write = function(data, encoding, cb) {
-  if (!Buffer.isBuffer(data)) {
-    const err = new ERR_INVALID_ARG_TYPE('data', 'Buffer', data);
-    return this.emit('error', err);
-  }
-
-  if (!Buffer.isBuffer(this.handle)) {
-    return this.once('open', function() {
-      this._write(data, encoding, cb);
-    });
-  }
-
-  this.sftp.writeData(this.handle,
-                      data,
-                      0,
-                      data.length,
-                      this.pos,
-                      (er, bytes) => {
-    if (er) {
-      if (this.autoClose)
-        this.destroy();
-      return cb(er);
-    }
-    this.bytesWritten += bytes;
-    cb();
-  });
-
-  this.pos += data.length;
-};
-
-WriteStream.prototype._writev = function(data, cb) {
-  if (!Buffer.isBuffer(this.handle)) {
-    return this.once('open', function() {
-      this._writev(data, cb);
-    });
-  }
-
-  var sftp = this.sftp;
-  var handle = this.handle;
-  var writesLeft = data.length;
-
-  var onwrite = (er, bytes) => {
-    if (er) {
-      this.destroy();
-      return cb(er);
-    }
-    this.bytesWritten += bytes;
-    if (--writesLeft === 0)
-      cb();
-  };
-
-  // TODO: try to combine chunks to reduce number of requests to the server
-  for (var i = 0; i < data.length; ++i) {
-    var chunk = data[i].chunk;
-
-    sftp.writeData(handle, chunk, 0, chunk.length, this.pos, onwrite);
-    this.pos += chunk.length;
-  }
-};
-
-if (typeof WritableStream.prototype.destroy !== 'function')
-  WriteStream.prototype.destroy = ReadStream.prototype.destroy;
-
-WriteStream.prototype._destroy = ReadStream.prototype._destroy;
-WriteStream.prototype.close = function(cb) {
-  if (cb) {
-    if (this.closed) {
-      process.nextTick(cb);
-      return;
-    } else {
-      this.on('close', cb);
-    }
-  }
-
-  // If we are not autoClosing, we should call
-  // destroy on 'finish'.
-  if (!this.autoClose)
-    this.on('finish', this.destroy.bind(this));
-
-  this.end();
-};
-
-// There is no shutdown() for files.
-WriteStream.prototype.destroySoon = WriteStream.prototype.end;
-
-Object.defineProperty(WriteStream.prototype, 'pending', {
-  get() { return this.handle === null; },
-  configurable: true
-});
-
-module.exports = SFTPStream;
-
-
-
-/***/ }),
-
-/***/ 1788:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-// TODO: * Automatic re-key every (configurable) n bytes or length of time
-//         - RFC suggests every 1GB of transmitted data or 1 hour, whichever
-//           comes sooner
-//       * Filter control codes from strings
-//         (as per http://tools.ietf.org/html/rfc4251#section-9.2)
-
-var crypto = __nccwpck_require__(6113);
-var zlib = __nccwpck_require__(9796);
-var TransformStream = (__nccwpck_require__(2781).Transform);
-var inherits = (__nccwpck_require__(3837).inherits);
-var inspect = (__nccwpck_require__(3837).inspect);
-
-var StreamSearch = __nccwpck_require__(2405);
-var Ber = (__nccwpck_require__(970).Ber);
-
-var readUInt32BE = (__nccwpck_require__(9419).readUInt32BE);
-var writeUInt32BE = (__nccwpck_require__(9419).writeUInt32BE);
-var consts = __nccwpck_require__(4617);
-var utils = __nccwpck_require__(4928);
-var iv_inc = utils.iv_inc;
-var readString = utils.readString;
-var readInt = utils.readInt;
-var DSASigBERToBare = utils.DSASigBERToBare;
-var ECDSASigASN1ToSSH = utils.ECDSASigASN1ToSSH;
-var sigSSHToASN1 = utils.sigSSHToASN1;
-var parseDERKey = (__nccwpck_require__(8820).parseDERKey);
-
-var CIPHER_INFO = consts.CIPHER_INFO;
-var HMAC_INFO = consts.HMAC_INFO;
-var MESSAGE = consts.MESSAGE;
-var DYNAMIC_KEXDH_MESSAGE = consts.DYNAMIC_KEXDH_MESSAGE;
-var KEXDH_MESSAGE = consts.KEXDH_MESSAGE;
-var ALGORITHMS = consts.ALGORITHMS;
-var DISCONNECT_REASON = consts.DISCONNECT_REASON;
-var CHANNEL_OPEN_FAILURE = consts.CHANNEL_OPEN_FAILURE;
-var SSH_TO_OPENSSL = consts.SSH_TO_OPENSSL;
-var TERMINAL_MODE = consts.TERMINAL_MODE;
-var SIGNALS = consts.SIGNALS;
-var EDDSA_SUPPORTED = consts.EDDSA_SUPPORTED;
-var CURVE25519_SUPPORTED = consts.CURVE25519_SUPPORTED;
-var BUGS = consts.BUGS;
-var BUGGY_IMPLS = consts.BUGGY_IMPLS;
-var BUGGY_IMPLS_LEN = BUGGY_IMPLS.length;
-var MODULE_VER = (__nccwpck_require__(9186)/* .version */ .i8);
-var I = 0;
-var IN_INIT = I++;
-var IN_GREETING = I++;
-var IN_HEADER = I++;
-var IN_PACKETBEFORE = I++;
-var IN_PACKET = I++;
-var IN_PACKETDATA = I++;
-var IN_PACKETDATAVERIFY = I++;
-var IN_PACKETDATAAFTER = I++;
-var OUT_INIT = I++;
-var OUT_READY = I++;
-var OUT_REKEYING = I++;
-var MAX_SEQNO = 4294967295;
-var MAX_PACKET_SIZE = 35000;
-var MAX_PACKETS_REKEYING = 50;
-var EXP_TYPE_HEADER = 0;
-var EXP_TYPE_LF = 1;
-var EXP_TYPE_BYTES = 2; // Waits until n bytes have been seen
-var Z_PARTIAL_FLUSH = zlib.Z_PARTIAL_FLUSH;
-var ZLIB_OPTS = { flush: Z_PARTIAL_FLUSH };
-
-var RE_NULL = /\x00/g;
-
-var IDENT_PREFIX_BUFFER = Buffer.from('SSH-');
-var EMPTY_BUFFER = Buffer.allocUnsafe(0);
-var HMAC_COMPUTE = Buffer.allocUnsafe(9);
-var PING_PACKET = Buffer.from([
-  MESSAGE.GLOBAL_REQUEST,
-  // "keepalive@openssh.com"
-  0, 0, 0, 21,
-    107, 101, 101, 112, 97, 108, 105, 118, 101, 64, 111, 112, 101, 110, 115,
-    115, 104, 46, 99, 111, 109,
-  // Request a reply
-  1
-]);
-var NEWKEYS_PACKET = Buffer.from([MESSAGE.NEWKEYS]);
-var USERAUTH_SUCCESS_PACKET = Buffer.from([MESSAGE.USERAUTH_SUCCESS]);
-var REQUEST_SUCCESS_PACKET = Buffer.from([MESSAGE.REQUEST_SUCCESS]);
-var REQUEST_FAILURE_PACKET = Buffer.from([MESSAGE.REQUEST_FAILURE]);
-var NO_TERMINAL_MODES_BUFFER = Buffer.from([TERMINAL_MODE.TTY_OP_END]);
-var KEXDH_GEX_REQ_PACKET = Buffer.from([
-  MESSAGE.KEXDH_GEX_REQUEST,
-  // Minimal size in bits of an acceptable group
-  0, 0, 4, 0, // 1024, modp2
-  // Preferred size in bits of the group the server will send
-  0, 0, 16, 0, // 4096, modp16
-  // Maximal size in bits of an acceptable group
-  0, 0, 32, 0 // 8192, modp18
-]);
-
-function DEBUG_NOOP(msg) {}
-
-function SSH2Stream(cfg) {
-  if (typeof cfg !== 'object' || cfg === null)
-    cfg = {};
-
-  TransformStream.call(this, {
-    highWaterMark: (typeof cfg.highWaterMark === 'number'
-                    ? cfg.highWaterMark
-                    : 32 * 1024)
-  });
-
-  this._needContinue = false;
-  this.bytesSent = this.bytesReceived = 0;
-  this.debug = (typeof cfg.debug === 'function' ? cfg.debug : DEBUG_NOOP);
-  this.server = (cfg.server === true);
-  this.maxPacketSize = (typeof cfg.maxPacketSize === 'number'
-                        ? cfg.maxPacketSize
-                        : MAX_PACKET_SIZE);
-  // Bitmap that indicates any bugs the remote side has. This is determined
-  // by the reported software version.
-  this.remoteBugs = 0;
-
-  if (this.server) {
-    // TODO: Remove when we support group exchange for server implementation
-    this.remoteBugs = BUGS.BAD_DHGEX;
-  }
-
-  this.readable = true;
-
-  var self = this;
-
-  var hostKeys = cfg.hostKeys;
-  if (this.server && (typeof hostKeys !== 'object' || hostKeys === null))
-    throw new Error('hostKeys must be an object keyed on host key type');
-
-  this.config = {
-    // Server
-    hostKeys: hostKeys, // All keys supported by server
-
-    // Client/Server
-    ident: 'SSH-2.0-'
-           + (cfg.ident
-              || ('ssh2js' + MODULE_VER + (this.server ? 'srv' : ''))),
-    algorithms: {
-      kex: ALGORITHMS.KEX,
-      kexBuf: ALGORITHMS.KEX_BUF,
-      serverHostKey: ALGORITHMS.SERVER_HOST_KEY,
-      serverHostKeyBuf: ALGORITHMS.SERVER_HOST_KEY_BUF,
-      cipher: ALGORITHMS.CIPHER,
-      cipherBuf: ALGORITHMS.CIPHER_BUF,
-      hmac: ALGORITHMS.HMAC,
-      hmacBuf: ALGORITHMS.HMAC_BUF,
-      compress: ALGORITHMS.COMPRESS,
-      compressBuf: ALGORITHMS.COMPRESS_BUF
-    }
-  };
-  // RFC 4253 states the identification string must not contain NULL
-  this.config.ident.replace(RE_NULL, '');
-
-  if (this.config.ident.length + 2 /* Account for "\r\n" */ > 255)
-    throw new Error('ident too long');
-
-  if (typeof cfg.algorithms === 'object' && cfg.algorithms !== null) {
-    var algos = cfg.algorithms;
-    if (Array.isArray(algos.kex) && algos.kex.length > 0) {
-      this.config.algorithms.kex = algos.kex;
-      if (!Buffer.isBuffer(algos.kexBuf))
-        algos.kexBuf = Buffer.from(algos.kex.join(','), 'ascii');
-      this.config.algorithms.kexBuf = algos.kexBuf;
-    }
-    if (Array.isArray(algos.serverHostKey) && algos.serverHostKey.length > 0) {
-      this.config.algorithms.serverHostKey = algos.serverHostKey;
-      if (!Buffer.isBuffer(algos.serverHostKeyBuf)) {
-        algos.serverHostKeyBuf = Buffer.from(algos.serverHostKey.join(','),
-                                             'ascii');
-      }
-      this.config.algorithms.serverHostKeyBuf = algos.serverHostKeyBuf;
-    }
-    if (Array.isArray(algos.cipher) && algos.cipher.length > 0) {
-      this.config.algorithms.cipher = algos.cipher;
-      if (!Buffer.isBuffer(algos.cipherBuf))
-        algos.cipherBuf = Buffer.from(algos.cipher.join(','), 'ascii');
-      this.config.algorithms.cipherBuf = algos.cipherBuf;
-    }
-    if (Array.isArray(algos.hmac) && algos.hmac.length > 0) {
-      this.config.algorithms.hmac = algos.hmac;
-      if (!Buffer.isBuffer(algos.hmacBuf))
-        algos.hmacBuf = Buffer.from(algos.hmac.join(','), 'ascii');
-      this.config.algorithms.hmacBuf = algos.hmacBuf;
-    }
-    if (Array.isArray(algos.compress) && algos.compress.length > 0) {
-      this.config.algorithms.compress = algos.compress;
-      if (!Buffer.isBuffer(algos.compressBuf))
-        algos.compressBuf = Buffer.from(algos.compress.join(','), 'ascii');
-      this.config.algorithms.compressBuf = algos.compressBuf;
-    }
-  }
-
-  this.reset(true);
-
-  // Common events
-  this.on('end', function() {
-    // Let GC collect any Buffers we were previously storing
-    self.readable = false;
-    self._state = undefined;
-    self.reset();
-    self._state.outgoing.bufSeqno = undefined;
-  });
-  this.on('DISCONNECT', function(reason, code, desc, lang) {
-    onDISCONNECT(self, reason, code, desc, lang);
-  });
-  this.on('KEXINIT', function(init, firstFollows) {
-    onKEXINIT(self, init, firstFollows);
-  });
-  this.on('NEWKEYS', function() { onNEWKEYS(self); });
-
-  if (this.server) {
-    // Server-specific events
-    this.on('KEXDH_INIT', function(e) { onKEXDH_INIT(self, e); });
-  } else {
-    // Client-specific events
-    this.on('KEXDH_REPLY', function(info) { onKEXDH_REPLY(self, info); })
-        .on('KEXDH_GEX_GROUP',
-            function(prime, gen) { onKEXDH_GEX_GROUP(self, prime, gen); });
-  }
-
-  if (this.server) {
-    // Greeting displayed before the ssh identification string is sent, this is
-    // usually ignored by most clients
-    if (typeof cfg.greeting === 'string' && cfg.greeting.length) {
-      if (cfg.greeting.slice(-2) === '\r\n')
-        this.push(cfg.greeting);
-      else
-        this.push(cfg.greeting + '\r\n');
-    }
-    // Banner shown after the handshake completes, but before user
-    // authentication begins
-    if (typeof cfg.banner === 'string' && cfg.banner.length) {
-      if (cfg.banner.slice(-2) === '\r\n')
-        this.banner = cfg.banner;
-      else
-        this.banner = cfg.banner + '\r\n';
-    }
-  }
-  this.debug('DEBUG: Local ident: ' + inspect(this.config.ident));
-  this.push(this.config.ident + '\r\n');
-
-  this._state.incoming.expectedPacket = 'KEXINIT';
-}
-inherits(SSH2Stream, TransformStream);
-
-SSH2Stream.prototype.__read = TransformStream.prototype._read;
-SSH2Stream.prototype._read = function(n) {
-  if (this._needContinue) {
-    this._needContinue = false;
-    this.emit('continue');
-  }
-  return this.__read(n);
-};
-SSH2Stream.prototype.__push = TransformStream.prototype.push;
-SSH2Stream.prototype.push = function(chunk, encoding) {
-  var ret = this.__push(chunk, encoding);
-  this._needContinue = (ret === false);
-  return ret;
-};
-
-SSH2Stream.prototype._cleanup = function(callback) {
-  this.reset();
-  this.debug('DEBUG: Parser: Malformed packet');
-  callback && callback(new Error('Malformed packet'));
-};
-
-SSH2Stream.prototype._transform = function(chunk, encoding, callback, decomp) {
-  var skipDecrypt = false;
-  var decryptAuthMode = false;
-  var state = this._state;
-  var instate = state.incoming;
-  var outstate = state.outgoing;
-  var expect = instate.expect;
-  var decrypt = instate.decrypt;
-  var decompress = instate.decompress;
-  var chlen = chunk.length;
-  var chleft = 0;
-  var debug = this.debug;
-  var self = this;
-  var i = 0;
-  var p = i;
-  var blockLen;
-  var buffer;
-  var buf;
+StringDecoder.prototype.write = function (buf) {
+  if (buf.length === 0) return '';
   var r;
-
-  this.bytesReceived += chlen;
-
-  while (true) {
-    if (expect.type !== undefined) {
-      if (i >= chlen)
-        break;
-      if (expect.type === EXP_TYPE_BYTES) {
-        chleft = (chlen - i);
-        var pktLeft = (expect.buf.length - expect.ptr);
-        if (pktLeft <= chleft) {
-          chunk.copy(expect.buf, expect.ptr, i, i + pktLeft);
-          i += pktLeft;
-          buffer = expect.buf;
-          expect.buf = undefined;
-          expect.ptr = 0;
-          expect.type = undefined;
-        } else {
-          chunk.copy(expect.buf, expect.ptr, i);
-          expect.ptr += chleft;
-          i += chleft;
-        }
-        continue;
-      } else if (expect.type === EXP_TYPE_HEADER) {
-        i += instate.search.push(chunk);
-        if (expect.type !== undefined)
-          continue;
-      } else if (expect.type === EXP_TYPE_LF) {
-        if (++expect.ptr + 4 /* Account for "SSH-" */ > 255) {
-          this.reset();
-          debug('DEBUG: Parser: Identification string exceeded 255 characters');
-          return callback(new Error('Max identification string size exceeded'));
-        }
-        if (chunk[i] === 0x0A) {
-          expect.type = undefined;
-          if (p < i) {
-            if (expect.buf === undefined)
-              expect.buf = chunk.toString('ascii', p, i);
-            else
-              expect.buf += chunk.toString('ascii', p, i);
-          }
-          buffer = expect.buf;
-          expect.buf = undefined;
-          ++i;
-        } else {
-          if (++i === chlen && p < i) {
-            if (expect.buf === undefined)
-              expect.buf = chunk.toString('ascii', p, i);
-            else
-              expect.buf += chunk.toString('ascii', p, i);
-          }
-          continue;
-        }
-      }
-    }
-
-    if (instate.status === IN_INIT) {
-      if (!this.readable)
-        return callback();
-      if (this.server) {
-        // Retrieve what should be the start of the protocol version exchange
-        if (!buffer) {
-          debug('DEBUG: Parser: IN_INIT (waiting for identification begin)');
-          expectData(this, EXP_TYPE_BYTES, 4);
-        } else {
-          if (buffer[0] === 0x53       // S
-              && buffer[1] === 0x53    // S
-              && buffer[2] === 0x48    // H
-              && buffer[3] === 0x2D) { // -
-            instate.status = IN_GREETING;
-            debug('DEBUG: Parser: IN_INIT (waiting for rest of identification)');
-          } else {
-            this.reset();
-            debug('DEBUG: Parser: Bad identification start');
-            return callback(new Error('Bad identification start'));
-          }
-        }
-      } else {
-        debug('DEBUG: Parser: IN_INIT');
-        // Retrieve any bytes that may come before the protocol version exchange
-        var ss = instate.search = new StreamSearch(IDENT_PREFIX_BUFFER);
-        ss.on('info', function onInfo(matched, data, start, end) {
-          if (data) {
-            if (instate.greeting === undefined)
-              instate.greeting = data.toString('binary', start, end);
-            else
-              instate.greeting += data.toString('binary', start, end);
-          }
-          if (matched) {
-            expect.type = undefined;
-            instate.search.removeListener('info', onInfo);
-          }
-        });
-        ss.maxMatches = 1;
-        expectData(this, EXP_TYPE_HEADER);
-        instate.status = IN_GREETING;
-      }
-    } else if (instate.status === IN_GREETING) {
-      debug('DEBUG: Parser: IN_GREETING');
-      instate.search = undefined;
-      // Retrieve the identification bytes after the "SSH-" header
-      p = i;
-      expectData(this, EXP_TYPE_LF);
-      instate.status = IN_HEADER;
-    } else if (instate.status === IN_HEADER) {
-      debug('DEBUG: Parser: IN_HEADER');
-      if (buffer.charCodeAt(buffer.length - 1) === 13)
-        buffer = buffer.slice(0, -1);
-      var idxDash = buffer.indexOf('-');
-      var idxSpace = buffer.indexOf(' ');
-      var header = {
-        // RFC says greeting SHOULD be utf8
-        greeting: instate.greeting,
-        identRaw: 'SSH-' + buffer,
-        versions: {
-          protocol: buffer.substr(0, idxDash),
-          software: (idxSpace === -1
-                     ? buffer.substring(idxDash + 1)
-                     : buffer.substring(idxDash + 1, idxSpace))
-        },
-        comments: (idxSpace > -1 ? buffer.substring(idxSpace + 1) : undefined)
-      };
-      instate.greeting = undefined;
-
-      if (header.versions.protocol !== '1.99'
-          && header.versions.protocol !== '2.0') {
-        this.reset();
-        debug('DEBUG: Parser: protocol version not supported: '
-              + header.versions.protocol);
-        return callback(new Error('Protocol version not supported'));
-      } else
-        this.emit('header', header);
-
-      if (instate.status === IN_INIT) {
-        // We reset from an event handler, possibly due to an unsupported SSH
-        // protocol version?
-        return;
-      }
-
-      var identRaw = header.identRaw;
-      var software = header.versions.software;
-      this.debug('DEBUG: Remote ident: ' + inspect(identRaw));
-      for (var j = 0, rule; j < BUGGY_IMPLS_LEN; ++j) {
-        rule = BUGGY_IMPLS[j];
-        if (typeof rule[0] === 'string') {
-          if (software === rule[0])
-            this.remoteBugs |= rule[1];
-        } else if (rule[0].test(software))
-          this.remoteBugs |= rule[1];
-      }
-      instate.identRaw = identRaw;
-      // Adjust bytesReceived first otherwise it will have an incorrectly larger
-      // total when we call back into this function after completing KEXINIT
-      this.bytesReceived -= (chlen - i);
-      KEXINIT(this, function() {
-        if (i === chlen)
-          callback();
-        else
-          self._transform(chunk.slice(i), encoding, callback);
-      });
-      instate.status = IN_PACKETBEFORE;
-      return;
-    } else if (instate.status === IN_PACKETBEFORE) {
-      blockLen = (decrypt.instance ? decrypt.info.blockLen : 8);
-      debug('DEBUG: Parser: IN_PACKETBEFORE (expecting ' + blockLen + ')');
-      // Wait for the right number of bytes so we can determine the incoming
-      // packet length
-      expectData(this, EXP_TYPE_BYTES, blockLen, decrypt.buf);
-      instate.status = IN_PACKET;
-    } else if (instate.status === IN_PACKET) {
-      debug('DEBUG: Parser: IN_PACKET');
-      if (decrypt.instance) {
-        decryptAuthMode = (decrypt.info.authLen > 0);
-        if (!decryptAuthMode)
-          buffer = decryptData(this, buffer);
-        blockLen = decrypt.info.blockLen;
-      } else {
-        decryptAuthMode = false;
-        blockLen = 8;
-      }
-
-      r = readInt(buffer, 0, this, callback);
-      if (r === false)
-        return;
-      var hmacInfo = instate.hmac.info;
-      var macSize;
-      if (hmacInfo)
-        macSize = hmacInfo.actualLen;
-      else
-        macSize = 0;
-      var fullPacketLen = r + 4 + macSize;
-      var maxPayloadLen = this.maxPacketSize;
-      if (decompress.instance) {
-        // Account for compressed payloads
-        // This formula is taken from dropbear which derives it from zlib's
-        // documentation. Explanation from dropbear:
-        /* For exact details see http://www.zlib.net/zlib_tech.html
-         * 5 bytes per 16kB block, plus 6 bytes for the stream.
-         * We might allocate 5 unnecessary bytes here if it's an
-         * exact multiple. */
-        maxPayloadLen += (((this.maxPacketSize / 16384) + 1) * 5 + 6);
-      }
-      if (r > maxPayloadLen
-          // TODO: Change 16 to "MAX(16, decrypt.info.blockLen)" when/if SSH2
-          // adopts 512-bit ciphers
-          || fullPacketLen < (16 + macSize)
-          || ((r + (decryptAuthMode ? 0 : 4)) % blockLen) !== 0) {
-        this.disconnect(DISCONNECT_REASON.PROTOCOL_ERROR);
-        debug('DEBUG: Parser: Bad packet length (' + fullPacketLen + ')');
-        return callback(new Error('Bad packet length'));
-      }
-
-      instate.pktLen = r;
-      var remainLen = instate.pktLen + 4 - blockLen;
-      if (decryptAuthMode) {
-        decrypt.instance.setAAD(buffer.slice(0, 4));
-        debug('DEBUG: Parser: pktLen:'
-              + instate.pktLen
-              + ',remainLen:'
-              + remainLen);
-      } else {
-        instate.padLen = buffer[4];
-        debug('DEBUG: Parser: pktLen:'
-              + instate.pktLen
-              + ',padLen:'
-              + instate.padLen
-              + ',remainLen:'
-              + remainLen);
-      }
-      if (remainLen > 0) {
-        if (decryptAuthMode)
-          instate.pktExtra = buffer.slice(4);
-        else
-          instate.pktExtra = buffer.slice(5);
-        // Grab the rest of the packet
-        expectData(this, EXP_TYPE_BYTES, remainLen);
-        instate.status = IN_PACKETDATA;
-      } else if (remainLen < 0)
-        instate.status = IN_PACKETBEFORE;
-      else {
-        // Entire message fit into one block
-        skipDecrypt = true;
-        instate.status = IN_PACKETDATA;
-        continue;
-      }
-    } else if (instate.status === IN_PACKETDATA) {
-      debug('DEBUG: Parser: IN_PACKETDATA');
-      if (decrypt.instance) {
-        decryptAuthMode = (decrypt.info.authLen > 0);
-        if (!skipDecrypt) {
-          if (!decryptAuthMode)
-            buffer = decryptData(this, buffer);
-        } else {
-          skipDecrypt = false;
-        }
-      } else {
-        decryptAuthMode = false;
-        skipDecrypt = false;
-      }
-      var padStart = instate.pktLen - instate.padLen - 1;
-      // TODO: Allocate a Buffer once that is slightly larger than maxPacketSize
-      // (to accommodate for packet length field and MAC) and re-use that
-      // instead
-      if (instate.pktExtra) {
-        buf = Buffer.allocUnsafe(instate.pktExtra.length + buffer.length);
-        instate.pktExtra.copy(buf);
-        buffer.copy(buf, instate.pktExtra.length);
-        instate.payload = buf.slice(0, padStart);
-      } else {
-        // Entire message fit into one block
-        if (decryptAuthMode)
-          buf = buffer.slice(4);
-        else
-          buf = buffer.slice(5);
-        instate.payload = buffer.slice(5, 5 + padStart);
-      }
-      if (instate.hmac.info !== undefined) {
-        // Wait for hmac hash
-        var inHMACSize = decrypt.info.authLen || instate.hmac.info.actualLen;
-        debug('DEBUG: Parser: HMAC size:' + inHMACSize);
-        expectData(this, EXP_TYPE_BYTES, inHMACSize, instate.hmac.buf);
-        instate.status = IN_PACKETDATAVERIFY;
-        instate.packet = buf;
-      } else
-        instate.status = IN_PACKETDATAAFTER;
-      instate.pktExtra = undefined;
-      buf = undefined;
-    } else if (instate.status === IN_PACKETDATAVERIFY) {
-      debug('DEBUG: Parser: IN_PACKETDATAVERIFY');
-      // Verify packet data integrity
-      if (hmacVerify(this, buffer)) {
-        debug('DEBUG: Parser: IN_PACKETDATAVERIFY (Valid HMAC)');
-        instate.status = IN_PACKETDATAAFTER;
-        instate.packet = undefined;
-      } else {
-        this.reset();
-        debug('DEBUG: Parser: IN_PACKETDATAVERIFY (Invalid HMAC)');
-        return callback(new Error('Invalid HMAC'));
-      }
-    } else if (instate.status === IN_PACKETDATAAFTER) {
-      if (decompress.instance) {
-        if (!decomp) {
-          debug('DEBUG: Parser: Decompressing');
-          decompress.instance.write(instate.payload);
-          var decompBuf = [];
-          var decompBufLen = 0;
-          decompress.instance.on('readable', function() {
-            var buf;
-            while (buf = this.read()) {
-              decompBuf.push(buf);
-              decompBufLen += buf.length;
-            }
-          }).flush(Z_PARTIAL_FLUSH, function() {
-            decompress.instance.removeAllListeners('readable');
-            if (decompBuf.length === 1)
-              instate.payload = decompBuf[0];
-            else
-              instate.payload = Buffer.concat(decompBuf, decompBufLen);
-            decompBuf = null;
-            var nextSlice;
-            if (i === chlen)
-              nextSlice = EMPTY_BUFFER; // Avoid slicing a zero-length buffer
-            else
-              nextSlice = chunk.slice(i);
-            self._transform(nextSlice, encoding, callback, true);
-          });
-          return;
-        } else {
-          // Make sure we reset this after this first time in the loop,
-          // otherwise we could end up trying to interpret as-is another
-          // compressed packet that is within the same chunk
-          decomp = false;
-        }
-      }
-
-      this.emit('packet');
-
-      var ptype = instate.payload[0];
-
-      if (debug !== DEBUG_NOOP) {
-        var msgPacket = 'DEBUG: Parser: IN_PACKETDATAAFTER, packet: ';
-        var authMethod = state.authsQueue[0];
-        var msgPktType = null;
-
-        if (outstate.status === OUT_REKEYING
-            && !(ptype <= 4 || (ptype >= 20 && ptype <= 49)))
-          msgPacket += '(enqueued) ';
-
-        if (ptype === MESSAGE.KEXDH_INIT) {
-          switch (state.kex.type) {
-            case 'group':
-              msgPktType = 'KEXDH_INIT';
-              break;
-            case 'groupex':
-              msgPktType = 'KEXDH_GEX_REQUEST';
-              break;
-            default:
-              msgPktType = 'KEXECDH_INIT';
-          }
-        } else if (ptype === MESSAGE.KEXDH_REPLY) {
-          switch (state.kex.type) {
-            case 'group':
-              msgPktType = 'KEXDH_REPLY';
-              break;
-            case 'groupex':
-              msgPktType = 'KEXDH_GEX_GROUP';
-              break;
-            default:
-              msgPktType = 'KEXECDH_REPLY';
-          }
-        } else if (ptype === MESSAGE.KEXDH_GEX_GROUP) {
-          msgPktType = 'KEXDH_GEX_GROUP';
-        } else if (ptype === MESSAGE.KEXDH_GEX_REPLY) {
-          msgPktType = 'KEXDH_GEX_REPLY';
-        } else if (ptype === 60) {
-          if (authMethod === 'password')
-            msgPktType = 'USERAUTH_PASSWD_CHANGEREQ';
-          else if (authMethod === 'keyboard-interactive')
-            msgPktType = 'USERAUTH_INFO_REQUEST';
-          else if (authMethod === 'publickey')
-            msgPktType = 'USERAUTH_PK_OK';
-          else
-            msgPktType = 'UNKNOWN PACKET 60';
-        } else if (ptype === 61) {
-          if (authMethod === 'keyboard-interactive')
-            msgPktType = 'USERAUTH_INFO_RESPONSE';
-          else
-            msgPktType = 'UNKNOWN PACKET 61';
-        }
-
-        if (msgPktType === null)
-          msgPktType = MESSAGE[ptype];
-
-        // Don't write debug output for messages we custom make in parsePacket()
-        if (ptype !== MESSAGE.CHANNEL_OPEN
-            && ptype !== MESSAGE.CHANNEL_REQUEST
-            && ptype !== MESSAGE.CHANNEL_SUCCESS
-            && ptype !== MESSAGE.CHANNEL_FAILURE
-            && ptype !== MESSAGE.CHANNEL_EOF
-            && ptype !== MESSAGE.CHANNEL_CLOSE
-            && ptype !== MESSAGE.CHANNEL_DATA
-            && ptype !== MESSAGE.CHANNEL_EXTENDED_DATA
-            && ptype !== MESSAGE.CHANNEL_WINDOW_ADJUST
-            && ptype !== MESSAGE.DISCONNECT
-            && ptype !== MESSAGE.USERAUTH_REQUEST
-            && ptype !== MESSAGE.GLOBAL_REQUEST)
-          debug(msgPacket + msgPktType);
-      }
-
-      // Only parse packet if we are not re-keying or the packet is not a
-      // transport layer packet needed for re-keying
-      if (outstate.status === OUT_READY
-          || ptype <= 4
-          || (ptype >= 20 && ptype <= 49)) {
-        if (parsePacket(this, callback) === false)
-          return;
-
-        if (instate.status === IN_INIT) {
-          // We were reset due to some error/disagreement ?
-          return;
-        }
-      } else if (outstate.status === OUT_REKEYING) {
-        if (instate.rekeyQueue.length === MAX_PACKETS_REKEYING) {
-          debug('DEBUG: Parser: Max incoming re-key queue length reached');
-          this.disconnect(DISCONNECT_REASON.PROTOCOL_ERROR);
-          return callback(
-            new Error('Incoming re-key queue length limit reached')
-          );
-        }
-
-        // Make sure to record the sequence number in case we need it later on
-        // when we drain the queue (e.g. unknown packet)
-        var seqno = instate.seqno;
-        if (++instate.seqno > MAX_SEQNO)
-          instate.seqno = 0;
-
-        instate.rekeyQueue.push([seqno, instate.payload]);
-      }
-
-      instate.status = IN_PACKETBEFORE;
-      instate.payload = undefined;
-    }
-    if (buffer !== undefined)
-      buffer = undefined;
-  }
-
-  callback();
-};
-
-SSH2Stream.prototype.reset = function(noend) {
-  if (this._state) {
-    var state = this._state;
-    state.incoming.status = IN_INIT;
-    state.outgoing.status = OUT_INIT;
-  } else {
-    this._state = {
-      authsQueue: [],
-      hostkeyFormat: undefined,
-      kex: undefined,
-
-      incoming: {
-        status: IN_INIT,
-        expectedPacket: undefined,
-        search: undefined,
-        greeting: undefined,
-        seqno: 0,
-        pktLen: undefined,
-        padLen: undefined,
-        pktExtra: undefined,
-        payload: undefined,
-        packet: undefined,
-        kexinit: undefined,
-        identRaw: undefined,
-        rekeyQueue: [],
-        ignoreNext: false,
-
-        expect: {
-          amount: undefined,
-          type: undefined,
-          ptr: 0,
-          buf: undefined
-        },
-
-        decrypt: {
-          instance: false,
-          info: undefined,
-          iv: undefined,
-          key: undefined,
-          buf: undefined,
-          type: undefined
-        },
-
-        hmac: {
-          info: undefined,
-          key: undefined,
-          buf: undefined,
-          type: false
-        },
-
-        decompress: {
-          instance: false,
-          type: false
-        }
-      },
-
-      outgoing: {
-        status: OUT_INIT,
-        seqno: 0,
-        bufSeqno: Buffer.allocUnsafe(4),
-        rekeyQueue: [],
-        kexinit: undefined,
-        kexsecret: undefined,
-        pubkey: undefined,
-        exchangeHash: undefined,
-        sessionId: undefined,
-        sentNEWKEYS: false,
-
-        encrypt: {
-          instance: false,
-          info: undefined,
-          iv: undefined,
-          key: undefined,
-          type: undefined
-        },
-
-        hmac: {
-          info: undefined,
-          key: undefined,
-          buf: undefined,
-          type: false
-        },
-
-        compress: {
-          instance: false,
-          type: false,
-          queue: null
-        }
-      }
-    };
-  }
-  if (!noend) {
-    if (this.readable)
-      this.push(null);
-  }
-};
-
-// Common methods
-// Global
-SSH2Stream.prototype.disconnect = function(reason) {
-  /*
-    byte      SSH_MSG_DISCONNECT
-    uint32    reason code
-    string    description in ISO-10646 UTF-8 encoding
-    string    language tag
-  */
-  var buf = Buffer.alloc(1 + 4 + 4 + 4);
-
-  buf[0] = MESSAGE.DISCONNECT;
-
-  if (DISCONNECT_REASON[reason] === undefined)
-    reason = DISCONNECT_REASON.BY_APPLICATION;
-  writeUInt32BE(buf, reason, 1);
-
-  this.debug('DEBUG: Outgoing: Writing DISCONNECT ('
-             + DISCONNECT_REASON[reason]
-             + ')');
-  send(this, buf);
-  this.reset();
-
-  return false;
-};
-SSH2Stream.prototype.ping = function() {
-  this.debug('DEBUG: Outgoing: Writing ping (GLOBAL_REQUEST: keepalive@openssh.com)');
-  return send(this, PING_PACKET);
-};
-SSH2Stream.prototype.rekey = function() {
-  var status = this._state.outgoing.status;
-  if (status === OUT_REKEYING)
-    throw new Error('A re-key is already in progress');
-  else if (status !== OUT_READY)
-    throw new Error('Cannot re-key yet');
-
-  this.debug('DEBUG: Outgoing: Starting re-key');
-  return KEXINIT(this);
-};
-
-// 'ssh-connection' service-specific
-SSH2Stream.prototype.requestSuccess = function(data) {
-  var buf;
-  if (Buffer.isBuffer(data)) {
-    buf = Buffer.allocUnsafe(1 + data.length);
-
-    buf[0] = MESSAGE.REQUEST_SUCCESS;
-
-    data.copy(buf, 1);
-  } else
-    buf = REQUEST_SUCCESS_PACKET;
-
-  this.debug('DEBUG: Outgoing: Writing REQUEST_SUCCESS');
-  return send(this, buf);
-};
-SSH2Stream.prototype.requestFailure = function() {
-  this.debug('DEBUG: Outgoing: Writing REQUEST_FAILURE');
-  return send(this, REQUEST_FAILURE_PACKET);
-};
-SSH2Stream.prototype.channelSuccess = function(chan) {
-  // Does not consume window space
-  var buf = Buffer.allocUnsafe(1 + 4);
-
-  buf[0] = MESSAGE.CHANNEL_SUCCESS;
-
-  writeUInt32BE(buf, chan, 1);
-
-  this.debug('DEBUG: Outgoing: Writing CHANNEL_SUCCESS (' + chan + ')');
-  return send(this, buf);
-};
-SSH2Stream.prototype.channelFailure = function(chan) {
-  // Does not consume window space
-  var buf = Buffer.allocUnsafe(1 + 4);
-
-  buf[0] = MESSAGE.CHANNEL_FAILURE;
-
-  writeUInt32BE(buf, chan, 1);
-
-  this.debug('DEBUG: Outgoing: Writing CHANNEL_FAILURE (' + chan + ')');
-  return send(this, buf);
-};
-SSH2Stream.prototype.channelEOF = function(chan) {
-  // Does not consume window space
-  var buf = Buffer.allocUnsafe(1 + 4);
-
-  buf[0] = MESSAGE.CHANNEL_EOF;
-
-  writeUInt32BE(buf, chan, 1);
-
-  this.debug('DEBUG: Outgoing: Writing CHANNEL_EOF (' + chan + ')');
-  return send(this, buf);
-};
-SSH2Stream.prototype.channelClose = function(chan) {
-  // Does not consume window space
-  var buf = Buffer.allocUnsafe(1 + 4);
-
-  buf[0] = MESSAGE.CHANNEL_CLOSE;
-
-  writeUInt32BE(buf, chan, 1);
-
-  this.debug('DEBUG: Outgoing: Writing CHANNEL_CLOSE (' + chan + ')');
-  return send(this, buf);
-};
-SSH2Stream.prototype.channelWindowAdjust = function(chan, amount) {
-  // Does not consume window space
-  var buf = Buffer.allocUnsafe(1 + 4 + 4);
-
-  buf[0] = MESSAGE.CHANNEL_WINDOW_ADJUST;
-
-  writeUInt32BE(buf, chan, 1);
-
-  writeUInt32BE(buf, amount, 5);
-
-  this.debug('DEBUG: Outgoing: Writing CHANNEL_WINDOW_ADJUST ('
-             + chan
-             + ', '
-             + amount
-             + ')');
-  return send(this, buf);
-};
-SSH2Stream.prototype.channelData = function(chan, data) {
-  var dataIsBuffer = Buffer.isBuffer(data);
-  var dataLen = (dataIsBuffer ? data.length : Buffer.byteLength(data));
-  var buf = Buffer.allocUnsafe(1 + 4 + 4 + dataLen);
-
-  buf[0] = MESSAGE.CHANNEL_DATA;
-
-  writeUInt32BE(buf, chan, 1);
-
-  writeUInt32BE(buf, dataLen, 5);
-  if (dataIsBuffer)
-    data.copy(buf, 9);
-  else
-    buf.write(data, 9, dataLen, 'utf8');
-
-  this.debug('DEBUG: Outgoing: Writing CHANNEL_DATA (' + chan + ')');
-  return send(this, buf);
-};
-SSH2Stream.prototype.channelExtData = function(chan, data, type) {
-  var dataIsBuffer = Buffer.isBuffer(data);
-  var dataLen = (dataIsBuffer ? data.length : Buffer.byteLength(data));
-  var buf = Buffer.allocUnsafe(1 + 4 + 4 + 4 + dataLen);
-
-  buf[0] = MESSAGE.CHANNEL_EXTENDED_DATA;
-
-  writeUInt32BE(buf, chan, 1);
-
-  writeUInt32BE(buf, type, 5);
-
-  writeUInt32BE(buf, dataLen, 9);
-  if (dataIsBuffer)
-    data.copy(buf, 13);
-  else
-    buf.write(data, 13, dataLen, 'utf8');
-
-  this.debug('DEBUG: Outgoing: Writing CHANNEL_EXTENDED_DATA (' + chan + ')');
-  return send(this, buf);
-};
-SSH2Stream.prototype.channelOpenConfirm = function(remoteChan, localChan,
-                                                   initWindow, maxPacket) {
-  var buf = Buffer.allocUnsafe(1 + 4 + 4 + 4 + 4);
-
-  buf[0] = MESSAGE.CHANNEL_OPEN_CONFIRMATION;
-
-  writeUInt32BE(buf, remoteChan, 1);
-
-  writeUInt32BE(buf, localChan, 5);
-
-  writeUInt32BE(buf, initWindow, 9);
-
-  writeUInt32BE(buf, maxPacket, 13);
-
-  this.debug('DEBUG: Outgoing: Writing CHANNEL_OPEN_CONFIRMATION (r:'
-             + remoteChan
-             + ', l:'
-             + localChan
-             + ')');
-  return send(this, buf);
-};
-SSH2Stream.prototype.channelOpenFail = function(remoteChan, reason, desc,
-                                                lang) {
-  if (typeof desc !== 'string')
-    desc = '';
-  if (typeof lang !== 'string')
-    lang = '';
-
-  var descLen = Buffer.byteLength(desc);
-  var langLen = Buffer.byteLength(lang);
-  var p = 9;
-  var buf = Buffer.allocUnsafe(1 + 4 + 4 + 4 + descLen + 4 + langLen);
-
-  buf[0] = MESSAGE.CHANNEL_OPEN_FAILURE;
-
-  writeUInt32BE(buf, remoteChan, 1);
-
-  writeUInt32BE(buf, reason, 5);
-
-  writeUInt32BE(buf, descLen, p);
-  p += 4;
-  if (descLen) {
-    buf.write(desc, p, descLen, 'utf8');
-    p += descLen;
-  }
-
-  writeUInt32BE(buf, langLen, p);
-  if (langLen)
-    buf.write(lang, p += 4, langLen, 'ascii');
-
-  this.debug('DEBUG: Outgoing: Writing CHANNEL_OPEN_FAILURE ('
-             + remoteChan
-             + ')');
-  return send(this, buf);
-};
-
-// Client-specific methods
-// Global
-SSH2Stream.prototype.service = function(svcName) {
-  if (this.server)
-    throw new Error('Client-only method called in server mode');
-
-  var svcNameLen = Buffer.byteLength(svcName);
-  var buf = Buffer.allocUnsafe(1 + 4 + svcNameLen);
-
-  buf[0] = MESSAGE.SERVICE_REQUEST;
-
-  writeUInt32BE(buf, svcNameLen, 1);
-  buf.write(svcName, 5, svcNameLen, 'ascii');
-
-  this.debug('DEBUG: Outgoing: Writing SERVICE_REQUEST (' + svcName + ')');
-  return send(this, buf);
-};
-// 'ssh-connection' service-specific
-SSH2Stream.prototype.tcpipForward = function(bindAddr, bindPort, wantReply) {
-  if (this.server)
-    throw new Error('Client-only method called in server mode');
-
-  var addrlen = Buffer.byteLength(bindAddr);
-  var buf = Buffer.allocUnsafe(1 + 4 + 13 + 1 + 4 + addrlen + 4);
-
-  buf[0] = MESSAGE.GLOBAL_REQUEST;
-
-  writeUInt32BE(buf, 13, 1);
-  buf.write('tcpip-forward', 5, 13, 'ascii');
-
-  buf[18] = (wantReply === undefined || wantReply === true ? 1 : 0);
-
-  writeUInt32BE(buf, addrlen, 19);
-  buf.write(bindAddr, 23, addrlen, 'ascii');
-
-  writeUInt32BE(buf, bindPort, 23 + addrlen);
-
-  this.debug('DEBUG: Outgoing: Writing GLOBAL_REQUEST (tcpip-forward)');
-  return send(this, buf);
-};
-SSH2Stream.prototype.cancelTcpipForward = function(bindAddr, bindPort,
-                                                   wantReply) {
-  if (this.server)
-    throw new Error('Client-only method called in server mode');
-
-  var addrlen = Buffer.byteLength(bindAddr);
-  var buf = Buffer.allocUnsafe(1 + 4 + 20 + 1 + 4 + addrlen + 4);
-
-  buf[0] = MESSAGE.GLOBAL_REQUEST;
-
-  writeUInt32BE(buf, 20, 1);
-  buf.write('cancel-tcpip-forward', 5, 20, 'ascii');
-
-  buf[25] = (wantReply === undefined || wantReply === true ? 1 : 0);
-
-  writeUInt32BE(buf, addrlen, 26);
-  buf.write(bindAddr, 30, addrlen, 'ascii');
-
-  writeUInt32BE(buf, bindPort, 30 + addrlen);
-
-  this.debug('DEBUG: Outgoing: Writing GLOBAL_REQUEST (cancel-tcpip-forward)');
-  return send(this, buf);
-};
-SSH2Stream.prototype.openssh_streamLocalForward = function(socketPath,
-                                                           wantReply) {
-  if (this.server)
-    throw new Error('Client-only method called in server mode');
-
-  var pathlen = Buffer.byteLength(socketPath);
-  var buf = Buffer.allocUnsafe(1 + 4 + 31 + 1 + 4 + pathlen);
-
-  buf[0] = MESSAGE.GLOBAL_REQUEST;
-
-  writeUInt32BE(buf, 31, 1);
-  buf.write('streamlocal-forward@openssh.com', 5, 31, 'ascii');
-
-  buf[36] = (wantReply === undefined || wantReply === true ? 1 : 0);
-
-  writeUInt32BE(buf, pathlen, 37);
-  buf.write(socketPath, 41, pathlen, 'utf8');
-
-  this.debug('DEBUG: Outgoing: Writing GLOBAL_REQUEST (streamlocal-forward@openssh.com)');
-  return send(this, buf);
-};
-SSH2Stream.prototype.openssh_cancelStreamLocalForward = function(socketPath,
-                                                                 wantReply) {
-  if (this.server)
-    throw new Error('Client-only method called in server mode');
-
-  var pathlen = Buffer.byteLength(socketPath);
-  var buf = Buffer.allocUnsafe(1 + 4 + 38 + 1 + 4 + pathlen);
-
-  buf[0] = MESSAGE.GLOBAL_REQUEST;
-
-  writeUInt32BE(buf, 38, 1);
-  buf.write('cancel-streamlocal-forward@openssh.com', 5, 38, 'ascii');
-
-  buf[43] = (wantReply === undefined || wantReply === true ? 1 : 0);
-
-  writeUInt32BE(buf, pathlen, 44);
-  buf.write(socketPath, 48, pathlen, 'utf8');
-
-  this.debug('DEBUG: Outgoing: Writing GLOBAL_REQUEST (cancel-streamlocal-forward@openssh.com)');
-  return send(this, buf);
-};
-SSH2Stream.prototype.directTcpip = function(chan, initWindow, maxPacket, cfg) {
-  if (this.server)
-    throw new Error('Client-only method called in server mode');
-
-  var srclen = Buffer.byteLength(cfg.srcIP);
-  var dstlen = Buffer.byteLength(cfg.dstIP);
-  var p = 29;
-  var buf = Buffer.allocUnsafe(1 + 4 + 12 + 4 + 4 + 4 + 4 + srclen + 4 + 4
-                               + dstlen + 4);
-
-  buf[0] = MESSAGE.CHANNEL_OPEN;
-
-  writeUInt32BE(buf, 12, 1);
-  buf.write('direct-tcpip', 5, 12, 'ascii');
-
-  writeUInt32BE(buf, chan, 17);
-
-  writeUInt32BE(buf, initWindow, 21);
-
-  writeUInt32BE(buf, maxPacket, 25);
-
-  writeUInt32BE(buf, dstlen, p);
-  buf.write(cfg.dstIP, p += 4, dstlen, 'ascii');
-
-  writeUInt32BE(buf, cfg.dstPort, p += dstlen);
-
-  writeUInt32BE(buf, srclen, p += 4);
-  buf.write(cfg.srcIP, p += 4, srclen, 'ascii');
-
-  writeUInt32BE(buf, cfg.srcPort, p += srclen);
-
-  this.debug('DEBUG: Outgoing: Writing CHANNEL_OPEN ('
-             + chan
-             + ', direct-tcpip)');
-  return send(this, buf);
-};
-SSH2Stream.prototype.openssh_directStreamLocal = function(chan, initWindow,
-                                                          maxPacket, cfg) {
-  if (this.server)
-    throw new Error('Client-only method called in server mode');
-
-  var pathlen = Buffer.byteLength(cfg.socketPath);
-  var p = 47;
-  var buf = Buffer.allocUnsafe(1 + 4 + 30 + 4 + 4 + 4 + 4 + pathlen + 4 + 4);
-
-  buf[0] = MESSAGE.CHANNEL_OPEN;
-
-  writeUInt32BE(buf, 30, 1);
-  buf.write('direct-streamlocal@openssh.com', 5, 30, 'ascii');
-
-  writeUInt32BE(buf, chan, 35);
-
-  writeUInt32BE(buf, initWindow, 39);
-
-  writeUInt32BE(buf, maxPacket, 43);
-
-  writeUInt32BE(buf, pathlen, p);
-  buf.write(cfg.socketPath, p += 4, pathlen, 'utf8');
-
-  // reserved fields (string and uint32)
-  buf.fill(0, buf.length - 8);
-
-  this.debug('DEBUG: Outgoing: Writing CHANNEL_OPEN ('
-             + chan
-             + ', direct-streamlocal@openssh.com)');
-  return send(this, buf);
-};
-SSH2Stream.prototype.openssh_noMoreSessions = function(wantReply) {
-  if (this.server)
-    throw new Error('Client-only method called in server mode');
-
-  var buf = Buffer.allocUnsafe(1 + 4 + 28 + 1);
-
-  buf[0] = MESSAGE.GLOBAL_REQUEST;
-
-  writeUInt32BE(buf, 28, 1);
-  buf.write('no-more-sessions@openssh.com', 5, 28, 'ascii');
-
-  buf[33] = (wantReply === undefined || wantReply === true ? 1 : 0);
-
-  this.debug('DEBUG: Outgoing: Writing GLOBAL_REQUEST (no-more-sessions@openssh.com)');
-  return send(this, buf);
-};
-SSH2Stream.prototype.session = function(chan, initWindow, maxPacket) {
-  if (this.server)
-    throw new Error('Client-only method called in server mode');
-
-  // Does not consume window space
-  var buf = Buffer.allocUnsafe(1 + 4 + 7 + 4 + 4 + 4);
-
-  buf[0] = MESSAGE.CHANNEL_OPEN;
-
-  writeUInt32BE(buf, 7, 1);
-  buf.write('session', 5, 7, 'ascii');
-
-  writeUInt32BE(buf, chan, 12);
-
-  writeUInt32BE(buf, initWindow, 16);
-
-  writeUInt32BE(buf, maxPacket, 20);
-
-  this.debug('DEBUG: Outgoing: Writing CHANNEL_OPEN ('
-             + chan
-             + ', session)');
-  return send(this, buf);
-};
-SSH2Stream.prototype.windowChange = function(chan, rows, cols, height, width) {
-  if (this.server)
-    throw new Error('Client-only method called in server mode');
-
-  // Does not consume window space
-  var buf = Buffer.allocUnsafe(1 + 4 + 4 + 13 + 1 + 4 + 4 + 4 + 4);
-
-  buf[0] = MESSAGE.CHANNEL_REQUEST;
-
-  writeUInt32BE(buf, chan, 1);
-
-  writeUInt32BE(buf, 13, 5);
-  buf.write('window-change', 9, 13, 'ascii');
-
-  buf[22] = 0;
-
-  writeUInt32BE(buf, cols, 23);
-
-  writeUInt32BE(buf, rows, 27);
-
-  writeUInt32BE(buf, width, 31);
-
-  writeUInt32BE(buf, height, 35);
-
-  this.debug('DEBUG: Outgoing: Writing CHANNEL_REQUEST ('
-             + chan
-             + ', window-change)');
-  return send(this, buf);
-};
-SSH2Stream.prototype.pty = function(chan, rows, cols, height,
-                                    width, term, modes, wantReply) {
-  if (this.server)
-    throw new Error('Client-only method called in server mode');
-
-  // Does not consume window space
-  if (!term || !term.length)
-    term = 'vt100';
-  if (modes
-      && !Buffer.isBuffer(modes)
-      && !Array.isArray(modes)
-      && typeof modes === 'object')
-    modes = modesToBytes(modes);
-  if (!modes || !modes.length)
-    modes = NO_TERMINAL_MODES_BUFFER;
-
-  var termLen = term.length;
-  var modesLen = modes.length;
-  var p = 21;
-  var buf = Buffer.allocUnsafe(1 + 4 + 4 + 7 + 1 + 4 + termLen + 4 + 4 + 4 + 4
-                               + 4 + modesLen);
-
-  buf[0] = MESSAGE.CHANNEL_REQUEST;
-
-  writeUInt32BE(buf, chan, 1);
-
-  writeUInt32BE(buf, 7, 5);
-  buf.write('pty-req', 9, 7, 'ascii');
-
-  buf[16] = (wantReply === undefined || wantReply === true ? 1 : 0);
-
-  writeUInt32BE(buf, termLen, 17);
-  buf.write(term, 21, termLen, 'utf8');
-
-  writeUInt32BE(buf, cols, p += termLen);
-
-  writeUInt32BE(buf, rows, p += 4);
-
-  writeUInt32BE(buf, width, p += 4);
-
-  writeUInt32BE(buf, height, p += 4);
-
-  writeUInt32BE(buf, modesLen, p += 4);
-  p += 4;
-  if (Array.isArray(modes)) {
-    for (var i = 0; i < modesLen; ++i)
-      buf[p++] = modes[i];
-  } else if (Buffer.isBuffer(modes)) {
-    modes.copy(buf, p);
-  }
-
-  this.debug('DEBUG: Outgoing: Writing CHANNEL_REQUEST ('
-             + chan
-             + ', pty-req)');
-  return send(this, buf);
-};
-SSH2Stream.prototype.shell = function(chan, wantReply) {
-  if (this.server)
-    throw new Error('Client-only method called in server mode');
-
-  // Does not consume window space
-  var buf = Buffer.allocUnsafe(1 + 4 + 4 + 5 + 1);
-
-  buf[0] = MESSAGE.CHANNEL_REQUEST;
-
-  writeUInt32BE(buf, chan, 1);
-
-  writeUInt32BE(buf, 5, 5);
-  buf.write('shell', 9, 5, 'ascii');
-
-  buf[14] = (wantReply === undefined || wantReply === true ? 1 : 0);
-
-  this.debug('DEBUG: Outgoing: Writing CHANNEL_REQUEST ('
-             + chan
-             + ', shell)');
-  return send(this, buf);
-};
-SSH2Stream.prototype.exec = function(chan, cmd, wantReply) {
-  if (this.server)
-    throw new Error('Client-only method called in server mode');
-
-  // Does not consume window space
-  var cmdlen = (Buffer.isBuffer(cmd) ? cmd.length : Buffer.byteLength(cmd));
-  var buf = Buffer.allocUnsafe(1 + 4 + 4 + 4 + 1 + 4 + cmdlen);
-
-  buf[0] = MESSAGE.CHANNEL_REQUEST;
-
-  writeUInt32BE(buf, chan, 1);
-
-  writeUInt32BE(buf, 4, 5);
-  buf.write('exec', 9, 4, 'ascii');
-
-  buf[13] = (wantReply === undefined || wantReply === true ? 1 : 0);
-
-  writeUInt32BE(buf, cmdlen, 14);
-  if (Buffer.isBuffer(cmd))
-    cmd.copy(buf, 18);
-  else
-    buf.write(cmd, 18, cmdlen, 'utf8');
-
-  this.debug('DEBUG: Outgoing: Writing CHANNEL_REQUEST ('
-             + chan
-             + ', exec)');
-  return send(this, buf);
-};
-SSH2Stream.prototype.signal = function(chan, signal) {
-  if (this.server)
-    throw new Error('Client-only method called in server mode');
-
-  // Does not consume window space
-  signal = signal.toUpperCase();
-  if (signal.slice(0, 3) === 'SIG')
-    signal = signal.substring(3);
-
-  if (SIGNALS.indexOf(signal) === -1)
-    throw new Error('Invalid signal: ' + signal);
-
-  var signalLen = signal.length;
-  var buf = Buffer.allocUnsafe(1 + 4 + 4 + 6 + 1 + 4 + signalLen);
-
-  buf[0] = MESSAGE.CHANNEL_REQUEST;
-
-  writeUInt32BE(buf, chan, 1);
-
-  writeUInt32BE(buf, 6, 5);
-  buf.write('signal', 9, 6, 'ascii');
-
-  buf[15] = 0;
-
-  writeUInt32BE(buf, signalLen, 16);
-  buf.write(signal, 20, signalLen, 'ascii');
-
-  this.debug('DEBUG: Outgoing: Writing CHANNEL_REQUEST ('
-             + chan
-             + ', signal)');
-  return send(this, buf);
-};
-SSH2Stream.prototype.env = function(chan, key, val, wantReply) {
-  if (this.server)
-    throw new Error('Client-only method called in server mode');
-
-  // Does not consume window space
-  var keyLen = Buffer.byteLength(key);
-  var valLen = (Buffer.isBuffer(val) ? val.length : Buffer.byteLength(val));
-  var buf = Buffer.allocUnsafe(1 + 4 + 4 + 3 + 1 + 4 + keyLen + 4 + valLen);
-
-  buf[0] = MESSAGE.CHANNEL_REQUEST;
-
-  writeUInt32BE(buf, chan, 1);
-
-  writeUInt32BE(buf, 3, 5);
-  buf.write('env', 9, 3, 'ascii');
-
-  buf[12] = (wantReply === undefined || wantReply === true ? 1 : 0);
-
-  writeUInt32BE(buf, keyLen, 13);
-  buf.write(key, 17, keyLen, 'ascii');
-
-  writeUInt32BE(buf, valLen, 17 + keyLen);
-  if (Buffer.isBuffer(val))
-    val.copy(buf, 17 + keyLen + 4);
-  else
-    buf.write(val, 17 + keyLen + 4, valLen, 'utf8');
-
-  this.debug('DEBUG: Outgoing: Writing CHANNEL_REQUEST ('
-             + chan
-             + ', env)');
-  return send(this, buf);
-};
-SSH2Stream.prototype.x11Forward = function(chan, cfg, wantReply) {
-  if (this.server)
-    throw new Error('Client-only method called in server mode');
-
-  // Does not consume window space
-  var protolen = Buffer.byteLength(cfg.protocol);
-  var cookielen = Buffer.byteLength(cfg.cookie);
-  var buf = Buffer.allocUnsafe(1 + 4 + 4 + 7 + 1 + 1 + 4 + protolen + 4
-                               + cookielen + 4);
-
-  buf[0] = MESSAGE.CHANNEL_REQUEST;
-
-  writeUInt32BE(buf, chan, 1);
-
-  writeUInt32BE(buf, 7, 5);
-  buf.write('x11-req', 9, 7, 'ascii');
-
-  buf[16] = (wantReply === undefined || wantReply === true ? 1 : 0);
-
-  buf[17] = (cfg.single ? 1 : 0);
-
-  writeUInt32BE(buf, protolen, 18);
-  var bp = 22;
-  if (Buffer.isBuffer(cfg.protocol))
-    cfg.protocol.copy(buf, bp);
-  else
-    buf.write(cfg.protocol, bp, protolen, 'utf8');
-  bp += protolen;
-
-  writeUInt32BE(buf, cookielen, bp);
-  bp += 4;
-  if (Buffer.isBuffer(cfg.cookie))
-    cfg.cookie.copy(buf, bp);
-  else
-    buf.write(cfg.cookie, bp, cookielen, 'binary');
-  bp += cookielen;
-
-  writeUInt32BE(buf, (cfg.screen || 0), bp);
-
-  this.debug('DEBUG: Outgoing: Writing CHANNEL_REQUEST ('
-             + chan
-             + ', x11-req)');
-  return send(this, buf);
-};
-SSH2Stream.prototype.subsystem = function(chan, name, wantReply) {
-  if (this.server)
-    throw new Error('Client-only method called in server mode');
-
-  // Does not consume window space
-  var nameLen = Buffer.byteLength(name);
-  var buf = Buffer.allocUnsafe(1 + 4 + 4 + 9 + 1 + 4 + nameLen);
-
-  buf[0] = MESSAGE.CHANNEL_REQUEST;
-
-  writeUInt32BE(buf, chan, 1);
-
-  writeUInt32BE(buf, 9, 5);
-  buf.write('subsystem', 9, 9, 'ascii');
-
-  buf[18] = (wantReply === undefined || wantReply === true ? 1 : 0);
-
-  writeUInt32BE(buf, nameLen, 19);
-  buf.write(name, 23, nameLen, 'ascii');
-
-  this.debug('DEBUG: Outgoing: Writing CHANNEL_REQUEST ('
-             + chan
-             + ', subsystem: '
-             + name
-             + ')');
-  return send(this, buf);
-};
-SSH2Stream.prototype.openssh_agentForward = function(chan, wantReply) {
-  if (this.server)
-    throw new Error('Client-only method called in server mode');
-
-  // Does not consume window space
-  var buf = Buffer.allocUnsafe(1 + 4 + 4 + 26 + 1);
-
-  buf[0] = MESSAGE.CHANNEL_REQUEST;
-
-  writeUInt32BE(buf, chan, 1);
-
-  writeUInt32BE(buf, 26, 5);
-  buf.write('auth-agent-req@openssh.com', 9, 26, 'ascii');
-
-  buf[35] = (wantReply === undefined || wantReply === true ? 1 : 0);
-
-  this.debug('DEBUG: Outgoing: Writing CHANNEL_REQUEST ('
-             + chan
-             + ', auth-agent-req@openssh.com)');
-  return send(this, buf);
-};
-// 'ssh-userauth' service-specific
-SSH2Stream.prototype.authPassword = function(username, password) {
-  if (this.server)
-    throw new Error('Client-only method called in server mode');
-
-  var userLen = Buffer.byteLength(username);
-  var passLen = Buffer.byteLength(password);
-  var p = 0;
-  var buf = Buffer.allocUnsafe(1
-                               + 4 + userLen
-                               + 4 + 14 // "ssh-connection"
-                               + 4 + 8 // "password"
-                               + 1
-                               + 4 + passLen);
-
-  buf[p] = MESSAGE.USERAUTH_REQUEST;
-
-  writeUInt32BE(buf, userLen, ++p);
-  buf.write(username, p += 4, userLen, 'utf8');
-
-  writeUInt32BE(buf, 14, p += userLen);
-  buf.write('ssh-connection', p += 4, 14, 'ascii');
-
-  writeUInt32BE(buf, 8, p += 14);
-  buf.write('password', p += 4, 8, 'ascii');
-
-  buf[p += 8] = 0;
-
-  writeUInt32BE(buf, passLen, ++p);
-  buf.write(password, p += 4, passLen, 'utf8');
-
-  this._state.authsQueue.push('password');
-  this.debug('DEBUG: Outgoing: Writing USERAUTH_REQUEST (password)');
-  return send(this, buf);
-};
-SSH2Stream.prototype.authPK = function(username, pubKey, cbSign) {
-  if (this.server)
-    throw new Error('Client-only method called in server mode');
-
-  var self = this;
-  var outstate = this._state.outgoing;
-  var keyType;
-
-  if (typeof pubKey.getPublicSSH === 'function') {
-    keyType = pubKey.type;
-    pubKey = pubKey.getPublicSSH();
-  } else {
-    keyType = pubKey.toString('ascii',
-                              4,
-                              4 + readUInt32BE(pubKey, 0));
-  }
-
-  var userLen = Buffer.byteLength(username);
-  var algoLen = Buffer.byteLength(keyType);
-  var pubKeyLen = pubKey.length;
-  var sesLen = outstate.sessionId.length;
-  var p = 0;
-  var buf = Buffer.allocUnsafe((cbSign ? 4 + sesLen : 0)
-                               + 1
-                               + 4 + userLen
-                               + 4 + 14 // "ssh-connection"
-                               + 4 + 9 // "publickey"
-                               + 1
-                               + 4 + algoLen
-                               + 4 + pubKeyLen
-                              );
-
-  if (cbSign) {
-    writeUInt32BE(buf, sesLen, p);
-    outstate.sessionId.copy(buf, p += 4);
-    buf[p += sesLen] = MESSAGE.USERAUTH_REQUEST;
-  } else {
-    buf[p] = MESSAGE.USERAUTH_REQUEST;
-  }
-
-  writeUInt32BE(buf, userLen, ++p);
-  buf.write(username, p += 4, userLen, 'utf8');
-
-  writeUInt32BE(buf, 14, p += userLen);
-  buf.write('ssh-connection', p += 4, 14, 'ascii');
-
-  writeUInt32BE(buf, 9, p += 14);
-  buf.write('publickey', p += 4, 9, 'ascii');
-
-  buf[p += 9] = (cbSign ? 1 : 0);
-
-  writeUInt32BE(buf, algoLen, ++p);
-  buf.write(keyType, p += 4, algoLen, 'ascii');
-
-  writeUInt32BE(buf, pubKeyLen, p += algoLen);
-  pubKey.copy(buf, p += 4);
-
-  if (!cbSign) {
-    this._state.authsQueue.push('publickey');
-    this.debug('DEBUG: Outgoing: Writing USERAUTH_REQUEST (publickey -- check)');
-    return send(this, buf);
-  }
-
-  cbSign(buf, function(signature) {
-    signature = convertSignature(signature, keyType);
-    if (signature === false)
-      throw new Error('Error while converting handshake signature');
-
-    var sigLen = signature.length;
-    var sigbuf = Buffer.allocUnsafe(1
-                                    + 4 + userLen
-                                    + 4 + 14 // "ssh-connection"
-                                    + 4 + 9 // "publickey"
-                                    + 1
-                                    + 4 + algoLen
-                                    + 4 + pubKeyLen
-                                    + 4 // 4 + algoLen + 4 + sigLen
-                                    + 4 + algoLen
-                                    + 4 + sigLen);
-
-    p = 0;
-
-    sigbuf[p] = MESSAGE.USERAUTH_REQUEST;
-
-    writeUInt32BE(sigbuf, userLen, ++p);
-    sigbuf.write(username, p += 4, userLen, 'utf8');
-
-    writeUInt32BE(sigbuf, 14, p += userLen);
-    sigbuf.write('ssh-connection', p += 4, 14, 'ascii');
-
-    writeUInt32BE(sigbuf, 9, p += 14);
-    sigbuf.write('publickey', p += 4, 9, 'ascii');
-
-    sigbuf[p += 9] = 1;
-
-    writeUInt32BE(sigbuf, algoLen, ++p);
-    sigbuf.write(keyType, p += 4, algoLen, 'ascii');
-
-    writeUInt32BE(sigbuf, pubKeyLen, p += algoLen);
-    pubKey.copy(sigbuf, p += 4);
-    writeUInt32BE(sigbuf, 4 + algoLen + 4 + sigLen, p += pubKeyLen);
-    writeUInt32BE(sigbuf, algoLen, p += 4);
-    sigbuf.write(keyType, p += 4, algoLen, 'ascii');
-    writeUInt32BE(sigbuf, sigLen, p += algoLen);
-    signature.copy(sigbuf, p += 4);
-
-    // Servers shouldn't send packet type 60 in response to signed publickey
-    // attempts, but if they do, interpret as type 60.
-    self._state.authsQueue.push('publickey');
-    self.debug('DEBUG: Outgoing: Writing USERAUTH_REQUEST (publickey)');
-    return send(self, sigbuf);
-  });
-  return true;
-};
-SSH2Stream.prototype.authHostbased = function(username, pubKey, hostname,
-                                              userlocal, cbSign) {
-  // TODO: Make DRY by sharing similar code with authPK()
-
-  if (this.server)
-    throw new Error('Client-only method called in server mode');
-
-  var self = this;
-  var outstate = this._state.outgoing;
-  var keyType;
-
-  if (typeof pubKey.getPublicSSH === 'function') {
-    keyType = pubKey.type;
-    pubKey = pubKey.getPublicSSH();
-  } else {
-    keyType = pubKey.toString('ascii',
-                              4,
-                              4 + readUInt32BE(pubKey, 0));
-  }
-
-  var userLen = Buffer.byteLength(username);
-  var algoLen = Buffer.byteLength(keyType);
-  var pubKeyLen = pubKey.length;
-  var sesLen = outstate.sessionId.length;
-  var hostnameLen = Buffer.byteLength(hostname);
-  var userlocalLen = Buffer.byteLength(userlocal);
-  var p = 0;
-  var buf = Buffer.allocUnsafe(4 + sesLen
-                               + 1
-                               + 4 + userLen
-                               + 4 + 14 // "ssh-connection"
-                               + 4 + 9 // "hostbased"
-                               + 4 + algoLen
-                               + 4 + pubKeyLen
-                               + 4 + hostnameLen
-                               + 4 + userlocalLen
-                              );
-
-  writeUInt32BE(buf, sesLen, p);
-  outstate.sessionId.copy(buf, p += 4);
-
-  buf[p += sesLen] = MESSAGE.USERAUTH_REQUEST;
-
-  writeUInt32BE(buf, userLen, ++p);
-  buf.write(username, p += 4, userLen, 'utf8');
-
-  writeUInt32BE(buf, 14, p += userLen);
-  buf.write('ssh-connection', p += 4, 14, 'ascii');
-
-  writeUInt32BE(buf, 9, p += 14);
-  buf.write('hostbased', p += 4, 9, 'ascii');
-
-  writeUInt32BE(buf, algoLen, p += 9);
-  buf.write(keyType, p += 4, algoLen, 'ascii');
-
-  writeUInt32BE(buf, pubKeyLen, p += algoLen);
-  pubKey.copy(buf, p += 4);
-
-  writeUInt32BE(buf, hostnameLen, p += pubKeyLen);
-  buf.write(hostname, p += 4, hostnameLen, 'ascii');
-
-  writeUInt32BE(buf, userlocalLen, p += hostnameLen);
-  buf.write(userlocal, p += 4, userlocalLen, 'utf8');
-
-  cbSign(buf, function(signature) {
-    signature = convertSignature(signature, keyType);
-    if (signature === false)
-      throw new Error('Error while converting handshake signature');
-
-    var sigLen = signature.length;
-    var sigbuf = Buffer.allocUnsafe((buf.length - sesLen) + sigLen);
-
-    buf.copy(sigbuf, 0, 4 + sesLen);
-    writeUInt32BE(sigbuf, sigLen, sigbuf.length - sigLen - 4);
-    signature.copy(sigbuf, sigbuf.length - sigLen);
-
-    self._state.authsQueue.push('hostbased');
-    self.debug('DEBUG: Outgoing: Writing USERAUTH_REQUEST (hostbased)');
-    return send(self, sigbuf);
-  });
-  return true;
-};
-SSH2Stream.prototype.authKeyboard = function(username) {
-  if (this.server)
-    throw new Error('Client-only method called in server mode');
-
-  var userLen = Buffer.byteLength(username);
-  var p = 0;
-  var buf = Buffer.allocUnsafe(1
-                               + 4 + userLen
-                               + 4 + 14 // "ssh-connection"
-                               + 4 + 20 // "keyboard-interactive"
-                               + 4 // no language set
-                               + 4 // no submethods
-                              );
-
-  buf[p] = MESSAGE.USERAUTH_REQUEST;
-
-  writeUInt32BE(buf, userLen, ++p);
-  buf.write(username, p += 4, userLen, 'utf8');
-
-  writeUInt32BE(buf, 14, p += userLen);
-  buf.write('ssh-connection', p += 4, 14, 'ascii');
-
-  writeUInt32BE(buf, 20, p += 14);
-  buf.write('keyboard-interactive', p += 4, 20, 'ascii');
-
-  writeUInt32BE(buf, 0, p += 20);
-
-  writeUInt32BE(buf, 0, p += 4);
-
-  this._state.authsQueue.push('keyboard-interactive');
-  this.debug('DEBUG: Outgoing: Writing USERAUTH_REQUEST (keyboard-interactive)');
-  return send(this, buf);
-};
-SSH2Stream.prototype.authNone = function(username) {
-  if (this.server)
-    throw new Error('Client-only method called in server mode');
-
-  var userLen = Buffer.byteLength(username);
-  var p = 0;
-  var buf = Buffer.allocUnsafe(1
-                               + 4 + userLen
-                               + 4 + 14 // "ssh-connection"
-                               + 4 + 4 // "none"
-                              );
-
-  buf[p] = MESSAGE.USERAUTH_REQUEST;
-
-  writeUInt32BE(buf, userLen, ++p);
-  buf.write(username, p += 4, userLen, 'utf8');
-
-  writeUInt32BE(buf, 14, p += userLen);
-  buf.write('ssh-connection', p += 4, 14, 'ascii');
-
-  writeUInt32BE(buf, 4, p += 14);
-  buf.write('none', p += 4, 4, 'ascii');
-
-  this._state.authsQueue.push('none');
-  this.debug('DEBUG: Outgoing: Writing USERAUTH_REQUEST (none)');
-  return send(this, buf);
-};
-SSH2Stream.prototype.authInfoRes = function(responses) {
-  if (this.server)
-    throw new Error('Client-only method called in server mode');
-
-  var responsesLen = 0;
-  var p = 0;
-  var resLen;
-  var len;
   var i;
-
-  if (responses) {
-    for (i = 0, len = responses.length; i < len; ++i)
-      responsesLen += 4 + Buffer.byteLength(responses[i]);
+  if (this.lastNeed) {
+    r = this.fillLast(buf);
+    if (r === undefined) return '';
+    i = this.lastNeed;
+    this.lastNeed = 0;
+  } else {
+    i = 0;
   }
-  var buf = Buffer.allocUnsafe(1 + 4 + responsesLen);
+  if (i < buf.length) return r ? r + this.text(buf, i) : this.text(buf, i);
+  return r || '';
+};
 
-  buf[p++] = MESSAGE.USERAUTH_INFO_RESPONSE;
+StringDecoder.prototype.end = utf8End;
 
-  writeUInt32BE(buf, responses ? responses.length : 0, p);
-  if (responses) {
-    p += 4;
-    for (i = 0, len = responses.length; i < len; ++i) {
-      resLen = Buffer.byteLength(responses[i]);
-      writeUInt32BE(buf, resLen, p);
-      p += 4;
-      if (resLen) {
-        buf.write(responses[i], p, resLen, 'utf8');
-        p += resLen;
-      }
-    }
+// Returns only complete characters in a Buffer
+StringDecoder.prototype.text = utf8Text;
+
+// Attempts to complete a partial non-UTF-8 character using bytes from a Buffer
+StringDecoder.prototype.fillLast = function (buf) {
+  if (this.lastNeed <= buf.length) {
+    buf.copy(this.lastChar, this.lastTotal - this.lastNeed, 0, this.lastNeed);
+    return this.lastChar.toString(this.encoding, 0, this.lastTotal);
   }
-
-  this.debug('DEBUG: Outgoing: Writing USERAUTH_INFO_RESPONSE');
-  return send(this, buf);
+  buf.copy(this.lastChar, this.lastTotal - this.lastNeed, 0, buf.length);
+  this.lastNeed -= buf.length;
 };
 
-// Server-specific methods
-// Global
-SSH2Stream.prototype.serviceAccept = function(svcName) {
-  if (!this.server)
-    throw new Error('Server-only method called in client mode');
-
-  var svcNameLen = svcName.length;
-  var buf = Buffer.allocUnsafe(1 + 4 + svcNameLen);
-
-  buf[0] = MESSAGE.SERVICE_ACCEPT;
-
-  writeUInt32BE(buf, svcNameLen, 1);
-  buf.write(svcName, 5, svcNameLen, 'ascii');
-
-  this.debug('DEBUG: Outgoing: Writing SERVICE_ACCEPT (' + svcName + ')');
-  send(this, buf);
-
-  if (this.server && this.banner && svcName === 'ssh-userauth') {
-    /*
-      byte      SSH_MSG_USERAUTH_BANNER
-      string    message in ISO-10646 UTF-8 encoding
-      string    language tag
-    */
-    var bannerLen = Buffer.byteLength(this.banner);
-    var packetLen = 1 + 4 + bannerLen + 4;
-    var packet = Buffer.allocUnsafe(packetLen);
-    packet[0] = MESSAGE.USERAUTH_BANNER;
-    writeUInt32BE(packet, bannerLen, 1);
-    packet.write(this.banner, 5, bannerLen, 'utf8');
-    packet.fill(0, packetLen - 4); // Empty language tag
-    this.debug('DEBUG: Outgoing: Writing USERAUTH_BANNER');
-    send(this, packet);
-    this.banner = undefined; // Prevent banner from being displayed again
-  }
-};
-// 'ssh-connection' service-specific
-SSH2Stream.prototype.forwardedTcpip = function(chan, initWindow, maxPacket,
-                                               cfg) {
-  if (!this.server)
-    throw new Error('Server-only method called in client mode');
-
-  var boundAddrLen = Buffer.byteLength(cfg.boundAddr);
-  var remoteAddrLen = Buffer.byteLength(cfg.remoteAddr);
-  var p = 36 + boundAddrLen;
-  var buf = Buffer.allocUnsafe(1 + 4 + 15 + 4 + 4 + 4 + 4 + boundAddrLen + 4 + 4
-                               + remoteAddrLen + 4);
-
-  buf[0] = MESSAGE.CHANNEL_OPEN;
-
-  writeUInt32BE(buf, 15, 1);
-  buf.write('forwarded-tcpip', 5, 15, 'ascii');
-
-  writeUInt32BE(buf, chan, 20);
-
-  writeUInt32BE(buf, initWindow, 24);
-
-  writeUInt32BE(buf, maxPacket, 28);
-
-  writeUInt32BE(buf, boundAddrLen, 32);
-  buf.write(cfg.boundAddr, 36, boundAddrLen, 'ascii');
-
-  writeUInt32BE(buf, cfg.boundPort, p);
-
-  writeUInt32BE(buf, remoteAddrLen, p += 4);
-  buf.write(cfg.remoteAddr, p += 4, remoteAddrLen, 'ascii');
-
-  writeUInt32BE(buf, cfg.remotePort, p += remoteAddrLen);
-
-  this.debug('DEBUG: Outgoing: Writing CHANNEL_OPEN ('
-             + chan
-             + ', forwarded-tcpip)');
-  return send(this, buf);
-};
-SSH2Stream.prototype.x11 = function(chan, initWindow, maxPacket, cfg) {
-  if (!this.server)
-    throw new Error('Server-only method called in client mode');
-
-  var addrLen = Buffer.byteLength(cfg.originAddr);
-  var p = 24 + addrLen;
-  var buf = Buffer.allocUnsafe(1 + 4 + 3 + 4 + 4 + 4 + 4 + addrLen + 4);
-
-  buf[0] = MESSAGE.CHANNEL_OPEN;
-
-  writeUInt32BE(buf, 3, 1);
-  buf.write('x11', 5, 3, 'ascii');
-
-  writeUInt32BE(buf, chan, 8);
-
-  writeUInt32BE(buf, initWindow, 12);
-
-  writeUInt32BE(buf, maxPacket, 16);
-
-  writeUInt32BE(buf, addrLen, 20);
-  buf.write(cfg.originAddr, 24, addrLen, 'ascii');
-
-  writeUInt32BE(buf, cfg.originPort, p);
-
-  this.debug('DEBUG: Outgoing: Writing CHANNEL_OPEN ('
-             + chan
-             + ', x11)');
-  return send(this, buf);
-};
-SSH2Stream.prototype.openssh_authAgent = function(chan, initWindow, maxPacket) {
-  if (!this.server)
-    throw new Error('Server-only method called in client mode');
-
-  var buf = Buffer.allocUnsafe(1 + 4 + 22 + 4 + 4 + 4);
-
-  buf[0] = MESSAGE.CHANNEL_OPEN;
-
-  writeUInt32BE(buf, 22, 1);
-  buf.write('auth-agent@openssh.com', 5, 22, 'ascii');
-
-  writeUInt32BE(buf, chan, 27);
-
-  writeUInt32BE(buf, initWindow, 31);
-
-  writeUInt32BE(buf, maxPacket, 35);
-
-  this.debug('DEBUG: Outgoing: Writing CHANNEL_OPEN ('
-             + chan
-             + ', auth-agent@openssh.com)');
-  return send(this, buf);
-};
-SSH2Stream.prototype.openssh_forwardedStreamLocal = function(chan, initWindow,
-                                                             maxPacket, cfg) {
-  if (!this.server)
-    throw new Error('Server-only method called in client mode');
-
-  var pathlen = Buffer.byteLength(cfg.socketPath);
-  var buf = Buffer.allocUnsafe(1 + 4 + 33 + 4 + 4 + 4 + 4 + pathlen + 4);
-
-  buf[0] = MESSAGE.CHANNEL_OPEN;
-
-  writeUInt32BE(buf, 33, 1);
-  buf.write('forwarded-streamlocal@openssh.com', 5, 33, 'ascii');
-
-  writeUInt32BE(buf, chan, 38);
-
-  writeUInt32BE(buf, initWindow, 42);
-
-  writeUInt32BE(buf, maxPacket, 46);
-
-  writeUInt32BE(buf, pathlen, 50);
-  buf.write(cfg.socketPath, 54, pathlen, 'utf8');
-
-  writeUInt32BE(buf, 0, 54 + pathlen);
-
-  this.debug('DEBUG: Outgoing: Writing CHANNEL_OPEN ('
-             + chan
-             + ', forwarded-streamlocal@openssh.com)');
-  return send(this, buf);
-};
-SSH2Stream.prototype.exitStatus = function(chan, status) {
-  if (!this.server)
-    throw new Error('Server-only method called in client mode');
-
-  // Does not consume window space
-  var buf = Buffer.allocUnsafe(1 + 4 + 4 + 11 + 1 + 4);
-
-  buf[0] = MESSAGE.CHANNEL_REQUEST;
-
-  writeUInt32BE(buf, chan, 1);
-
-  writeUInt32BE(buf, 11, 5);
-  buf.write('exit-status', 9, 11, 'ascii');
-
-  buf[20] = 0;
-
-  writeUInt32BE(buf, status, 21);
-
-  this.debug('DEBUG: Outgoing: Writing CHANNEL_REQUEST ('
-             + chan
-             + ', exit-status)');
-  return send(this, buf);
-};
-SSH2Stream.prototype.exitSignal = function(chan, name, coreDumped, msg) {
-  if (!this.server)
-    throw new Error('Server-only method called in client mode');
-
-  // Does not consume window space
-  var nameLen = Buffer.byteLength(name);
-  var msgLen = (msg ? Buffer.byteLength(msg) : 0);
-  var p = 25 + nameLen;
-  var buf = Buffer.allocUnsafe(1 + 4 + 4 + 11 + 1 + 4 + nameLen + 1 + 4 + msgLen
-                               + 4);
-
-  buf[0] = MESSAGE.CHANNEL_REQUEST;
-
-  writeUInt32BE(buf, chan, 1);
-
-  writeUInt32BE(buf, 11, 5);
-  buf.write('exit-signal', 9, 11, 'ascii');
-
-  buf[20] = 0;
-
-  writeUInt32BE(buf, nameLen, 21);
-  buf.write(name, 25, nameLen, 'utf8');
-
-  buf[p++] = (coreDumped ? 1 : 0);
-
-  writeUInt32BE(buf, msgLen, p);
-  p += 4;
-  if (msgLen) {
-    buf.write(msg, p, msgLen, 'utf8');
-    p += msgLen;
-  }
-
-  writeUInt32BE(buf, 0, p);
-
-  this.debug('DEBUG: Outgoing: Writing CHANNEL_REQUEST ('
-             + chan
-             + ', exit-signal)');
-  return send(this, buf);
-};
-// 'ssh-userauth' service-specific
-SSH2Stream.prototype.authFailure = function(authMethods, isPartial) {
-  if (!this.server)
-    throw new Error('Server-only method called in client mode');
-
-  var authsQueue = this._state.authsQueue;
-  if (!authsQueue.length)
-    throw new Error('No auth in progress');
-
-  var methods;
-
-  if (typeof authMethods === 'boolean') {
-    isPartial = authMethods;
-    authMethods = undefined;
-  }
-
-  if (authMethods) {
-    methods = [];
-    for (var i = 0, len = authMethods.length; i < len; ++i) {
-      if (authMethods[i].toLowerCase() === 'none')
-        continue;
-      methods.push(authMethods[i]);
-    }
-    methods = methods.join(',');
-  } else
-    methods = '';
-
-  var methodsLen = methods.length;
-  var buf = Buffer.allocUnsafe(1 + 4 + methodsLen + 1);
-
-  buf[0] = MESSAGE.USERAUTH_FAILURE;
-
-  writeUInt32BE(buf, methodsLen, 1);
-  buf.write(methods, 5, methodsLen, 'ascii');
-
-  buf[5 + methodsLen] = (isPartial === true ? 1 : 0);
-
-  this._state.authsQueue.shift();
-  this.debug('DEBUG: Outgoing: Writing USERAUTH_FAILURE');
-  return send(this, buf);
-};
-SSH2Stream.prototype.authSuccess = function() {
-  if (!this.server)
-    throw new Error('Server-only method called in client mode');
-
-  var authsQueue = this._state.authsQueue;
-  if (!authsQueue.length)
-    throw new Error('No auth in progress');
-
-  var state = this._state;
-  var outstate = state.outgoing;
-  var instate = state.incoming;
-
-  state.authsQueue.shift();
-
-  this.debug('DEBUG: Outgoing: Writing USERAUTH_SUCCESS');
-  var ret = send(this, USERAUTH_SUCCESS_PACKET);
-
-  if (outstate.compress.type === 'zlib@openssh.com') {
-    outstate.compress.instance = zlib.createDeflate(ZLIB_OPTS);
-    outstate.compress.queue = [];
-  }
-  if (instate.decompress.type === 'zlib@openssh.com')
-    instate.decompress.instance = zlib.createInflate(ZLIB_OPTS);
-
-  return ret;
-};
-SSH2Stream.prototype.authPKOK = function(keyAlgo, key) {
-  if (!this.server)
-    throw new Error('Server-only method called in client mode');
-
-  var authsQueue = this._state.authsQueue;
-  if (!authsQueue.length || authsQueue[0] !== 'publickey')
-    throw new Error('"publickey" auth not in progress');
-
-  var keyAlgoLen = keyAlgo.length;
-  var keyLen = key.length;
-  var buf = Buffer.allocUnsafe(1 + 4 + keyAlgoLen + 4 + keyLen);
-
-  buf[0] = MESSAGE.USERAUTH_PK_OK;
-
-  writeUInt32BE(buf, keyAlgoLen, 1);
-  buf.write(keyAlgo, 5, keyAlgoLen, 'ascii');
-
-  writeUInt32BE(buf, keyLen, 5 + keyAlgoLen);
-  key.copy(buf, 5 + keyAlgoLen + 4);
-
-  this._state.authsQueue.shift();
-  this.debug('DEBUG: Outgoing: Writing USERAUTH_PK_OK');
-  return send(this, buf);
-};
-SSH2Stream.prototype.authPasswdChg = function(prompt, lang) {
-  if (!this.server)
-    throw new Error('Server-only method called in client mode');
-
-  var promptLen = Buffer.byteLength(prompt);
-  var langLen = lang ? lang.length : 0;
-  var p = 0;
-  var buf = Buffer.allocUnsafe(1 + 4 + promptLen + 4 + langLen);
-
-  buf[p] = MESSAGE.USERAUTH_PASSWD_CHANGEREQ;
-
-  writeUInt32BE(buf, promptLen, ++p);
-  buf.write(prompt, p += 4, promptLen, 'utf8');
-
-  writeUInt32BE(buf, langLen, p += promptLen);
-  if (langLen)
-    buf.write(lang, p += 4, langLen, 'ascii');
-
-  this.debug('DEBUG: Outgoing: Writing USERAUTH_PASSWD_CHANGEREQ');
-  return send(this, buf);
-};
-SSH2Stream.prototype.authInfoReq = function(name, instructions, prompts) {
-  if (!this.server)
-    throw new Error('Server-only method called in client mode');
-
-  var promptsLen = 0;
-  var nameLen = name ? Buffer.byteLength(name) : 0;
-  var instrLen = instructions ? Buffer.byteLength(instructions) : 0;
-  var p = 0;
-  var promptLen;
-  var prompt;
-  var len;
-  var i;
-
-  for (i = 0, len = prompts.length; i < len; ++i)
-    promptsLen += 4 + Buffer.byteLength(prompts[i].prompt) + 1;
-  var buf = Buffer.allocUnsafe(1 + 4 + nameLen + 4 + instrLen + 4 + 4
-                               + promptsLen);
-
-  buf[p++] = MESSAGE.USERAUTH_INFO_REQUEST;
-
-  writeUInt32BE(buf, nameLen, p);
-  p += 4;
-  if (name) {
-    buf.write(name, p, nameLen, 'utf8');
-    p += nameLen;
-  }
-
-  writeUInt32BE(buf, instrLen, p);
-  p += 4;
-  if (instructions) {
-    buf.write(instructions, p, instrLen, 'utf8');
-    p += instrLen;
-  }
-
-  writeUInt32BE(buf, 0, p);
-  p += 4;
-
-  writeUInt32BE(buf, prompts.length, p);
-  p += 4;
-  for (i = 0, len = prompts.length; i < len; ++i) {
-    prompt = prompts[i];
-    promptLen = Buffer.byteLength(prompt.prompt);
-    writeUInt32BE(buf, promptLen, p);
-    p += 4;
-    if (promptLen) {
-      buf.write(prompt.prompt, p, promptLen, 'utf8');
-      p += promptLen;
-    }
-    buf[p++] = (prompt.echo ? 1 : 0);
-  }
-
-  this.debug('DEBUG: Outgoing: Writing USERAUTH_INFO_REQUEST');
-  return send(this, buf);
-};
-
-// Shared incoming/parser functions
-function onDISCONNECT(self, reason, code, desc, lang) { // Client/Server
-  if (code !== DISCONNECT_REASON.BY_APPLICATION) {
-    var err = new Error(desc || reason);
-    err.code = code;
-    self.emit('error', err);
-  }
-  self.reset();
+// Checks the type of a UTF-8 byte, whether it's ASCII, a leading byte, or a
+// continuation byte. If an invalid byte is detected, -2 is returned.
+function utf8CheckByte(byte) {
+  if (byte <= 0x7F) return 0;else if (byte >> 5 === 0x06) return 2;else if (byte >> 4 === 0x0E) return 3;else if (byte >> 3 === 0x1E) return 4;
+  return byte >> 6 === 0x02 ? -1 : -2;
 }
 
-function onKEXINIT(self, init, firstFollows) { // Client/Server
-  var state = self._state;
-  var outstate = state.outgoing;
-
-  if (outstate.status === OUT_READY) {
-    self.debug('DEBUG: Received re-key request');
-    outstate.status = OUT_REKEYING;
-    outstate.kexinit = undefined;
-    KEXINIT(self, check);
-  } else {
-    check();
+// Checks at most 3 bytes at the end of a Buffer in order to detect an
+// incomplete multi-byte UTF-8 character. The total number of bytes (2, 3, or 4)
+// needed to complete the UTF-8 character (if applicable) are returned.
+function utf8CheckIncomplete(self, buf, i) {
+  var j = buf.length - 1;
+  if (j < i) return 0;
+  var nb = utf8CheckByte(buf[j]);
+  if (nb >= 0) {
+    if (nb > 0) self.lastNeed = nb - 1;
+    return nb;
   }
+  if (--j < i || nb === -2) return 0;
+  nb = utf8CheckByte(buf[j]);
+  if (nb >= 0) {
+    if (nb > 0) self.lastNeed = nb - 2;
+    return nb;
+  }
+  if (--j < i || nb === -2) return 0;
+  nb = utf8CheckByte(buf[j]);
+  if (nb >= 0) {
+    if (nb > 0) {
+      if (nb === 2) nb = 0;else self.lastNeed = nb - 3;
+    }
+    return nb;
+  }
+  return 0;
+}
 
-  function check() {
-    if (check_KEXINIT(self, init, firstFollows) === true) {
-      if (!self.server) {
-        if (state.kex.type === 'groupex')
-          KEXDH_GEX_REQ(self);
-        else
-          KEXDH_INIT(self);
-      } else {
-        state.incoming.expectedPacket = state.kex.pktInit;
+// Validates as many continuation bytes for a multi-byte UTF-8 character as
+// needed or are available. If we see a non-continuation byte where we expect
+// one, we "replace" the validated continuation bytes we've seen so far with
+// a single UTF-8 replacement character ('\ufffd'), to match v8's UTF-8 decoding
+// behavior. The continuation byte check is included three times in the case
+// where all of the continuation bytes for a character exist in the same buffer.
+// It is also done this way as a slight performance increase instead of using a
+// loop.
+function utf8CheckExtraBytes(self, buf, p) {
+  if ((buf[0] & 0xC0) !== 0x80) {
+    self.lastNeed = 0;
+    return '\ufffd';
+  }
+  if (self.lastNeed > 1 && buf.length > 1) {
+    if ((buf[1] & 0xC0) !== 0x80) {
+      self.lastNeed = 1;
+      return '\ufffd';
+    }
+    if (self.lastNeed > 2 && buf.length > 2) {
+      if ((buf[2] & 0xC0) !== 0x80) {
+        self.lastNeed = 2;
+        return '\ufffd';
       }
     }
   }
 }
 
-function check_KEXINIT(self, init, firstFollows) {
-  var state = self._state;
-  var instate = state.incoming;
-  var outstate = state.outgoing;
-  var debug = self.debug;
-  var serverList;
-  var clientList;
-  var val;
-  var len;
-  var i;
-
-  debug('DEBUG: Comparing KEXINITs ...');
-
-  var algos = self.config.algorithms;
-
-  var kexList = algos.kex;
-  if (self.remoteBugs & BUGS.BAD_DHGEX) {
-    var copied = false;
-    for (var j = kexList.length - 1; j >= 0; --j) {
-      if (kexList[j].indexOf('group-exchange') !== -1) {
-        if (!copied) {
-          kexList = kexList.slice();
-          copied = true;
-        }
-        kexList.splice(j, 1);
-      }
-    }
+// Attempts to complete a multi-byte UTF-8 character using bytes from a Buffer.
+function utf8FillLast(buf) {
+  var p = this.lastTotal - this.lastNeed;
+  var r = utf8CheckExtraBytes(this, buf, p);
+  if (r !== undefined) return r;
+  if (this.lastNeed <= buf.length) {
+    buf.copy(this.lastChar, p, 0, this.lastNeed);
+    return this.lastChar.toString(this.encoding, 0, this.lastTotal);
   }
-
-  debug('DEBUG: (local) KEX algorithms: ' + kexList);
-  debug('DEBUG: (remote) KEX algorithms: ' + init.algorithms.kex);
-  if (self.server) {
-    serverList = kexList;
-    clientList = init.algorithms.kex;
-  } else {
-    serverList = init.algorithms.kex;
-    clientList = kexList;
-  }
-  // Check for agreeable key exchange algorithm
-  for (i = 0, len = clientList.length;
-       i < len && serverList.indexOf(clientList[i]) === -1;
-       ++i);
-  if (i === len) {
-    // No suitable match found!
-    debug('DEBUG: No matching key exchange algorithm');
-    var err = new Error('Handshake failed: no matching key exchange algorithm');
-    err.level = 'handshake';
-    self.emit('error', err);
-    self.disconnect(DISCONNECT_REASON.KEY_EXCHANGE_FAILED);
-    return false;
-  }
-
-  var kex_algorithm = clientList[i];
-  debug('DEBUG: KEX algorithm: ' + kex_algorithm);
-  if (firstFollows
-      && (!init.algorithms.kex.length
-          || kex_algorithm !== init.algorithms.kex[0])) {
-    // Ignore next incoming packet, it was a wrong first guess at KEX algorithm
-    instate.ignoreNext = true;
-  }
-
-  debug('DEBUG: (local) Host key formats: ' + algos.serverHostKey);
-  debug('DEBUG: (remote) Host key formats: ' + init.algorithms.srvHostKey);
-  if (self.server) {
-    serverList = algos.serverHostKey;
-    clientList = init.algorithms.srvHostKey;
-  } else {
-    serverList = init.algorithms.srvHostKey;
-    clientList = algos.serverHostKey;
-  }
-  // Check for agreeable server host key format
-  for (i = 0, len = clientList.length;
-       i < len && serverList.indexOf(clientList[i]) === -1;
-       ++i);
-  if (i === len) {
-    // No suitable match found!
-    debug('DEBUG: No matching host key format');
-    var err = new Error('Handshake failed: no matching host key format');
-    err.level = 'handshake';
-    self.emit('error', err);
-    self.disconnect(DISCONNECT_REASON.KEY_EXCHANGE_FAILED);
-    return false;
-  }
-
-  state.hostkeyFormat = clientList[i];
-  debug('DEBUG: Host key format: ' + state.hostkeyFormat);
-
-  debug('DEBUG: (local) Client->Server ciphers: ' + algos.cipher);
-  debug('DEBUG: (remote) Client->Server ciphers: '
-        + init.algorithms.cs.encrypt);
-  if (self.server) {
-    serverList = algos.cipher;
-    clientList = init.algorithms.cs.encrypt;
-  } else {
-    serverList = init.algorithms.cs.encrypt;
-    clientList = algos.cipher;
-  }
-  // Check for agreeable client->server cipher
-  for (i = 0, len = clientList.length;
-       i < len && serverList.indexOf(clientList[i]) === -1;
-       ++i);
-  if (i === len) {
-    // No suitable match found!
-    debug('DEBUG: No matching Client->Server cipher');
-    var err = new Error('Handshake failed: no matching client->server cipher');
-    err.level = 'handshake';
-    self.emit('error', err);
-    self.disconnect(DISCONNECT_REASON.KEY_EXCHANGE_FAILED);
-    return false;
-  }
-
-  if (self.server)
-    val = instate.decrypt.type = clientList[i];
-  else
-    val = outstate.encrypt.type = clientList[i];
-  debug('DEBUG: Client->Server Cipher: ' + val);
-
-  debug('DEBUG: (local) Server->Client ciphers: ' + algos.cipher);
-  debug('DEBUG: (remote) Server->Client ciphers: '
-        + (init.algorithms.sc.encrypt));
-  if (self.server) {
-    serverList = algos.cipher;
-    clientList = init.algorithms.sc.encrypt;
-  } else {
-    serverList = init.algorithms.sc.encrypt;
-    clientList = algos.cipher;
-  }
-  // Check for agreeable server->client cipher
-  for (i = 0, len = clientList.length;
-       i < len && serverList.indexOf(clientList[i]) === -1;
-       ++i);
-  if (i === len) {
-    // No suitable match found!
-    debug('DEBUG: No matching Server->Client cipher');
-    var err = new Error('Handshake failed: no matching server->client cipher');
-    err.level = 'handshake';
-    self.emit('error', err);
-    self.disconnect(DISCONNECT_REASON.KEY_EXCHANGE_FAILED);
-    return false;
-  }
-
-  if (self.server)
-    val = outstate.encrypt.type = clientList[i];
-  else
-    val = instate.decrypt.type = clientList[i];
-  debug('DEBUG: Server->Client Cipher: ' + val);
-
-  debug('DEBUG: (local) Client->Server HMAC algorithms: ' + algos.hmac);
-  debug('DEBUG: (remote) Client->Server HMAC algorithms: '
-        + init.algorithms.cs.mac);
-  if (self.server) {
-    serverList = algos.hmac;
-    clientList = init.algorithms.cs.mac;
-  } else {
-    serverList = init.algorithms.cs.mac;
-    clientList = algos.hmac;
-  }
-  // Check for agreeable client->server hmac algorithm
-  for (i = 0, len = clientList.length;
-       i < len && serverList.indexOf(clientList[i]) === -1;
-       ++i);
-  if (i === len) {
-    // No suitable match found!
-    debug('DEBUG: No matching Client->Server HMAC algorithm');
-    var err = new Error('Handshake failed: no matching client->server HMAC');
-    err.level = 'handshake';
-    self.emit('error', err);
-    self.disconnect(DISCONNECT_REASON.KEY_EXCHANGE_FAILED);
-    return false;
-  }
-
-  if (self.server)
-    val = instate.hmac.type = clientList[i];
-  else
-    val = outstate.hmac.type = clientList[i];
-  debug('DEBUG: Client->Server HMAC algorithm: ' + val);
-
-  debug('DEBUG: (local) Server->Client HMAC algorithms: ' + algos.hmac);
-  debug('DEBUG: (remote) Server->Client HMAC algorithms: '
-        + init.algorithms.sc.mac);
-  if (self.server) {
-    serverList = algos.hmac;
-    clientList = init.algorithms.sc.mac;
-  } else {
-    serverList = init.algorithms.sc.mac;
-    clientList = algos.hmac;
-  }
-  // Check for agreeable server->client hmac algorithm
-  for (i = 0, len = clientList.length;
-       i < len && serverList.indexOf(clientList[i]) === -1;
-       ++i);
-  if (i === len) {
-    // No suitable match found!
-    debug('DEBUG: No matching Server->Client HMAC algorithm');
-    var err = new Error('Handshake failed: no matching server->client HMAC');
-    err.level = 'handshake';
-    self.emit('error', err);
-    self.disconnect(DISCONNECT_REASON.KEY_EXCHANGE_FAILED);
-    return false;
-  }
-
-  if (self.server)
-    val = outstate.hmac.type = clientList[i];
-  else
-    val = instate.hmac.type = clientList[i];
-  debug('DEBUG: Server->Client HMAC algorithm: ' + val);
-
-  debug('DEBUG: (local) Client->Server compression algorithms: '
-        + algos.compress);
-  debug('DEBUG: (remote) Client->Server compression algorithms: '
-        + init.algorithms.cs.compress);
-  if (self.server) {
-    serverList = algos.compress;
-    clientList = init.algorithms.cs.compress;
-  } else {
-    serverList = init.algorithms.cs.compress;
-    clientList = algos.compress;
-  }
-  // Check for agreeable client->server compression algorithm
-  for (i = 0, len = clientList.length;
-       i < len && serverList.indexOf(clientList[i]) === -1;
-       ++i);
-  if (i === len) {
-    // No suitable match found!
-    debug('DEBUG: No matching Client->Server compression algorithm');
-    var err = new Error('Handshake failed: no matching client->server '
-                        + 'compression algorithm');
-    err.level = 'handshake';
-    self.emit('error', err);
-    self.disconnect(DISCONNECT_REASON.KEY_EXCHANGE_FAILED);
-    return false;
-  }
-
-  if (self.server)
-    val = instate.decompress.type = clientList[i];
-  else
-    val = outstate.compress.type = clientList[i];
-  debug('DEBUG: Client->Server compression algorithm: ' + val);
-
-  debug('DEBUG: (local) Server->Client compression algorithms: '
-        + algos.compress);
-  debug('DEBUG: (remote) Server->Client compression algorithms: '
-        + init.algorithms.sc.compress);
-  if (self.server) {
-    serverList = algos.compress;
-    clientList = init.algorithms.sc.compress;
-  } else {
-    serverList = init.algorithms.sc.compress;
-    clientList = algos.compress;
-  }
-  // Check for agreeable server->client compression algorithm
-  for (i = 0, len = clientList.length;
-       i < len && serverList.indexOf(clientList[i]) === -1;
-       ++i);
-  if (i === len) {
-    // No suitable match found!
-    debug('DEBUG: No matching Server->Client compression algorithm');
-    var err = new Error('Handshake failed: no matching server->client '
-                        + 'compression algorithm');
-    err.level = 'handshake';
-    self.emit('error', err);
-    self.disconnect(DISCONNECT_REASON.KEY_EXCHANGE_FAILED);
-    return false;
-  }
-
-  if (self.server)
-    val = outstate.compress.type = clientList[i];
-  else
-    val = instate.decompress.type = clientList[i];
-  debug('DEBUG: Server->Client compression algorithm: ' + val);
-
-  state.kex = new KeyExchange(kex_algorithm);
-  state.kex.generateKeys();
-  outstate.pubkey = state.kex.getPublicKey();
-
-  return true;
+  buf.copy(this.lastChar, p, 0, buf.length);
+  this.lastNeed -= buf.length;
 }
 
-function onKEXDH_GEX_GROUP(self, prime, gen) {
-  var state = self._state;
-  var outstate = state.outgoing;
-
-  state.kex.setDHParams(prime, gen);
-  state.kex.generateKeys();
-  outstate.pubkey = state.kex.getPublicKey();
-
-  KEXDH_INIT(self);
+// Returns all complete UTF-8 characters in a Buffer. If the Buffer ended on a
+// partial character, the character's bytes are buffered until the required
+// number of bytes are available.
+function utf8Text(buf, i) {
+  var total = utf8CheckIncomplete(this, buf, i);
+  if (!this.lastNeed) return buf.toString('utf8', i);
+  this.lastTotal = total;
+  var end = buf.length - (total - this.lastNeed);
+  buf.copy(this.lastChar, 0, end);
+  return buf.toString('utf8', i, end);
 }
 
-function onKEXDH_INIT(self, e) { // Server
-  KEXDH_REPLY(self, e);
-}
-
-function onKEXDH_REPLY(self, info, verifiedHost) { // Client
-  var state = self._state;
-  var instate = state.incoming;
-  var outstate = state.outgoing;
-  var debug = self.debug;
-  var len;
-  var i;
-
-  if (verifiedHost === undefined) {
-    instate.expectedPacket = 'NEWKEYS';
-    outstate.sentNEWKEYS = false;
-
-    debug('DEBUG: Checking host key format');
-    // Ensure all host key formats agree
-    var hostkey_format = readString(info.hostkey, 0, 'ascii', self);
-    if (hostkey_format === false)
-      return false;
-    if (info.hostkey_format !== state.hostkeyFormat
-        || info.hostkey_format !== hostkey_format) {
-      // Expected and actual server host key format do not match!
-      debug('DEBUG: Host key format mismatch');
-      self.disconnect(DISCONNECT_REASON.KEY_EXCHANGE_FAILED);
-      self.reset();
-      var err = new Error('Handshake failed: host key format mismatch');
-      err.level = 'handshake';
-      self.emit('error', err);
-      return false;
-    }
-
-    debug('DEBUG: Checking signature format');
-    // Ensure signature formats agree
-    var sig_format = readString(info.sig, 0, 'ascii', self);
-    if (sig_format === false)
-      return false;
-    if (info.sig_format !== sig_format) {
-      debug('DEBUG: Signature format mismatch');
-      self.disconnect(DISCONNECT_REASON.KEY_EXCHANGE_FAILED);
-      self.reset();
-      var err = new Error('Handshake failed: signature format mismatch');
-      err.level = 'handshake';
-      self.emit('error', err);
-      return false;
-    }
-  }
-
-  // Verify the host fingerprint first if needed
-  if (outstate.status === OUT_INIT) {
-    if (verifiedHost === undefined) {
-      debug('DEBUG: Verifying host fingerprint');
-      var sync = true;
-      var emitted = self.emit('fingerprint', info.hostkey, function(permitted) {
-        // Prevent multiple calls to this callback
-        if (verifiedHost !== undefined)
-          return;
-        verifiedHost = !!permitted;
-        if (!sync) {
-          // Continue execution by re-entry
-          onKEXDH_REPLY(self, info, verifiedHost);
-        }
-      });
-      sync = false;
-      // Support async calling of verification callback
-      if (emitted && verifiedHost === undefined)
-        return;
-    }
-    if (verifiedHost === undefined)
-      debug('DEBUG: Host accepted by default (no verification)');
-    else if (verifiedHost === true)
-      debug('DEBUG: Host accepted (verified)');
-    else {
-      debug('DEBUG: Host denied via fingerprint verification');
-      self.disconnect(DISCONNECT_REASON.KEY_EXCHANGE_FAILED);
-      self.reset();
-      var err = new Error('Handshake failed: '
-                          + 'host fingerprint verification failed');
-      err.level = 'handshake';
-      self.emit('error', err);
-      return false;
-    }
-  }
-
-  info.pubkey = state.kex.convertPublicKey(info.pubkey);
-
-  info.secret = state.kex.computeSecret(info.pubkey);
-
-  if (info.secret instanceof Error) {
-    info.secret.message = 'Error while computing DH secret ('
-                          + state.kex.type + '): '
-                          + info.secret.message;
-    info.secret.level = 'handshake';
-    self.emit('error', info.secret);
-    self.disconnect(DISCONNECT_REASON.KEY_EXCHANGE_FAILED);
-    return false;
-  }
-
-  var hash = crypto.createHash(state.kex.hash);
-
-  var len_ident = Buffer.byteLength(self.config.ident);
-  var len_sident = Buffer.byteLength(instate.identRaw);
-  var len_init = outstate.kexinit.length;
-  var len_sinit = instate.kexinit.length;
-  var len_hostkey = info.hostkey.length;
-  var len_pubkey = outstate.pubkey.length;
-  var len_spubkey = info.pubkey.length;
-  var len_secret = info.secret.length;
-
-  var exchangeBufLen = len_ident
-                       + len_sident
-                       + len_init
-                       + len_sinit
-                       + len_hostkey
-                       + len_pubkey
-                       + len_spubkey
-                       + len_secret
-                       + (4 * 8); // Length fields for above values
-
-  // Group exchange-related
-  var len_gex_prime;
-  var len_gex_gen;
-  var gex_prime;
-  var gex_gen;
-  var dhParams = state.kex.getDHParams();
-  if (dhParams) {
-    gex_prime = dhParams.prime;
-    gex_gen = dhParams.generator;
-    len_gex_prime = gex_prime.length;
-    len_gex_gen = gex_gen.length;
-    exchangeBufLen += (4 * 3); // min, n, max values
-    exchangeBufLen += (4 * 2); // prime, generator length fields
-    exchangeBufLen += len_gex_prime;
-    exchangeBufLen += len_gex_gen;
-  }
-
-  var bp = 0;
-  var exchangeBuf = Buffer.allocUnsafe(exchangeBufLen);
-
-  writeUInt32BE(exchangeBuf, len_ident, bp);
-  bp += 4;
-  exchangeBuf.write(self.config.ident, bp, 'utf8'); // V_C
-  bp += len_ident;
-
-  writeUInt32BE(exchangeBuf, len_sident, bp);
-  bp += 4;
-  exchangeBuf.write(instate.identRaw, bp, 'utf8'); // V_S
-  bp += len_sident;
-
-  writeUInt32BE(exchangeBuf, len_init, bp);
-  bp += 4;
-  outstate.kexinit.copy(exchangeBuf, bp); // I_C
-  bp += len_init;
-  outstate.kexinit = undefined;
-
-  writeUInt32BE(exchangeBuf, len_sinit, bp);
-  bp += 4;
-  instate.kexinit.copy(exchangeBuf, bp); // I_S
-  bp += len_sinit;
-  instate.kexinit = undefined;
-
-  writeUInt32BE(exchangeBuf, len_hostkey, bp);
-  bp += 4;
-  info.hostkey.copy(exchangeBuf, bp); // K_S
-  bp += len_hostkey;
-
-  if (dhParams) {
-    KEXDH_GEX_REQ_PACKET.slice(1).copy(exchangeBuf, bp); // min, n, max
-    bp += (4 * 3); // Skip over bytes just copied
-
-    writeUInt32BE(exchangeBuf, len_gex_prime, bp);
-    bp += 4;
-    gex_prime.copy(exchangeBuf, bp); // p
-    bp += len_gex_prime;
-
-    writeUInt32BE(exchangeBuf, len_gex_gen, bp);
-    bp += 4;
-    gex_gen.copy(exchangeBuf, bp); // g
-    bp += len_gex_gen;
-  }
-
-  writeUInt32BE(exchangeBuf, len_pubkey, bp);
-  bp += 4;
-  outstate.pubkey.copy(exchangeBuf, bp); // e
-  bp += len_pubkey;
-
-  writeUInt32BE(exchangeBuf, len_spubkey, bp);
-  bp += 4;
-  info.pubkey.copy(exchangeBuf, bp); // f
-  bp += len_spubkey;
-
-  writeUInt32BE(exchangeBuf, len_secret, bp);
-  bp += 4;
-  info.secret.copy(exchangeBuf, bp); // K
-
-  outstate.exchangeHash = hash.update(exchangeBuf).digest(); // H
-
-  var rawsig = readString(info.sig, info.sig._pos, self); // s
-  if (rawsig === false
-      || !(rawsig = sigSSHToASN1(rawsig, info.sig_format, self))) {
-    return false;
-  }
-
-  var hostPubKey = parseDERKey(info.hostkey, info.sig_format);
-  if (hostPubKey instanceof Error)
-    return false;
-
-  debug('DEBUG: Verifying signature');
-
-  if (hostPubKey.verify(outstate.exchangeHash, rawsig) !== true) {
-    debug('DEBUG: Signature verification failed');
-    self.disconnect(DISCONNECT_REASON.KEY_EXCHANGE_FAILED);
-    self.reset();
-    var err = new Error('Handshake failed: signature verification failed');
-    err.level = 'handshake';
-    self.emit('error', err);
-    return false;
-  }
-
-  if (outstate.sessionId === undefined)
-    outstate.sessionId = outstate.exchangeHash;
-  outstate.kexsecret = info.secret;
-
-  debug('DEBUG: Outgoing: Writing NEWKEYS');
-  if (outstate.status === OUT_REKEYING)
-    send(self, NEWKEYS_PACKET, undefined, true);
-  else
-    send(self, NEWKEYS_PACKET);
-  outstate.sentNEWKEYS = true;
-
-  if (verifiedHost !== undefined && instate.expectedPacket === undefined) {
-    // We received NEWKEYS while we were waiting for the fingerprint
-    // verification callback to be called. In this case we have to re-execute
-    // onNEWKEYS to finish the handshake.
-    onNEWKEYS(self);
-  }
-}
-
-function onNEWKEYS(self) { // Client/Server
-  var state = self._state;
-  var outstate = state.outgoing;
-  var instate = state.incoming;
-
-  instate.expectedPacket = undefined;
-
-  if (!outstate.sentNEWKEYS)
-    return;
-
-  var len = outstate.kexsecret.length;
-
-  var outCipherInfo = outstate.encrypt.info = CIPHER_INFO[outstate.encrypt.type];
-  var p = 0;
-
-  var dhHashAlgo = state.kex.hash;
-
-  var secret = Buffer.allocUnsafe(4 + len);
-  var iv;
-  var key;
-
-  // Whenever the client sends a new authentication request, it is enqueued
-  // here.  Once the request is resolved (success, fail, or PK_OK),
-  // dequeue.  Whatever is at the front of the queue determines how we
-  // interpret packet type 60.
-  state.authsQueue = [];
-
-  writeUInt32BE(secret, len, p);
-  p += 4;
-  outstate.kexsecret.copy(secret, p);
-  outstate.kexsecret = undefined;
-  if (!outCipherInfo.stream) {
-    iv = crypto.createHash(dhHashAlgo)
-               .update(secret)
-               .update(outstate.exchangeHash)
-               .update(!self.server ? 'A' : 'B', 'ascii')
-               .update(outstate.sessionId)
-               .digest();
-    while (iv.length < outCipherInfo.ivLen) {
-      iv = Buffer.concat([iv,
-                          crypto.createHash(dhHashAlgo)
-                                .update(secret)
-                                .update(outstate.exchangeHash)
-                                .update(iv)
-                                .digest()]);
-    }
-    if (iv.length > outCipherInfo.ivLen)
-      iv = iv.slice(0, outCipherInfo.ivLen);
-  } else {
-    iv = EMPTY_BUFFER; // Streaming ciphers don't use an IV upfront
-  }
-
-  key = crypto.createHash(dhHashAlgo)
-              .update(secret)
-              .update(outstate.exchangeHash)
-              .update(!self.server ? 'C' : 'D', 'ascii')
-              .update(outstate.sessionId)
-              .digest();
-  while (key.length < outCipherInfo.keyLen) {
-    key = Buffer.concat([key,
-                         crypto.createHash(dhHashAlgo)
-                               .update(secret)
-                               .update(outstate.exchangeHash)
-                               .update(key)
-                               .digest()]);
-  }
-  if (key.length > outCipherInfo.keyLen)
-    key = key.slice(0, outCipherInfo.keyLen);
-
-  if (outCipherInfo.authLen > 0) {
-    outstate.encrypt.iv = iv;
-    outstate.encrypt.key = key;
-    outstate.encrypt.instance = true;
-  } else {
-    var cipherAlgo = SSH_TO_OPENSSL[outstate.encrypt.type];
-    outstate.encrypt.instance = crypto.createCipheriv(cipherAlgo, key, iv);
-    outstate.encrypt.instance.setAutoPadding(false);
-  }
-
-  // And now for decrypting ...
-
-  var inCipherInfo = instate.decrypt.info = CIPHER_INFO[instate.decrypt.type];
-  if (!inCipherInfo.stream) {
-    iv = crypto.createHash(dhHashAlgo)
-               .update(secret)
-               .update(outstate.exchangeHash)
-               .update(!self.server ? 'B' : 'A', 'ascii')
-               .update(outstate.sessionId)
-               .digest();
-    while (iv.length < inCipherInfo.ivLen) {
-      iv = Buffer.concat([iv,
-                          crypto.createHash(dhHashAlgo)
-                                .update(secret)
-                                .update(outstate.exchangeHash)
-                                .update(iv)
-                                .digest()]);
-    }
-    if (iv.length > inCipherInfo.ivLen)
-      iv = iv.slice(0, inCipherInfo.ivLen);
-  } else {
-    iv = EMPTY_BUFFER; // Streaming ciphers don't use an IV upfront
-  }
-
-  // Create a reusable buffer for decryption purposes
-  instate.decrypt.buf = Buffer.allocUnsafe(inCipherInfo.blockLen);
-
-  key = crypto.createHash(dhHashAlgo)
-              .update(secret)
-              .update(outstate.exchangeHash)
-              .update(!self.server ? 'D' : 'C', 'ascii')
-              .update(outstate.sessionId)
-              .digest();
-  while (key.length < inCipherInfo.keyLen) {
-    key = Buffer.concat([key,
-                         crypto.createHash(dhHashAlgo)
-                               .update(secret)
-                               .update(outstate.exchangeHash)
-                               .update(key)
-                               .digest()]);
-  }
-  if (key.length > inCipherInfo.keyLen)
-    key = key.slice(0, inCipherInfo.keyLen);
-
-  var decipherAlgo = SSH_TO_OPENSSL[instate.decrypt.type];
-  instate.decrypt.instance = crypto.createDecipheriv(decipherAlgo, key, iv);
-  instate.decrypt.instance.setAutoPadding(false);
-  instate.decrypt.iv = iv;
-  instate.decrypt.key = key;
-
-  var emptyBuf;
-  if (outCipherInfo.discardLen > 0) {
-    emptyBuf = Buffer.alloc(outCipherInfo.discardLen);
-    outstate.encrypt.instance.update(emptyBuf);
-  }
-  if (inCipherInfo.discardLen > 0) {
-    if (!emptyBuf || emptyBuf.length !== inCipherInfo.discardLen)
-      emptyBuf = Buffer.alloc(outCipherInfo.discardLen);
-    instate.decrypt.instance.update(emptyBuf);
-  }
-
-  var outHMACInfo = outstate.hmac.info = HMAC_INFO[outstate.hmac.type];
-  var inHMACInfo = instate.hmac.info = HMAC_INFO[instate.hmac.type];
-
-  if (outCipherInfo.authLen === 0) {
-    key = crypto.createHash(dhHashAlgo)
-                .update(secret)
-                .update(outstate.exchangeHash)
-                .update(!self.server ? 'E' : 'F', 'ascii')
-                .update(outstate.sessionId)
-                .digest();
-    while (key.length < outHMACInfo.len) {
-      key = Buffer.concat([key,
-                           crypto.createHash(dhHashAlgo)
-                                 .update(secret)
-                                 .update(outstate.exchangeHash)
-                                 .update(key)
-                                 .digest()]);
-    }
-    if (key.length > outHMACInfo.len)
-      key = key.slice(0, outHMACInfo.len);
-    outstate.hmac.key = key;
-  } else {
-    outstate.hmac.key = undefined;
-  }
-  if (inCipherInfo.authLen === 0) {
-    key = crypto.createHash(dhHashAlgo)
-                .update(secret)
-                .update(outstate.exchangeHash)
-                .update(!self.server ? 'F' : 'E', 'ascii')
-                .update(outstate.sessionId)
-                .digest();
-    while (key.length < inHMACInfo.len) {
-      key = Buffer.concat([key,
-                           crypto.createHash(dhHashAlgo)
-                                 .update(secret)
-                                 .update(outstate.exchangeHash)
-                                 .update(key)
-                                 .digest()]);
-    }
-    if (key.length > inHMACInfo.len)
-      key = key.slice(0, inHMACInfo.len);
-    instate.hmac.key = key;
-  } else {
-    instate.hmac.key = undefined;
-  }
-
-  // Create a reusable buffer for message verification purposes
-  var inHMACSize = inCipherInfo.authLen || instate.hmac.info.actualLen;
-  if (!instate.hmac.buf
-      || instate.hmac.buf.length !== inHMACSize) {
-    instate.hmac.buf = Buffer.allocUnsafe(inHMACSize);
-  }
-
-  outstate.exchangeHash = undefined;
-
-  if (outstate.compress.type === 'zlib') {
-    outstate.compress.instance = zlib.createDeflate(ZLIB_OPTS);
-    outstate.compress.queue = [];
-  } else if (outstate.compress.type === 'none') {
-    outstate.compress.instance = false;
-    outstate.compress.queue = null;
-  }
-  if (instate.decompress.type === 'zlib')
-    instate.decompress.instance = zlib.createInflate(ZLIB_OPTS);
-  else if (instate.decompress.type === 'none')
-    instate.decompress.instance = false;
-
-  self.bytesSent = self.bytesReceived = 0;
-
-  if (outstate.status === OUT_REKEYING) {
-    outstate.status = OUT_READY;
-
-    // Empty our outbound buffer of any data we tried to send during the
-    // re-keying process
-    var queue = outstate.rekeyQueue;
-    var qlen = queue.length;
-    var q = 0;
-
-    outstate.rekeyQueue = [];
-
-    for (; q < qlen; ++q) {
-      if (Buffer.isBuffer(queue[q]))
-        send(self, queue[q]);
-      else
-        send(self, queue[q][0], queue[q][1]);
-    }
-
-    // Now empty our inbound buffer of any non-transport layer packets we
-    // received during the re-keying process
-    queue = instate.rekeyQueue;
-    qlen = queue.length;
-    q = 0;
-
-    instate.rekeyQueue = [];
-
-    var curSeqno = instate.seqno;
-    for (; q < qlen; ++q) {
-      instate.seqno = queue[q][0];
-      instate.payload = queue[q][1];
-      if (parsePacket(self) === false)
-        return;
-
-      if (instate.status === IN_INIT) {
-        // We were reset due to some error/disagreement ?
-        return;
-      }
-    }
-    instate.seqno = curSeqno;
-  } else {
-    outstate.status = OUT_READY;
-    if (instate.status === IN_PACKET) {
-      // Explicitly update incoming packet parser status in order to get the
-      // correct decipher, hmac, etc. states.
-
-      // We only get here if the host fingerprint callback was called
-      // asynchronously and the incoming packet parser is still expecting an
-      // unencrypted packet, etc.
-
-      self.debug('DEBUG: Parser: IN_PACKETBEFORE (update) (expecting '
-                 + inCipherInfo.blockLen + ')');
-      // Wait for the right number of bytes so we can determine the incoming
-      // packet length
-      expectData(self,
-                 EXP_TYPE_BYTES,
-                 inCipherInfo.blockLen,
-                 instate.decrypt.buf);
-    }
-    self.emit('ready');
-  }
-}
-
-function getPacketType(self, pktType) {
-  var kex = self._state.kex;
-  if (kex) {
-    // Disambiguate
-    switch (pktType) {
-      case 30:
-        return kex.pktInit;
-      case 31:
-        switch (kex.type) {
-          case 'group':
-            return 'KEXDH_REPLY';
-          case 'groupex':
-            return 'KEXDH_GEX_GROUP';
-          default:
-            return 'KEXECDH_REPLY';
-        }
-        break;
-      case 33:
-        if (kex.type === 'groupex')
-          return 'KEXDH_GEX_REPLY';
-    }
-  }
-  return MESSAGE[pktType];
-}
-
-function parsePacket(self, callback) {
-  var instate = self._state.incoming;
-  var outstate = self._state.outgoing;
-  var payload = instate.payload;
-  var seqno = instate.seqno;
-  var serviceName;
-  var lang;
-  var message;
-  var info;
-  var chan;
-  var data;
-  var srcIP;
-  var srcPort;
-  var sender;
-  var window;
-  var packetSize;
-  var recipient;
-  var description;
-  var socketPath;
-
-  if (++instate.seqno > MAX_SEQNO)
-    instate.seqno = 0;
-
-  if (instate.ignoreNext) {
-    self.debug('DEBUG: Parser: Packet ignored');
-    instate.ignoreNext = false;
-    return;
-  }
-
-  var type = payload[0];
-  if (type === undefined)
-    return false;
-
-  // If we receive a packet during handshake that is not the expected packet
-  // and it is not one of: DISCONNECT, IGNORE, UNIMPLEMENTED, or DEBUG, then we
-  // close the stream
-  if (outstate.status !== OUT_READY
-      && getPacketType(self, type) !== instate.expectedPacket
-      && type < 1
-      && type > 4) {
-    self.debug('DEBUG: Parser: IN_PACKETDATAAFTER, expected: '
-               + instate.expectedPacket
-               + ' but got: '
-               + getPacketType(self, type));
-    // XXX: Potential issue where the module user decides to initiate a rekey
-    // via KEXINIT() (which sets `expectedPacket`) after receiving a packet
-    // and there is still another packet already waiting to be parsed at the
-    // time the KEXINIT is written. this will cause an unexpected disconnect...
-    self.disconnect(DISCONNECT_REASON.PROTOCOL_ERROR);
-    var err = new Error('Received unexpected packet');
-    err.level = 'protocol';
-    self.emit('error', err);
-    return false;
-  }
-
-  if (type === MESSAGE.CHANNEL_DATA) {
-    /*
-      byte      SSH_MSG_CHANNEL_DATA
-      uint32    recipient channel
-      string    data
-    */
-    chan = readInt(payload, 1, self, callback);
-    if (chan === false)
-      return false;
-    // TODO: MAX_CHAN_DATA_LEN here should really be dependent upon the
-    //       channel's packet size. The ssh2 module uses 32KB, so we'll hard
-    //       code this for now ...
-    data = readString(payload, 5, self, callback, 32768);
-    if (data === false)
-      return false;
-    self.debug('DEBUG: Parser: IN_PACKETDATAAFTER, packet: CHANNEL_DATA ('
-               + chan
-               + ')');
-    self.emit('CHANNEL_DATA:' + chan, data);
-  } else if (type === MESSAGE.CHANNEL_EXTENDED_DATA) {
-    /*
-      byte      SSH_MSG_CHANNEL_EXTENDED_DATA
-      uint32    recipient channel
-      uint32    data_type_code
-      string    data
-    */
-    chan = readInt(payload, 1, self, callback);
-    if (chan === false)
-      return false;
-    var dataType = readInt(payload, 5, self, callback);
-    if (dataType === false)
-      return false;
-    data = readString(payload, 9, self, callback);
-    if (data === false)
-      return false;
-    self.debug('DEBUG: Parser: IN_PACKETDATAAFTER, packet: '
-               + 'CHANNEL_EXTENDED_DATA ('
-               + chan
-               + ')');
-    self.emit('CHANNEL_EXTENDED_DATA:' + chan, dataType, data);
-  } else if (type === MESSAGE.CHANNEL_WINDOW_ADJUST) {
-    /*
-      byte      SSH_MSG_CHANNEL_WINDOW_ADJUST
-      uint32    recipient channel
-      uint32    bytes to add
-    */
-    chan = readInt(payload, 1, self, callback);
-    if (chan === false)
-      return false;
-    var bytesToAdd = readInt(payload, 5, self, callback);
-    if (bytesToAdd === false)
-      return false;
-    self.debug('DEBUG: Parser: IN_PACKETDATAAFTER, packet: '
-               + 'CHANNEL_WINDOW_ADJUST ('
-               + chan
-               + ', '
-               + bytesToAdd
-               + ')');
-    self.emit('CHANNEL_WINDOW_ADJUST:' + chan, bytesToAdd);
-  } else if (type === MESSAGE.CHANNEL_SUCCESS) {
-    /*
-      byte      SSH_MSG_CHANNEL_SUCCESS
-      uint32    recipient channel
-    */
-    chan = readInt(payload, 1, self, callback);
-    if (chan === false)
-      return false;
-    self.debug('DEBUG: Parser: IN_PACKETDATAAFTER, packet: CHANNEL_SUCCESS ('
-               + chan
-               + ')');
-    self.emit('CHANNEL_SUCCESS:' + chan);
-  } else if (type === MESSAGE.CHANNEL_FAILURE) {
-    /*
-      byte      SSH_MSG_CHANNEL_FAILURE
-      uint32    recipient channel
-    */
-    chan = readInt(payload, 1, self, callback);
-    if (chan === false)
-      return false;
-    self.debug('DEBUG: Parser: IN_PACKETDATAAFTER, packet: CHANNEL_FAILURE ('
-               + chan
-               + ')');
-    self.emit('CHANNEL_FAILURE:' + chan);
-  } else if (type === MESSAGE.CHANNEL_EOF) {
-    /*
-      byte      SSH_MSG_CHANNEL_EOF
-      uint32    recipient channel
-    */
-    chan = readInt(payload, 1, self, callback);
-    if (chan === false)
-      return false;
-    self.debug('DEBUG: Parser: IN_PACKETDATAAFTER, packet: CHANNEL_EOF ('
-               + chan
-               + ')');
-    self.emit('CHANNEL_EOF:' + chan);
-  } else if (type === MESSAGE.CHANNEL_OPEN) {
-    /*
-      byte      SSH_MSG_CHANNEL_OPEN
-      string    channel type in US-ASCII only
-      uint32    sender channel
-      uint32    initial window size
-      uint32    maximum packet size
-      ....      channel type specific data follows
-    */
-    var chanType = readString(payload, 1, 'ascii', self, callback);
-    if (chanType === false)
-      return false;
-    sender = readInt(payload, payload._pos, self, callback);
-    if (sender === false)
-      return false;
-    window = readInt(payload, payload._pos += 4, self, callback);
-    if (window === false)
-      return false;
-    packetSize = readInt(payload, payload._pos += 4, self, callback);
-    if (packetSize === false)
-      return false;
-    var channel;
-
-    self.debug('DEBUG: Parser: IN_PACKETDATAAFTER, packet: CHANNEL_OPEN ('
-               + sender
-               + ', '
-               + chanType
-               + ')');
-
-    if (chanType === 'forwarded-tcpip' // Server->Client
-        || chanType === 'direct-tcpip') { // Client->Server
-      /*
-        string    address that was connected / host to connect
-        uint32    port that was connected / port to connect
-        string    originator IP address
-        uint32    originator port
-      */
-      var destIP = readString(payload,
-                              payload._pos += 4,
-                              'ascii',
-                              self,
-                              callback);
-      if (destIP === false)
-        return false;
-      var destPort = readInt(payload, payload._pos, self, callback);
-      if (destPort === false)
-        return false;
-      srcIP = readString(payload, payload._pos += 4, 'ascii', self, callback);
-      if (srcIP === false)
-        return false;
-      srcPort = readInt(payload, payload._pos, self, callback);
-      if (srcPort === false)
-        return false;
-      channel = {
-        type: chanType,
-        sender: sender,
-        window: window,
-        packetSize: packetSize,
-        data: {
-          destIP: destIP,
-          destPort: destPort,
-          srcIP: srcIP,
-          srcPort: srcPort
-        }
-      };
-    } else if (// Server->Client
-               chanType === 'forwarded-streamlocal@openssh.com'
-               // Client->Server
-               || chanType === 'direct-streamlocal@openssh.com') {
-      /*
-        string    socket path
-        string    reserved for future use
-      */
-      socketPath = readString(payload,
-                              payload._pos += 4,
-                              'utf8',
-                              self,
-                              callback);
-      if (socketPath === false)
-        return false;
-      channel = {
-        type: chanType,
-        sender: sender,
-        window: window,
-        packetSize: packetSize,
-        data: {
-          socketPath: socketPath,
-        }
-      };
-    } else if (chanType === 'x11') { // Server->Client
-      /*
-        string    originator address (e.g., "192.168.7.38")
-        uint32    originator port
-      */
-      srcIP = readString(payload, payload._pos += 4, 'ascii', self, callback);
-      if (srcIP === false)
-        return false;
-      srcPort = readInt(payload, payload._pos, self, callback);
-      if (srcPort === false)
-        return false;
-      channel = {
-        type: chanType,
-        sender: sender,
-        window: window,
-        packetSize: packetSize,
-        data: {
-          srcIP: srcIP,
-          srcPort: srcPort
-        }
-      };
-    } else {
-      // 'session' (Client->Server), 'auth-agent@openssh.com' (Server->Client)
-      channel = {
-        type: chanType,
-        sender: sender,
-        window: window,
-        packetSize: packetSize,
-        data: {}
-      };
-    }
-
-    self.emit('CHANNEL_OPEN', channel);
-  } else if (type === MESSAGE.CHANNEL_OPEN_CONFIRMATION) {
-    /*
-      byte      SSH_MSG_CHANNEL_OPEN_CONFIRMATION
-      uint32    recipient channel
-      uint32    sender channel
-      uint32    initial window size
-      uint32    maximum packet size
-      ....      channel type specific data follows
-    */
-    // "The 'recipient channel' is the channel number given in the
-    // original open request, and 'sender channel' is the channel number
-    // allocated by the other side."
-    recipient = readInt(payload, 1, self, callback);
-    if (recipient === false)
-      return false;
-    sender = readInt(payload, 5, self, callback);
-    if (sender === false)
-      return false;
-    window = readInt(payload, 9, self, callback);
-    if (window === false)
-      return false;
-    packetSize = readInt(payload, 13, self, callback);
-    if (packetSize === false)
-      return false;
-
-    info = {
-      recipient: recipient,
-      sender: sender,
-      window: window,
-      packetSize: packetSize
-    };
-
-    if (payload.length > 17)
-      info.data = payload.slice(17);
-
-    self.emit('CHANNEL_OPEN_CONFIRMATION:' + info.recipient, info);
-  } else if (type === MESSAGE.CHANNEL_OPEN_FAILURE) {
-    /*
-      byte      SSH_MSG_CHANNEL_OPEN_FAILURE
-      uint32    recipient channel
-      uint32    reason code
-      string    description in ISO-10646 UTF-8 encoding
-      string    language tag
-    */
-    recipient = readInt(payload, 1, self, callback);
-    if (recipient === false)
-      return false;
-    var reasonCode = readInt(payload, 5, self, callback);
-    if (reasonCode === false)
-      return false;
-    description = readString(payload, 9, 'utf8', self, callback);
-    if (description === false)
-      return false;
-    lang = readString(payload, payload._pos, 'utf8', self, callback);
-    if (lang === false)
-      return false;
-    payload._pos = 9;
-    info = {
-      recipient: recipient,
-      reasonCode: reasonCode,
-      reason: CHANNEL_OPEN_FAILURE[reasonCode],
-      description: description,
-      lang: lang
-    };
-
-    self.emit('CHANNEL_OPEN_FAILURE:' + info.recipient, info);
-  } else if (type === MESSAGE.CHANNEL_CLOSE) {
-    /*
-      byte      SSH_MSG_CHANNEL_CLOSE
-      uint32    recipient channel
-    */
-    chan = readInt(payload, 1, self, callback);
-    if (chan === false)
-      return false;
-    self.debug('DEBUG: Parser: IN_PACKETDATAAFTER, packet: CHANNEL_CLOSE ('
-               + chan
-               + ')');
-    self.emit('CHANNEL_CLOSE:' + chan);
-  } else if (type === MESSAGE.IGNORE) {
-    /*
-      byte      SSH_MSG_IGNORE
-      string    data
-    */
-  } else if (type === MESSAGE.DISCONNECT) {
-    /*
-      byte      SSH_MSG_DISCONNECT
-      uint32    reason code
-      string    description in ISO-10646 UTF-8 encoding
-      string    language tag
-    */
-    var reason = readInt(payload, 1, self, callback);
-    if (reason === false)
-      return false;
-    var reasonText = DISCONNECT_REASON[reason];
-    description = readString(payload, 5, 'utf8', self, callback);
-    if (description === false)
-      return false;
-
-    if (payload._pos < payload.length)
-      lang = readString(payload, payload._pos, 'ascii', self, callback);
-
-    self.debug('DEBUG: Parser: IN_PACKETDATAAFTER, packet: DISCONNECT ('
-               + reasonText
-               + ')');
-
-    self.emit('DISCONNECT', reasonText, reason, description, lang);
-  } else if (type === MESSAGE.DEBUG) {
-    /*
-      byte      SSH_MSG_DEBUG
-      boolean   always_display
-      string    message in ISO-10646 UTF-8 encoding
-      string    language tag
-    */
-    message = readString(payload, 2, 'utf8', self, callback);
-    if (message === false)
-      return false;
-    lang = readString(payload, payload._pos, 'ascii', self, callback);
-    if (lang === false)
-      return false;
-
-    self.emit('DEBUG', message, lang);
-  } else if (type === MESSAGE.NEWKEYS) {
-    /*
-      byte      SSH_MSG_NEW_KEYS
-    */
-    self.emit('NEWKEYS');
-  } else if (type === MESSAGE.SERVICE_REQUEST) {
-    /*
-      byte      SSH_MSG_SERVICE_REQUEST
-      string    service name
-    */
-    serviceName = readString(payload, 1, 'ascii', self, callback);
-    if (serviceName === false)
-      return false;
-
-    self.emit('SERVICE_REQUEST', serviceName);
-  } else if (type === MESSAGE.SERVICE_ACCEPT) {
-    /*
-      byte      SSH_MSG_SERVICE_ACCEPT
-      string    service name
-    */
-    serviceName = readString(payload, 1, 'ascii', self, callback);
-    if (serviceName === false)
-      return false;
-
-    self.emit('SERVICE_ACCEPT', serviceName);
-  } else if (type === MESSAGE.USERAUTH_REQUEST) {
-    /*
-      byte      SSH_MSG_USERAUTH_REQUEST
-      string    user name in ISO-10646 UTF-8 encoding [RFC3629]
-      string    service name in US-ASCII
-      string    method name in US-ASCII
-      ....      method specific fields
-    */
-    var username = readString(payload, 1, 'utf8', self, callback);
-    if (username === false)
-      return false;
-    var svcName = readString(payload, payload._pos, 'ascii', self, callback);
-    if (svcName === false)
-      return false;
-    var method = readString(payload, payload._pos, 'ascii', self, callback);
-    if (method === false)
-      return false;
-
-    var methodData;
-    var methodDesc;
-
-    if (method === 'password') {
-      methodData = readString(payload,
-                              payload._pos + 1,
-                              'utf8',
-                              self,
-                              callback);
-      if (methodData === false)
-        return false;
-    } else if (method === 'publickey' || method === 'hostbased') {
-      var pkSigned;
-      var keyAlgo;
-      var key;
-      var signature;
-      var blob;
-      var hostname;
-      var userlocal;
-      if (method === 'publickey') {
-        pkSigned = payload[payload._pos++];
-        if (pkSigned === undefined)
-          return false;
-        pkSigned = (pkSigned !== 0);
-      }
-      keyAlgo = readString(payload, payload._pos, 'ascii', self, callback);
-      if (keyAlgo === false)
-        return false;
-      key = readString(payload, payload._pos, self, callback);
-      if (key === false)
-        return false;
-
-      if (pkSigned || method === 'hostbased') {
-        if (method === 'hostbased') {
-          hostname = readString(payload, payload._pos, 'ascii', self, callback);
-          if (hostname === false)
-            return false;
-          userlocal = readString(payload, payload._pos, 'utf8', self, callback);
-          if (userlocal === false)
-            return false;
-        }
-
-        var blobEnd = payload._pos;
-        signature = readString(payload, blobEnd, self, callback);
-        if (signature === false)
-          return false;
-
-        if (signature.length > (4 + keyAlgo.length + 4)
-            && signature.toString('ascii', 4, 4 + keyAlgo.length) === keyAlgo) {
-          // Skip algoLen + algo + sigLen
-          signature = signature.slice(4 + keyAlgo.length + 4);
-        }
-
-        signature = sigSSHToASN1(signature, keyAlgo, self, callback);
-        if (signature === false)
-          return false;
-
-        blob = Buffer.allocUnsafe(4 + outstate.sessionId.length + blobEnd);
-        writeUInt32BE(blob, outstate.sessionId.length, 0);
-        outstate.sessionId.copy(blob, 4);
-        payload.copy(blob, 4 + outstate.sessionId.length, 0, blobEnd);
-      } else {
-        methodDesc = 'publickey -- check';
-      }
-
-      methodData = {
-        keyAlgo: keyAlgo,
-        key: key,
-        signature: signature,
-        blob: blob,
-        localHostname: hostname,
-        localUsername: userlocal
-      };
-    } else if (method === 'keyboard-interactive') {
-      // Skip language, it's deprecated
-      var skipLen = readInt(payload, payload._pos, self, callback);
-      if (skipLen === false)
-        return false;
-      methodData = readString(payload,
-                              payload._pos + 4 + skipLen,
-                              'utf8',
-                              self,
-                              callback);
-      if (methodData === false)
-        return false;
-    } else if (method !== 'none')
-      methodData = payload.slice(payload._pos);
-
-    if (methodDesc === undefined)
-      methodDesc = method;
-
-    self.debug('DEBUG: Parser: IN_PACKETDATAAFTER, packet: USERAUTH_REQUEST ('
-               + methodDesc
-               + ')');
-
-    self._state.authsQueue.push(method);
-    self.emit('USERAUTH_REQUEST', username, svcName, method, methodData);
-  } else if (type === MESSAGE.USERAUTH_SUCCESS) {
-    /*
-      byte      SSH_MSG_USERAUTH_SUCCESS
-    */
-    if (outstate.compress.type === 'zlib@openssh.com') {
-      outstate.compress.instance = zlib.createDeflate(ZLIB_OPTS);
-      outstate.compress.queue = [];
-    }
-    if (instate.decompress.type === 'zlib@openssh.com')
-      instate.decompress.instance = zlib.createInflate(ZLIB_OPTS);
-
-    self._state.authsQueue.shift();
-
-    self.emit('USERAUTH_SUCCESS');
-  } else if (type === MESSAGE.USERAUTH_FAILURE) {
-    /*
-      byte      SSH_MSG_USERAUTH_FAILURE
-      name-list    authentications that can continue
-      boolean      partial success
-    */
-    var auths = readString(payload, 1, 'ascii', self, callback);
-    if (auths === false)
-      return false;
-    var partSuccess = payload[payload._pos];
-    if (partSuccess === undefined)
-      return false;
-
-    partSuccess = (partSuccess !== 0);
-    auths = auths.split(',');
-
-    self._state.authsQueue.shift();
-    self.emit('USERAUTH_FAILURE', auths, partSuccess);
-  } else if (type === MESSAGE.USERAUTH_BANNER) {
-    /*
-      byte      SSH_MSG_USERAUTH_BANNER
-      string    message in ISO-10646 UTF-8 encoding
-      string    language tag
-    */
-    message = readString(payload, 1, 'utf8', self, callback);
-    if (message === false)
-      return false;
-    lang = readString(payload, payload._pos, 'utf8', self, callback);
-    if (lang === false)
-      return false;
-
-    self.emit('USERAUTH_BANNER', message, lang);
-  } else if (type === MESSAGE.GLOBAL_REQUEST) {
-    /*
-      byte      SSH_MSG_GLOBAL_REQUEST
-      string    request name in US-ASCII only
-      boolean   want reply
-      ....      request-specific data follows
-    */
-    var request = readString(payload, 1, 'ascii', self, callback);
-    if (request === false) {
-      self.debug('DEBUG: Parser: IN_PACKETDATAAFTER, packet: GLOBAL_REQUEST');
-      return false;
-    }
-    self.debug('DEBUG: Parser: IN_PACKETDATAAFTER, packet: GLOBAL_REQUEST ('
-               + request
-               + ')');
-
-    var wantReply = payload[payload._pos++];
-    if (wantReply === undefined)
-      return false;
-    wantReply = (wantReply !== 0);
-
-    var reqData;
-    if (request === 'tcpip-forward' || request === 'cancel-tcpip-forward') {
-      var bindAddr = readString(payload, payload._pos, 'ascii', self, callback);
-      if (bindAddr === false)
-        return false;
-      var bindPort = readInt(payload, payload._pos, self, callback);
-      if (bindPort === false)
-        return false;
-      reqData = {
-        bindAddr: bindAddr,
-        bindPort: bindPort
-      };
-    } else if (request === 'streamlocal-forward@openssh.com'
-               || request === 'cancel-streamlocal-forward@openssh.com') {
-      socketPath = readString(payload, payload._pos, 'utf8', self, callback);
-      if (socketPath === false)
-        return false;
-      reqData = {
-        socketPath: socketPath
-      };
-    } else if (request === 'no-more-sessions@openssh.com') {
-      // No data
-    } else {
-      reqData = payload.slice(payload._pos);
-    }
-
-    self.emit('GLOBAL_REQUEST', request, wantReply, reqData);
-  } else if (type === MESSAGE.REQUEST_SUCCESS) {
-    /*
-      byte      SSH_MSG_REQUEST_SUCCESS
-      ....      response specific data
-    */
-    if (payload.length > 1)
-      self.emit('REQUEST_SUCCESS', payload.slice(1));
-    else
-      self.emit('REQUEST_SUCCESS');
-  } else if (type === MESSAGE.REQUEST_FAILURE) {
-    /*
-      byte      SSH_MSG_REQUEST_FAILURE
-    */
-    self.emit('REQUEST_FAILURE');
-  } else if (type === MESSAGE.UNIMPLEMENTED) {
-    /*
-      byte      SSH_MSG_UNIMPLEMENTED
-      uint32    packet sequence number of rejected message
-    */
-    // TODO
-  } else if (type === MESSAGE.KEXINIT)
-    return parse_KEXINIT(self, callback);
-  else if (type === MESSAGE.CHANNEL_REQUEST)
-    return parse_CHANNEL_REQUEST(self, callback);
-  else if (type >= 30 && type <= 49) // Key exchange method-specific messages
-    return parse_KEX(self, type, callback);
-  else if (type >= 60 && type <= 70) // User auth context-specific messages
-    return parse_USERAUTH(self, type, callback);
-  else {
-    // Unknown packet type
-    var unimpl = Buffer.allocUnsafe(1 + 4);
-    unimpl[0] = MESSAGE.UNIMPLEMENTED;
-    writeUInt32BE(unimpl, seqno, 1);
-    send(self, unimpl);
-  }
-}
-
-function parse_KEXINIT(self, callback) {
-  var instate = self._state.incoming;
-  var payload = instate.payload;
-
-  /*
-    byte         SSH_MSG_KEXINIT
-    byte[16]     cookie (random bytes)
-    name-list    kex_algorithms
-    name-list    server_host_key_algorithms
-    name-list    encryption_algorithms_client_to_server
-    name-list    encryption_algorithms_server_to_client
-    name-list    mac_algorithms_client_to_server
-    name-list    mac_algorithms_server_to_client
-    name-list    compression_algorithms_client_to_server
-    name-list    compression_algorithms_server_to_client
-    name-list    languages_client_to_server
-    name-list    languages_server_to_client
-    boolean      first_kex_packet_follows
-    uint32       0 (reserved for future extension)
-  */
-  var init = {
-    algorithms: {
-      kex: undefined,
-      srvHostKey: undefined,
-      cs: {
-        encrypt: undefined,
-        mac: undefined,
-        compress: undefined
-      },
-      sc: {
-        encrypt: undefined,
-        mac: undefined,
-        compress: undefined
-      }
-    },
-    languages: {
-      cs: undefined,
-      sc: undefined
-    }
-  };
-  var val;
-
-  val = readList(payload, 17, self, callback);
-  if (val === false)
-    return false;
-  init.algorithms.kex = val;
-  val = readList(payload, payload._pos, self, callback);
-  if (val === false)
-    return false;
-  init.algorithms.srvHostKey = val;
-  val = readList(payload, payload._pos, self, callback);
-  if (val === false)
-    return false;
-  init.algorithms.cs.encrypt = val;
-  val = readList(payload, payload._pos, self, callback);
-  if (val === false)
-    return false;
-  init.algorithms.sc.encrypt = val;
-  val = readList(payload, payload._pos, self, callback);
-  if (val === false)
-    return false;
-  init.algorithms.cs.mac = val;
-  val = readList(payload, payload._pos, self, callback);
-  if (val === false)
-    return false;
-  init.algorithms.sc.mac = val;
-  val = readList(payload, payload._pos, self, callback);
-  if (val === false)
-    return false;
-  init.algorithms.cs.compress = val;
-  val = readList(payload, payload._pos, self, callback);
-  if (val === false)
-    return false;
-  init.algorithms.sc.compress = val;
-  val = readList(payload, payload._pos, self, callback);
-  if (val === false)
-    return false;
-  init.languages.cs = val;
-  val = readList(payload, payload._pos, self, callback);
-  if (val === false)
-    return false;
-  init.languages.sc = val;
-
-  var firstFollows = (payload._pos < payload.length
-                      && payload[payload._pos] === 1);
-
-  instate.kexinit = payload;
-
-  self.emit('KEXINIT', init, firstFollows);
-}
-
-function parse_KEX(self, type, callback) {
-  var state = self._state;
-  var instate = state.incoming;
-  var payload = instate.payload;
-
-  if (state.outgoing.status === OUT_READY
-      || getPacketType(self, type) !== instate.expectedPacket) {
-    self.debug('DEBUG: Parser: IN_PACKETDATAAFTER, expected: '
-               + instate.expectedPacket
-               + ' but got: '
-               + getPacketType(self, type));
-    self.disconnect(DISCONNECT_REASON.PROTOCOL_ERROR);
-    var err = new Error('Received unexpected packet');
-    err.level = 'protocol';
-    self.emit('error', err);
-    return false;
-  }
-
-  if (state.kex.type === 'groupex') {
-    // Dynamic group exchange-related
-
-    if (self.server) {
-      // TODO: Support group exchange server-side
-      self.disconnect(DISCONNECT_REASON.PROTOCOL_ERROR);
-      var err = new Error('DH group exchange not supported by server');
-      err.level = 'handshake';
-      self.emit('error', err);
-      return false;
-    } else {
-      if (type === MESSAGE.KEXDH_GEX_GROUP) {
-        /*
-          byte    SSH_MSG_KEX_DH_GEX_GROUP
-          mpint   p, safe prime
-          mpint   g, generator for subgroup in GF(p)
-        */
-        var prime = readString(payload, 1, self, callback);
-        if (prime === false)
-          return false;
-        var gen = readString(payload, payload._pos, self, callback);
-        if (gen === false)
-          return false;
-        self.emit('KEXDH_GEX_GROUP', prime, gen);
-      } else if (type === MESSAGE.KEXDH_GEX_REPLY)
-        return parse_KEXDH_REPLY(self, callback);
-    }
-  } else {
-    // Static group or ECDH-related
-
-    if (type === MESSAGE.KEXDH_INIT) {
-      /*
-        byte      SSH_MSG_KEXDH_INIT
-        mpint     e
-      */
-      var e = readString(payload, 1, self, callback);
-      if (e === false)
-        return false;
-
-      self.emit('KEXDH_INIT', e);
-    } else if (type === MESSAGE.KEXDH_REPLY)
-      return parse_KEXDH_REPLY(self, callback);
-  }
-}
-
-function parse_KEXDH_REPLY(self, callback) {
-  var payload = self._state.incoming.payload;
-  /*
-    byte      SSH_MSG_KEXDH_REPLY
-                / SSH_MSG_KEX_DH_GEX_REPLY
-                / SSH_MSG_KEX_ECDH_REPLY
-    string    server public host key and certificates (K_S)
-    mpint     f
-    string    signature of H
-  */
-  var hostkey = readString(payload, 1, self, callback);
-  if (hostkey === false)
-    return false;
-  var pubkey = readString(payload, payload._pos, self, callback);
-  if (pubkey === false)
-    return false;
-  var sig = readString(payload, payload._pos, self, callback);
-  if (sig === false)
-    return false;
-  var info = {
-    hostkey: hostkey,
-    hostkey_format: undefined,
-    pubkey: pubkey,
-    sig: sig,
-    sig_format: undefined
-  };
-  var hostkey_format = readString(hostkey, 0, 'ascii', self, callback);
-  if (hostkey_format === false)
-    return false;
-  info.hostkey_format = hostkey_format;
-  var sig_format = readString(sig, 0, 'ascii', self, callback);
-  if (sig_format === false)
-    return false;
-  info.sig_format = sig_format;
-  self.emit('KEXDH_REPLY', info);
-}
-
-function parse_USERAUTH(self, type, callback) {
-  var state = self._state;
-  var authMethod = state.authsQueue[0];
-  var payload = state.incoming.payload;
-  var message;
-  var lang;
-  var text;
-
-  if (authMethod === 'password') {
-    if (type === MESSAGE.USERAUTH_PASSWD_CHANGEREQ) {
-      /*
-        byte      SSH_MSG_USERAUTH_PASSWD_CHANGEREQ
-        string    prompt in ISO-10646 UTF-8 encoding
-        string    language tag
-      */
-      message = readString(payload, 1, 'utf8', self, callback);
-      if (message === false)
-        return false;
-      lang = readString(payload, payload._pos, 'utf8', self, callback);
-      if (lang === false)
-        return false;
-      self.emit('USERAUTH_PASSWD_CHANGEREQ', message, lang);
-    }
-  } else if (authMethod === 'keyboard-interactive') {
-    if (type === MESSAGE.USERAUTH_INFO_REQUEST) {
-      /*
-        byte      SSH_MSG_USERAUTH_INFO_REQUEST
-        string    name (ISO-10646 UTF-8)
-        string    instruction (ISO-10646 UTF-8)
-        string    language tag -- MAY be empty
-        int       num-prompts
-        string    prompt[1] (ISO-10646 UTF-8)
-        boolean   echo[1]
-        ...
-        string    prompt[num-prompts] (ISO-10646 UTF-8)
-        boolean   echo[num-prompts]
-      */
-      var name;
-      var instr;
-      var nprompts;
-
-      name = readString(payload, 1, 'utf8', self, callback);
-      if (name === false)
-        return false;
-      instr = readString(payload, payload._pos, 'utf8', self, callback);
-      if (instr === false)
-        return false;
-      lang = readString(payload, payload._pos, 'utf8', self, callback);
-      if (lang === false)
-        return false;
-      nprompts = readInt(payload, payload._pos, self, callback);
-      if (nprompts === false)
-        return false;
-
-      payload._pos += 4;
-
-      var prompts = [];
-      for (var prompt = 0; prompt < nprompts; ++prompt) {
-        text = readString(payload, payload._pos, 'utf8', self, callback);
-        if (text === false)
-          return false;
-        var echo = payload[payload._pos++];
-        if (echo === undefined)
-          return false;
-        echo = (echo !== 0);
-        prompts.push({
-          prompt: text,
-          echo: echo
-        });
-      }
-      self.emit('USERAUTH_INFO_REQUEST', name, instr, lang, prompts);
-    } else if (type === MESSAGE.USERAUTH_INFO_RESPONSE) {
-      /*
-        byte      SSH_MSG_USERAUTH_INFO_RESPONSE
-        int       num-responses
-        string    response[1] (ISO-10646 UTF-8)
-        ...
-        string    response[num-responses] (ISO-10646 UTF-8)
-      */
-      var nresponses = readInt(payload, 1, self, callback);
-      if (nresponses === false)
-        return false;
-
-      payload._pos = 5;
-
-      var responses = [];
-      for (var response = 0; response < nresponses; ++response) {
-        text = readString(payload, payload._pos, 'utf8', self, callback);
-        if (text === false)
-          return false;
-        responses.push(text);
-      }
-      self.emit('USERAUTH_INFO_RESPONSE', responses);
-    }
-  } else if (authMethod === 'publickey') {
-    if (type === MESSAGE.USERAUTH_PK_OK) {
-      /*
-        byte      SSH_MSG_USERAUTH_PK_OK
-        string    public key algorithm name from the request
-        string    public key blob from the request
-      */
-      var authsQueue = self._state.authsQueue;
-      if (!authsQueue.length || authsQueue[0] !== 'publickey')
-        return;
-      authsQueue.shift();
-      self.emit('USERAUTH_PK_OK');
-      // XXX: Parse public key info? client currently can ignore it because
-      // there is only one outstanding auth request at any given time, so it
-      // knows which key was OK'd
-    }
-  } else if (authMethod !== undefined) {
-    // Invalid packet for this auth type
-    self.disconnect(DISCONNECT_REASON.PROTOCOL_ERROR);
-    var err = new Error('Invalid authentication method: ' + authMethod);
-    err.level = 'protocol';
-    self.emit('error', err);
-  }
-}
-
-function parse_CHANNEL_REQUEST(self, callback) {
-  var payload = self._state.incoming.payload;
-  var info;
-  var cols;
-  var rows;
-  var width;
-  var height;
-  var wantReply;
-  var signal;
-
-  var recipient = readInt(payload, 1, self, callback);
-  if (recipient === false)
-    return false;
-  var request = readString(payload, 5, 'ascii', self, callback);
-  if (request === false)
-    return false;
-
-  if (request === 'exit-status') { // Server->Client
-    /*
-      byte      SSH_MSG_CHANNEL_REQUEST
-      uint32    recipient channel
-      string    "exit-status"
-      boolean   FALSE
-      uint32    exit_status
-    */
-    var code = readInt(payload, ++payload._pos, self, callback);
-    if (code === false)
-      return false;
-    info = {
-      recipient: recipient,
-      request: request,
-      wantReply: false,
-      code: code
-    };
-  } else if (request === 'exit-signal') { // Server->Client
-    /*
-      byte      SSH_MSG_CHANNEL_REQUEST
-      uint32    recipient channel
-      string    "exit-signal"
-      boolean   FALSE
-      string    signal name (without the "SIG" prefix)
-      boolean   core dumped
-      string    error message in ISO-10646 UTF-8 encoding
-      string    language tag
-    */
-    var coredump;
-    if (!(self.remoteBugs & BUGS.OLD_EXIT)) {
-      signal = readString(payload, ++payload._pos, 'ascii', self, callback);
-      if (signal === false)
-        return false;
-      coredump = payload[payload._pos++];
-      if (coredump === undefined)
-        return false;
-      coredump = (coredump !== 0);
-    } else {
-      /*
-        Instead of `signal name` and `core dumped`, we have just:
-
-        uint32  signal number
-      */
-      signal = readInt(payload, ++payload._pos, self, callback);
-      if (signal === false)
-        return false;
-      switch (signal) {
-        case 1:
-          signal = 'HUP';
-          break;
-        case 2:
-          signal = 'INT';
-          break;
-        case 3:
-          signal = 'QUIT';
-          break;
-        case 6:
-          signal = 'ABRT';
-          break;
-        case 9:
-          signal = 'KILL';
-          break;
-        case 14:
-          signal = 'ALRM';
-          break;
-        case 15:
-          signal = 'TERM';
-          break;
-        default:
-          // Unknown or OS-specific
-          signal = 'UNKNOWN (' + signal + ')';
-      }
-      coredump = false;
-    }
-    var description = readString(payload, payload._pos, 'utf8', self,
-                                 callback);
-    if (description === false)
-      return false;
-    var lang = readString(payload, payload._pos, 'utf8', self, callback);
-    if (lang === false)
-      return false;
-    info = {
-      recipient: recipient,
-      request: request,
-      wantReply: false,
-      signal: signal,
-      coredump: coredump,
-      description: description,
-      lang: lang
-    };
-  } else if (request === 'pty-req') { // Client->Server
-    /*
-      byte      SSH_MSG_CHANNEL_REQUEST
-      uint32    recipient channel
-      string    "pty-req"
-      boolean   want_reply
-      string    TERM environment variable value (e.g., vt100)
-      uint32    terminal width, characters (e.g., 80)
-      uint32    terminal height, rows (e.g., 24)
-      uint32    terminal width, pixels (e.g., 640)
-      uint32    terminal height, pixels (e.g., 480)
-      string    encoded terminal modes
-    */
-    wantReply = payload[payload._pos++];
-    if (wantReply === undefined)
-      return false;
-    wantReply = (wantReply !== 0);
-    var term = readString(payload, payload._pos, 'ascii', self, callback);
-    if (term === false)
-      return false;
-    cols = readInt(payload, payload._pos, self, callback);
-    if (cols === false)
-      return false;
-    rows = readInt(payload, payload._pos += 4, self, callback);
-    if (rows === false)
-      return false;
-    width = readInt(payload, payload._pos += 4, self, callback);
-    if (width === false)
-      return false;
-    height = readInt(payload, payload._pos += 4, self, callback);
-    if (height === false)
-      return false;
-    var modes = readString(payload, payload._pos += 4, self, callback);
-    if (modes === false)
-      return false;
-    modes = bytesToModes(modes);
-    info = {
-      recipient: recipient,
-      request: request,
-      wantReply: wantReply,
-      term: term,
-      cols: cols,
-      rows: rows,
-      width: width,
-      height: height,
-      modes: modes
-    };
-  } else if (request === 'window-change') { // Client->Server
-    /*
-      byte      SSH_MSG_CHANNEL_REQUEST
-      uint32    recipient channel
-      string    "window-change"
-      boolean   FALSE
-      uint32    terminal width, columns
-      uint32    terminal height, rows
-      uint32    terminal width, pixels
-      uint32    terminal height, pixels
-    */
-    cols = readInt(payload, ++payload._pos, self, callback);
-    if (cols === false)
-      return false;
-    rows = readInt(payload, payload._pos += 4, self, callback);
-    if (rows === false)
-      return false;
-    width = readInt(payload, payload._pos += 4, self, callback);
-    if (width === false)
-      return false;
-    height = readInt(payload, payload._pos += 4, self, callback);
-    if (height === false)
-      return false;
-    info = {
-      recipient: recipient,
-      request: request,
-      wantReply: false,
-      cols: cols,
-      rows: rows,
-      width: width,
-      height: height
-    };
-  } else if (request === 'x11-req') { // Client->Server
-    /*
-      byte      SSH_MSG_CHANNEL_REQUEST
-      uint32    recipient channel
-      string    "x11-req"
-      boolean   want reply
-      boolean   single connection
-      string    x11 authentication protocol
-      string    x11 authentication cookie
-      uint32    x11 screen number
-    */
-    wantReply = payload[payload._pos++];
-    if (wantReply === undefined)
-      return false;
-    wantReply = (wantReply !== 0);
-    var single = payload[payload._pos++];
-    if (single === undefined)
-      return false;
-    single = (single !== 0);
-    var protocol = readString(payload, payload._pos, 'ascii', self, callback);
-    if (protocol === false)
-      return false;
-    var cookie = readString(payload, payload._pos, 'binary', self, callback);
-    if (cookie === false)
-      return false;
-    var screen = readInt(payload, payload._pos, self, callback);
-    if (screen === false)
-      return false;
-    info = {
-      recipient: recipient,
-      request: request,
-      wantReply: wantReply,
-      single: single,
-      protocol: protocol,
-      cookie: cookie,
-      screen: screen
-    };
-  } else if (request === 'env') { // Client->Server
-    /*
-      byte      SSH_MSG_CHANNEL_REQUEST
-      uint32    recipient channel
-      string    "env"
-      boolean   want reply
-      string    variable name
-      string    variable value
-    */
-    wantReply = payload[payload._pos++];
-    if (wantReply === undefined)
-      return false;
-    wantReply = (wantReply !== 0);
-    var key = readString(payload, payload._pos, 'utf8', self, callback);
-    if (key === false)
-      return false;
-    var val = readString(payload, payload._pos, 'utf8', self, callback);
-    if (val === false)
-      return false;
-    info = {
-      recipient: recipient,
-      request: request,
-      wantReply: wantReply,
-      key: key,
-      val: val
-    };
-  } else if (request === 'shell') { // Client->Server
-    /*
-      byte      SSH_MSG_CHANNEL_REQUEST
-      uint32    recipient channel
-      string    "shell"
-      boolean   want reply
-    */
-    wantReply = payload[payload._pos];
-    if (wantReply === undefined)
-      return false;
-    wantReply = (wantReply !== 0);
-    info = {
-      recipient: recipient,
-      request: request,
-      wantReply: wantReply
-    };
-  } else if (request === 'exec') { // Client->Server
-    /*
-      byte      SSH_MSG_CHANNEL_REQUEST
-      uint32    recipient channel
-      string    "exec"
-      boolean   want reply
-      string    command
-    */
-    wantReply = payload[payload._pos++];
-    if (wantReply === undefined)
-      return false;
-    wantReply = (wantReply !== 0);
-    var command = readString(payload, payload._pos, 'utf8', self, callback);
-    if (command === false)
-      return false;
-    info = {
-      recipient: recipient,
-      request: request,
-      wantReply: wantReply,
-      command: command
-    };
-  } else if (request === 'subsystem') { // Client->Server
-    /*
-      byte      SSH_MSG_CHANNEL_REQUEST
-      uint32    recipient channel
-      string    "subsystem"
-      boolean   want reply
-      string    subsystem name
-    */
-    wantReply = payload[payload._pos++];
-    if (wantReply === undefined)
-      return false;
-    wantReply = (wantReply !== 0);
-    var subsystem = readString(payload, payload._pos, 'utf8', self, callback);
-    if (subsystem === false)
-      return false;
-    info = {
-      recipient: recipient,
-      request: request,
-      wantReply: wantReply,
-      subsystem: subsystem
-    };
-  } else if (request === 'signal') { // Client->Server
-    /*
-      byte      SSH_MSG_CHANNEL_REQUEST
-      uint32    recipient channel
-      string    "signal"
-      boolean   FALSE
-      string    signal name (without the "SIG" prefix)
-    */
-    signal = readString(payload, ++payload._pos, 'ascii', self, callback);
-    if (signal === false)
-      return false;
-    info = {
-      recipient: recipient,
-      request: request,
-      wantReply: false,
-      signal: 'SIG' + signal
-    };
-  } else if (request === 'xon-xoff') { // Client->Server
-    /*
-      byte      SSH_MSG_CHANNEL_REQUEST
-      uint32    recipient channel
-      string    "xon-xoff"
-      boolean   FALSE
-      boolean   client can do
-    */
-    var clientControl = payload[++payload._pos];
-    if (clientControl === undefined)
-      return false;
-    clientControl = (clientControl !== 0);
-    info = {
-      recipient: recipient,
-      request: request,
-      wantReply: false,
-      clientControl: clientControl
-    };
-  } else if (request === 'auth-agent-req@openssh.com') { // Client->Server
-    /*
-      byte      SSH_MSG_CHANNEL_REQUEST
-      uint32    recipient channel
-      string    "auth-agent-req@openssh.com"
-      boolean   want reply
-    */
-    wantReply = payload[payload._pos];
-    if (wantReply === undefined)
-      return false;
-    wantReply = (wantReply !== 0);
-    info = {
-      recipient: recipient,
-      request: request,
-      wantReply: wantReply
-    };
-  } else {
-    // Unknown request type
-    wantReply = payload[payload._pos];
-    if (wantReply === undefined)
-      return false;
-    wantReply = (wantReply !== 0);
-    info = {
-      recipient: recipient,
-      request: request,
-      wantReply: wantReply
-    };
-  }
-  self.debug('DEBUG: Parser: IN_PACKETDATAAFTER, packet: CHANNEL_REQUEST ('
-             + recipient
-             + ', '
-             + request
-             + ')');
-  self.emit('CHANNEL_REQUEST:' + recipient, info);
-}
-
-function hmacVerify(self, data) {
-  var instate = self._state.incoming;
-  var hmac = instate.hmac;
-
-  self.debug('DEBUG: Parser: Verifying MAC');
-
-  if (instate.decrypt.info.authLen > 0) {
-    var decrypt = instate.decrypt;
-    var instance = decrypt.instance;
-
-    instance.setAuthTag(data);
-
-    var payload = instance.update(instate.packet);
-    instate.payload = payload.slice(1, instate.packet.length - payload[0]);
-    iv_inc(decrypt.iv);
-
-    decrypt.instance = crypto.createDecipheriv(
-                         SSH_TO_OPENSSL[decrypt.type],
-                         decrypt.key,
-                         decrypt.iv
-                       );
-    decrypt.instance.setAutoPadding(false);
-    return true;
-  } else {
-    var calcHmac = crypto.createHmac(SSH_TO_OPENSSL[hmac.type], hmac.key);
-
-    writeUInt32BE(HMAC_COMPUTE, instate.seqno, 0);
-    writeUInt32BE(HMAC_COMPUTE, instate.pktLen, 4);
-    HMAC_COMPUTE[8] = instate.padLen;
-
-    calcHmac.update(HMAC_COMPUTE);
-    calcHmac.update(instate.packet);
-
-    var mac = calcHmac.digest();
-    if (mac.length > instate.hmac.info.actualLen)
-      mac = mac.slice(0, instate.hmac.info.actualLen);
-    return timingSafeEqual(mac, data);
-  }
-}
-
-function decryptData(self, data) {
-  var instance = self._state.incoming.decrypt.instance;
-  self.debug('DEBUG: Parser: Decrypting');
-  return instance.update(data);
-}
-
-function expectData(self, type, amount, buffer) {
-  var expect = self._state.incoming.expect;
-  expect.amount = amount;
-  expect.type = type;
-  expect.ptr = 0;
-  if (buffer)
-    expect.buf = buffer;
-  else if (amount)
-    expect.buf = Buffer.allocUnsafe(amount);
-}
-
-function readList(buffer, start, stream, callback) {
-  var list = readString(buffer, start, 'ascii', stream, callback);
-  return (list !== false ? (list.length ? list.split(',') : []) : false);
-}
-
-function bytesToModes(buffer) {
-  var modes = {};
-
-  for (var i = 0, len = buffer.length, opcode; i < len; i += 5) {
-    opcode = buffer[i];
-    if (opcode === TERMINAL_MODE.TTY_OP_END
-        || TERMINAL_MODE[opcode] === undefined
-        || i + 5 > len)
-      break;
-    modes[TERMINAL_MODE[opcode]] = readUInt32BE(buffer, i + 1);
-  }
-
-  return modes;
-}
-
-function modesToBytes(modes) {
-  var RE_IS_NUM = /^\d+$/;
-  var keys = Object.keys(modes);
-  var b = 0;
-  var bytes = [];
-
-  for (var i = 0, len = keys.length, key, opcode, val; i < len; ++i) {
-    key = keys[i];
-    opcode = TERMINAL_MODE[key];
-    if (opcode
-        && !RE_IS_NUM.test(key)
-        && typeof modes[key] === 'number'
-        && key !== 'TTY_OP_END') {
-      val = modes[key];
-      bytes[b++] = opcode;
-      bytes[b++] = (val >>> 24) & 0xFF;
-      bytes[b++] = (val >>> 16) & 0xFF;
-      bytes[b++] = (val >>> 8) & 0xFF;
-      bytes[b++] = val & 0xFF;
-    }
-  }
-
-  bytes[b] = TERMINAL_MODE.TTY_OP_END;
-
-  return bytes;
-}
-
-// Shared outgoing functions
-function KEXINIT(self, cb) { // Client/Server
-  randBytes(16, function(myCookie) {
-    /*
-      byte         SSH_MSG_KEXINIT
-      byte[16]     cookie (random bytes)
-      name-list    kex_algorithms
-      name-list    server_host_key_algorithms
-      name-list    encryption_algorithms_client_to_server
-      name-list    encryption_algorithms_server_to_client
-      name-list    mac_algorithms_client_to_server
-      name-list    mac_algorithms_server_to_client
-      name-list    compression_algorithms_client_to_server
-      name-list    compression_algorithms_server_to_client
-      name-list    languages_client_to_server
-      name-list    languages_server_to_client
-      boolean      first_kex_packet_follows
-      uint32       0 (reserved for future extension)
-    */
-    var algos = self.config.algorithms;
-
-    var kexBuf = algos.kexBuf;
-    if (self.remoteBugs & BUGS.BAD_DHGEX) {
-      var copied = false;
-      var kexList = algos.kex;
-      for (var j = kexList.length - 1; j >= 0; --j) {
-        if (kexList[j].indexOf('group-exchange') !== -1) {
-          if (!copied) {
-            kexList = kexList.slice();
-            copied = true;
-          }
-          kexList.splice(j, 1);
-        }
-      }
-      if (copied)
-        kexBuf = Buffer.from(kexList.join(','));
-    }
-
-    var hostKeyBuf = algos.serverHostKeyBuf;
-
-    var kexInitSize = 1 + 16
-                      + 4 + kexBuf.length
-                      + 4 + hostKeyBuf.length
-                      + (2 * (4 + algos.cipherBuf.length))
-                      + (2 * (4 + algos.hmacBuf.length))
-                      + (2 * (4 + algos.compressBuf.length))
-                      + (2 * (4 /* languages skipped */))
-                      + 1 + 4;
-    var buf = Buffer.allocUnsafe(kexInitSize);
-    var p = 17;
-
-    buf[0] = MESSAGE.KEXINIT;
-
-    if (myCookie !== false)
-      myCookie.copy(buf, 1);
-
-    writeUInt32BE(buf, kexBuf.length, p);
-    p += 4;
-    kexBuf.copy(buf, p);
-    p += kexBuf.length;
-
-    writeUInt32BE(buf, hostKeyBuf.length, p);
-    p += 4;
-    hostKeyBuf.copy(buf, p);
-    p += hostKeyBuf.length;
-
-    writeUInt32BE(buf, algos.cipherBuf.length, p);
-    p += 4;
-    algos.cipherBuf.copy(buf, p);
-    p += algos.cipherBuf.length;
-
-    writeUInt32BE(buf, algos.cipherBuf.length, p);
-    p += 4;
-    algos.cipherBuf.copy(buf, p);
-    p += algos.cipherBuf.length;
-
-    writeUInt32BE(buf, algos.hmacBuf.length, p);
-    p += 4;
-    algos.hmacBuf.copy(buf, p);
-    p += algos.hmacBuf.length;
-
-    writeUInt32BE(buf, algos.hmacBuf.length, p);
-    p += 4;
-    algos.hmacBuf.copy(buf, p);
-    p += algos.hmacBuf.length;
-
-    writeUInt32BE(buf, algos.compressBuf.length, p);
-    p += 4;
-    algos.compressBuf.copy(buf, p);
-    p += algos.compressBuf.length;
-
-    writeUInt32BE(buf, algos.compressBuf.length, p);
-    p += 4;
-    algos.compressBuf.copy(buf, p);
-    p += algos.compressBuf.length;
-
-    // Skip language lists, first_kex_packet_follows, and reserved bytes
-    buf.fill(0, buf.length - 13);
-
-    self.debug('DEBUG: Outgoing: Writing KEXINIT');
-
-    self._state.incoming.expectedPacket = 'KEXINIT';
-
-    var outstate = self._state.outgoing;
-
-    outstate.kexinit = buf;
-
-    if (outstate.status === OUT_READY) {
-      // We are the one starting the rekeying process ...
-      outstate.status = OUT_REKEYING;
-    }
-
-    send(self, buf, cb, true);
-  });
-  return true;
-}
-
-function KEXDH_INIT(self) { // Client
-  var state = self._state;
-  var outstate = state.outgoing;
-  var buf = Buffer.allocUnsafe(1 + 4 + outstate.pubkey.length);
-
-  state.incoming.expectedPacket = state.kex.pktReply;
-  if (state.kex.type === 'groupex') {
-    buf[0] = MESSAGE.KEXDH_GEX_INIT;
-    self.debug('DEBUG: Outgoing: Writing KEXDH_GEX_INIT');
-  } else {
-    buf[0] = MESSAGE.KEXDH_INIT;
-    if (state.kex.type === 'group')
-      self.debug('DEBUG: Outgoing: Writing KEXDH_INIT');
-    else
-      self.debug('DEBUG: Outgoing: Writing KEXECDH_INIT');
-  }
-
-  writeUInt32BE(buf, outstate.pubkey.length, 1);
-  outstate.pubkey.copy(buf, 5);
-
-  return send(self, buf, undefined, true);
-}
-
-function KEXDH_REPLY(self, e) { // Server
-  var state = self._state;
-  var outstate = state.outgoing;
-  var instate = state.incoming;
-  var curHostKey = self.config.hostKeys[state.hostkeyFormat];
-  if (Array.isArray(curHostKey))
-    curHostKey = curHostKey[0];
-  var hostkey = curHostKey.getPublicSSH();
-  var hostkeyAlgo = curHostKey.type;
-
-  // e === client DH public key
-
-  e = state.kex.convertPublicKey(e);
-
-  var secret = state.kex.computeSecret(e);
-
-  if (secret instanceof Error) {
-    secret.message = 'Error while computing DH secret ('
-                     + state.kex.type + '): '
-                     + secret.message;
-    secret.level = 'handshake';
-    self.emit('error', secret);
-    self.disconnect(DISCONNECT_REASON.KEY_EXCHANGE_FAILED);
-    return false;
-  }
-
-  var hash = crypto.createHash(state.kex.hash);
-
-  var len_ident = Buffer.byteLength(instate.identRaw);
-  var len_sident = Buffer.byteLength(self.config.ident);
-  var len_init = instate.kexinit.length;
-  var len_sinit = outstate.kexinit.length;
-  var len_hostkey = hostkey.length;
-  var len_pubkey = e.length;
-  var len_spubkey = outstate.pubkey.length;
-  var len_secret = secret.length;
-
-  var exchangeBufLen = len_ident
-                       + len_sident
-                       + len_init
-                       + len_sinit
-                       + len_hostkey
-                       + len_pubkey
-                       + len_spubkey
-                       + len_secret
-                       + (4 * 8); // Length fields for above values
-
-  // Group exchange-related
-  var len_gex_prime;
-  var len_gex_gen;
-  var gex_prime;
-  var gex_gen;
-  var dhParams = state.kex.getDHParams();
-  if (dhParams) {
-    gex_prime = dhParams.prime;
-    gex_gen = dhParams.generator;
-    len_gex_prime = gex_prime.length;
-    len_gex_gen = gex_gen.length;
-    exchangeBufLen += (4 * 3); // min, n, max values
-    exchangeBufLen += (4 * 2); // prime, generator length fields
-    exchangeBufLen += len_gex_prime;
-    exchangeBufLen += len_gex_gen;
-  }
-
-  var bp = 0;
-  var exchangeBuf = Buffer.allocUnsafe(exchangeBufLen);
-
-  writeUInt32BE(exchangeBuf, len_ident, bp);
-  bp += 4;
-  exchangeBuf.write(instate.identRaw, bp, 'utf8'); // V_C
-  bp += len_ident;
-
-  writeUInt32BE(exchangeBuf, len_sident, bp);
-  bp += 4;
-  exchangeBuf.write(self.config.ident, bp, 'utf8'); // V_S
-  bp += len_sident;
-
-  writeUInt32BE(exchangeBuf, len_init, bp);
-  bp += 4;
-  instate.kexinit.copy(exchangeBuf, bp); // I_C
-  bp += len_init;
-  instate.kexinit = undefined;
-
-  writeUInt32BE(exchangeBuf, len_sinit, bp);
-  bp += 4;
-  outstate.kexinit.copy(exchangeBuf, bp); // I_S
-  bp += len_sinit;
-  outstate.kexinit = undefined;
-
-  writeUInt32BE(exchangeBuf, len_hostkey, bp);
-  bp += 4;
-  hostkey.copy(exchangeBuf, bp); // K_S
-  bp += len_hostkey;
-
-  if (dhParams) {
-    KEXDH_GEX_REQ_PACKET.slice(1).copy(exchangeBuf, bp); // min, n, max
-    bp += (4 * 3); // Skip over bytes just copied
-
-    writeUInt32BE(exchangeBuf, len_gex_prime, bp);
-    bp += 4;
-    gex_prime.copy(exchangeBuf, bp); // p
-    bp += len_gex_prime;
-
-    writeUInt32BE(exchangeBuf, len_gex_gen, bp);
-    bp += 4;
-    gex_gen.copy(exchangeBuf, bp); // g
-    bp += len_gex_gen;
-  }
-
-  writeUInt32BE(exchangeBuf, len_pubkey, bp);
-  bp += 4;
-  e.copy(exchangeBuf, bp); // e
-  bp += len_pubkey;
-
-  writeUInt32BE(exchangeBuf, len_spubkey, bp);
-  bp += 4;
-  outstate.pubkey.copy(exchangeBuf, bp); // f
-  bp += len_spubkey;
-
-  writeUInt32BE(exchangeBuf, len_secret, bp);
-  bp += 4;
-  secret.copy(exchangeBuf, bp); // K
-
-  outstate.exchangeHash = hash.update(exchangeBuf).digest(); // H
-
-  if (outstate.sessionId === undefined)
-    outstate.sessionId = outstate.exchangeHash;
-  outstate.kexsecret = secret;
-
-  var signature = curHostKey.sign(outstate.exchangeHash);
-  if (signature instanceof Error) {
-    signature.message = 'Error while signing data with host key ('
-                        + hostkeyAlgo + '): '
-                        + signature.message;
-    signature.level = 'handshake';
-    self.emit('error', signature);
-    self.disconnect(DISCONNECT_REASON.KEY_EXCHANGE_FAILED);
-    return false;
-  }
-
-  signature = convertSignature(signature, hostkeyAlgo);
-  if (signature === false) {
-    signature.message = 'Error while converting handshake signature';
-    signature.level = 'handshake';
-    self.emit('error', signature);
-    self.disconnect(DISCONNECT_REASON.KEY_EXCHANGE_FAILED);
-    return false;
-  }
-
-  /*
-    byte      SSH_MSG_KEXDH_REPLY
-    string    server public host key and certificates (K_S)
-    mpint     f
-    string    signature of H
-  */
-
-  var siglen = 4 + hostkeyAlgo.length + 4 + signature.length;
-  var buf = Buffer.allocUnsafe(1
-                               + 4 + len_hostkey
-                               + 4 + len_spubkey
-                               + 4 + siglen);
-
-  bp = 0;
-  buf[bp] = MESSAGE[state.kex.pktReply];
-  ++bp;
-
-  writeUInt32BE(buf, len_hostkey, bp);
-  bp += 4;
-  hostkey.copy(buf, bp); // K_S
-  bp += len_hostkey;
-
-  writeUInt32BE(buf, len_spubkey, bp);
-  bp += 4;
-  outstate.pubkey.copy(buf, bp); // f
-  bp += len_spubkey;
-
-  writeUInt32BE(buf, siglen, bp);
-  bp += 4;
-  writeUInt32BE(buf, hostkeyAlgo.length, bp);
-  bp += 4;
-  buf.write(hostkeyAlgo, bp, hostkeyAlgo.length, 'ascii');
-  bp += hostkeyAlgo.length;
-  writeUInt32BE(buf, signature.length, bp);
-  bp += 4;
-  signature.copy(buf, bp);
-
-  state.incoming.expectedPacket = 'NEWKEYS';
-
-  self.debug('DEBUG: Outgoing: Writing ' + state.kex.pktReply);
-  send(self, buf, undefined, true);
-
-  outstate.sentNEWKEYS = true;
-  self.debug('DEBUG: Outgoing: Writing NEWKEYS');
-  return send(self, NEWKEYS_PACKET, undefined, true);
-}
-
-function KEXDH_GEX_REQ(self) { // Client
-  self._state.incoming.expectedPacket = 'KEXDH_GEX_GROUP';
-
-  self.debug('DEBUG: Outgoing: Writing KEXDH_GEX_REQUEST');
-  return send(self, KEXDH_GEX_REQ_PACKET, undefined, true);
-}
-
-function compressPayload(self, payload, cb) {
-  var compress = self._state.outgoing.compress.instance;
-  compress.write(payload);
-  compress.flush(Z_PARTIAL_FLUSH, compressFlushCb.bind(self, cb));
-}
-
-function compressFlushCb(cb) {
-  if (this._readableState.ended || this._writableState.ended)
-    return;
-  send_(this, this._state.outgoing.compress.instance.read(), cb);
-
-  var queue = this._state.outgoing.compress.queue;
-  queue.shift();
-  if (queue.length > 0)
-    compressPayload(this, queue[0][0], queue[0][1]);
-}
-
-function send(self, payload, cb, bypass) {
-  var state = self._state;
-
-  if (!state)
-    return false;
-
-  var outstate = state.outgoing;
-  if (outstate.status === OUT_REKEYING && !bypass) {
-    if (typeof cb === 'function')
-      outstate.rekeyQueue.push([payload, cb]);
-    else
-      outstate.rekeyQueue.push(payload);
-    return false;
-  } else if (self._readableState.ended || self._writableState.ended) {
-    return false;
-  }
-
-  if (outstate.compress.instance) {
-    // This queue nonsense only exists because of a change made in node v10.12.0
-    // that changed flushing behavior, which now coalesces multiple writes to a
-    // single flush, which does not work for us.
-    var queue = outstate.compress.queue;
-    queue.push([payload, cb]);
-    if (queue.length === 1)
-      compressPayload(self, queue[0][0], queue[0][1]);
-    return true;
-  } else {
-    return send_(self, payload, cb);
-  }
-}
-
-function send_(self, payload, cb) {
-  // TODO: Implement length checks
-
-  var state = self._state;
-  var outstate = state.outgoing;
-  var encrypt = outstate.encrypt;
-  var hmac = outstate.hmac;
-  var pktLen;
-  var padLen;
-  var buf;
-  var mac;
-  var ret;
-
-  pktLen = payload.length + 9;
-
-  if (encrypt.instance !== false) {
-    if (encrypt.info.authLen > 0) {
-      var ptlen = 1 + payload.length + 4/* Must have at least 4 bytes padding*/;
-      while ((ptlen % encrypt.info.blockLen) !== 0)
-        ++ptlen;
-      padLen = ptlen - 1 - payload.length;
-      pktLen = 4 + ptlen;
-    } else {
-      var blockLen = encrypt.info.blockLen;
-      pktLen += ((blockLen - 1) * pktLen) % blockLen;
-      padLen = pktLen - payload.length - 5;
-    }
-  } else {
-    pktLen += (7 * pktLen) % 8;
-    padLen = pktLen - payload.length - 5;
-  }
-
-  buf = Buffer.allocUnsafe(pktLen);
-
-  writeUInt32BE(buf, pktLen - 4, 0);
-  buf[4] = padLen;
-  payload.copy(buf, 5);
-
-  copyRandPadBytes(buf, 5 + payload.length, padLen);
-
-  if (hmac.type !== false && hmac.key) {
-    mac = crypto.createHmac(SSH_TO_OPENSSL[hmac.type], hmac.key);
-    writeUInt32BE(outstate.bufSeqno, outstate.seqno, 0);
-    mac.update(outstate.bufSeqno);
-    mac.update(buf);
-    mac = mac.digest();
-    if (mac.length > hmac.info.actualLen)
-      mac = mac.slice(0, hmac.info.actualLen);
-  }
-
-  var nb = 0;
-  var encData;
-
-  if (encrypt.instance !== false) {
-    if (encrypt.info.authLen > 0) {
-      var encrypter = crypto.createCipheriv(SSH_TO_OPENSSL[encrypt.type],
-                                            encrypt.key,
-                                            encrypt.iv);
-      encrypter.setAutoPadding(false);
-
-      var lenbuf = buf.slice(0, 4);
-
-      encrypter.setAAD(lenbuf);
-      self.push(lenbuf);
-      nb += lenbuf;
-
-      encData = encrypter.update(buf.slice(4));
-      self.push(encData);
-      nb += encData.length;
-
-      var final = encrypter.final();
-      if (final.length) {
-        self.push(final);
-        nb += final.length;
-      }
-
-      var authTag = encrypter.getAuthTag();
-      ret = self.push(authTag);
-      nb += authTag.length;
-
-      iv_inc(encrypt.iv);
-    } else {
-      encData = encrypt.instance.update(buf);
-      self.push(encData);
-      nb += encData.length;
-
-      ret = self.push(mac);
-      nb += mac.length;
-    }
-  } else {
-    ret = self.push(buf);
-    nb = buf.length;
-  }
-
-  self.bytesSent += nb;
-
-  if (++outstate.seqno > MAX_SEQNO)
-    outstate.seqno = 0;
-
-  cb && cb();
-
-  return ret;
-}
-
-var copyRandPadBytes = (function() {
-  if (typeof crypto.randomFillSync === 'function') {
-    return crypto.randomFillSync;
-  } else {
-    return function copyRandPadBytes(buf, offset, count) {
-      var padBytes = crypto.randomBytes(count);
-      padBytes.copy(buf, offset);
-    };
-  }
-})();
-
-function randBytes(n, cb) {
-  crypto.randomBytes(n, function retry(err, buf) {
-    if (err)
-      return crypto.randomBytes(n, retry);
-    cb && cb(buf);
-  });
-}
-
-function convertSignature(signature, keyType) {
-  switch (keyType) {
-    case 'ssh-dss':
-      return DSASigBERToBare(signature);
-    case 'ecdsa-sha2-nistp256':
-    case 'ecdsa-sha2-nistp384':
-    case 'ecdsa-sha2-nistp521':
-      return ECDSASigASN1ToSSH(signature);
-  }
-
-  return signature;
-}
-
-var timingSafeEqual = (function() {
-  if (typeof crypto.timingSafeEqual === 'function') {
-    return function timingSafeEquals(a, b) {
-      if (a.length !== b.length) {
-        crypto.timingSafeEqual(a, a);
-        return false;
-      } else {
-        return crypto.timingSafeEqual(a, b);
-      }
-    };
-  } else {
-    return function timingSafeEquals(a, b) {
-      var val;
-      if (a.length === b.length) {
-        val = 0;
-      } else {
-        val = 1;
-        b = a;
-      }
-
-      for (var i = 0, len = a.length; i < len; ++i)
-        val |= (a[i] ^ b[i]);
-
-      return (val === 0);
-    }
-  }
-})();
-
-function KeyExchange(algo, options) {
-  switch (algo) {
-    case 'curve25519-sha256':
-    case 'curve25519-sha256@libssh.org':
-      if (!CURVE25519_SUPPORTED)
-        break;
-      this.type = '25519';
-      this.hash = 'sha256';
-      this.pktInit = 'KEXECDH_INIT';
-      this.pktReply = 'KEXECDH_REPLY';
-      return;
-    case 'ecdh-sha2-nistp256':
-      this.type = 'ecdh';
-      this.name = 'prime256v1';
-      this.hash = 'sha256';
-      this.pktInit = 'KEXECDH_INIT';
-      this.pktReply = 'KEXECDH_REPLY';
-      return;
-    case 'ecdh-sha2-nistp384':
-      this.type = 'ecdh';
-      this.name = 'secp384r1';
-      this.hash = 'sha384';
-      this.pktInit = 'KEXECDH_INIT';
-      this.pktReply = 'KEXECDH_REPLY';
-      return;
-    case 'ecdh-sha2-nistp521':
-      this.type = 'ecdh';
-      this.name = 'secp521r1';
-      this.hash = 'sha512';
-      this.pktInit = 'KEXECDH_INIT';
-      this.pktReply = 'KEXECDH_REPLY';
-      return;
-    case 'diffie-hellman-group1-sha1':
-      this.type = 'group';
-      this.name = 'modp2';
-      this.hash = 'sha1';
-      this.pktInit = 'KEXDH_INIT';
-      this.pktReply = 'KEXDH_REPLY';
-      return;
-    case 'diffie-hellman-group14-sha1':
-      this.type = 'group';
-      this.name = 'modp14';
-      this.hash = 'sha1';
-      this.pktInit = 'KEXDH_INIT';
-      this.pktReply = 'KEXDH_REPLY';
-      return;
-    case 'diffie-hellman-group14-sha256':
-      this.type = 'group';
-      this.name = 'modp14';
-      this.hash = 'sha256';
-      this.pktInit = 'KEXDH_INIT';
-      this.pktReply = 'KEXDH_REPLY';
-      return;
-    case 'diffie-hellman-group16-sha512':
-      this.type = 'group';
-      this.name = 'modp16';
-      this.hash = 'sha512';
-      this.pktInit = 'KEXDH_INIT';
-      this.pktReply = 'KEXDH_REPLY';
-      return;
-    case 'diffie-hellman-group18-sha512':
-      this.type = 'group';
-      this.name = 'modp18';
-      this.hash = 'sha512';
-      this.pktInit = 'KEXDH_INIT';
-      this.pktReply = 'KEXDH_REPLY';
-      return;
-    case 'diffie-hellman-group-exchange-sha1':
-      this.type = 'groupex';
-      this.hash = 'sha1';
-      this.pktInit = 'KEXDH_GEX_REQ';
-      this.pktReply = 'KEXDH_GEX_REPLY';
-      this._prime = null;
-      this._generator = null;
-      return;
-    case 'diffie-hellman-group-exchange-sha256':
-      this.type = 'groupex';
-      this.hash = 'sha256';
-      this.pktInit = 'KEXDH_GEX_REQ';
-      this.pktReply = 'KEXDH_GEX_REPLY';
-      this._prime = null;
-      this._generator = null;
-      return;
-  }
-  throw new Error('Unsupported key exchange algorithm: ' + algo);
-}
-KeyExchange.prototype.setDHParams = function(prime, generator) {
-  if (this.type === 'groupex') {
-    if (!Buffer.isBuffer(prime))
-      throw new Error('Invalid prime value');
-    if (!Buffer.isBuffer(generator))
-      throw new Error('Invalid generator value');
-    this._prime = prime;
-    this._generator = generator;
-  }
-};
-KeyExchange.prototype.getDHParams = function() {
-  if (this.type === 'groupex' && this._kex) {
-    return {
-      prime: convertToMpint(this._kex.getPrime()),
-      generator: convertToMpint(this._kex.getGenerator()),
-    };
-  }
-};
-KeyExchange.prototype.generateKeys = function() {
-  switch (this.type) {
-    case '25519':
-      if (!this._keys)
-        this._keys = crypto.generateKeyPairSync('x25519');
-      break;
-    case 'ecdh':
-      if (!this._kex) {
-        this._kex = crypto.createECDH(this.name);
-        this._public = this._kex.generateKeys();
-      }
-      break;
-    case 'group':
-    case 'groupex':
-      if (!this._kex) {
-        if (this.name)
-          this._kex = crypto.createDiffieHellmanGroup(this.name);
-        else if (this._prime && this._generator)
-          this._kex = crypto.createDiffieHellman(this._prime, this._generator);
-        if (this._kex)
-          this._public = this._kex.generateKeys();
-      }
-      break;
-  }
-};
-KeyExchange.prototype.getPublicKey = function() {
-  this.generateKeys();
-
-  var key;
-  switch (this.type) {
-    case '25519':
-      key = this._keys.publicKey.export({ type: 'spki', format: 'der' });
-      return key.slice(-32); // HACK: avoids parsing DER/BER header
-    case 'ecdh':
-    case 'group':
-    case 'groupex':
-      key = this._public;
-      break;
-  }
-  if (key)
-    return this.convertPublicKey(key);
-};
-KeyExchange.prototype.convertPublicKey = function(key) {
-  var newKey;
-  var idx = 0;
-  var len = key.length;
-  while (key[idx] === 0x00) {
-    ++idx;
-    --len;
-  }
-  switch (this.type) {
-    case '25519':
-      if (key.length === 32)
-        return key;
-      break;
-    default:
-      if (key[idx] & 0x80) {
-        newKey = Buffer.allocUnsafe(1 + len);
-        newKey[0] = 0;
-        key.copy(newKey, 1, idx);
-        return newKey;
-      }
-  }
-  if (len !== key.length) {
-    newKey = Buffer.allocUnsafe(len);
-    key.copy(newKey, 0, idx);
-    key = newKey;
-  }
-  return key;
-};
-KeyExchange.prototype.computeSecret = function(otherPublicKey) {
-  this.generateKeys();
-
-  switch (this.type) {
-    case '25519':
-      try {
-        var asnWriter = new Ber.Writer();
-        asnWriter.startSequence();
-          // algorithm
-          asnWriter.startSequence();
-            asnWriter.writeOID('1.3.101.110'); // id-X25519
-          asnWriter.endSequence();
-
-          // PublicKey
-          asnWriter.startSequence(Ber.BitString);
-            asnWriter.writeByte(0x00);
-            // XXX: hack to write a raw buffer without a tag -- yuck
-            asnWriter._ensure(otherPublicKey.length);
-            otherPublicKey.copy(asnWriter._buf,
-                                asnWriter._offset,
-                                0,
-                                otherPublicKey.length);
-            asnWriter._offset += otherPublicKey.length;
-          asnWriter.endSequence();
-        asnWriter.endSequence();
-
-        return convertToMpint(crypto.diffieHellman({
-          privateKey: this._keys.privateKey,
-          publicKey: crypto.createPublicKey({
-            key: asnWriter.buffer,
-            type: 'spki',
-            format: 'der',
-          }),
-        }));
-      } catch (ex) {
-        return ex;
-      }
-      break;
-    case 'ecdh':
-    case 'group':
-    case 'groupex':
-      try {
-        return convertToMpint(this._kex.computeSecret(otherPublicKey));
-      } catch (ex) {
-        return ex;
-      }
-  }
-};
-
-function convertToMpint(buf) {
-  var idx = 0;
-  var length = buf.length;
-  while (buf[idx] === 0x00) {
-    ++idx;
-    --length;
-  }
-  var newBuf;
-  if (buf[idx] & 0x80) {
-    newBuf = Buffer.allocUnsafe(1 + length);
-    newBuf[0] = 0;
-    buf.copy(newBuf, 1, idx);
-    buf = newBuf;
-  } else if (length !== buf.length) {
-    newBuf = Buffer.allocUnsafe(length);
-    buf.copy(newBuf, 0, idx);
-    buf = newBuf;
-  }
-  return buf;
-}
-
-module.exports = SSH2Stream;
-module.exports._send = send;
-
-
-/***/ }),
-
-/***/ 4928:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-var Ber = (__nccwpck_require__(970).Ber);
-
-var readUInt32BE = (__nccwpck_require__(9419).readUInt32BE);
-var writeUInt32BE = (__nccwpck_require__(9419).writeUInt32BE);
-
-// XXX the value of 2400 from dropbear is only for certain strings, not all
-// strings. for example the list strings used during handshakes
-var MAX_STRING_LEN = Infinity;//2400; // taken from dropbear
-
-module.exports = {
-  iv_inc: iv_inc,
-  readInt: readInt,
-  readString: readString,
-  parseKey: (__nccwpck_require__(8820).parseKey),
-  sigSSHToASN1: sigSSHToASN1,
-  DSASigBERToBare: DSASigBERToBare,
-  ECDSASigASN1ToSSH: ECDSASigASN1ToSSH
-};
-
-function iv_inc(iv) {
-  var n = 12;
-  var c = 0;
-  do {
-    --n;
-    c = iv[n];
-    if (c === 255)
-      iv[n] = 0;
-    else {
-      iv[n] = ++c;
-      return;
-    }
-  } while (n > 4);
-}
-
-function readInt(buffer, start, stream, cb) {
-  var bufferLen = buffer.length;
-  if (start < 0 || start >= bufferLen || (bufferLen - start) < 4) {
-    stream && stream._cleanup(cb);
-    return false;
-  }
-
-  return readUInt32BE(buffer, start);
-}
-
-function DSASigBERToBare(signature) {
-  if (signature.length <= 40)
-    return signature;
-  // This is a quick and dirty way to get from BER encoded r and s that
-  // OpenSSL gives us, to just the bare values back to back (40 bytes
-  // total) like OpenSSH (and possibly others) are expecting
-  var asnReader = new Ber.Reader(signature);
-  asnReader.readSequence();
-  var r = asnReader.readString(Ber.Integer, true);
-  var s = asnReader.readString(Ber.Integer, true);
-  var rOffset = 0;
-  var sOffset = 0;
-  if (r.length < 20) {
-    var rNew = Buffer.allocUnsafe(20);
-    r.copy(rNew, 1);
-    r = rNew;
-    r[0] = 0;
-  }
-  if (s.length < 20) {
-    var sNew = Buffer.allocUnsafe(20);
-    s.copy(sNew, 1);
-    s = sNew;
-    s[0] = 0;
-  }
-  if (r.length > 20 && r[0] === 0x00)
-    rOffset = 1;
-  if (s.length > 20 && s[0] === 0x00)
-    sOffset = 1;
-  var newSig = Buffer.allocUnsafe((r.length - rOffset) + (s.length - sOffset));
-  r.copy(newSig, 0, rOffset);
-  s.copy(newSig, r.length - rOffset, sOffset);
-  return newSig;
-}
-
-function ECDSASigASN1ToSSH(signature) {
-  if (signature[0] === 0x00)
-    return signature;
-  // Convert SSH signature parameters to ASN.1 BER values for OpenSSL
-  var asnReader = new Ber.Reader(signature);
-  asnReader.readSequence();
-  var r = asnReader.readString(Ber.Integer, true);
-  var s = asnReader.readString(Ber.Integer, true);
-  if (r === null || s === null)
-    return false;
-  var newSig = Buffer.allocUnsafe(4 + r.length + 4 + s.length);
-  writeUInt32BE(newSig, r.length, 0);
-  r.copy(newSig, 4);
-  writeUInt32BE(newSig, s.length, 4 + r.length);
-  s.copy(newSig, 4 + 4 + r.length);
-  return newSig;
-}
-
-function sigSSHToASN1(sig, type, self, callback) {
-  var asnWriter;
-  switch (type) {
-    case 'ssh-dss':
-      if (sig.length > 40)
-        return sig;
-      // Change bare signature r and s values to ASN.1 BER values for OpenSSL
-      asnWriter = new Ber.Writer();
-      asnWriter.startSequence();
-      var r = sig.slice(0, 20);
-      var s = sig.slice(20);
-      if (r[0] & 0x80) {
-        var rNew = Buffer.allocUnsafe(21);
-        rNew[0] = 0x00;
-        r.copy(rNew, 1);
-        r = rNew;
-      } else if (r[0] === 0x00 && !(r[1] & 0x80)) {
-        r = r.slice(1);
-      }
-      if (s[0] & 0x80) {
-        var sNew = Buffer.allocUnsafe(21);
-        sNew[0] = 0x00;
-        s.copy(sNew, 1);
-        s = sNew;
-      } else if (s[0] === 0x00 && !(s[1] & 0x80)) {
-        s = s.slice(1);
-      }
-      asnWriter.writeBuffer(r, Ber.Integer);
-      asnWriter.writeBuffer(s, Ber.Integer);
-      asnWriter.endSequence();
-      return asnWriter.buffer;
-    case 'ecdsa-sha2-nistp256':
-    case 'ecdsa-sha2-nistp384':
-    case 'ecdsa-sha2-nistp521':
-      var r = readString(sig, 0, self, callback);
-      if (r === false)
-        return false;
-      var s = readString(sig, sig._pos, self, callback);
-      if (s === false)
-        return false;
-
-      asnWriter = new Ber.Writer();
-      asnWriter.startSequence();
-      asnWriter.writeBuffer(r, Ber.Integer);
-      asnWriter.writeBuffer(s, Ber.Integer);
-      asnWriter.endSequence();
-      return asnWriter.buffer;
-    default:
-      return sig;
-  }
-}
-
-function readString(buffer, start, encoding, stream, cb, maxLen) {
-  if (encoding && !Buffer.isBuffer(encoding) && typeof encoding !== 'string') {
-    if (typeof cb === 'number')
-      maxLen = cb;
-    cb = stream;
-    stream = encoding;
-    encoding = undefined;
-  }
-
-  start || (start = 0);
-  var bufferLen = buffer.length;
-  var left = (bufferLen - start);
-  var len;
-  var end;
-  if (start < 0 || start >= bufferLen || left < 4) {
-    stream && stream._cleanup(cb);
-    return false;
-  }
-
-  len = readUInt32BE(buffer, start);
-  if (len > (maxLen || MAX_STRING_LEN) || left < (4 + len)) {
-    stream && stream._cleanup(cb);
-    return false;
-  }
-
-  start += 4;
-  end = start + len;
-  buffer._pos = end;
-
-  if (encoding) {
-    if (Buffer.isBuffer(encoding)) {
-      buffer.copy(encoding, 0, start, end);
-      return encoding;
-    } else {
-      return buffer.toString(encoding, start, end);
-    }
-  } else {
-    return buffer.slice(start, end);
-  }
-}
-
-
-
-/***/ }),
-
-/***/ 2405:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-/*
-  Based heavily on the Streaming Boyer-Moore-Horspool C++ implementation
-  by Hongli Lai at: https://github.com/FooBarWidget/boyer-moore-horspool
-*/
-var EventEmitter = (__nccwpck_require__(2361).EventEmitter),
-    inherits = (__nccwpck_require__(3837).inherits);
-
-function jsmemcmp(buf1, pos1, buf2, pos2, num) {
-  for (var i = 0; i < num; ++i, ++pos1, ++pos2)
-    if (buf1[pos1] !== buf2[pos2])
-      return false;
-  return true;
-}
-
-function SBMH(needle) {
-  if (typeof needle === 'string')
-    needle = new Buffer(needle);
-  var i, j, needle_len = needle.length;
-
-  this.maxMatches = Infinity;
-  this.matches = 0;
-
-  this._occ = new Array(256);
-  this._lookbehind_size = 0;
-  this._needle = needle;
-  this._bufpos = 0;
-
-  this._lookbehind = new Buffer(needle_len);
-
-  // Initialize occurrence table.
-  for (j = 0; j < 256; ++j)
-    this._occ[j] = needle_len;
-
-  // Populate occurrence table with analysis of the needle,
-  // ignoring last letter.
-  if (needle_len >= 1) {
-    for (i = 0; i < needle_len - 1; ++i)
-      this._occ[needle[i]] = needle_len - 1 - i;
-  }
-}
-inherits(SBMH, EventEmitter);
-
-SBMH.prototype.reset = function() {
-  this._lookbehind_size = 0;
-  this.matches = 0;
-  this._bufpos = 0;
-};
-
-SBMH.prototype.push = function(chunk, pos) {
-  var r, chlen;
-  if (!Buffer.isBuffer(chunk))
-    chunk = new Buffer(chunk, 'binary');
-  chlen = chunk.length;
-  this._bufpos = pos || 0;
-  while (r !== chlen && this.matches < this.maxMatches)
-    r = this._sbmh_feed(chunk);
+// For UTF-8, a replacement character is added when ending on a partial
+// character.
+function utf8End(buf) {
+  var r = buf && buf.length ? this.write(buf) : '';
+  if (this.lastNeed) return r + '\ufffd';
   return r;
-};
+}
 
-SBMH.prototype._sbmh_feed = function(data) {
-  var len = data.length, needle = this._needle, needle_len = needle.length;
-
-  // Positive: points to a position in `data`
-  //           pos == 3 points to data[3]
-  // Negative: points to a position in the lookbehind buffer
-  //           pos == -2 points to lookbehind[lookbehind_size - 2]
-  var pos = -this._lookbehind_size,
-      last_needle_char = needle[needle_len - 1],
-      occ = this._occ,
-      lookbehind = this._lookbehind;
-
-  if (pos < 0) {
-    // Lookbehind buffer is not empty. Perform Boyer-Moore-Horspool
-    // search with character lookup code that considers both the
-    // lookbehind buffer and the current round's haystack data.
-    //
-    // Loop until
-    //   there is a match.
-    // or until
-    //   we've moved past the position that requires the
-    //   lookbehind buffer. In this case we switch to the
-    //   optimized loop.
-    // or until
-    //   the character to look at lies outside the haystack.
-    while (pos < 0 && pos <= len - needle_len) {
-       var ch = this._sbmh_lookup_char(data, pos + needle_len - 1);
-
-      if (ch === last_needle_char
-          && this._sbmh_memcmp(data, pos, needle_len - 1)) {
-        this._lookbehind_size = 0;
-        ++this.matches;
-        if (pos > -this._lookbehind_size)
-          this.emit('info', true, lookbehind, 0, this._lookbehind_size + pos);
-        else
-          this.emit('info', true);
-
-        this._bufpos = pos + needle_len;
-        return pos + needle_len;
-      } else
-        pos += occ[ch];
-    }
-
-    // No match.
-
-    if (pos < 0) {
-      // There's too few data for Boyer-Moore-Horspool to run,
-      // so let's use a different algorithm to skip as much as
-      // we can.
-      // Forward pos until
-      //   the trailing part of lookbehind + data
-      //   looks like the beginning of the needle
-      // or until
-      //   pos == 0
-      while (pos < 0 && !this._sbmh_memcmp(data, pos, len - pos))
-        pos++;
-    }
-
-    if (pos >= 0) {
-      // Discard lookbehind buffer.
-      this.emit('info', false, lookbehind, 0, this._lookbehind_size);
-      this._lookbehind_size = 0;
-    } else {
-      // Cut off part of the lookbehind buffer that has
-      // been processed and append the entire haystack
-      // into it.
-      var bytesToCutOff = this._lookbehind_size + pos;
-
-      if (bytesToCutOff > 0) {
-        // The cut off data is guaranteed not to contain the needle.
-        this.emit('info', false, lookbehind, 0, bytesToCutOff);
+// UTF-16LE typically needs two bytes per character, but even if we have an even
+// number of bytes available, we need to check if we end on a leading/high
+// surrogate. In that case, we need to wait for the next two bytes in order to
+// decode the last character properly.
+function utf16Text(buf, i) {
+  if ((buf.length - i) % 2 === 0) {
+    var r = buf.toString('utf16le', i);
+    if (r) {
+      var c = r.charCodeAt(r.length - 1);
+      if (c >= 0xD800 && c <= 0xDBFF) {
+        this.lastNeed = 2;
+        this.lastTotal = 4;
+        this.lastChar[0] = buf[buf.length - 2];
+        this.lastChar[1] = buf[buf.length - 1];
+        return r.slice(0, -1);
       }
-
-      lookbehind.copy(lookbehind, 0, bytesToCutOff,
-                      this._lookbehind_size - bytesToCutOff);
-      this._lookbehind_size -= bytesToCutOff;
-
-      data.copy(lookbehind, this._lookbehind_size);
-      this._lookbehind_size += len;
-
-      this._bufpos = len;
-      return len;
     }
+    return r;
   }
+  this.lastNeed = 1;
+  this.lastTotal = 2;
+  this.lastChar[0] = buf[buf.length - 1];
+  return buf.toString('utf16le', i, buf.length - 1);
+}
 
-  if (pos >= 0)
-    pos += this._bufpos;
-
-  // Lookbehind buffer is now empty. Perform Boyer-Moore-Horspool
-  // search with optimized character lookup code that only considers
-  // the current round's haystack data.
-  while (pos <= len - needle_len) {
-    var ch = data[pos + needle_len - 1];
-
-    if (ch === last_needle_char
-        && data[pos] === needle[0]
-        && jsmemcmp(needle, 0, data, pos, needle_len - 1)) {
-      ++this.matches;
-      if (pos > 0)
-        this.emit('info', true, data, this._bufpos, pos);
-      else
-        this.emit('info', true);
-
-      this._bufpos = pos + needle_len;
-      return pos + needle_len;
-    } else
-      pos += occ[ch];
+// For UTF-16LE we do not explicitly append special replacement characters if we
+// end on a partial character, we simply let v8 handle that.
+function utf16End(buf) {
+  var r = buf && buf.length ? this.write(buf) : '';
+  if (this.lastNeed) {
+    var end = this.lastTotal - this.lastNeed;
+    return r + this.lastChar.toString('utf16le', 0, end);
   }
+  return r;
+}
 
-  // There was no match. If there's trailing haystack data that we cannot
-  // match yet using the Boyer-Moore-Horspool algorithm (because the trailing
-  // data is less than the needle size) then match using a modified
-  // algorithm that starts matching from the beginning instead of the end.
-  // Whatever trailing data is left after running this algorithm is added to
-  // the lookbehind buffer.
-  if (pos < len) {
-    while (pos < len && (data[pos] !== needle[0]
-                         || !jsmemcmp(data, pos, needle, 0, len - pos))) {
-      ++pos;
-    }
-    if (pos < len) {
-      data.copy(lookbehind, 0, pos, pos + (len - pos));
-      this._lookbehind_size = len - pos;
-    }
+function base64Text(buf, i) {
+  var n = (buf.length - i) % 3;
+  if (n === 0) return buf.toString('base64', i);
+  this.lastNeed = 3 - n;
+  this.lastTotal = 3;
+  if (n === 1) {
+    this.lastChar[0] = buf[buf.length - 1];
+  } else {
+    this.lastChar[0] = buf[buf.length - 2];
+    this.lastChar[1] = buf[buf.length - 1];
   }
-
-  // Everything until pos is guaranteed not to contain needle data.
-  if (pos > 0)
-    this.emit('info', false, data, this._bufpos, pos < len ? pos : len);
-
-  this._bufpos = len;
-  return len;
-};
-
-SBMH.prototype._sbmh_lookup_char = function(data, pos) {
-  if (pos < 0)
-    return this._lookbehind[this._lookbehind_size + pos];
-  else
-    return data[pos];
+  return buf.toString('base64', i, buf.length - n);
 }
 
-SBMH.prototype._sbmh_memcmp = function(data, pos, len) {
-  var i = 0;
-
-  while (i < len) {
-    if (this._sbmh_lookup_char(data, pos + i) === this._needle[i])
-      ++i;
-    else
-      return false;
-  }
-  return true;
+function base64End(buf) {
+  var r = buf && buf.length ? this.write(buf) : '';
+  if (this.lastNeed) return r + this.lastChar.toString('base64', 0, 3 - this.lastNeed);
+  return r;
 }
 
-module.exports = SBMH;
-
-
-/***/ }),
-
-/***/ 9318:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
-
-"use strict";
-
-const os = __nccwpck_require__(2037);
-const tty = __nccwpck_require__(6224);
-const hasFlag = __nccwpck_require__(1621);
-
-const {env} = process;
-
-let forceColor;
-if (hasFlag('no-color') ||
-	hasFlag('no-colors') ||
-	hasFlag('color=false') ||
-	hasFlag('color=never')) {
-	forceColor = 0;
-} else if (hasFlag('color') ||
-	hasFlag('colors') ||
-	hasFlag('color=true') ||
-	hasFlag('color=always')) {
-	forceColor = 1;
+// Pass bytes on through for single-byte encodings (e.g. ascii, latin1, hex)
+function simpleWrite(buf) {
+  return buf.toString(this.encoding);
 }
 
-if ('FORCE_COLOR' in env) {
-	if (env.FORCE_COLOR === 'true') {
-		forceColor = 1;
-	} else if (env.FORCE_COLOR === 'false') {
-		forceColor = 0;
-	} else {
-		forceColor = env.FORCE_COLOR.length === 0 ? 1 : Math.min(parseInt(env.FORCE_COLOR, 10), 3);
-	}
+function simpleEnd(buf) {
+  return buf && buf.length ? this.write(buf) : '';
 }
-
-function translateLevel(level) {
-	if (level === 0) {
-		return false;
-	}
-
-	return {
-		level,
-		hasBasic: true,
-		has256: level >= 2,
-		has16m: level >= 3
-	};
-}
-
-function supportsColor(haveStream, streamIsTTY) {
-	if (forceColor === 0) {
-		return 0;
-	}
-
-	if (hasFlag('color=16m') ||
-		hasFlag('color=full') ||
-		hasFlag('color=truecolor')) {
-		return 3;
-	}
-
-	if (hasFlag('color=256')) {
-		return 2;
-	}
-
-	if (haveStream && !streamIsTTY && forceColor === undefined) {
-		return 0;
-	}
-
-	const min = forceColor || 0;
-
-	if (env.TERM === 'dumb') {
-		return min;
-	}
-
-	if (process.platform === 'win32') {
-		// Windows 10 build 10586 is the first Windows release that supports 256 colors.
-		// Windows 10 build 14931 is the first release that supports 16m/TrueColor.
-		const osRelease = os.release().split('.');
-		if (
-			Number(osRelease[0]) >= 10 &&
-			Number(osRelease[2]) >= 10586
-		) {
-			return Number(osRelease[2]) >= 14931 ? 3 : 2;
-		}
-
-		return 1;
-	}
-
-	if ('CI' in env) {
-		if (['TRAVIS', 'CIRCLECI', 'APPVEYOR', 'GITLAB_CI', 'GITHUB_ACTIONS', 'BUILDKITE'].some(sign => sign in env) || env.CI_NAME === 'codeship') {
-			return 1;
-		}
-
-		return min;
-	}
-
-	if ('TEAMCITY_VERSION' in env) {
-		return /^(9\.(0*[1-9]\d*)\.|\d{2,}\.)/.test(env.TEAMCITY_VERSION) ? 1 : 0;
-	}
-
-	if (env.COLORTERM === 'truecolor') {
-		return 3;
-	}
-
-	if ('TERM_PROGRAM' in env) {
-		const version = parseInt((env.TERM_PROGRAM_VERSION || '').split('.')[0], 10);
-
-		switch (env.TERM_PROGRAM) {
-			case 'iTerm.app':
-				return version >= 3 ? 3 : 2;
-			case 'Apple_Terminal':
-				return 2;
-			// No default
-		}
-	}
-
-	if (/-256(color)?$/i.test(env.TERM)) {
-		return 2;
-	}
-
-	if (/^screen|^xterm|^vt100|^vt220|^rxvt|color|ansi|cygwin|linux/i.test(env.TERM)) {
-		return 1;
-	}
-
-	if ('COLORTERM' in env) {
-		return 1;
-	}
-
-	return min;
-}
-
-function getSupportLevel(stream) {
-	const level = supportsColor(stream, stream && stream.isTTY);
-	return translateLevel(level);
-}
-
-module.exports = {
-	supportsColor: getSupportLevel,
-	stdout: translateLevel(supportsColor(true, tty.isatty(1))),
-	stderr: translateLevel(supportsColor(true, tty.isatty(2)))
-};
-
 
 /***/ }),
 
@@ -38029,7 +28831,6 @@ module.exports = __nccwpck_require__(4219);
 /***/ 4219:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
-"use strict";
 
 
 var net = __nccwpck_require__(1808);
@@ -38298,7 +29099,7 @@ exports.debug = debug; // for test
 
 /***/ }),
 
-/***/ 4498:
+/***/ 8729:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 (function(nacl) {
@@ -40693,6 +31494,656 @@ nacl.setPRNG = function(fn) {
 
 /***/ }),
 
+/***/ 5027:
+/***/ ((__unused_webpack_module, exports) => {
+
+var undefined = (void 0); // Paranoia
+
+// Beyond this value, index getters/setters (i.e. array[0], array[1]) are so slow to
+// create, and consume so much memory, that the browser appears frozen.
+var MAX_ARRAY_LENGTH = 1e5;
+
+// Approximations of internal ECMAScript conversion functions
+var ECMAScript = (function() {
+  // Stash a copy in case other scripts modify these
+  var opts = Object.prototype.toString,
+      ophop = Object.prototype.hasOwnProperty;
+
+  return {
+    // Class returns internal [[Class]] property, used to avoid cross-frame instanceof issues:
+    Class: function(v) { return opts.call(v).replace(/^\[object *|\]$/g, ''); },
+    HasProperty: function(o, p) { return p in o; },
+    HasOwnProperty: function(o, p) { return ophop.call(o, p); },
+    IsCallable: function(o) { return typeof o === 'function'; },
+    ToInt32: function(v) { return v >> 0; },
+    ToUint32: function(v) { return v >>> 0; }
+  };
+}());
+
+// Snapshot intrinsics
+var LN2 = Math.LN2,
+    abs = Math.abs,
+    floor = Math.floor,
+    log = Math.log,
+    min = Math.min,
+    pow = Math.pow,
+    round = Math.round;
+
+// ES5: lock down object properties
+function configureProperties(obj) {
+  if (getOwnPropNames && defineProp) {
+    var props = getOwnPropNames(obj), i;
+    for (i = 0; i < props.length; i += 1) {
+      defineProp(obj, props[i], {
+        value: obj[props[i]],
+        writable: false,
+        enumerable: false,
+        configurable: false
+      });
+    }
+  }
+}
+
+// emulate ES5 getter/setter API using legacy APIs
+// http://blogs.msdn.com/b/ie/archive/2010/09/07/transitioning-existing-code-to-the-es5-getter-setter-apis.aspx
+// (second clause tests for Object.defineProperty() in IE<9 that only supports extending DOM prototypes, but
+// note that IE<9 does not support __defineGetter__ or __defineSetter__ so it just renders the method harmless)
+var defineProp
+if (Object.defineProperty && (function() {
+      try {
+        Object.defineProperty({}, 'x', {});
+        return true;
+      } catch (e) {
+        return false;
+      }
+    })()) {
+  defineProp = Object.defineProperty;
+} else {
+  defineProp = function(o, p, desc) {
+    if (!o === Object(o)) throw new TypeError("Object.defineProperty called on non-object");
+    if (ECMAScript.HasProperty(desc, 'get') && Object.prototype.__defineGetter__) { Object.prototype.__defineGetter__.call(o, p, desc.get); }
+    if (ECMAScript.HasProperty(desc, 'set') && Object.prototype.__defineSetter__) { Object.prototype.__defineSetter__.call(o, p, desc.set); }
+    if (ECMAScript.HasProperty(desc, 'value')) { o[p] = desc.value; }
+    return o;
+  };
+}
+
+var getOwnPropNames = Object.getOwnPropertyNames || function (o) {
+  if (o !== Object(o)) throw new TypeError("Object.getOwnPropertyNames called on non-object");
+  var props = [], p;
+  for (p in o) {
+    if (ECMAScript.HasOwnProperty(o, p)) {
+      props.push(p);
+    }
+  }
+  return props;
+};
+
+// ES5: Make obj[index] an alias for obj._getter(index)/obj._setter(index, value)
+// for index in 0 ... obj.length
+function makeArrayAccessors(obj) {
+  if (!defineProp) { return; }
+
+  if (obj.length > MAX_ARRAY_LENGTH) throw new RangeError("Array too large for polyfill");
+
+  function makeArrayAccessor(index) {
+    defineProp(obj, index, {
+      'get': function() { return obj._getter(index); },
+      'set': function(v) { obj._setter(index, v); },
+      enumerable: true,
+      configurable: false
+    });
+  }
+
+  var i;
+  for (i = 0; i < obj.length; i += 1) {
+    makeArrayAccessor(i);
+  }
+}
+
+// Internal conversion functions:
+//    pack<Type>()   - take a number (interpreted as Type), output a byte array
+//    unpack<Type>() - take a byte array, output a Type-like number
+
+function as_signed(value, bits) { var s = 32 - bits; return (value << s) >> s; }
+function as_unsigned(value, bits) { var s = 32 - bits; return (value << s) >>> s; }
+
+function packI8(n) { return [n & 0xff]; }
+function unpackI8(bytes) { return as_signed(bytes[0], 8); }
+
+function packU8(n) { return [n & 0xff]; }
+function unpackU8(bytes) { return as_unsigned(bytes[0], 8); }
+
+function packU8Clamped(n) { n = round(Number(n)); return [n < 0 ? 0 : n > 0xff ? 0xff : n & 0xff]; }
+
+function packI16(n) { return [(n >> 8) & 0xff, n & 0xff]; }
+function unpackI16(bytes) { return as_signed(bytes[0] << 8 | bytes[1], 16); }
+
+function packU16(n) { return [(n >> 8) & 0xff, n & 0xff]; }
+function unpackU16(bytes) { return as_unsigned(bytes[0] << 8 | bytes[1], 16); }
+
+function packI32(n) { return [(n >> 24) & 0xff, (n >> 16) & 0xff, (n >> 8) & 0xff, n & 0xff]; }
+function unpackI32(bytes) { return as_signed(bytes[0] << 24 | bytes[1] << 16 | bytes[2] << 8 | bytes[3], 32); }
+
+function packU32(n) { return [(n >> 24) & 0xff, (n >> 16) & 0xff, (n >> 8) & 0xff, n & 0xff]; }
+function unpackU32(bytes) { return as_unsigned(bytes[0] << 24 | bytes[1] << 16 | bytes[2] << 8 | bytes[3], 32); }
+
+function packIEEE754(v, ebits, fbits) {
+
+  var bias = (1 << (ebits - 1)) - 1,
+      s, e, f, ln,
+      i, bits, str, bytes;
+
+  function roundToEven(n) {
+    var w = floor(n), f = n - w;
+    if (f < 0.5)
+      return w;
+    if (f > 0.5)
+      return w + 1;
+    return w % 2 ? w + 1 : w;
+  }
+
+  // Compute sign, exponent, fraction
+  if (v !== v) {
+    // NaN
+    // http://dev.w3.org/2006/webapi/WebIDL/#es-type-mapping
+    e = (1 << ebits) - 1; f = pow(2, fbits - 1); s = 0;
+  } else if (v === Infinity || v === -Infinity) {
+    e = (1 << ebits) - 1; f = 0; s = (v < 0) ? 1 : 0;
+  } else if (v === 0) {
+    e = 0; f = 0; s = (1 / v === -Infinity) ? 1 : 0;
+  } else {
+    s = v < 0;
+    v = abs(v);
+
+    if (v >= pow(2, 1 - bias)) {
+      e = min(floor(log(v) / LN2), 1023);
+      f = roundToEven(v / pow(2, e) * pow(2, fbits));
+      if (f / pow(2, fbits) >= 2) {
+        e = e + 1;
+        f = 1;
+      }
+      if (e > bias) {
+        // Overflow
+        e = (1 << ebits) - 1;
+        f = 0;
+      } else {
+        // Normalized
+        e = e + bias;
+        f = f - pow(2, fbits);
+      }
+    } else {
+      // Denormalized
+      e = 0;
+      f = roundToEven(v / pow(2, 1 - bias - fbits));
+    }
+  }
+
+  // Pack sign, exponent, fraction
+  bits = [];
+  for (i = fbits; i; i -= 1) { bits.push(f % 2 ? 1 : 0); f = floor(f / 2); }
+  for (i = ebits; i; i -= 1) { bits.push(e % 2 ? 1 : 0); e = floor(e / 2); }
+  bits.push(s ? 1 : 0);
+  bits.reverse();
+  str = bits.join('');
+
+  // Bits to bytes
+  bytes = [];
+  while (str.length) {
+    bytes.push(parseInt(str.substring(0, 8), 2));
+    str = str.substring(8);
+  }
+  return bytes;
+}
+
+function unpackIEEE754(bytes, ebits, fbits) {
+
+  // Bytes to bits
+  var bits = [], i, j, b, str,
+      bias, s, e, f;
+
+  for (i = bytes.length; i; i -= 1) {
+    b = bytes[i - 1];
+    for (j = 8; j; j -= 1) {
+      bits.push(b % 2 ? 1 : 0); b = b >> 1;
+    }
+  }
+  bits.reverse();
+  str = bits.join('');
+
+  // Unpack sign, exponent, fraction
+  bias = (1 << (ebits - 1)) - 1;
+  s = parseInt(str.substring(0, 1), 2) ? -1 : 1;
+  e = parseInt(str.substring(1, 1 + ebits), 2);
+  f = parseInt(str.substring(1 + ebits), 2);
+
+  // Produce number
+  if (e === (1 << ebits) - 1) {
+    return f !== 0 ? NaN : s * Infinity;
+  } else if (e > 0) {
+    // Normalized
+    return s * pow(2, e - bias) * (1 + f / pow(2, fbits));
+  } else if (f !== 0) {
+    // Denormalized
+    return s * pow(2, -(bias - 1)) * (f / pow(2, fbits));
+  } else {
+    return s < 0 ? -0 : 0;
+  }
+}
+
+function unpackF64(b) { return unpackIEEE754(b, 11, 52); }
+function packF64(v) { return packIEEE754(v, 11, 52); }
+function unpackF32(b) { return unpackIEEE754(b, 8, 23); }
+function packF32(v) { return packIEEE754(v, 8, 23); }
+
+
+//
+// 3 The ArrayBuffer Type
+//
+
+(function() {
+
+  /** @constructor */
+  var ArrayBuffer = function ArrayBuffer(length) {
+    length = ECMAScript.ToInt32(length);
+    if (length < 0) throw new RangeError('ArrayBuffer size is not a small enough positive integer');
+
+    this.byteLength = length;
+    this._bytes = [];
+    this._bytes.length = length;
+
+    var i;
+    for (i = 0; i < this.byteLength; i += 1) {
+      this._bytes[i] = 0;
+    }
+
+    configureProperties(this);
+  };
+
+  exports.eT = exports.eT || ArrayBuffer;
+
+  //
+  // 4 The ArrayBufferView Type
+  //
+
+  // NOTE: this constructor is not exported
+  /** @constructor */
+  var ArrayBufferView = function ArrayBufferView() {
+    //this.buffer = null;
+    //this.byteOffset = 0;
+    //this.byteLength = 0;
+  };
+
+  //
+  // 5 The Typed Array View Types
+  //
+
+  function makeConstructor(bytesPerElement, pack, unpack) {
+    // Each TypedArray type requires a distinct constructor instance with
+    // identical logic, which this produces.
+
+    var ctor;
+    ctor = function(buffer, byteOffset, length) {
+      var array, sequence, i, s;
+
+      if (!arguments.length || typeof arguments[0] === 'number') {
+        // Constructor(unsigned long length)
+        this.length = ECMAScript.ToInt32(arguments[0]);
+        if (length < 0) throw new RangeError('ArrayBufferView size is not a small enough positive integer');
+
+        this.byteLength = this.length * this.BYTES_PER_ELEMENT;
+        this.buffer = new ArrayBuffer(this.byteLength);
+        this.byteOffset = 0;
+      } else if (typeof arguments[0] === 'object' && arguments[0].constructor === ctor) {
+        // Constructor(TypedArray array)
+        array = arguments[0];
+
+        this.length = array.length;
+        this.byteLength = this.length * this.BYTES_PER_ELEMENT;
+        this.buffer = new ArrayBuffer(this.byteLength);
+        this.byteOffset = 0;
+
+        for (i = 0; i < this.length; i += 1) {
+          this._setter(i, array._getter(i));
+        }
+      } else if (typeof arguments[0] === 'object' &&
+                 !(arguments[0] instanceof ArrayBuffer || ECMAScript.Class(arguments[0]) === 'ArrayBuffer')) {
+        // Constructor(sequence<type> array)
+        sequence = arguments[0];
+
+        this.length = ECMAScript.ToUint32(sequence.length);
+        this.byteLength = this.length * this.BYTES_PER_ELEMENT;
+        this.buffer = new ArrayBuffer(this.byteLength);
+        this.byteOffset = 0;
+
+        for (i = 0; i < this.length; i += 1) {
+          s = sequence[i];
+          this._setter(i, Number(s));
+        }
+      } else if (typeof arguments[0] === 'object' &&
+                 (arguments[0] instanceof ArrayBuffer || ECMAScript.Class(arguments[0]) === 'ArrayBuffer')) {
+        // Constructor(ArrayBuffer buffer,
+        //             optional unsigned long byteOffset, optional unsigned long length)
+        this.buffer = buffer;
+
+        this.byteOffset = ECMAScript.ToUint32(byteOffset);
+        if (this.byteOffset > this.buffer.byteLength) {
+          throw new RangeError("byteOffset out of range");
+        }
+
+        if (this.byteOffset % this.BYTES_PER_ELEMENT) {
+          // The given byteOffset must be a multiple of the element
+          // size of the specific type, otherwise an exception is raised.
+          throw new RangeError("ArrayBuffer length minus the byteOffset is not a multiple of the element size.");
+        }
+
+        if (arguments.length < 3) {
+          this.byteLength = this.buffer.byteLength - this.byteOffset;
+
+          if (this.byteLength % this.BYTES_PER_ELEMENT) {
+            throw new RangeError("length of buffer minus byteOffset not a multiple of the element size");
+          }
+          this.length = this.byteLength / this.BYTES_PER_ELEMENT;
+        } else {
+          this.length = ECMAScript.ToUint32(length);
+          this.byteLength = this.length * this.BYTES_PER_ELEMENT;
+        }
+
+        if ((this.byteOffset + this.byteLength) > this.buffer.byteLength) {
+          throw new RangeError("byteOffset and length reference an area beyond the end of the buffer");
+        }
+      } else {
+        throw new TypeError("Unexpected argument type(s)");
+      }
+
+      this.constructor = ctor;
+
+      configureProperties(this);
+      makeArrayAccessors(this);
+    };
+
+    ctor.prototype = new ArrayBufferView();
+    ctor.prototype.BYTES_PER_ELEMENT = bytesPerElement;
+    ctor.prototype._pack = pack;
+    ctor.prototype._unpack = unpack;
+    ctor.BYTES_PER_ELEMENT = bytesPerElement;
+
+    // getter type (unsigned long index);
+    ctor.prototype._getter = function(index) {
+      if (arguments.length < 1) throw new SyntaxError("Not enough arguments");
+
+      index = ECMAScript.ToUint32(index);
+      if (index >= this.length) {
+        return undefined;
+      }
+
+      var bytes = [], i, o;
+      for (i = 0, o = this.byteOffset + index * this.BYTES_PER_ELEMENT;
+           i < this.BYTES_PER_ELEMENT;
+           i += 1, o += 1) {
+        bytes.push(this.buffer._bytes[o]);
+      }
+      return this._unpack(bytes);
+    };
+
+    // NONSTANDARD: convenience alias for getter: type get(unsigned long index);
+    ctor.prototype.get = ctor.prototype._getter;
+
+    // setter void (unsigned long index, type value);
+    ctor.prototype._setter = function(index, value) {
+      if (arguments.length < 2) throw new SyntaxError("Not enough arguments");
+
+      index = ECMAScript.ToUint32(index);
+      if (index >= this.length) {
+        return undefined;
+      }
+
+      var bytes = this._pack(value), i, o;
+      for (i = 0, o = this.byteOffset + index * this.BYTES_PER_ELEMENT;
+           i < this.BYTES_PER_ELEMENT;
+           i += 1, o += 1) {
+        this.buffer._bytes[o] = bytes[i];
+      }
+    };
+
+    // void set(TypedArray array, optional unsigned long offset);
+    // void set(sequence<type> array, optional unsigned long offset);
+    ctor.prototype.set = function(index, value) {
+      if (arguments.length < 1) throw new SyntaxError("Not enough arguments");
+      var array, sequence, offset, len,
+          i, s, d,
+          byteOffset, byteLength, tmp;
+
+      if (typeof arguments[0] === 'object' && arguments[0].constructor === this.constructor) {
+        // void set(TypedArray array, optional unsigned long offset);
+        array = arguments[0];
+        offset = ECMAScript.ToUint32(arguments[1]);
+
+        if (offset + array.length > this.length) {
+          throw new RangeError("Offset plus length of array is out of range");
+        }
+
+        byteOffset = this.byteOffset + offset * this.BYTES_PER_ELEMENT;
+        byteLength = array.length * this.BYTES_PER_ELEMENT;
+
+        if (array.buffer === this.buffer) {
+          tmp = [];
+          for (i = 0, s = array.byteOffset; i < byteLength; i += 1, s += 1) {
+            tmp[i] = array.buffer._bytes[s];
+          }
+          for (i = 0, d = byteOffset; i < byteLength; i += 1, d += 1) {
+            this.buffer._bytes[d] = tmp[i];
+          }
+        } else {
+          for (i = 0, s = array.byteOffset, d = byteOffset;
+               i < byteLength; i += 1, s += 1, d += 1) {
+            this.buffer._bytes[d] = array.buffer._bytes[s];
+          }
+        }
+      } else if (typeof arguments[0] === 'object' && typeof arguments[0].length !== 'undefined') {
+        // void set(sequence<type> array, optional unsigned long offset);
+        sequence = arguments[0];
+        len = ECMAScript.ToUint32(sequence.length);
+        offset = ECMAScript.ToUint32(arguments[1]);
+
+        if (offset + len > this.length) {
+          throw new RangeError("Offset plus length of array is out of range");
+        }
+
+        for (i = 0; i < len; i += 1) {
+          s = sequence[i];
+          this._setter(offset + i, Number(s));
+        }
+      } else {
+        throw new TypeError("Unexpected argument type(s)");
+      }
+    };
+
+    // TypedArray subarray(long begin, optional long end);
+    ctor.prototype.subarray = function(start, end) {
+      function clamp(v, min, max) { return v < min ? min : v > max ? max : v; }
+
+      start = ECMAScript.ToInt32(start);
+      end = ECMAScript.ToInt32(end);
+
+      if (arguments.length < 1) { start = 0; }
+      if (arguments.length < 2) { end = this.length; }
+
+      if (start < 0) { start = this.length + start; }
+      if (end < 0) { end = this.length + end; }
+
+      start = clamp(start, 0, this.length);
+      end = clamp(end, 0, this.length);
+
+      var len = end - start;
+      if (len < 0) {
+        len = 0;
+      }
+
+      return new this.constructor(
+        this.buffer, this.byteOffset + start * this.BYTES_PER_ELEMENT, len);
+    };
+
+    return ctor;
+  }
+
+  var Int8Array = makeConstructor(1, packI8, unpackI8);
+  var Uint8Array = makeConstructor(1, packU8, unpackU8);
+  var Uint8ClampedArray = makeConstructor(1, packU8Clamped, unpackU8);
+  var Int16Array = makeConstructor(2, packI16, unpackI16);
+  var Uint16Array = makeConstructor(2, packU16, unpackU16);
+  var Int32Array = makeConstructor(4, packI32, unpackI32);
+  var Uint32Array = makeConstructor(4, packU32, unpackU32);
+  var Float32Array = makeConstructor(4, packF32, unpackF32);
+  var Float64Array = makeConstructor(8, packF64, unpackF64);
+
+  exports.iq = exports.iq || Int8Array;
+  exports.U2 = exports.U2 || Uint8Array;
+  exports.we = exports.we || Uint8ClampedArray;
+  exports.M2 = exports.M2 || Int16Array;
+  exports.HA = exports.HA || Uint16Array;
+  exports.ZV = exports.ZV || Int32Array;
+  exports._R = exports._R || Uint32Array;
+  exports.$L = exports.$L || Float32Array;
+  exports.I = exports.I || Float64Array;
+}());
+
+//
+// 6 The DataView View Type
+//
+
+(function() {
+  function r(array, index) {
+    return ECMAScript.IsCallable(array.get) ? array.get(index) : array[index];
+  }
+
+  var IS_BIG_ENDIAN = (function() {
+    var u16array = new(exports.HA)([0x1234]),
+        u8array = new(exports.U2)(u16array.buffer);
+    return r(u8array, 0) === 0x12;
+  }());
+
+  // Constructor(ArrayBuffer buffer,
+  //             optional unsigned long byteOffset,
+  //             optional unsigned long byteLength)
+  /** @constructor */
+  var DataView = function DataView(buffer, byteOffset, byteLength) {
+    if (arguments.length === 0) {
+      buffer = new exports.eT(0);
+    } else if (!(buffer instanceof exports.eT || ECMAScript.Class(buffer) === 'ArrayBuffer')) {
+      throw new TypeError("TypeError");
+    }
+
+    this.buffer = buffer || new exports.eT(0);
+
+    this.byteOffset = ECMAScript.ToUint32(byteOffset);
+    if (this.byteOffset > this.buffer.byteLength) {
+      throw new RangeError("byteOffset out of range");
+    }
+
+    if (arguments.length < 3) {
+      this.byteLength = this.buffer.byteLength - this.byteOffset;
+    } else {
+      this.byteLength = ECMAScript.ToUint32(byteLength);
+    }
+
+    if ((this.byteOffset + this.byteLength) > this.buffer.byteLength) {
+      throw new RangeError("byteOffset and length reference an area beyond the end of the buffer");
+    }
+
+    configureProperties(this);
+  };
+
+  function makeGetter(arrayType) {
+    return function(byteOffset, littleEndian) {
+
+      byteOffset = ECMAScript.ToUint32(byteOffset);
+
+      if (byteOffset + arrayType.BYTES_PER_ELEMENT > this.byteLength) {
+        throw new RangeError("Array index out of range");
+      }
+      byteOffset += this.byteOffset;
+
+      var uint8Array = new exports.U2(this.buffer, byteOffset, arrayType.BYTES_PER_ELEMENT),
+          bytes = [], i;
+      for (i = 0; i < arrayType.BYTES_PER_ELEMENT; i += 1) {
+        bytes.push(r(uint8Array, i));
+      }
+
+      if (Boolean(littleEndian) === Boolean(IS_BIG_ENDIAN)) {
+        bytes.reverse();
+      }
+
+      return r(new arrayType(new exports.U2(bytes).buffer), 0);
+    };
+  }
+
+  DataView.prototype.getUint8 = makeGetter(exports.U2);
+  DataView.prototype.getInt8 = makeGetter(exports.iq);
+  DataView.prototype.getUint16 = makeGetter(exports.HA);
+  DataView.prototype.getInt16 = makeGetter(exports.M2);
+  DataView.prototype.getUint32 = makeGetter(exports._R);
+  DataView.prototype.getInt32 = makeGetter(exports.ZV);
+  DataView.prototype.getFloat32 = makeGetter(exports.$L);
+  DataView.prototype.getFloat64 = makeGetter(exports.I);
+
+  function makeSetter(arrayType) {
+    return function(byteOffset, value, littleEndian) {
+
+      byteOffset = ECMAScript.ToUint32(byteOffset);
+      if (byteOffset + arrayType.BYTES_PER_ELEMENT > this.byteLength) {
+        throw new RangeError("Array index out of range");
+      }
+
+      // Get bytes
+      var typeArray = new arrayType([value]),
+          byteArray = new exports.U2(typeArray.buffer),
+          bytes = [], i, byteView;
+
+      for (i = 0; i < arrayType.BYTES_PER_ELEMENT; i += 1) {
+        bytes.push(r(byteArray, i));
+      }
+
+      // Flip if necessary
+      if (Boolean(littleEndian) === Boolean(IS_BIG_ENDIAN)) {
+        bytes.reverse();
+      }
+
+      // Write them
+      byteView = new exports.U2(this.buffer, byteOffset, arrayType.BYTES_PER_ELEMENT);
+      byteView.set(bytes);
+    };
+  }
+
+  DataView.prototype.setUint8 = makeSetter(exports.U2);
+  DataView.prototype.setInt8 = makeSetter(exports.iq);
+  DataView.prototype.setUint16 = makeSetter(exports.HA);
+  DataView.prototype.setInt16 = makeSetter(exports.M2);
+  DataView.prototype.setUint32 = makeSetter(exports._R);
+  DataView.prototype.setInt32 = makeSetter(exports.ZV);
+  DataView.prototype.setFloat32 = makeSetter(exports.$L);
+  DataView.prototype.setFloat64 = makeSetter(exports.I);
+
+  exports.VO = exports.VO || DataView;
+
+}());
+
+
+/***/ }),
+
+/***/ 7127:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+
+/**
+ * For Node.js, simply re-export the core `util.deprecate` function.
+ */
+
+module.exports = __nccwpck_require__(3837).deprecate;
+
+
+/***/ }),
+
 /***/ 9623:
 /***/ ((module) => {
 
@@ -40712,212 +32163,294 @@ module.exports = eval("require")("cpu-features");
 /***/ 9491:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("assert");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("assert");
 
 /***/ }),
 
 /***/ 4300:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("buffer");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("buffer");
 
 /***/ }),
 
 /***/ 2081:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("child_process");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("child_process");
 
 /***/ }),
 
 /***/ 6113:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("crypto");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("crypto");
 
 /***/ }),
 
 /***/ 9523:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("dns");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("dns");
 
 /***/ }),
 
 /***/ 2361:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("events");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("events");
 
 /***/ }),
 
 /***/ 7147:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("fs");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("fs");
 
 /***/ }),
 
 /***/ 3685:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("http");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("http");
 
 /***/ }),
 
 /***/ 5687:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("https");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("https");
 
 /***/ }),
 
 /***/ 1808:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("net");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("net");
 
 /***/ }),
 
 /***/ 2037:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("os");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("os");
 
 /***/ }),
 
 /***/ 1017:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("path");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("path");
 
 /***/ }),
 
 /***/ 2781:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("stream");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("stream");
 
 /***/ }),
 
 /***/ 4404:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("tls");
-
-/***/ }),
-
-/***/ 6224:
-/***/ ((module) => {
-
-"use strict";
-module.exports = require("tty");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("tls");
 
 /***/ }),
 
 /***/ 3837:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("util");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("util");
 
 /***/ }),
 
 /***/ 9796:
 /***/ ((module) => {
 
-"use strict";
-module.exports = require("zlib");
+module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("zlib");
 
 /***/ }),
 
-/***/ 9625:
+/***/ 6674:
 /***/ ((module) => {
 
-"use strict";
-module.exports = {"i8":"1.10.0"};
-
-/***/ }),
-
-/***/ 9186:
-/***/ ((module) => {
-
-"use strict";
-module.exports = {"i8":"0.4.10"};
+module.exports = {"i8":"1.11.0"};
 
 /***/ })
 
-/******/ 	});
+/******/ });
 /************************************************************************/
-/******/ 	// The module cache
-/******/ 	var __webpack_module_cache__ = {};
-/******/ 	
-/******/ 	// The require function
-/******/ 	function __nccwpck_require__(moduleId) {
-/******/ 		// Check if module is in cache
-/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
-/******/ 		if (cachedModule !== undefined) {
-/******/ 			return cachedModule.exports;
-/******/ 		}
-/******/ 		// Create a new module (and put it into the cache)
-/******/ 		var module = __webpack_module_cache__[moduleId] = {
-/******/ 			id: moduleId,
-/******/ 			loaded: false,
-/******/ 			exports: {}
-/******/ 		};
-/******/ 	
-/******/ 		// Execute the module function
-/******/ 		var threw = true;
-/******/ 		try {
-/******/ 			__webpack_modules__[moduleId].call(module.exports, module, module.exports, __nccwpck_require__);
-/******/ 			threw = false;
-/******/ 		} finally {
-/******/ 			if(threw) delete __webpack_module_cache__[moduleId];
-/******/ 		}
-/******/ 	
-/******/ 		// Flag the module as loaded
-/******/ 		module.loaded = true;
-/******/ 	
-/******/ 		// Return the exports of the module
-/******/ 		return module.exports;
+/******/ // The module cache
+/******/ var __webpack_module_cache__ = {};
+/******/ 
+/******/ // The require function
+/******/ function __nccwpck_require__(moduleId) {
+/******/ 	// Check if module is in cache
+/******/ 	var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 	if (cachedModule !== undefined) {
+/******/ 		return cachedModule.exports;
 /******/ 	}
-/******/ 	
+/******/ 	// Create a new module (and put it into the cache)
+/******/ 	var module = __webpack_module_cache__[moduleId] = {
+/******/ 		// no module.id needed
+/******/ 		// no module.loaded needed
+/******/ 		exports: {}
+/******/ 	};
+/******/ 
+/******/ 	// Execute the module function
+/******/ 	var threw = true;
+/******/ 	try {
+/******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __nccwpck_require__);
+/******/ 		threw = false;
+/******/ 	} finally {
+/******/ 		if(threw) delete __webpack_module_cache__[moduleId];
+/******/ 	}
+/******/ 
+/******/ 	// Return the exports of the module
+/******/ 	return module.exports;
+/******/ }
+/******/ 
 /************************************************************************/
-/******/ 	/* webpack/runtime/node module decorator */
-/******/ 	(() => {
-/******/ 		__nccwpck_require__.nmd = (module) => {
-/******/ 			module.paths = [];
-/******/ 			if (!module.children) module.children = [];
-/******/ 			return module;
-/******/ 		};
-/******/ 	})();
-/******/ 	
-/******/ 	/* webpack/runtime/compat */
-/******/ 	
-/******/ 	if (typeof __nccwpck_require__ !== 'undefined') __nccwpck_require__.ab = __dirname + "/";
-/******/ 	
+/******/ /* webpack/runtime/compat */
+/******/ 
+/******/ if (typeof __nccwpck_require__ !== 'undefined') __nccwpck_require__.ab = new URL('.', import.meta.url).pathname.slice(import.meta.url.match(/^file:\/\/\/\w:/) ? 1 : 0, -1) + "/";
+/******/ 
 /************************************************************************/
 var __webpack_exports__ = {};
 // This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
 (() => {
-const { deploy } = __nccwpck_require__(5911);
-const core = __nccwpck_require__(2186);
 
-let config = {
+// EXTERNAL MODULE: ./node_modules/@actions/core/lib/core.js
+var core = __nccwpck_require__(2186);
+;// CONCATENATED MODULE: external "fs/promises"
+const promises_namespaceObject = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("fs/promises");
+// EXTERNAL MODULE: ./node_modules/ssh2-sftp-client/src/index.js
+var src = __nccwpck_require__(7551);
+// EXTERNAL MODULE: external "path"
+var external_path_ = __nccwpck_require__(1017);
+// EXTERNAL MODULE: ./node_modules/minimatch/minimatch.js
+var minimatch = __nccwpck_require__(3973);
+;// CONCATENATED MODULE: ./lib/deployer.js
+
+
+
+
+
+class Deployer {
+
+    constructor(config, options) {
+        this.config = {
+            username: 'root',
+            port: 22,
+            ...config
+        };
+        this.options = {
+            dryRun: true,
+            exclude: [],
+            removeRedundant: false,
+            ...options
+        };
+        this.sftp = new src();
+        this.promises = [];
+    }
+
+    async sync() {
+        await this.sftp.connect(this.config);
+        await this.syncDir(['']);
+        await Promise.all(this.promises);
+        await this.sftp.end();
+    }
+
+    async syncDir(relativePath) {
+        let localPath = external_path_.join(this.config.localDir, ...relativePath);
+        let remotePath = external_path_.posix.join(this.config.remoteDir, ...relativePath);
+        const remoteStats = await this.sftp.exists(remotePath);
+        if (remoteStats === '-' || remoteStats === 'l') {
+            throw new Error(`remote has same name file as the directory: ${external_path_.basename(remotePath)}`);
+        } else if (remoteStats === false) {
+            await this.sftp.mkdir(remotePath, true);
+            console.log(`created directory: ${remotePath} on remote.`);
+        }
+        let localStats = await (0,promises_namespaceObject.lstat)(localPath);
+        if (localStats.isDirectory()) {
+            console.log(`checking dir: ${localPath}`);
+            const dir = await (0,promises_namespaceObject.opendir)(localPath);
+            for await (const dirent of dir) {
+                const localFile = external_path_.join(localPath, dirent.name);
+                const remoteFile = external_path_.posix.join(remotePath, dirent.name);
+                if (this.isIgnoreFile(localFile)) {
+                    console.log(`ignoring ${dirent.name}`);
+                    continue;
+                }
+                if (dirent.isDirectory()) {
+                    const dirExists = await this.sftp.exists(remoteFile);
+                    if (dirExists === 'd') {
+                        await this.syncDir(localFile.split(external_path_.sep));
+                    } else {
+                        console.log(`${this.options.dryRun ? 'Dry-run: ': ''}uploading dir ${dirent.name}`);
+                        if (!this.options.dryRun) {
+                            this.promises.push(this.sftp.uploadDir(
+                                external_path_.join(localPath, dirent.name),
+                                remoteFile,
+                                { filter: (path, isDirectory) => this.isIgnoreFile(path) }
+                            ));
+                        }
+                    }
+                } else {
+                   await this.uploadFile(localFile, remoteFile);
+                }
+
+            }
+        } else {
+            const remoteFile = external_path_.posix.join(remotePath, external_path_.basename(localPath));
+            if (!this.isIgnoreFile(remoteFile)) await this.uploadFile(localPath, remoteFile);
+        }
+    }
+
+    async uploadFile(localFile, remoteFile) {
+        const remoteExists = await this.sftp.exists(remoteFile);
+        if (this.options.forceUpload) {
+            console.log(`${this.options.dryRun ? 'Dry-run: ': ''} force upload ${remoteFile}`);
+            if (!this.options.dryRun) {
+                if (remoteExists === 'd') {
+                    await this.sftp.rmdir(remoteFile, true);
+                } else {
+                    await this.sftp.delete(remoteFile, true);
+                }
+                this.promises.push(this.sftp.put(localFile, remoteFile));
+            };
+        } else {
+            if (remoteExists) {
+                if (remoteExists === '-') {
+                    console.log(`checking modified timestamp of ${remoteFile}`);
+                    const localStats = await (0,promises_namespaceObject.lstat)(localFile);
+                    const remoteStats = await this.sftp.stat(remoteFile);
+                    if (remoteStats.modifyTime < localStats.mtimeMs) {
+                        console.log(`${this.options.dryRun ? 'Dry-run: ': ''}uploading newer file: ${localFile}`);
+                        if (!this.options.dryRun)  this.promises.push(this.sftp.put(localFile, remoteFile));
+                    } else {
+                        console.log(`server has newer file: ${localFile}, skipping upload.`);
+                    }
+                } else {
+                    throw new Error(`remote has different file type and same name of ${remoteFile}, consider using forceUpload to overwrite it.`);
+                }
+            } else {
+                console.log(`${this.options.dryRun ? 'Dry-run: ': ''}uploading file ${localFile}`);
+                if (!this.options.dryRun)  this.promises.push(this.sftp.put(localFile, remoteFile));
+            }
+        }
+    }
+
+    isIgnoreFile(path) {
+        return this.options.exclude.some(pattern => minimatch(path, pattern));
+    }
+}
+;// CONCATENATED MODULE: ./sftp.js
+
+
+
+const config = {
   host: core.getInput('host'), // Required.
   port: core.getInput('port'), // Optional, Default to 22.
   username: core.getInput('username'), // Required.
@@ -40929,26 +32462,18 @@ let config = {
   remoteDir: core.getInput('remoteDir') // Required, Absolute path only.
 };
 
-let options = {
-  dryRun: JSON.parse(core.getInput('dryRun')), // Enable dry-run mode. Default to false
+const options = {
+  dryRun: JSON.parse(core.getInput('dryRun')), // Enable dry-run mode. Default to true
   exclude: core.getInput('exclude').split(','), // exclude patterns (glob)
-  excludeMode: core.getInput('excludeMode'), // Behavior for excluded files ('remove' or 'ignore'), Default to 'remove'.
   forceUpload: JSON.parse(core.getInput('forceUpload')) // Force uploading all files, Default to false(upload only newer files).
 };
 
 console.log('config->', config, options);
 
-deploy(config, options)
-  .then(() => {
-    console.log('sftp upload success!');
-  })
-  .catch(err => {
-    console.error('sftp upload error! ', err);
-    core.setFailed(err.message)
-  });
+new Deployer(config, options)
+  .sync()
+  .then(()=> console.log('sftp upload success!'));
+
 
 })();
 
-module.exports = __webpack_exports__;
-/******/ })()
-;
