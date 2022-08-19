@@ -21,7 +21,7 @@ inputs:
     required: true
   dryRun:
     required: false
-    default: false
+    default: true
   privateKey:
     required: false
     default: ''
@@ -31,9 +31,6 @@ inputs:
   agent:
     required: false
     default: ''
-  excludeMode:
-    required: false
-    default: 'remove'
   exclude:
     required: false
     default: ''

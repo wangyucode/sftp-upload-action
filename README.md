@@ -24,7 +24,7 @@ this is a github action script for upload files to server via SFTP protocol.
 ### Use password
 ```yml
 - name: SFTP uploader
-  uses: wangyucode/sftp-upload-action@v1.4.0
+  uses: wangyucode/sftp-upload-action@v1.4.1
   with:
     host: 'wycode.cn'
     password: ${{ secrets.password }} 
@@ -35,7 +35,7 @@ this is a github action script for upload files to server via SFTP protocol.
 ### Use privateKey
 ```yml
 - name: SFTP uploader
-  uses: wangyucode/sftp-upload-action@v1.4.0
+  uses: wangyucode/sftp-upload-action@v1.4.1
   with:
     host: 'wycode.cn'
     privateKey: ${{ secrets.key }} 

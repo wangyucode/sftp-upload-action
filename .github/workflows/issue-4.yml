@@ -31,7 +31,7 @@ jobs:
       - name: SFTP uploader
         uses: wangyucode/sftp-upload-action@v1.3.3
         with:
-          host: 'wycode.cn'
+          host: ${{ secrets.HOST }}
           port: 22 # optional, default is 22 
           privateKey: ${{ secrets.SERVER_KEY }} 
           localDir: 'project'

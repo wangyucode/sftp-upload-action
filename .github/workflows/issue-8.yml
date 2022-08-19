@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: Test issue 5#
+name: Test issue 8#
 
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch
@@ -19,22 +19,19 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:  
 
-      - name: create files
-        run: |
-          mkdir -p project/
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 2
 
-           echo "some jar file" > project/Something.jar
-           echo "another jar file" > project/Another.jar
+      - name: restore timestamps
+        uses: chetan/git-restore-mtime-action@v1
 
       - name: SFTP uploader
-        uses: wangyucode/sftp-upload-action@v1.3.3
+        uses: wangyucode/sftp-upload-action@v1.4.1
         with:
           host: ${{ secrets.HOST }}
-          port: 22 # optional, default is 22 
+          port: 22
           privateKey: ${{ secrets.SERVER_KEY }} 
-          localDir: 'project'
+          localDir: './'
           remoteDir: '/root/test/'
-          exclude: '!Something.jar'
-          excludeMode: 'ignore'
-          
-          
+

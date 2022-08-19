@@ -31,7 +31,7 @@ jobs:
       - name: SFTP uploader
         uses: wangyucode/sftp-upload-action@v1.4.1
         with:
-          host: '121.89.216.18'
+          host: ${{ secrets.HOST }}
           port: 5190
           privateKey: ${{ secrets.SERVER_KEY }} 
           localDir: './node_modules'
@@ -46,7 +46,7 @@ jobs:
       - name: SFTP uploader
         uses: wangyucode/sftp-upload-action@v1.4.1
         with:
-          host: '121.89.216.18'
+          host: ${{ secrets.HOST }}
           port: 5190
           privateKey: ${{ secrets.SERVER_KEY }} 
           localDir: '/home/runner/work/blablabla/ok'
