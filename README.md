@@ -2,6 +2,8 @@
 
 this is a github action script for upload files to server via SFTP protocol.
 
+![Libraries.io dependency status for GitHub repo](https://img.shields.io/librariesio/github/wangyucode/sftp-upload-action)
+
 ## Inputs
 
 ```
