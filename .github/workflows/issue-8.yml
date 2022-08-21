@@ -27,12 +27,12 @@ jobs:
         uses: chetan/git-restore-mtime-action@v1
 
       - name: SFTP uploader
-        uses: wangyucode/sftp-upload-action@v1.4.3
+        uses: wangyucode/sftp-upload-action@v1.4.4
         with:
           host: ${{ secrets.HOST }}
           port: 5190
           privateKey: ${{ secrets.SERVER_KEY }} 
           localDir: './test'
           remoteDir: '/root/test/'
-          dryRun: false
+          dryRun: true
 
