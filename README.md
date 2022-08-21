@@ -2,6 +2,10 @@
 
 this is a github action script for upload files to server via SFTP protocol.
 
+![Snyk Vulnerabilities for GitHub Repo](https://img.shields.io/snyk/vulnerabilities/github/wangyucode/sftp-upload-action)
+![release](https://flat.badgen.net/github/release/wangyucode/sftp-upload-action)
+![dependabot](https://flat.badgen.net/github/dependabot/wangyucode/sftp-upload-action)
+
 ## Inputs
 
 ```
