@@ -30,8 +30,8 @@ jobs:
         uses: wangyucode/sftp-upload-action@v1.4.1
         with:
           host: ${{ secrets.HOST }}
-          port: 22
+          port: 5190
           privateKey: ${{ secrets.SERVER_KEY }} 
-          localDir: './'
+          localDir: './test'
           remoteDir: '/root/test/'
 
