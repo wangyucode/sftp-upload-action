@@ -23,6 +23,7 @@ class Deployer {
             removeRedundant: false,
             ...options
         };
+        if(this.options.dryRun) console.warn('dryRun option is enabled! no files will be changed.');
         this.sftp = new Client();
         this.promises = [];
     }
@@ -35,16 +36,21 @@ class Deployer {
     }
 
     async syncDir(localDir, remoteDir, relativePath) {
-        let localPath = path.join(localDir, relativePath);
-        let remotePath = path.posix.join(remoteDir, relativePath);
+        const localPath = path.join(localDir, relativePath);
+        const remotePath = path.posix.join(remoteDir, relativePath);
         const remoteStats = await this.sftp.exists(remotePath);
         if (remoteStats === '-' || remoteStats === 'l') {
-            throw new Error(`remote has same name file as the directory: ${path.basename(remotePath)}`);
+            if (this.options.forceUpload) {
+                console.log(`${this.options.dryRun ? 'Dry-run: ' : ''}removing directory: ${remotePath} on remote.`);
+                if (!this.options.dryRun) await this.sftp.rmdir(remoteFile, true);
+            } else {
+                throw new Error(`remote has same name file as the directory: ${path.basename(remotePath)}`);
+            }
         } else if (remoteStats === false) {
-            await this.sftp.mkdir(remotePath, true);
-            console.log(`created directory: ${remotePath} on remote.`);
+            console.log(`${this.options.dryRun ? 'Dry-run: ' : ''}creating directory: ${remotePath} on remote.`);
+            if (!this.options.dryRun) await this.sftp.mkdir(remotePath, true);
         }
-        let localStats = await lstat(localPath);
+        const localStats = await lstat(localPath);
         if (localStats.isDirectory()) {
             console.log(`checking dir: ${localPath}`);
             const dir = await opendir(localPath);
@@ -62,11 +68,11 @@ class Deployer {
                     } else {
                         console.log(`${this.options.dryRun ? 'Dry-run: ' : ''}uploading dir ${dirent.name}`);
                         if (!this.options.dryRun) {
-                            this.promises.push(this.sftp.uploadDir(
+                            await this.sftp.uploadDir(
                                 path.join(localPath, dirent.name),
                                 remoteFile,
-                                { filter: (path, isDirectory) => this.isIgnoreFile(path) }
-                            ));
+                                { filter: (p, _) => !this.isIgnoreFile(p) }
+                            );
                         }
                     }
                 } else {
@@ -95,7 +101,6 @@ class Deployer {
         } else {
             if (remoteExists) {
                 if (remoteExists === '-') {
-                    console.log(`checking modified timestamp of ${remoteFile}`);
                     const localStats = await lstat(localFile);
                     const remoteStats = await this.sftp.stat(remoteFile);
                     if (remoteStats.modifyTime < localStats.mtimeMs) {

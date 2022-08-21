@@ -27,7 +27,7 @@ jobs:
         uses: chetan/git-restore-mtime-action@v1
 
       - name: SFTP uploader
-        uses: wangyucode/sftp-upload-action@v1.4.4
+        uses: wangyucode/sftp-upload-action@v1.4.5
         with:
           host: ${{ secrets.HOST }}
           port: 5190
