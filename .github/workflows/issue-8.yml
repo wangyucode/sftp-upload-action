@@ -34,5 +34,5 @@ jobs:
           privateKey: ${{ secrets.SERVER_KEY }} 
           localDir: './test'
           remoteDir: '/root/test/'
-          dryRun: true
+          dryRun: false
 

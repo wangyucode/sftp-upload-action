@@ -19,8 +19,6 @@ const options = {
   forceUpload: JSON.parse(core.getInput('forceUpload')) // Force uploading all files, Default to false(upload only newer files).
 };
 
-console.log('config->', config, options);
-
 new Deployer(config, options)
   .sync()
   .then(() => console.log('sftp upload success!'));
