@@ -21,6 +21,7 @@ this is a github action script for upload files to server via SFTP protocol.
   dryRun: true                          # Optional. Default to true.
   exclude: 'node_modules/,**/*.spec.ts' # Optional. exclude patterns (glob), use ',' to split, Default to ''.
   forceUpload: false                    # Optional, Force uploading all files, Default to false(upload only newer files).
+  removeExtraFilesOnServer: false       # Optional, Remove extra files on server. Default to false.
 ```
 
 ## Example usage
