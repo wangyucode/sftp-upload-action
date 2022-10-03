@@ -37,6 +37,9 @@ inputs:
   forceUpload:
     required: false
     default: false
+  removeExtraFilesOnServer:
+    required: false
+    default: false
 runs:
   using: 'node16'
   main: 'dist/index.js'
