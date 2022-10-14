@@ -27,6 +27,7 @@ this is a github action script for upload files to server via SFTP protocol.
 ## Example usage
 
 ### Use password
+
 ```yml
 - name: SFTP uploader
   uses: wangyucode/sftp-upload-action@v1.4.6
@@ -38,6 +39,7 @@ this is a github action script for upload files to server via SFTP protocol.
 ```
 
 ### Use privateKey
+
 ```yml
 - name: SFTP uploader
   uses: wangyucode/sftp-upload-action@v1.4.6
@@ -47,3 +49,30 @@ this is a github action script for upload files to server via SFTP protocol.
     localDir: 'dist'
     remoteDir: '/data/nginx/www/wycode.cn/'
 ```
+
+### Example for a complete github action file
+
+```yml
+name: Upload complete repo (e.g. website) to a SFTP destination
+
+on: [push]
+
+jobs:
+  Upload-to-SFTP:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🚚 Get latest code                     # Checkout the latest code
+        uses: actions/checkout@v2
+
+      - name: 📂 SFTP uploader                       # Upload to SFTP 
+        uses: wangyucode/sftp-upload-action@v1.4.6
+        with:
+          host: ${{ secrets.HOST }}                  # Recommended to put the credentials in github secrets.
+          username: ${{ secrets.USER }}
+          password: ${{ secrets.PASSWORD }} 
+          dryRun: false                              # Optional. Default to true. Set to false to upload files.
+          forceUpload: true                          # Optional, Force uploading all files, Default to false(upload only newer files).
+          localDir: '.'                              # Required, Absolute or relative to cwd.
+          remoteDir: '/'                             # Required, Absolute path only.
+          exclude: '.git*,.DS_Store'                 # Optional. exclude patterns (glob), use ',' to split, Default to ''.
+´´´
