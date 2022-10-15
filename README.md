@@ -18,7 +18,7 @@ this is a github action script for upload files to server via SFTP protocol.
   agent: '',                            # Optional, path to the ssh-agent socket.
   localDir: 'dist',                     # Required, Absolute or relative to cwd.
   remoteDir: '/path/to/dest'            # Required, Absolute path only.
-  dryRun: true                          # Optional. Default to true.
+  dryRun: false                         # Optional. Default to false.
   exclude: 'node_modules/,**/*.spec.ts' # Optional. exclude patterns (glob), use ',' to split, Default to ''.
   forceUpload: false                    # Optional, Force uploading all files, Default to false(upload only newer files).
   removeExtraFilesOnServer: false       # Optional, Remove extra files on server. Default to false.
@@ -30,7 +30,7 @@ this is a github action script for upload files to server via SFTP protocol.
 
 ```yml
 - name: SFTP uploader
-  uses: wangyucode/sftp-upload-action@v1.4.6
+  uses: wangyucode/sftp-upload-action@v1.4.7
   with:
     host: 'wycode.cn'
     password: ${{ secrets.password }} 
@@ -42,7 +42,7 @@ this is a github action script for upload files to server via SFTP protocol.
 
 ```yml
 - name: SFTP uploader
-  uses: wangyucode/sftp-upload-action@v1.4.6
+  uses: wangyucode/sftp-upload-action@v1.4.7
   with:
     host: 'wycode.cn'
     privateKey: ${{ secrets.key }} 
@@ -65,12 +65,11 @@ jobs:
         uses: actions/checkout@v2
 
       - name: 📂 SFTP uploader                       # Upload to SFTP 
-        uses: wangyucode/sftp-upload-action@v1.4.6
+        uses: wangyucode/sftp-upload-action@v1.4.7
         with:
           host: ${{ secrets.HOST }}                  # Recommended to put the credentials in github secrets.
           username: ${{ secrets.USER }}
-          password: ${{ secrets.PASSWORD }} 
-          dryRun: false                              # Optional. Default to true. Set to false to upload files.
+          password: ${{ secrets.PASSWORD }}
           forceUpload: true                          # Optional, Force uploading all files, Default to false(upload only newer files).
           localDir: '.'                              # Required, Absolute or relative to cwd.
           remoteDir: '/'                             # Required, Absolute path only.

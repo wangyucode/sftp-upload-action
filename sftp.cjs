@@ -14,10 +14,10 @@ const config = {
 };
 
 const options = {
-  dryRun: JSON.parse(core.getInput('dryRun')), // Enable dry-run mode. Default to true
+  dryRun: JSON.parse(core.getInput('dryRun')), // Enable dry-run mode. Default to false.
   exclude: core.getInput('exclude').split(','), // exclude patterns (glob)
   forceUpload: JSON.parse(core.getInput('forceUpload')), // Force uploading all files, Default to false(upload only newer files).
-  removeExtraFilesOnServer: JSON.parse(core.getInput('dryRun')) // Remove extra files on server, default to false.
+  removeExtraFilesOnServer: JSON.parse(core.getInput('removeExtraFilesOnServer')) // Remove extra files on server, default to false.
 };
 
 new Deployer(config, options)

@@ -4,7 +4,7 @@
 /***/ 262:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-const { lstat, opendir } = __nccwpck_require__(3292);
+const { access, lstat, opendir } = __nccwpck_require__(3292);
 const Client = __nccwpck_require__(7551);
 const path = __nccwpck_require__(1017);
 const M = __nccwpck_require__(3973);
@@ -23,7 +23,7 @@ class Deployer {
             removeRedundant: false,
             ...options
         };
-        if(this.options.dryRun) console.warn('dryRun option is enabled! no files will be changed.');
+        if (this.options.dryRun) console.warn('dryRun option is enabled! no files will be changed.');
         this.sftp = new Client();
         this.promises = [];
     }
@@ -42,7 +42,7 @@ class Deployer {
         if (remoteStats === '-' || remoteStats === 'l') {
             if (this.options.forceUpload) {
                 console.log(`${this.options.dryRun ? 'Dry-run: ' : ''}removing directory: ${remotePath} on remote.`);
-                if (!this.options.dryRun) await this.sftp.rmdir(remoteFile, true);
+                if (!this.options.dryRun) await this.sftp.rmdir(remotePath, true);
             } else {
                 throw new Error(`remote has same name file as the directory: ${path.basename(remotePath)}`);
             }
@@ -54,6 +54,20 @@ class Deployer {
         if (localStats.isDirectory()) {
             console.log(`checking dir: ${localPath}`);
             const dir = await opendir(localPath);
+            if (this.options.removeExtraFilesOnServer) {
+                const filesOnServer = await this.sftp.list(remotePath);
+                for (const file of filesOnServer) {
+                    const localFile = path.join(localPath, file.name);
+                    try {
+                        await access(localFile);
+                    } catch {
+                        const isDirectory = file.type === 'd';
+                        console.log(`${this.options.dryRun ? 'Dry-run: ' : ''}removing extra ${isDirectory ? 'folder' : 'file'} '${file.name}' on remote.`);
+                        const remoteFile = path.posix.join(remotePath, file.name);
+                        if (!this.options.dryRun) isDirectory ? await this.sftp.rmdir(remoteFile, true) : await this.sftp.delete(remoteFile);
+                    }
+                }
+            }
             for await (const dirent of dir) {
                 const localFile = path.join(localPath, dirent.name);
                 const remoteFile = path.posix.join(remotePath, dirent.name);
@@ -78,7 +92,6 @@ class Deployer {
                 } else {
                     await this.uploadFile(localFile, remoteFile);
                 }
-
             }
         } else {
             const remoteFile = path.posix.join(remotePath, path.basename(localPath));
@@ -32536,9 +32549,10 @@ const config = {
 };
 
 const options = {
-  dryRun: JSON.parse(core.getInput('dryRun')), // Enable dry-run mode. Default to true
+  dryRun: JSON.parse(core.getInput('dryRun')), // Enable dry-run mode. Default to false.
   exclude: core.getInput('exclude').split(','), // exclude patterns (glob)
-  forceUpload: JSON.parse(core.getInput('forceUpload')) // Force uploading all files, Default to false(upload only newer files).
+  forceUpload: JSON.parse(core.getInput('forceUpload')), // Force uploading all files, Default to false(upload only newer files).
+  removeExtraFilesOnServer: JSON.parse(core.getInput('removeExtraFilesOnServer')) // Remove extra files on server, default to false.
 };
 
 new Deployer(config, options)
