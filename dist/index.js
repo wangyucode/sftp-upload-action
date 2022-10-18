@@ -32484,6 +32484,47 @@ module.exports = require("zlib");
 
 /***/ }),
 
+/***/ 9659:
+/***/ (function(__unused_webpack_module, __unused_webpack_exports, __nccwpck_require__) {
+
+const core = __nccwpck_require__(2186);
+const { Deployer } = __nccwpck_require__(262);
+
+const config = {
+  host: core.getInput('host'), // Required.
+  port: core.getInput('port'), // Optional, Default to 22.
+  username: core.getInput('username'), // Required.
+  password: core.getInput('password'), // Optional.
+  privateKey: core.getInput('privateKey'), // Optional.
+  passphrase: core.getInput('passphrase'), // Optional.
+  agent: core.getInput('agent'),   // Optional, path to the ssh-agent socket.
+  localDir: core.getInput('localDir'), // Required, Absolute or relative to cwd.
+  remoteDir: core.getInput('remoteDir') // Required, Absolute path only.
+};
+
+const options = {
+  dryRun: JSON.parse(core.getInput('dryRun')), // Enable dry-run mode. Default to false.
+  exclude: core.getInput('exclude').split(','), // exclude patterns (glob)
+  forceUpload: JSON.parse(core.getInput('forceUpload')), // Force uploading all files, Default to false(upload only newer files).
+  removeExtraFilesOnServer: JSON.parse(core.getInput('removeExtraFilesOnServer')) // Remove extra files on server, default to false.
+};
+
+if (config.privateKey && !/^[-]+[A-Z ]+[-]+\n/.test(config.privateKey)) {
+  try {
+    config.privateKey = fs.readFileSync(this.config.privateKey);;
+  } catch (err) {
+    throw new Error(`Private key file not found ${this.config.privateKey}`);
+  }
+}
+
+new Deployer(config, options)
+  .sync()
+  .then(() => console.log('sftp upload success!'));
+
+
+
+/***/ }),
+
 /***/ 6674:
 /***/ ((module) => {
 
@@ -32530,38 +32571,12 @@ module.exports = {"i8":"1.11.0"};
 /******/ 	if (typeof __nccwpck_require__ !== 'undefined') __nccwpck_require__.ab = __dirname + "/";
 /******/ 	
 /************************************************************************/
-var __webpack_exports__ = {};
-// This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
-(() => {
-const core = __nccwpck_require__(2186);
-const { Deployer } = __nccwpck_require__(262);
-
-const config = {
-  host: core.getInput('host'), // Required.
-  port: core.getInput('port'), // Optional, Default to 22.
-  username: core.getInput('username'), // Required.
-  password: core.getInput('password'), // Optional.
-  privateKey: core.getInput('privateKey'), // Optional.
-  passphrase: core.getInput('passphrase'), // Optional.
-  agent: core.getInput('agent'),   // Optional, path to the ssh-agent socket.
-  localDir: core.getInput('localDir'), // Required, Absolute or relative to cwd.
-  remoteDir: core.getInput('remoteDir') // Required, Absolute path only.
-};
-
-const options = {
-  dryRun: JSON.parse(core.getInput('dryRun')), // Enable dry-run mode. Default to false.
-  exclude: core.getInput('exclude').split(','), // exclude patterns (glob)
-  forceUpload: JSON.parse(core.getInput('forceUpload')), // Force uploading all files, Default to false(upload only newer files).
-  removeExtraFilesOnServer: JSON.parse(core.getInput('removeExtraFilesOnServer')) // Remove extra files on server, default to false.
-};
-
-new Deployer(config, options)
-  .sync()
-  .then(() => console.log('sftp upload success!'));
-
-
-})();
-
-module.exports = __webpack_exports__;
+/******/ 	
+/******/ 	// startup
+/******/ 	// Load entry module and return exports
+/******/ 	// This entry module is referenced by other modules so it can't be inlined
+/******/ 	var __webpack_exports__ = __nccwpck_require__(9659);
+/******/ 	module.exports = __webpack_exports__;
+/******/ 	
 /******/ })()
 ;
