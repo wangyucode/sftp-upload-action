@@ -20,6 +20,14 @@ const options = {
   removeExtraFilesOnServer: JSON.parse(core.getInput('removeExtraFilesOnServer')) // Remove extra files on server, default to false.
 };
 
+if (config.privateKey && !/^[-]+[A-Z ]+[-]+\n/.test(config.privateKey)) {
+  try {
+    config.privateKey = fs.readFileSync(this.config.privateKey);;
+  } catch (err) {
+    throw new Error(`Private key file not found ${this.config.privateKey}`);
+  }
+}
+
 new Deployer(config, options)
   .sync()
   .then(() => console.log('sftp upload success!'));

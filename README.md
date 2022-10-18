@@ -13,7 +13,7 @@ this is a github action script for upload files to server via SFTP protocol.
   port: 22,                             # Optional, Default to 22.
   username: 'user',                     # Required.
   password: 'password',                 # Optional.
-  privateKey: '',                       # Optional, your private key(Raw content).
+  privateKey: '',                       # Optional, your private key(Raw content or key path).
   passphrase: '',                       # Optional.
   agent: '',                            # Optional, path to the ssh-agent socket.
   localDir: 'dist',                     # Required, Absolute or relative to cwd.
@@ -30,7 +30,7 @@ this is a github action script for upload files to server via SFTP protocol.
 
 ```yml
 - name: SFTP uploader
-  uses: wangyucode/sftp-upload-action@v1.4.7
+  uses: wangyucode/sftp-upload-action@v1.4.8
   with:
     host: 'wycode.cn'
     password: ${{ secrets.password }} 
@@ -42,7 +42,7 @@ this is a github action script for upload files to server via SFTP protocol.
 
 ```yml
 - name: SFTP uploader
-  uses: wangyucode/sftp-upload-action@v1.4.7
+  uses: wangyucode/sftp-upload-action@v1.4.8
   with:
     host: 'wycode.cn'
     privateKey: ${{ secrets.key }} 
@@ -65,7 +65,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: 📂 SFTP uploader                       # Upload to SFTP 
-        uses: wangyucode/sftp-upload-action@v1.4.7
+        uses: wangyucode/sftp-upload-action@v1.4.8
         with:
           host: ${{ secrets.HOST }}                  # Recommended to put the credentials in github secrets.
           username: ${{ secrets.USER }}
