@@ -1,4 +1,5 @@
 const core = require('@actions/core');
+const fs = require('fs');
 const { Deployer } = require('./lib/deployer');
 
 const config = {
@@ -22,9 +23,10 @@ const options = {
 
 if (config.privateKey && !/^[-]+[A-Z ]+[-]+\n/.test(config.privateKey)) {
   try {
-    config.privateKey = fs.readFileSync(this.config.privateKey);;
+    config.privateKey = fs.readFileSync(config.privateKey);;
   } catch (err) {
-    throw new Error(`Private key file not found ${this.config.privateKey}`);
+    console.error(err);
+    throw new Error(`Private key file not found ${config.privateKey}`);
   }
 }
 
