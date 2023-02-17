@@ -21,7 +21,7 @@ inputs:
     required: true
   dryRun:
     required: false
-    default: true
+    default: false
   privateKey:
     required: false
     default: ''
