@@ -16,7 +16,7 @@ const config = {
 
 const options = {
   dryRun: JSON.parse(core.getInput('dryRun')), // Enable dry-run mode. Default to false.
-  exclude: core.getInput('exclude').split(',').map(pattern => pattern.replace(/\//, "*")), // exclude patterns (glob) automatically replace "/" if it's the last character.
+  exclude: core.getInput('exclude').split(',').map(pattern => pattern.replace(/\/$/, '')), // exclude patterns (glob) automatically replace "/" if it's the last character.
   forceUpload: JSON.parse(core.getInput('forceUpload')), // Force uploading all files, Default to false(upload only newer files).
   removeExtraFilesOnServer: JSON.parse(core.getInput('removeExtraFilesOnServer')) // Remove extra files on server, default to false.
 };
