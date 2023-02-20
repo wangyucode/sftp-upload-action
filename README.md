@@ -30,7 +30,7 @@ this is a github action script for upload files to server via SFTP protocol.
 
 ```yml
 - name: SFTP uploader
-  uses: wangyucode/sftp-upload-action@v1.4.8
+  uses: wangyucode/sftp-upload-action@v1.4.9
   with:
     host: 'wycode.cn'
     password: ${{ secrets.password }} 
@@ -42,7 +42,7 @@ this is a github action script for upload files to server via SFTP protocol.
 
 ```yml
 - name: SFTP uploader
-  uses: wangyucode/sftp-upload-action@v1.4.8
+  uses: wangyucode/sftp-upload-action@v1.4.9
   with:
     host: 'wycode.cn'
     privateKey: ${{ secrets.key }} 
@@ -65,7 +65,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: 📂 SFTP uploader                       # Upload to SFTP 
-        uses: wangyucode/sftp-upload-action@v1.4.8
+        uses: wangyucode/sftp-upload-action@v1.4.9
         with:
           host: ${{ secrets.HOST }}                  # Recommended to put the credentials in github secrets.
           username: ${{ secrets.USER }}
@@ -75,3 +75,9 @@ jobs:
           remoteDir: '/'                             # Required, Absolute path only.
           exclude: '.git*,.DS_Store'                 # Optional. exclude patterns (glob), use ',' to split, Default to ''.
 ´´´
+## Upload newer files
+
+the action will check `modifyTime` and upload the newer files if `forceUpload` is false.
+but you should restore the modified time before uploading.
+here is an action that can change the modified time: https://github.com/marketplace/actions/git-restore-mtime
+
