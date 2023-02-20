@@ -7,7 +7,7 @@ new Deployer({
     localDir: './test',
     remoteDir: '/root/test/'
 }, {
-    exclude: ['node_modules'],
-    dryRun: false,
+    exclude: ['test/folder1', 'test/folder3'],
+    dryRun: true,
     removeExtraFilesOnServer: true,
 }).sync();
