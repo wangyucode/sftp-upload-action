@@ -9,6 +9,7 @@ const config = {
   password: core.getInput('password'), // Optional.
   privateKey: core.getInput('privateKey'), // Optional.
   passphrase: core.getInput('passphrase'), // Optional.
+  algorithms: core.getInput('compress') ? {compress: 'zlib@openssh.com'} : {}, // Optional. Default to false.
   agent: core.getInput('agent'),   // Optional, path to the ssh-agent socket.
   localDir: core.getInput('localDir'), // Required, Absolute or relative to cwd.
   remoteDir: core.getInput('remoteDir') // Required, Absolute path only.
@@ -16,7 +17,7 @@ const config = {
 
 const options = {
   dryRun: JSON.parse(core.getInput('dryRun')), // Enable dry-run mode. Default to false.
-  exclude: core.getInput('exclude').split(',').map(pattern => pattern.replace(/\/$/, '')), // exclude patterns (glob) automatically replace "/" if it's the last character.
+  exclude: core.getInput('exclude').split(','), // exclude patterns (glob) like .gitignore.
   forceUpload: JSON.parse(core.getInput('forceUpload')), // Force uploading all files, Default to false(upload only newer files).
   removeExtraFilesOnServer: JSON.parse(core.getInput('removeExtraFilesOnServer')) // Remove extra files on server, default to false.
 };

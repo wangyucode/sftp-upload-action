@@ -16,10 +16,11 @@ this is a github action script for upload files to server via SFTP protocol.
   privateKey: '',                       # Optional, your private key(Raw content or key path).
   passphrase: '',                       # Optional.
   agent: '',                            # Optional, path to the ssh-agent socket.
+  compress: false,                      # Optional, compress for ssh connection. Default to false.
   localDir: 'dist',                     # Required, Absolute or relative to cwd.
   remoteDir: '/path/to/dest'            # Required, Absolute path only.
   dryRun: false                         # Optional. Default to false.
-  exclude: 'node_modules/,**/*.spec.ts' # Optional. exclude patterns (glob), use ',' to split, Default to ''.
+  exclude: 'node_modules/,**/*.spec.ts' # Optional. exclude patterns (glob) like .gitignore, use ',' to split, Default to ''.
   forceUpload: false                    # Optional, Force uploading all files, Default to false(upload only newer files).
   removeExtraFilesOnServer: false       # Optional, Remove extra files on server. Default to false.
 ```
@@ -73,7 +74,7 @@ jobs:
           forceUpload: true                          # Optional, Force uploading all files, Default to false(upload only newer files).
           localDir: '.'                              # Required, Absolute or relative to cwd.
           remoteDir: '/'                             # Required, Absolute path only.
-          exclude: '.git*,.DS_Store'                 # Optional. exclude patterns (glob), use ',' to split, Default to ''.
+          exclude: '.git*,.DS_Store'                 # Optional. exclude patterns (glob) like .gitignore, use ',' to split, Default to ''.
 ´´´
 ## Upload newer files
 

@@ -15,6 +15,9 @@ inputs:
     default: 'root'
   password:
     required: true
+  compress:
+    required: false
+    default: false
   localDir:
     required: true
   remoteDir:
