@@ -51,8 +51,8 @@ class Deployer {
                 continue;
             }
             const r = this.remoteFiles.find(r => r.path === l.path);
-            const localFile = path.posix.join(this.config.localDir, l.path);
-            const remoteFile = path.posix.join(this.config.remoteDir, l.path);
+            const localFile = path.join(this.config.localDir, l.path);
+            const remoteFile = path.join(this.config.remoteDir, l.path).replace(/\\/g, '/');
             if (this.options.forceUpload) {
                 console.log(`${this.options.dryRun ? 'Dry-run: ' : ''} force upload -> ${l.path}`);
                 if (!this.options.dryRun) {
@@ -72,18 +72,24 @@ class Deployer {
                         throw new Error(`remote has different file type and same name of ${r.path}, consider using 'forceUpload' to overwrite it.`);
                     } else if (!r.isDirectory) {
                         if (r.size !== l.size) {
-                            console.log(`${this.options.dryRun ? 'Dry-run: ' : ''}uploading different -> ${l.path}`);
+                            console.log(`${this.options.dryRun ? 'Dry-run: ' : ''}replace different -> ${l.path}`);
                             if (!this.options.dryRun) await this.sftp.put(localFile, remoteFile);
                         } else if (r.mtime < l.mtime) {
-                            console.log(`${this.options.dryRun ? 'Dry-run: ' : ''}uploading newer -> ${l.path}`);
+                            console.log(`${this.options.dryRun ? 'Dry-run: ' : ''}replace newer -> ${l.path}`);
                             if (!this.options.dryRun) await this.sftp.put(localFile, remoteFile);
                         } else {
                             console.log(`server has same file: ${localFile}, skipping upload.`);
                         }
                     }
+                } else if (!l.isDirectory) {
+                    console.log(`${this.options.dryRun ? 'Dry-run: ' : ''}creating file -> ${remoteFile}`);
+                    if (!this.options.dryRun){
+                        await this.sftp.mkdir(path.dirname(remoteFile), true);
+                        await this.sftp.put(localFile, remoteFile);
+                    } 
                 } else {
-                    console.log(`${this.options.dryRun ? 'Dry-run: ' : ''}uploading: ${l.path}`);
-                    if (!this.options.dryRun) await this.sftp.put(localFile, remoteFile);
+                    console.log(`${this.options.dryRun ? 'Dry-run: ' : ''}creating folder -> ${remoteFile}`);
+                    if (!this.options.dryRun) await this.sftp.mkdir(remoteFile, true);
                 }
             }
         }
@@ -98,28 +104,33 @@ class Deployer {
                 const filePath = path.join(localPath, file.name);
                 if (file.isDirectory()) {
                     console.log(`reading local folder -> ${filePath}`);
-                    this.localFiles.push({ path: this.getRelativePath(filePath, this.config.localDir), isDirectory: true });
+                    this.localFiles.push({ path: this.getRelativePath(filePath, false), isDirectory: true });
                     // recursion
                     await this.readLocalFiles(filePath);
                 } else {
                     console.log(`reading local file -> ${filePath}`);
                     const fileState = await lstat(filePath);
-                    this.localFiles.push({ path: this.getRelativePath(filePath, this.config.localDir), size: fileState.size, mtime: fileState.mtimeMs });
+                    this.localFiles.push({ path: this.getRelativePath(filePath, false), size: fileState.size, mtime: fileState.mtimeMs });
                 }
             }
         } else {
             console.log(`reading local file -> ${localPath}`);
-            this.localFiles.push({ path: this.getRelativePath(localPath, this.config.localDir), size: stats.size, mtime: stats.mtimeMs });
+            this.localFiles.push({ path: this.getRelativePath(localPath, false), size: stats.size, mtime: stats.mtimeMs });
         }
     }
 
     async readRemoteFiles(remotePath) {
-        const stats = await this.sftp.stat(remotePath);
+        let canNotReadFolder = false;
+        const stats = await this.sftp.stat(remotePath).catch(() => {
+            console.error(`can not read remote folder -> ${remotePath}`);
+            canNotReadFolder = true;
+        });
+        if (canNotReadFolder) return;
         if (stats.isDirectory) {
             const filesOnServer = await this.sftp.list(remotePath);
             for (const file of filesOnServer) {
                 const filePath = path.posix.join(remotePath, file.name);
-                const relativePath = this.getRelativePath(filePath, this.config.remoteDir);
+                const relativePath = this.getRelativePath(filePath, true);
                 let removed = false;
                 // remove extra files on remote side
                 if (this.options.removeExtraFilesOnServer) {
@@ -141,7 +152,7 @@ class Deployer {
             }
         } else {
             console.log(`reading remote file -> ${remotePath}`);
-            this.remoteFiles.push({ path: this.getRelativePath(remotePath, this.config.remoteDir), size: stats.size, mtime: stats.modifyTime });
+            this.remoteFiles.push({ path: this.getRelativePath(remotePath, true), size: stats.size, mtime: stats.modifyTime });
         }
     }
 
@@ -158,9 +169,9 @@ class Deployer {
         return true;
     }
 
-    getRelativePath(file, dir) {
-        const dirPath = path.resolve(dir);
-        const filePath = path.resolve(file);
+    getRelativePath(file, isRemote) {
+        const dirPath = isRemote ? path.resolve(this.config.remoteDir) : path.resolve(this.config.localDir);
+        const filePath = isRemote ? path.resolve(file) : path.resolve(file);
         return dirPath === filePath ? filePath : filePath.replace(dirPath, '');
     }
 

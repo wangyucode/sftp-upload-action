@@ -10,7 +10,7 @@ new Deployer({
     remoteDir: '/root/test/'
 }, {
     exclude: ['folder4', '**/file3'],
-    dryRun: true,
+    dryRun: false,
     removeExtraFilesOnServer: true,
 }).sync();
 // console.log(minimatch('/aaa/folder4/'.replace(/^\//,""), 'aaa/folder4/'))
