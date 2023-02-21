@@ -4,7 +4,7 @@ this is a github action script for upload files to server via SFTP protocol.
 
 ![Snyk Vulnerabilities for GitHub Repo](https://img.shields.io/snyk/vulnerabilities/github/wangyucode/sftp-upload-action)
 ![release](https://flat.badgen.net/github/release/wangyucode/sftp-upload-action)
-![dependabot](https://flat.badgen.net/github/dependabot/wangyucode/sftp-upload-action)
+[![Depfu](https://badges.depfu.com/badges/4b5cc2f5563a240e7b6c6106ded3e4c0/overview.svg)](https://depfu.com/github/wangyucode/sftp-upload-action?project_id=37917)
 
 ## Inputs
 
