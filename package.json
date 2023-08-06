@@ -1,6 +1,6 @@
 {
   "name": "sftp-upload-action",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "sftp upload using sftp-sync-deploy",
   "private": true,
   "scripts": {
