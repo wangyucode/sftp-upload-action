@@ -7,180 +7,238 @@
 const { lstat, opendir } = __nccwpck_require__(3292);
 const Client = __nccwpck_require__(7551);
 const path = __nccwpck_require__(1017);
-const { default: minimatch } = __nccwpck_require__(2002);
+const { minimatch } = __nccwpck_require__(1953);
 
 class Deployer {
+  constructor(config, options) {
+    this.config = {
+      username: "root",
+      port: 22,
+      ...config,
+    };
+    this.options = {
+      dryRun: false,
+      exclude: [],
+      ...options,
+    };
+    if (this.options.dryRun)
+      console.warn("dryRun option is enabled! no files will be changed.");
+    this.sftp = new Client();
+    this.localFiles = [];
+    this.remoteFiles = [];
+  }
 
-    constructor(config, options) {
-        this.config = {
-            username: 'root',
-            port: 22,
-            ...config
-        };
-        this.options = {
-            dryRun: false,
-            exclude: [],
-            ...options
-        };
-        if (this.options.dryRun) console.warn('dryRun option is enabled! no files will be changed.');
-        this.sftp = new Client();
-        this.localFiles = [];
-        this.remoteFiles = [];
+  async sync() {
+    await this.readLocalFiles(this.config.localDir);
 
-    }
+    console.log(`found ${this.localFiles.length} local files`);
 
-    async sync() {
-        await this.readLocalFiles(this.config.localDir);
+    await this.sftp.connect(this.config).catch(console.error);
+    await this.readRemoteFiles(this.config.remoteDir);
 
-        console.log(`found ${this.localFiles.length} local files`);
+    console.log(`found ${this.remoteFiles.length} remote files`);
 
-        await this.sftp.connect(this.config).catch(console.error);
-        await this.readRemoteFiles(this.config.remoteDir);
+    await this.upload();
+    await this.sftp.end();
+  }
 
-        console.log(`found ${this.remoteFiles.length} remote files`);
-
-        await this.upload();
-        await this.sftp.end();
-    }
-
-    async upload() {
-        // upload files to remote
-        for (const l of this.localFiles) {
-            if (this.isIgnoreFile(`${l.path}${l.isDirectory ? '/' : ''}`)) {
-                console.log(`ignoring local ${l.path}`);
-                continue;
-            }
-            const r = this.remoteFiles.find(r => r.path === l.path);
-            const localFile = path.join(this.config.localDir, l.path);
-            const remoteFile = path.join(this.config.remoteDir, l.path).replace(/\\/g, '/');
-            if (this.options.forceUpload) {
-                console.log(`${this.options.dryRun ? 'Dry-run: ' : ''} force upload -> ${l.path}`);
-                if (!this.options.dryRun) {
-                    // remove before upload
-                    if (r) {
-                        if (r.isDirectory) {
-                            await this.sftp.rmdir(remoteFile, true);
-                        } else {
-                            await this.sftp.delete(remoteFile, true);
-                        }
-                    }
-                    await this.sftp.put(localFile, remoteFile);
-                }
+  async upload() {
+    // upload files to remote
+    for (const l of this.localFiles) {
+      if (this.isIgnoreFile(`${l.path}${l.isDirectory ? "/" : ""}`)) {
+        console.log(`ignoring local ${l.path}`);
+        continue;
+      }
+      const r = this.remoteFiles.find((r) => r.path === l.path);
+      const localFile = path.join(this.config.localDir, l.path);
+      const remoteFile = path
+        .join(this.config.remoteDir, l.path)
+        .replace(/\\/g, "/");
+      if (this.options.forceUpload) {
+        console.log(
+          `${this.options.dryRun ? "Dry-run: " : ""} force upload -> ${l.path}`
+        );
+        if (!this.options.dryRun) {
+          // remove before upload
+          if (r) {
+            if (r.isDirectory) {
+              await this.sftp.rmdir(remoteFile, true);
             } else {
-                if (r) {
-                    if (r.isDirectory !== l.isDirectory) {
-                        throw new Error(`remote has different file type and same name of ${r.path}, consider using 'forceUpload' to overwrite it.`);
-                    } else if (!r.isDirectory) {
-                        if (r.size !== l.size) {
-                            console.log(`${this.options.dryRun ? 'Dry-run: ' : ''}replace different -> ${l.path}`);
-                            if (!this.options.dryRun) await this.sftp.put(localFile, remoteFile);
-                        } else if (r.mtime < l.mtime) {
-                            console.log(`${this.options.dryRun ? 'Dry-run: ' : ''}replace newer -> ${l.path}`);
-                            if (!this.options.dryRun) await this.sftp.put(localFile, remoteFile);
-                        } else {
-                            console.log(`server has same file: ${localFile}, skipping upload.`);
-                        }
-                    }
-                } else if (!l.isDirectory) {
-                    console.log(`${this.options.dryRun ? 'Dry-run: ' : ''}creating file -> ${remoteFile}`);
-                    if (!this.options.dryRun){
-                        await this.sftp.mkdir(path.dirname(remoteFile), true);
-                        await this.sftp.put(localFile, remoteFile);
-                    } 
-                } else {
-                    console.log(`${this.options.dryRun ? 'Dry-run: ' : ''}creating folder -> ${remoteFile}`);
-                    if (!this.options.dryRun) await this.sftp.mkdir(remoteFile, true);
-                }
+              await this.sftp.delete(remoteFile, true);
             }
+          }
+          await this.sftp.put(localFile, remoteFile);
         }
-    }
-
-
-    async readLocalFiles(localPath) {
-        const stats = await lstat(localPath);
-        if (stats.isDirectory()) {
-            const dir = await opendir(localPath);
-            for await (const file of dir) {
-                const filePath = path.join(localPath, file.name);
-                if (file.isDirectory()) {
-                    console.log(`reading local folder -> ${filePath}`);
-                    this.localFiles.push({ path: this.getRelativePath(filePath, false), isDirectory: true });
-                    // recursion
-                    await this.readLocalFiles(filePath);
-                } else {
-                    console.log(`reading local file -> ${filePath}`);
-                    const fileState = await lstat(filePath);
-                    this.localFiles.push({ path: this.getRelativePath(filePath, false), size: fileState.size, mtime: fileState.mtimeMs });
-                }
+      } else {
+        if (r) {
+          if (r.isDirectory !== l.isDirectory) {
+            throw new Error(
+              `remote has different file type and same name of ${r.path}, consider using 'forceUpload' to overwrite it.`
+            );
+          } else if (!r.isDirectory) {
+            if (r.size !== l.size) {
+              console.log(
+                `${
+                  this.options.dryRun ? "Dry-run: " : ""
+                }replace different -> ${l.path}`
+              );
+              if (!this.options.dryRun)
+                await this.sftp.put(localFile, remoteFile);
+            } else if (r.mtime < l.mtime) {
+              console.log(
+                `${this.options.dryRun ? "Dry-run: " : ""}replace newer -> ${
+                  l.path
+                }`
+              );
+              if (!this.options.dryRun)
+                await this.sftp.put(localFile, remoteFile);
+            } else {
+              console.log(
+                `server has same file: ${localFile}, skipping upload.`
+              );
             }
+          }
+        } else if (!l.isDirectory) {
+          console.log(
+            `${
+              this.options.dryRun ? "Dry-run: " : ""
+            }creating file -> ${remoteFile}`
+          );
+          if (!this.options.dryRun) {
+            await this.sftp.mkdir(path.dirname(remoteFile), true);
+            await this.sftp.put(localFile, remoteFile);
+          }
         } else {
-            console.log(`reading local file -> ${localPath}`);
-            this.localFiles.push({ path: this.getRelativePath(localPath, false), size: stats.size, mtime: stats.mtimeMs });
+          console.log(
+            `${
+              this.options.dryRun ? "Dry-run: " : ""
+            }creating folder -> ${remoteFile}`
+          );
+          if (!this.options.dryRun) await this.sftp.mkdir(remoteFile, true);
         }
+      }
     }
+  }
 
-    async readRemoteFiles(remotePath) {
-        let canNotReadFolder = false;
-        const stats = await this.sftp.stat(remotePath).catch(() => {
-            console.error(`can not read remote folder -> ${remotePath}`);
-            canNotReadFolder = true;
-        });
-        if (canNotReadFolder) return;
-        if (stats.isDirectory) {
-            const filesOnServer = await this.sftp.list(remotePath);
-            for (const file of filesOnServer) {
-                const filePath = path.posix.join(remotePath, file.name);
-                const relativePath = this.getRelativePath(filePath, true);
-                let removed = false;
-                // remove extra files on remote side
-                if (this.options.removeExtraFilesOnServer) {
-                    removed = await this.removeExtraFilesOnServer(relativePath, file.type === 'd');
-                }
-                if (file.type === 'd') {
-                    // recursion
-                    if (!removed) {
-                        console.log(`reading remote folder -> ${filePath}`);
-                        this.remoteFiles.push({ path: relativePath, isDirectory: true });
-                        await this.readRemoteFiles(filePath);
-                    }
-                } else {
-                    if (!removed) {
-                        console.log(`reading remote file -> ${filePath}`);
-                        this.remoteFiles.push({ path: relativePath, size: file.size, mtime: file.modifyTime });
-                    }
-                }
-            }
+  async readLocalFiles(localPath) {
+    const stats = await lstat(localPath);
+    if (stats.isDirectory()) {
+      const dir = await opendir(localPath);
+      for await (const file of dir) {
+        const filePath = path.join(localPath, file.name);
+        if (file.isDirectory()) {
+          console.log(`reading local folder -> ${filePath}`);
+          this.localFiles.push({
+            path: this.getRelativePath(filePath, false),
+            isDirectory: true,
+          });
+          // recursion
+          await this.readLocalFiles(filePath);
         } else {
-            console.log(`reading remote file -> ${remotePath}`);
-            this.remoteFiles.push({ path: this.getRelativePath(remotePath, true), size: stats.size, mtime: stats.modifyTime });
+          console.log(`reading local file -> ${filePath}`);
+          const fileState = await lstat(filePath);
+          this.localFiles.push({
+            path: this.getRelativePath(filePath, false),
+            size: fileState.size,
+            mtime: fileState.mtimeMs,
+          });
         }
+      }
+    } else {
+      console.log(`reading local file -> ${localPath}`);
+      this.localFiles.push({
+        path: this.getRelativePath(localPath, false),
+        size: stats.size,
+        mtime: stats.mtimeMs,
+      });
     }
+  }
 
-    async removeExtraFilesOnServer(remotePath, isDirectory) {
-        const exist = this.localFiles.some(l => l.path === remotePath);
-        if (exist) return false;
-        if (this.isIgnoreFile(`${remotePath}${isDirectory ? '/' : ''}`)) {
-            console.log(`ignoring remote ${remotePath}`);
-            return false;
+  async readRemoteFiles(remotePath) {
+    let canNotReadFolder = false;
+    const stats = await this.sftp.stat(remotePath).catch(() => {
+      console.error(`can not read remote folder -> ${remotePath}`);
+      canNotReadFolder = true;
+    });
+    if (canNotReadFolder) return;
+    if (stats.isDirectory) {
+      const filesOnServer = await this.sftp.list(remotePath);
+      for (const file of filesOnServer) {
+        const filePath = path.posix.join(remotePath, file.name);
+        const relativePath = this.getRelativePath(filePath, true);
+        let removed = false;
+        // remove extra files on remote side
+        if (this.options.removeExtraFilesOnServer) {
+          removed = await this.removeExtraFilesOnServer(
+            relativePath,
+            file.type === "d"
+          );
         }
-        console.log(`${this.options.dryRun ? 'Dry-run: ' : ''}removing extra ${isDirectory ? 'folder' : 'file'} '${remotePath}' on remote.`);
-        const remoteFile = path.posix.join(this.config.remoteDir, remotePath);
-        if (!this.options.dryRun) isDirectory ? await this.sftp.rmdir(remoteFile, true) : await this.sftp.delete(remoteFile);
-        return true;
+        if (file.type === "d") {
+          // recursion
+          if (!removed) {
+            console.log(`reading remote folder -> ${filePath}`);
+            this.remoteFiles.push({ path: relativePath, isDirectory: true });
+            await this.readRemoteFiles(filePath);
+          }
+        } else {
+          if (!removed) {
+            console.log(`reading remote file -> ${filePath}`);
+            this.remoteFiles.push({
+              path: relativePath,
+              size: file.size,
+              mtime: file.modifyTime,
+            });
+          }
+        }
+      }
+    } else {
+      console.log(`reading remote file -> ${remotePath}`);
+      this.remoteFiles.push({
+        path: this.getRelativePath(remotePath, true),
+        size: stats.size,
+        mtime: stats.modifyTime,
+      });
     }
+  }
 
-    getRelativePath(file, isRemote) {
-        const dirPath = isRemote ? path.resolve(this.config.remoteDir) : path.resolve(this.config.localDir);
-        const filePath = isRemote ? path.resolve(file) : path.resolve(file);
-        return dirPath === filePath ? filePath : filePath.replace(dirPath, '');
+  async removeExtraFilesOnServer(remotePath, isDirectory) {
+    const exist = this.localFiles.some((l) => l.path === remotePath);
+    if (exist) return false;
+    if (this.isIgnoreFile(`${remotePath}${isDirectory ? "/" : ""}`)) {
+      console.log(`ignoring remote ${remotePath}`);
+      return false;
     }
+    console.log(
+      `${this.options.dryRun ? "Dry-run: " : ""}removing extra ${
+        isDirectory ? "folder" : "file"
+      } '${remotePath}' on remote.`
+    );
+    const remoteFile = path.posix.join(this.config.remoteDir, remotePath);
+    if (!this.options.dryRun)
+      isDirectory
+        ? await this.sftp.rmdir(remoteFile, true)
+        : await this.sftp.delete(remoteFile);
+    return true;
+  }
 
-    isIgnoreFile(path) {
-        return this.options.exclude.some(pattern => minimatch(path.replace(/^\//, ''), pattern));
-    }
+  getRelativePath(file, isRemote) {
+    const dirPath = isRemote
+      ? path.resolve(this.config.remoteDir)
+      : path.resolve(this.config.localDir);
+    const filePath = isRemote ? path.resolve(file) : path.resolve(file);
+    return dirPath === filePath ? filePath : filePath.replace(dirPath, "");
+  }
+
+  isIgnoreFile(path) {
+    return this.options.exclude.some((pattern) =>
+      minimatch(path.replace(/^\//, ""), pattern)
+    );
+  }
 }
 
 module.exports = { Deployer };
+
 
 /***/ }),
 
@@ -3732,6 +3790,19 @@ function u8Concat (parts) {
   }
   return u8
 }
+
+
+/***/ }),
+
+/***/ 4137:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+"use strict";
+
+
+const binding = __nccwpck_require__(4240);
+
+module.exports = binding.getCPUInfo;
 
 
 /***/ }),
@@ -7632,6 +7703,7 @@ const concat = __nccwpck_require__(5107);
 const promiseRetry = __nccwpck_require__(4742);
 const { join, parse } = __nccwpck_require__(1017);
 const {
+  globalListener,
   addTempListeners,
   removeTempListeners,
   haveConnection,
@@ -7652,42 +7724,12 @@ class SftpClient {
     this.errorHandled = false;
     this.closeHandled = false;
     this.endHandled = false;
-    this.remotePathSep = '/';
     this.remotePlatform = 'unix';
     this.debug = undefined;
 
-    this.client.on('close', () => {
-      if (this.endCalled || this.errorHandled || this.closeHandled) {
-        // we are processing an expected end event or close event handled elsewhere
-        this.debugMsg('Global: Ignoring handled close event');
-      } else {
-        this.debugMsg('Global: Handling unexpected close event');
-        this.sftp = undefined;
-      }
-    });
-
-    this.client.on('end', () => {
-      if (this.endCalled || this.errorHandled || this.endHandled) {
-        // end event expected or handled elsewhere
-        this.debugMsg('Global: Ignoring hanlded end event');
-      } else {
-        this.debugMsg('Global: Handling unexpected end event');
-        this.sftp = undefined;
-      }
-    });
-
-    this.client.on('error', (err) => {
-      if (this.endCalled || this.errorHandled) {
-        // error event expected or handled elsewhere
-        this.debugMsg(`Global: Ignoring handled error: ${err.message}`);
-      } else {
-        this.debugMsg(`Global; Handling unexpected error; ${err.message}`);
-        this.sftp = undefined;
-        console.log(
-          `ssh2-sftp-client: Unexpected error: ${err.message}. Error code: ${err.code}`
-        );
-      }
-    });
+    this.client.on('close', globalListener(this, 'close'));
+    this.client.on('end', globalListener(this, 'end'));
+    this.client.on('error', globalListener(this, 'error'));
   }
 
   debugMsg(msg, obj) {
@@ -7801,7 +7843,6 @@ class SftpClient {
         if (err) {
           reject(this.fmtError(err, 'getSftpChannel', err.code));
         } else {
-          this.debugMsg('getSftpChannel: SFTP channel established');
           this.sftp = sftp;
           resolve(sftp);
         }
@@ -7887,39 +7928,34 @@ class SftpClient {
    * Returns undefined if the path does not exists.
    *
    * @param {String} remotePath - remote path, may be relative
+   * @param {Boolean} addListeners - (Optional) add event listeners. Default = true
    * @returns {Promise<String>} - remote absolute path or ''
    */
-  _realPath(rPath) {
+  realPath(remotePath, addListeners = true) {
+    let listeners;
     return new Promise((resolve, reject) => {
-      this.debugMsg(`_realPath -> ${rPath}`);
-      this.sftp.realpath(rPath, (err, absPath) => {
+      if (addListeners) {
+        listeners = addTempListeners(this, 'realPath', reject);
+      }
+      this.debugMsg(`realPath -> ${remotePath}`);
+      this.sftp.realpath(remotePath, (err, absPath) => {
         if (err) {
           if (err.code === 2) {
-            this.debugMsg('_realPath <- ""');
+            this.debugMsg('realPath <- ""');
             resolve('');
           } else {
-            reject(this.fmtError(`${err.message} ${rPath}`, 'realPath', err.code));
+            this.debugMsg(`${err.message} ${remotePath}`, 'realPath');
+            reject(this.fmtError(`${err.message} ${remotePath}`, 'realPath', err.code));
           }
         }
-        this.debugMsg(`_realPath <- ${absPath}`);
+        this.debugMsg(`realPath <- ${absPath}`);
         resolve(absPath);
       });
+    }).finally(() => {
+      if (addListeners) {
+        removeTempListeners(this, listeners, 'realPath');
+      }
     });
-  }
-
-  async realPath(remotePath) {
-    let listeners;
-    try {
-      listeners = addTempListeners(this, 'realPath');
-      haveConnection(this, 'realPath');
-      return await this._realPath(remotePath);
-    } catch (e) {
-      throw e.custom
-        ? e
-        : this.fmtError(`${e.message} ${remotePath}`, 'realPath', e.code);
-    } finally {
-      removeTempListeners(this, listeners, 'realPath');
-    }
   }
 
   /**
@@ -7934,20 +7970,23 @@ class SftpClient {
   }
 
   /**
-   * Retrieves attributes for path
+   * Retrieves attributes for path using cmd, which is either
+   * this.sftp.stat or this.sftp.lstat
    *
+   * @param {Function} cmd - either this.sftp.stat or this.sftp.lstat
    * @param {String} remotePath - a string containing the path to a file
+   * @param {Boolean} addListeners - (Optional) if true add event listeners. Default true.
    * @return {Promise<Object>} stats - attributes info
    */
-  _stat(aPath) {
+  _xstat(cmd, aPath, addListeners = true) {
+    let listeners;
     return new Promise((resolve, reject) => {
-      this.debugMsg(`_stat: ${aPath}`);
-      this.sftp.stat(aPath, (err, stats) => {
+      let cb = (err, stats) => {
         if (err) {
           if (err.code === 2 || err.code === 4) {
-            reject(this.fmtError(`No such file: ${aPath}`, '_stat', errorCode.notexist));
+            reject(this.fmtError(`No such file: ${aPath}`, '_xstat', errorCode.notexist));
           } else {
-            reject(this.fmtError(`${err.message} ${aPath}`, '_stat', err.code));
+            reject(this.fmtError(`${err.message} ${aPath}`, '_xstat', err.code));
           }
         } else {
           const result = {
@@ -7965,24 +8004,62 @@ class SftpClient {
             isFIFO: stats.isFIFO(),
             isSocket: stats.isSocket(),
           };
-          this.debugMsg('_stat: stats <- ', result);
+          this.debugMsg('_xstat: result = ', result);
           resolve(result);
         }
-      });
+      };
+      if (addListeners) {
+        listeners = addTempListeners(this, '_xstat', reject);
+      }
+      if (cmd === 'stat') {
+        this.sftp.stat(aPath, cb);
+      } else {
+        this.sftp.lstat(aPath, cb);
+      }
+    }).finally(() => {
+      if (addListeners) {
+        removeTempListeners(this, listeners, '_xstat');
+      }
     });
   }
 
+  /*
+   * Use the stat command to obtain attributes associated with a remote path.
+   * THe difference between stat and lstat is that stat, in the case of symbolic
+   * links, will return the attributes associated with the target of the link. With
+   * lstat, attributes associated with the symbolic link rather than the target are
+   * returned.
+   *
+   * @param {String} remotePath - path to an object on the remote server
+   * @return {Promise<Object>} stats - attributes info
+   *
+   */
   async stat(remotePath) {
-    let listeners;
     try {
-      listeners = addTempListeners(this, 'stat');
       haveConnection(this, 'stat');
-      const absPath = await normalizeRemotePath(this, remotePath);
-      return await this._stat(absPath);
+      return await this._xstat('stat', remotePath);
     } catch (err) {
       throw err.custom ? err : this.fmtError(err, 'stat', err.code);
-    } finally {
-      removeTempListeners(this, listeners, 'stat');
+    }
+  }
+
+  /*
+   * Use the lstat command to obtain attributes associated with a remote path.
+   * THe difference between stat and lstat is that stat, in the case of symbolic
+   * links, will return the attributes associated with the target of the link. With
+   * lstat, attributes associated with the symbolic link rather than the target are
+   * returned.
+   *
+   * @param {String} remotePath - path to an object on the remote server
+   * @return {Promise<Object>} stats - attributes info
+   *
+   */
+  async lstat(remotePath) {
+    try {
+      haveConnection(this, 'lstat');
+      return await this._xstat('lstat', remotePath);
+    } catch (err) {
+      throw err.custom ? err : this.fmtError(err, 'lstat', err.code);
     }
   }
 
@@ -7997,48 +8074,28 @@ class SftpClient {
    * @return {Promise<Boolean|String>} returns false if object does not exist. Returns type of
    *                   object if it does
    */
-  async _exists(rPath) {
-    try {
-      const absPath = await normalizeRemotePath(this, rPath);
-      this.debugMsg(`exists: ${rPath} -> ${absPath}`);
-      const info = await this._stat(absPath);
-      this.debugMsg('exists: <- ', info);
-      if (info.isDirectory) {
-        this.debugMsg(`exists: ${rPath} = d`);
-        return 'd';
-      }
-      if (info.isSymbolicLink) {
-        this.debugMsg(`exists: ${rPath} = l`);
-        return 'l';
-      }
-      if (info.isFile) {
-        this.debugMsg(`exists: ${rPath} = -`);
-        return '-';
-      }
-      this.debugMsg(`exists: ${rPath} = false`);
-      return false;
-    } catch (err) {
-      if (err.code === errorCode.notexist) {
-        this.debugMsg(`exists: ${rPath} = false errorCode = ${err.code}`);
-        return false;
-      }
-      throw err.custom ? err : this.fmtError(err.message, 'exists', err.code);
-    }
-  }
-
   async exists(remotePath) {
-    let listeners;
+    this.debugMsg(`exists: remotePath = ${remotePath}`);
     try {
-      listeners = addTempListeners(this, 'exists');
-      haveConnection(this, 'exists');
       if (remotePath === '.') {
         return 'd';
       }
-      return await this._exists(remotePath);
+      const info = await this.lstat(remotePath);
+      this.debugMsg('exists: <- ', info);
+      if (info.isDirectory) {
+        return 'd';
+      } else if (info.isSymbolicLink) {
+        return 'l';
+      } else if (info.isFile) {
+        return '-';
+      } else {
+        return false;
+      }
     } catch (err) {
-      throw err.custom ? err : this.fmtError(err, 'exists', err.code);
-    } finally {
-      removeTempListeners(this, listeners, 'exists');
+      if (err.code === errorCode.notexist) {
+        return false;
+      }
+      throw err.custom ? err : this.fmtError(err.message, 'exists', err.code);
     }
   }
 
@@ -8053,53 +8110,51 @@ class SftpClient {
    *
    * @param {String} remotePath - path to remote directory
    * @param {function} filter - a filter function used to select return entries
+   * @param {Boolean} addListeners - (Optional) if true, add listeners. Default true
    * @returns {Promise<Array>} array of file description objects
    */
-  _list(remotePath, filter) {
-    return new Promise((resolve, reject) => {
-      this.sftp.readdir(remotePath, (err, fileList) => {
-        if (err) {
-          reject(this.fmtError(`${err.message} ${remotePath}`, 'list', err.code));
-        } else {
-          const reg = /-/gi;
-          const newList = fileList.map((item) => {
-            return {
-              type: item.longname.slice(0, 1),
-              name: item.filename,
-              size: item.attrs.size,
-              modifyTime: item.attrs.mtime * 1000,
-              accessTime: item.attrs.atime * 1000,
-              rights: {
-                user: item.longname.slice(1, 4).replace(reg, ''),
-                group: item.longname.slice(4, 7).replace(reg, ''),
-                other: item.longname.slice(7, 10).replace(reg, ''),
-              },
-              owner: item.attrs.uid,
-              group: item.attrs.gid,
-              longname: item.longname,
-            };
-          });
-          if (filter) {
-            resolve(newList.filter((item) => filter(item)));
-          } else {
-            resolve(newList);
-          }
-        }
-      });
-    });
-  }
-
-  async list(remotePath, filter) {
+  list(remotePath, filter, addListeners = true) {
     let listeners;
-    try {
-      listeners = addTempListeners(this, 'list');
-      haveConnection(this, 'list');
-      return await this._list(remotePath, filter);
-    } catch (e) {
-      throw e.custom ? e : this.fmtError(`${e.message} ${remotePath}`, 'list', e.code);
-    } finally {
-      removeTempListeners(this, listeners, 'list');
-    }
+    return new Promise((resolve, reject) => {
+      if (addListeners) {
+        listeners = addTempListeners(this, 'list', reject);
+      }
+      if (haveConnection(this, 'list', reject)) {
+        this.sftp.readdir(remotePath, (err, fileList) => {
+          if (err) {
+            reject(this.fmtError(`${err.message} ${remotePath}`, 'list', err.code));
+          } else {
+            const reg = /-/gi;
+            const newList = fileList.map((item) => {
+              return {
+                type: item.longname.slice(0, 1),
+                name: item.filename,
+                size: item.attrs.size,
+                modifyTime: item.attrs.mtime * 1000,
+                accessTime: item.attrs.atime * 1000,
+                rights: {
+                  user: item.longname.slice(1, 4).replace(reg, ''),
+                  group: item.longname.slice(4, 7).replace(reg, ''),
+                  other: item.longname.slice(7, 10).replace(reg, ''),
+                },
+                owner: item.attrs.uid,
+                group: item.attrs.gid,
+                longname: item.longname,
+              };
+            });
+            if (filter) {
+              resolve(newList.filter((item) => filter(item)));
+            } else {
+              resolve(newList);
+            }
+          }
+        });
+      }
+    }).finally(() => {
+      if (addListeners) {
+        removeTempListeners(this, listeners, 'list');
+      }
+    });
   }
 
   /**
@@ -8114,6 +8169,7 @@ class SftpClient {
    * @param {string|stream|undefined} dst - data destination
    * @param {Object} options - options object with supported properties of readStreamOptions,
    *                          writeStreamOptions and pipeOptions.
+   * @param {Boolean} addListeners - (Optional) if true, add listeners. Default true
    *
    * *Important Note*: The ability to set ''autoClose' on read/write streams and 'end' on pipe() calls
    * is no longer supported. New methods 'createReadStream()' and 'createWriteStream()' have been
@@ -8121,81 +8177,76 @@ class SftpClient {
    *
    * @return {Promise<String|Stream|Buffer>}
    */
-  _get(rPath, dst, opts) {
-    let rdr, wtr;
+  get(remotePath, dst, options, addListeners = true) {
+    let listeners, rdr, wtr;
     return new Promise((resolve, reject) => {
-      opts = {
-        ...opts,
-        readStreamOptions: { autoClose: true },
-        writeStreamOptions: { autoClose: true },
-        pipeOptions: { end: true },
-      };
-      rdr = this.sftp.createReadStream(rPath, opts.readStreamOptions);
-      rdr.once('error', (err) => {
-        if (dst && typeof dst !== 'string' && !dst.destroyed) {
-          dst.destroy();
-        }
-        reject(this.fmtError(`${err.message} ${rPath}`, '_get', err.code));
-      });
-      if (dst === undefined) {
-        // no dst specified, return buffer of data
-        this.debugMsg('get resolving buffer of data');
-        wtr = concat((buff) => {
-          resolve(buff);
+      if (addListeners) {
+        listeners = addTempListeners(this, 'get', reject);
+      }
+      if (haveConnection(this, 'get', reject)) {
+        options = {
+          readStreamOptions: { ...options?.readStreamOptions, autoClose: true },
+          writeStreamOptions: { ...options?.writeStreamOptions, autoClose: true },
+          pipeOptions: { ...options?.pipeOptions, end: true },
+        };
+        rdr = this.sftp.createReadStream(remotePath, options.readStreamOptions);
+        rdr.once('error', (err) => {
+          if (dst && typeof dst !== 'string' && !dst.destroyed) {
+            dst.destroy();
+          }
+          reject(this.fmtError(`${err.message} ${remotePath}`, 'get', err.code));
         });
-      } else if (typeof dst === 'string') {
-        // dst local file path
-        this.debugMsg('get returning local file');
-        const localCheck = haveLocalCreate(dst);
-        if (!localCheck.status) {
+        if (dst === undefined) {
+          // no dst specified, return buffer of data
+          this.debugMsg('get resolving buffer of data');
+          wtr = concat((buff) => {
+            resolve(buff);
+          });
+        } else if (typeof dst === 'string') {
+          // dst local file path
+          this.debugMsg('get returning local file');
+          const localCheck = haveLocalCreate(dst);
+          if (!localCheck.status) {
+            reject(
+              this.fmtError(
+                `Bad path: ${dst}: ${localCheck.details}`,
+                'get',
+                localCheck.code
+              )
+            );
+            return;
+          } else {
+            wtr = fs.createWriteStream(dst, options.writeStreamOptions);
+          }
+        } else {
+          this.debugMsg('get: returning data into supplied stream');
+          wtr = dst;
+        }
+        wtr.once('error', (err) => {
           reject(
             this.fmtError(
-              `Bad path: ${dst}: ${localCheck.details}`,
+              `${err.message} ${typeof dst === 'string' ? dst : '<stream>'}`,
               'get',
-              localCheck.code
+              err.code
             )
           );
-          return;
-        } else {
-          wtr = fs.createWriteStream(dst, opts.writeStreamOptions);
-        }
-      } else {
-        this.debugMsg('get: returning data into supplied stream');
-        wtr = dst;
+        });
+        rdr.once('end', () => {
+          if (typeof dst === 'string') {
+            this.debugMsg('get: resolving with dst filename');
+            resolve(dst);
+          } else if (dst !== undefined) {
+            this.debugMsg('get: resolving with writer stream object');
+            resolve(wtr);
+          }
+        });
+        rdr.pipe(wtr, options.pipeOptions);
       }
-      wtr.once('error', (err) => {
-        reject(
-          this.fmtError(
-            `${err.message} ${typeof dst === 'string' ? dst : '<stream>'}`,
-            'get',
-            err.code
-          )
-        );
-      });
-      rdr.once('end', () => {
-        if (typeof dst === 'string') {
-          this.debugMsg('get: resolving with dst filename');
-          resolve(dst);
-        } else if (dst !== undefined) {
-          this.debugMsg('get: resolving with writer stream object');
-          resolve(wtr);
-        }
-      });
-      rdr.pipe(wtr, opts.pipeOptions);
+    }).finally(() => {
+      if (addListeners) {
+        removeTempListeners(this, listeners, 'get');
+      }
     });
-  }
-
-  async get(remotePath, dst, options) {
-    let listeners;
-    try {
-      listeners = addTempListeners(this, 'get');
-      haveConnection(this, 'get');
-      return await this._get(remotePath, dst, options);
-    } catch (e) {
-      throw e.custom ? e : this.fmtError(`${e.message} ${remotePath}`, 'get', e.code);
-    } finally {
-      removeTempListeners(this, listeners, 'get');
-    }
   }
 
   /**
@@ -8208,22 +8259,29 @@ class SftpClient {
    * @param {Object} options
    * @return {Promise<String>} the result of downloading the file
    */
-  _fastGet(rPath, lPath, opts) {
+  _fastGet(rPath, lPath, opts, addListeners = true) {
+    let listeners;
     return new Promise((resolve, reject) => {
-      this.sftp.fastGet(rPath, lPath, opts, (err) => {
-        if (err) {
-          reject(this.fmtError(`${err.message} Remote: ${rPath} Local: ${lPath}`));
-        }
-        resolve(`${rPath} was successfully download to ${lPath}!`);
-      });
+      if (addListeners) {
+        listeners = addTempListeners(this, '_fastGet', reject);
+      }
+      if (haveConnection(this, '_fastGet', reject)) {
+        this.sftp.fastGet(rPath, lPath, opts, (err) => {
+          if (err) {
+            reject(this.fmtError(`${err.message} Remote: ${rPath} Local: ${lPath}`));
+          }
+          resolve(`${rPath} was successfully download to ${lPath}!`);
+        });
+      }
+    }).finally(() => {
+      if (addListeners) {
+        removeTempListeners(this, listeners, '_fastGet');
+      }
     });
   }
 
   async fastGet(remotePath, localPath, options) {
-    let listeners;
     try {
-      listeners = addTempListeners(this, 'fastGet');
-      haveConnection(this, 'fastGet');
       const ftype = await this.exists(remotePath);
       if (ftype !== '-') {
         const msg = `${!ftype ? 'No such file ' : 'Not a regular file'} ${remotePath}`;
@@ -8240,8 +8298,6 @@ class SftpClient {
       return await this._fastGet(remotePath, localPath, options);
     } catch (err) {
       throw this.fmtError(err, 'fastGet');
-    } finally {
-      removeTempListeners(this, listeners, 'fastGet');
     }
   }
 
@@ -8253,34 +8309,42 @@ class SftpClient {
    * See 'fastPut' at
    * https://github.com/mscdex/ssh2-streams/blob/master/SFTPStream.md
    *
-   * @param {String} localPath
-   * @param {String} remotePath
-   * @param {Object} options
+   * @param {String} localPath - path to local file to put
+   * @param {String} remotePath - destination path for put file
+   * @param {Object} options - additonal fastPut options
+   * @param {Boolean} addListeners - (Optional) if true, add listeners. Default true.
    * @return {Promise<String>} the result of downloading the file
    */
-  _fastPut(lPath, rPath, opts) {
+  _fastPut(lPath, rPath, opts, addListeners = true) {
+    let listeners;
     return new Promise((resolve, reject) => {
-      this.sftp.fastPut(lPath, rPath, opts, (err) => {
-        if (err) {
-          reject(
-            this.fmtError(
-              `${err.message} Local: ${lPath} Remote: ${rPath}`,
-              'fastPut',
-              err.code
-            )
-          );
-        }
-        resolve(`${lPath} was successfully uploaded to ${rPath}!`);
-      });
+      if (addListeners) {
+        listeners = addTempListeners(this, '_fastPut', reject);
+      }
+      if (haveConnection(this, '_fastPut', reject)) {
+        this.sftp.fastPut(lPath, rPath, opts, (err) => {
+          if (err) {
+            reject(
+              this.fmtError(
+                `${err.message} Local: ${lPath} Remote: ${rPath}`,
+                'fastPut',
+                err.code
+              )
+            );
+          }
+          resolve(`${lPath} was successfully uploaded to ${rPath}!`);
+        });
+      }
+    }).finally(() => {
+      if (addListeners) {
+        removeTempListeners(this, listeners, '_fastPut');
+      }
     });
   }
 
   async fastPut(localPath, remotePath, options) {
-    let listeners;
     try {
-      listeners = addTempListeners(this, 'fastPut');
       this.debugMsg(`fastPut -> local ${localPath} remote ${remotePath}`);
-      haveConnection(this, 'fastPut');
       const localCheck = haveLocalAccess(localPath);
       if (!localCheck.status) {
         throw this.fmtError(
@@ -8298,8 +8362,6 @@ class SftpClient {
       return await this._fastPut(localPath, remotePath, options);
     } catch (e) {
       throw e.custom ? e : this.fmtError(e.message, 'fastPut', e.code);
-    } finally {
-      removeTempListeners(this, listeners, 'fastPut');
     }
   }
 
@@ -8320,49 +8382,58 @@ class SftpClient {
    *
    * @return {Promise<String>}
    */
-  _put(lPath, rPath, opts) {
-    let wtr, rdr;
+  _put(lPath, rPath, opts, addListeners = true) {
+    let listeners, wtr, rdr;
     return new Promise((resolve, reject) => {
+      if (addListeners) {
+        listeners = addTempListeners(this, '_put', reject);
+      }
       opts = {
-        ...opts,
-        readStreamOptions: { autoClose: true },
-        writeStreamOptions: { autoClose: true },
-        pipeOptions: { end: true },
+        readStreamOptions: { ...opts?.readStreamOptions, autoClose: true },
+        writeStreamOptions: { ...opts?.writeStreamOptions, autoClose: true },
+        pipeOptions: { ...opts?.pipeOptions, end: true },
       };
-      wtr = this.sftp.createWriteStream(rPath, opts.writeStreamOptions);
-      wtr.once('error', (err) => {
-        reject(this.fmtError(`${err.message} ${rPath}`, 'put', err.code));
-      });
-      wtr.once('close', () => {
-        resolve(`Uploaded data stream to ${rPath}`);
-      });
-      if (lPath instanceof Buffer) {
-        this.debugMsg('put source is a buffer');
-        wtr.end(lPath);
-      } else {
-        rdr =
-          typeof lPath === 'string'
-            ? fs.createReadStream(lPath, opts.readStreamOptions)
-            : lPath;
-        rdr.once('error', (err) => {
+      if (haveConnection(this, '_put', reject)) {
+        wtr = this.sftp.createWriteStream(rPath, opts.writeStreamOptions);
+        wtr.once('error', (err) => {
           reject(
-            this.fmtError(
-              `${err.message} ${typeof lPath === 'string' ? lPath : '<stream>'}`,
-              '_put',
-              err.code
-            )
+            this.fmtError(`Write stream error: ${err.message} ${rPath}`, '_put', err.code)
           );
         });
-        rdr.pipe(wtr, opts.pipeOptions);
+        wtr.once('close', () => {
+          resolve(`Uploaded data stream to ${rPath}`);
+        });
+        if (lPath instanceof Buffer) {
+          this.debugMsg('put source is a buffer');
+          wtr.end(lPath);
+        } else {
+          rdr =
+            typeof lPath === 'string'
+              ? fs.createReadStream(lPath, opts.readStreamOptions)
+              : lPath;
+          rdr.once('error', (err) => {
+            reject(
+              this.fmtError(
+                `Read stream error: ${err.message} ${
+                  typeof lPath === 'string' ? lPath : '<stream>'
+                }`,
+                '_put',
+                err.code
+              )
+            );
+          });
+          rdr.pipe(wtr, opts.pipeOptions);
+        }
+      }
+    }).finally(() => {
+      if (addListeners) {
+        removeTempListeners(this, listeners, '_put');
       }
     });
   }
 
   async put(localSrc, remotePath, options) {
-    let listeners;
     try {
-      listeners = addTempListeners(this, 'put');
-      haveConnection(this, 'put');
       if (typeof localSrc === 'string') {
         const localCheck = haveLocalAccess(localSrc);
         if (!localCheck.status) {
@@ -8375,9 +8446,7 @@ class SftpClient {
       }
       return await this._put(localSrc, remotePath, options);
     } catch (e) {
-      throw e.custom ? e : this.fmtError(e.message, 'put', e.code);
-    } finally {
-      removeTempListeners(this, listeners, 'put');
+      throw e.custom ? e : this.fmtError(`Re-thrown: ${e.message}`, 'put', e.code);
     }
   }
 
@@ -8389,30 +8458,38 @@ class SftpClient {
    * @param  {Object} options
    * @return {Promise<String>}
    */
-  _append(input, rPath, opts) {
+  _append(input, rPath, opts, addListeners = true) {
+    let listeners;
     return new Promise((resolve, reject) => {
-      this.debugMsg(`append -> remote: ${rPath} `, opts);
-      opts.flags = 'a';
-      const stream = this.sftp.createWriteStream(rPath, opts);
-      stream.on('error', (err) => {
-        reject(this.fmtError(`${err.message} ${rPath}`, 'append', err.code));
-      });
-      stream.on('close', () => {
-        resolve(`Appended data to ${rPath}`);
-      });
-      if (input instanceof Buffer) {
-        stream.write(input);
-        stream.end();
-      } else {
-        input.pipe(stream);
+      if (addListeners) {
+        listeners = addTempListeners(this, '_append', reject);
+      }
+      if (haveConnection(this, '_append', reject)) {
+        this.debugMsg(`append -> remote: ${rPath} `, opts);
+        opts.flags = 'a';
+        const stream = this.sftp.createWriteStream(rPath, opts);
+        stream.on('error', (err) => {
+          reject(this.fmtError(`${err.message} ${rPath}`, 'append', err.code));
+        });
+        stream.on('close', () => {
+          resolve(`Appended data to ${rPath}`);
+        });
+        if (input instanceof Buffer) {
+          stream.write(input);
+          stream.end();
+        } else {
+          input.pipe(stream);
+        }
+      }
+    }).finally(() => {
+      if (addListeners) {
+        removeTempListeners(this, listeners, '_append');
       }
     });
   }
 
   async append(input, remotePath, options = {}) {
-    let listeners;
     try {
-      listeners = addTempListeners(this, 'append');
       if (typeof input === 'string') {
         throw this.fmtError(
           'Cannot append one file to another',
@@ -8420,7 +8497,6 @@ class SftpClient {
           errorCode.badPath
         );
       }
-      haveConnection(this, 'append');
       const fileType = await this.exists(remotePath);
       if (fileType && fileType === 'd') {
         throw this.fmtError(
@@ -8432,8 +8508,6 @@ class SftpClient {
       await this._append(input, remotePath, options);
     } catch (e) {
       throw e.custom ? e : this.fmtError(e.message, 'append', e.code);
-    } finally {
-      removeTempListeners(this, listeners, 'append');
     }
   }
 
@@ -8446,8 +8520,12 @@ class SftpClient {
    * @param {boolean} recursive - if true, recursively create directories
    * @return {Promise<String>}
    */
-  _doMkdir(p) {
+  _doMkdir(p, addListeners = true) {
+    let listeners;
     return new Promise((resolve, reject) => {
+      if (addListeners) {
+        listeners = addTempListeners(this, '_doMkdir', reject);
+      }
       this.sftp.mkdir(p, (err) => {
         if (err) {
           if (err.code === 4) {
@@ -8474,6 +8552,10 @@ class SftpClient {
           resolve(`${p} directory created`);
         }
       });
+    }).finally(() => {
+      if (addListeners) {
+        removeTempListeners(this, listeners, '_doMkdir');
+      }
     });
   }
 
@@ -8515,15 +8597,11 @@ class SftpClient {
   }
 
   async mkdir(remotePath, recursive = false) {
-    let listeners;
     try {
-      listeners = addTempListeners(this, '_mkdir');
       haveConnection(this, 'mkdir');
       return await this._mkdir(remotePath, recursive);
     } catch (err) {
       throw this.fmtError(`${err.message}`, 'mkdir', err.code);
-    } finally {
-      removeTempListeners(this, listeners, 'append');
     }
   }
 
@@ -8537,69 +8615,85 @@ class SftpClient {
    *                             directory
    * @return {Promise<String>}
    */
-  async rmdir(remotePath, recursive = false) {
-    const _rmdir = (p) => {
+  async rmdir(remoteDir, recursive = false) {
+    const _rmdir = (dir) => {
+      let listeners;
       return new Promise((resolve, reject) => {
-        this.debugMsg(`rmdir -> ${p}`);
-        this.sftp.rmdir(p, (err) => {
+        listeners = addTempListeners(this, '_rmdir', reject);
+        this.debugMsg(`_rmdir: dir = ${dir}`);
+        this.sftp.rmdir(dir, (err) => {
           if (err) {
-            reject(this.fmtError(`${err.message} ${p}`, 'rmdir', err.code));
+            reject(this.fmtError(`${err.message} ${dir}`, 'rmdir', err.code));
           }
           resolve('Successfully removed directory');
         });
+      }).finally(() => {
+        removeTempListeners(this, listeners, '_rmdir');
       });
     };
 
-    const _dormdir = async (p, recur) => {
-      try {
-        if (recur) {
-          const list = await this.list(p);
-          if (list.length) {
-            const files = list.filter((item) => item.type !== 'd');
-            const dirs = list.filter((item) => item.type === 'd');
-            this.debugMsg('rmdir contents (files): ', files);
-            this.debugMsg('rmdir contents (dirs): ', dirs);
-            for (const d of dirs) {
-              await _dormdir(`${p}${this.remotePathSep}${d.name}`, true);
-            }
-            const promiseList = [];
-            for (const f of files) {
-              promiseList.push(this._delete(`${p}${this.remotePathSep}${f.name}`));
-            }
-            await Promise.all(promiseList);
-          }
+    const _delFiles = (path, fileList) => {
+      let listeners;
+      return new Promise((resolve, reject) => {
+        listeners = addTempListeners(this, '_delFiles', reject);
+        this.debugMsg(`_delFiles: path = ${path} fileList = ${fileList}`);
+        let pList = [];
+        for (const f of fileList) {
+          pList.push(this.delete(`${path}/${f.name}`, true, false));
         }
-        return await _rmdir(p);
-      } catch (err) {
-        throw err.custom ? err : this.fmtError(err, '_dormdir', err.code);
-      }
+        resolve(pList);
+      })
+        .then((p) => {
+          return Promise.all(p);
+        })
+        .finally(() => {
+          removeTempListeners(this, listeners, '_delFiles');
+        });
     };
 
-    let listeners;
     try {
-      listeners = addTempListeners(this, 'rmdir');
-      haveConnection(this, 'rmdir');
-      const absPath = await normalizeRemotePath(this, remotePath);
-      const dirStatus = await this.exists(absPath);
-      if (dirStatus && dirStatus !== 'd') {
+      this.debugMsg(`rmdir: dir = ${remoteDir} recursive = ${recursive}`);
+      let absPath = await normalizeRemotePath(this, remoteDir);
+      let existStatus = await this.exists(absPath);
+      this.debugMsg(`rmdir: ${absPath} existStatus = ${existStatus}`);
+      if (!existStatus) {
         throw this.fmtError(
-          `Bad path: ${absPath} not a directory`,
+          `Bad Path: ${remoteDir}: No such directory`,
           'rmdir',
           errorCode.badPath
         );
-      } else if (!dirStatus) {
-        throw this.fmtError(
-          `Bad path: ${absPath} No such file`,
-          'rmdir',
-          errorCode.badPath
-        );
-      } else {
-        return await _dormdir(absPath, recursive);
       }
+      if (existStatus !== 'd') {
+        throw this.fmtError(
+          `Bad Path: ${remoteDir}: Not a directory`,
+          'rmdir',
+          errorCode.badPath
+        );
+      }
+      if (!recursive) {
+        this.debugMsg('rmdir: non-recursive - just try to remove it');
+        return await _rmdir(absPath);
+      }
+      let listing = await this.list(absPath);
+      this.debugMsg(`rmdir: listing count = ${listing.length}`);
+      if (!listing.length) {
+        this.debugMsg('rmdir: No sub dir or files, just rmdir');
+        return await _rmdir(absPath);
+      }
+      let fileList = listing.filter((i) => i.type !== 'd');
+      this.debugMsg(`rmdir: dir content files to remove = ${fileList.length}`);
+      let dirList = listing.filter((i) => i.type === 'd');
+      this.debugMsg(`rmdir: sub-directories to remove = ${dirList.length}`);
+      await _delFiles(absPath, fileList);
+      for (const d of dirList) {
+        await this.rmdir(`${absPath}/${d.name}`, true);
+      }
+      await _rmdir(absPath);
+      return 'Successfully removed directory';
     } catch (err) {
-      throw err.custom ? err : this.fmtError(err.message, 'rmdir', err.code);
-    } finally {
-      removeTempListeners(this, listeners, 'rmdir');
+      throw err.custom
+        ? err
+        : this.fmtError(`${err.message} ${remoteDir}`, 'rmdir', err.code);
     }
   }
 
@@ -8614,32 +8708,27 @@ class SftpClient {
    * @return {Promise<String>} with string 'Successfully deleted file' once resolved
    *
    */
-  _delete(rPath, notFoundOK) {
+  delete(remotePath, notFoundOK = false, addListeners = true) {
+    let listeners;
     return new Promise((resolve, reject) => {
-      this.sftp.unlink(rPath, (err) => {
+      if (addListeners) {
+        listeners = addTempListeners(this, 'delete', reject);
+      }
+      this.sftp.unlink(remotePath, (err) => {
         if (err) {
           if (notFoundOK && err.code === 2) {
-            resolve(`Successfully deleted ${rPath}`);
+            resolve(`Successfully deleted ${remotePath}`);
           } else {
-            reject(this.fmtError(`${err.message} ${rPath}`, 'delete', err.code));
+            reject(this.fmtError(`${err.message} ${remotePath}`, 'delete', err.code));
           }
         }
-        resolve(`Successfully deleted ${rPath}`);
+        resolve(`Successfully deleted ${remotePath}`);
       });
+    }).finally(() => {
+      if (addListeners) {
+        removeTempListeners(this, listeners, 'delete');
+      }
     });
-  }
-
-  async delete(remotePath, notFoundOK = false) {
-    let listeners;
-    try {
-      listeners = addTempListeners(this, 'delete');
-      haveConnection(this, 'delete');
-      return await this._delete(remotePath, notFoundOK);
-    } catch (err) {
-      throw err.custom ? err : this.fmtError(err.message, 'delete', err.code);
-    } finally {
-      removeTempListeners(this, listeners, 'delete');
-    }
   }
 
   /**
@@ -8649,40 +8738,36 @@ class SftpClient {
    *
    * @param {string} fromPath - path to the file to be renamed.
    * @param {string} toPath - path to the new name.
+   * @param {Boolean} addListeners - (Optional) if true, add listeners. Default true
    *
    * @return {Promise<String>}
    *
    */
-  _rename(fPath, tPath) {
-    return new Promise((resolve, reject) => {
-      this.sftp.rename(fPath, tPath, (err) => {
-        if (err) {
-          reject(
-            this.fmtError(
-              `${err.message} From: ${fPath} To: ${tPath}`,
-              '_rename',
-              err.code
-            )
-          );
-        }
-        resolve(`Successfully renamed ${fPath} to ${tPath}`);
-      });
-    });
-  }
-
-  async rename(fromPath, toPath) {
+  rename(fPath, tPath, addListeners = true) {
     let listeners;
-    try {
-      listeners = addTempListeners(this, 'rename');
-      haveConnection(this, 'rename');
-      return await this._rename(fromPath, toPath);
-    } catch (err) {
-      throw err.custom
-        ? err
-        : this.fmtError(`${err.message} ${fromPath} ${toPath}`, 'rename', err.code);
-    } finally {
-      removeTempListeners(this, listeners, 'rename');
-    }
+    return new Promise((resolve, reject) => {
+      if (addListeners) {
+        listeners = addTempListeners(this, 'rename', reject);
+      }
+      if (haveConnection(this, 'rename', reject)) {
+        this.sftp.rename(fPath, tPath, (err) => {
+          if (err) {
+            reject(
+              this.fmtError(
+                `${err.message} From: ${fPath} To: ${tPath}`,
+                '_rename',
+                err.code
+              )
+            );
+          }
+          resolve(`Successfully renamed ${fPath} to ${tPath}`);
+        });
+      }
+    }).finally(() => {
+      if (addListeners) {
+        removeTempListeners(this, listeners, 'rename');
+      }
+    });
   }
 
   /**
@@ -8693,40 +8778,34 @@ class SftpClient {
    *
    * @param {string} fromPath - path to the file to be renamed.
    * @param {string} toPath - path  the new name.
+   * @param {Boolean} addListeners - (Optional) if true, add listeners. Default true
    *
    * @return {Promise<String>}
    *
    */
-  _posixRename(fPath, tPath) {
-    return new Promise((resolve, reject) => {
-      this.sftp.ext_openssh_rename(fPath, tPath, (err) => {
-        if (err) {
-          reject(
-            this.fmtError(
-              `${err.message} From: ${fPath} To: ${tPath}`,
-              '_posixRename',
-              err.code
-            )
-          );
-        }
-        resolve(`Successful POSIX rename ${fPath} to ${tPath}`);
-      });
-    });
-  }
-
-  async posixRename(fromPath, toPath) {
+  posixRename(fPath, tPath, addListeners = true) {
     let listeners;
-    try {
-      listeners = addTempListeners(this, 'posixRename');
-      haveConnection(this, 'posixRename');
-      return await this._posixRename(fromPath, toPath);
-    } catch (err) {
-      throw err.custom
-        ? err
-        : this.fmtError(`${err.message} ${fromPath} ${toPath}`, 'posixRename', err.code);
-    } finally {
+    return new Promise((resolve, reject) => {
+      if (addListeners) {
+        listeners = addTempListeners(this, 'posixRename', reject);
+      }
+      if (haveConnection(this, 'posixRename', reject)) {
+        this.sftp.ext_openssh_rename(fPath, tPath, (err) => {
+          if (err) {
+            reject(
+              this.fmtError(
+                `${err.message} From: ${fPath} To: ${tPath}`,
+                '_posixRename',
+                err.code
+              )
+            );
+          }
+          resolve(`Successful POSIX rename ${fPath} to ${tPath}`);
+        });
+      }
+    }).finally(() => {
       removeTempListeners(this, listeners, 'posixRename');
-    }
+    });
   }
 
   /**
@@ -8736,33 +8815,29 @@ class SftpClient {
    *
    * @param {string} remotePath - path to the remote target object.
    * @param {number | string} mode - the new octal mode to set
+   * @param {boolean} addListeners - (Optional) if true, add listeners. Default true.
    *
    * @return {Promise<String>}
    */
-  _chmod(rPath, mode) {
-    return new Promise((resolve, reject) => {
-      this.sftp.chmod(rPath, mode, (err) => {
-        if (err) {
-          reject(this.fmtError(`${err.message} ${rPath}`, '_chmod', err.code));
-        }
-        resolve('Successfully change file mode');
-      });
-    });
-  }
-
-  async chmod(remotePath, mode) {
+  chmod(rPath, mode, addListeners = true) {
     let listeners;
-    try {
-      listeners = addTempListeners(this, 'chmod');
-      haveConnection(this, 'chmod');
-      return await this._chmod(remotePath, mode);
-    } catch (err) {
-      throw err.custom
-        ? err
-        : this.fmtError(`${err.message} ${remotePath}`, 'chmod', err.code);
-    } finally {
-      removeTempListeners(this, listeners, 'chmod');
-    }
+    return new Promise((resolve, reject) => {
+      if (addListeners) {
+        listeners = addTempListeners(this, 'chmod', reject);
+      }
+      if (haveConnection(this, 'chmod', reject)) {
+        this.sftp.chmod(rPath, mode, (err) => {
+          if (err) {
+            reject(this.fmtError(`${err.message} ${rPath}`, '_chmod', err.code));
+          }
+          resolve('Successfully change file mode');
+        });
+      }
+    }).finally(() => {
+      if (addListeners) {
+        removeTempListeners(this, listeners, 'chmod');
+      }
+    });
   }
 
   /**
@@ -8774,91 +8849,114 @@ class SftpClient {
    * @param {String} srcDir - local source directory
    * @param {String} dstDir - remote destination directory
    * @param {Object} options - (Optional) An object with 2 supported properties,
-   * 'filter' and 'useFastput'. The first argument is the full path of the item
+   * 'filter' and 'useFastput'. Filter is a function of two arguments.
+   * The first argument is the full path of a directory entry from the directory
    * to be uploaded and the second argument is a boolean, which will be true if
-   * the target path is for a directory. If the function returns true, the item
+   * the target path is for a directory. If the function returns true, this item
    * will be uploaded and excluded when it returns false. The 'useFastput' property is a
    * boolean value. When true, the 'fastPut()' method will be used to upload files. Default
    * is to use the slower, but more supported 'put()' method.
    *
-   * @returns {Promise<String>}
+   * @returns {Promise<Array>}
    */
-  async _uploadDir(srcDir, dstDir, options) {
-    try {
-      const absDstDir = await normalizeRemotePath(this, dstDir);
-      this.debugMsg(`uploadDir <- SRC = ${srcDir} DST = ${absDstDir}`);
+  async uploadDir(srcDir, dstDir, options) {
+    const getRemoteStatus = async (dstDir) => {
+      let absDstDir = await normalizeRemotePath(this, dstDir);
+      let status = await this.exists(absDstDir);
+      if (status && status !== 'd') {
+        throw this.fmtError(
+          `Bad path ${absDstDir} Not a directory`,
+          'getRemoteStatus',
+          errorCode.badPath
+        );
+      }
+      return { remoteDir: absDstDir, remoteStatus: status };
+    };
+
+    const checkLocalStatus = (srcDir) => {
       const srcType = localExists(srcDir);
       if (!srcType) {
         throw this.fmtError(
           `Bad path: ${srcDir} not exist`,
-          '_uploadDir',
+          'getLocalStatus',
           errorCode.badPath
         );
       }
       if (srcType !== 'd') {
         throw this.fmtError(
           `Bad path: ${srcDir}: not a directory`,
-          '_uploadDir',
+          'getLocalStatus',
           errorCode.badPath
         );
       }
-      const dstStatus = await this.exists(absDstDir);
-      if (dstStatus && dstStatus !== 'd') {
-        throw this.fmtError(
-          `Bad path ${absDstDir} Not a directory`,
-          '_uploadDir',
-          errorCode.badPath
-        );
-      }
-      if (!dstStatus) {
-        await this._mkdir(absDstDir, true);
+      return srcType;
+    };
+
+    const uploadFiles = (srcDir, dstDir, fileList, useFastput) => {
+      let listeners;
+      return new Promise((resolve, reject) => {
+        listeners = addTempListeners(this, 'uploadFiles', reject);
+        let uploads = [];
+        for (const f of fileList) {
+          const newSrc = join(srcDir, f.name);
+          const newDst = `${dstDir}/${f.name}`;
+          if (f.isFile()) {
+            if (useFastput) {
+              uploads.push(this._fastPut(newSrc, newDst, null, false));
+            } else {
+              uploads.push(this._put(newSrc, newDst, null, false));
+            }
+            this.client.emit('upload', { source: newSrc, destination: newDst });
+          } else {
+            this.debugMsg(`uploadFiles: File ignored: ${f.name} not a regular file`);
+          }
+        }
+        resolve(Promise.all(uploads));
+      })
+        .then((pList) => {
+          return Promise.all(pList);
+        })
+        .finally(() => {
+          removeTempListeners(this, listeners, uploadFiles);
+        });
+    };
+
+    try {
+      haveConnection(this, 'uploadDir');
+      this.debugMsg(
+        `uploadDir: srcDir = ${srcDir} dstDir = ${dstDir} options = ${options}`
+      );
+      let { remoteDir, remoteStatus } = await getRemoteStatus(dstDir);
+      this.debugMsg(`uploadDir: remoteDir = ${remoteDir} remoteStatus = ${remoteStatus}`);
+      checkLocalStatus(srcDir);
+      if (!remoteStatus) {
+        await this._mkdir(remoteDir, true);
       }
       let dirEntries = fs.readdirSync(srcDir, {
         encoding: 'utf8',
         withFileTypes: true,
       });
+      this.debugMsg(`uploadDir: dirEntries = ${dirEntries}`);
       if (options?.filter) {
         dirEntries = dirEntries.filter((item) =>
           options.filter(join(srcDir, item.name), item.isDirectory())
         );
       }
-      let fileUploads = [];
-      for (const e of dirEntries) {
-        const newSrc = join(srcDir, e.name);
-        const newDst = `${absDstDir}${this.remotePathSep}${e.name}`;
-        if (e.isDirectory()) {
-          await this.uploadDir(newSrc, newDst, options);
-        } else if (e.isFile()) {
-          if (options?.useFastput) {
-            fileUploads.push(this._fastPut(newSrc, newDst));
-          } else {
-            fileUploads.push(this._put(newSrc, newDst));
-          }
-          this.client.emit('upload', { source: newSrc, destination: newDst });
-        } else {
-          this.debugMsg(`uploadDir: File ignored: ${e.name} not a regular file`);
-        }
-        await Promise.all(fileUploads);
+      let dirUploads = dirEntries.filter((item) => item.isDirectory());
+      let fileUploads = dirEntries.filter((item) => !item.isDirectory());
+      this.debugMsg(`uploadDir: dirUploads = ${dirUploads}`);
+      this.debugMsg(`uploadDir: fileUploads = ${fileUploads}`);
+      await uploadFiles(srcDir, remoteDir, fileUploads, options?.useFastput);
+      for (const d of dirUploads) {
+        let src = join(srcDir, d.name);
+        let dst = `${remoteDir}/${d.name}`;
+        await this.uploadDir(src, dst, options);
       }
-      return `${srcDir} uploaded to ${absDstDir}`;
+      return `${srcDir} uploaded to ${dstDir}`;
     } catch (err) {
       throw err.custom
         ? err
-        : this.fmtError(`${err.message} ${srcDir}`, '_uploadDir', err.code);
-    }
-  }
-
-  async uploadDir(srcDir, dstDir, options) {
-    let listeners;
-    try {
-      listeners = addTempListeners(this, 'uploadDir');
-      this.debugMsg(`uploadDir -> SRC = ${srcDir} DST = ${dstDir}`);
-      haveConnection(this, 'uploadDir');
-      return await this._uploadDir(srcDir, dstDir, options);
-    } catch (err) {
-      throw err.custom ? err : this.fmtError(err, 'uploadDir');
-    } finally {
-      removeTempListeners(this, listeners, 'chmod');
+        : this.fmtError(`${err.message} ${srcDir}`, 'uploadDir', err.code);
     }
   }
 
@@ -8877,71 +8975,88 @@ class SftpClient {
    * is for a directory. If the function returns true, the item will be
    * downloaded and excluded if teh function returns false.
    *
-   * @returns {Promise<String>}
+   * @returns {Promise<Array>}
    */
-  async _downloadDir(srcDir, dstDir, options) {
-    try {
-      let fileList = await this._list(srcDir);
-      if (options?.filter) {
-        fileList = fileList.filter((item) =>
-          options.filter(
-            `${srcDir}${this.remotePathSep}${item.name}`,
-            item.type === 'd' ? true : false
-          )
-        );
-      }
-      const localCheck = haveLocalCreate(dstDir);
-      if (!localCheck.status && localCheck.details === 'permission denied') {
-        throw this.fmtError(
-          `Bad path: ${dstDir}: ${localCheck.details}`,
-          'downloadDir',
-          localCheck.code
-        );
-      } else if (localCheck.status && !localCheck.type) {
-        fs.mkdirSync(dstDir, { recursive: true });
-      } else if (localCheck.status && localCheck.type !== 'd') {
-        throw this.fmtError(
-          `Bad path: ${dstDir}: not a directory`,
-          'downloadDir',
-          errorCode.badPath
-        );
-      }
-      let downloadFiles = [];
-      for (const f of fileList) {
-        const newSrc = `${srcDir}${this.remotePathSep}${f.name}`;
-        const newDst = join(dstDir, f.name);
-        if (f.type === 'd') {
-          await this._downloadDir(newSrc, newDst, options);
-        } else if (f.type === '-') {
-          if (options?.useFasget) {
-            downloadFiles.push(this._fastGet(newSrc, newDst));
-          } else {
-            downloadFiles.push(this._get(newSrc, newDst));
-          }
-          this.client.emit('download', { source: newSrc, destination: newDst });
-        } else {
-          this.debugMsg(`downloadDir: File ignored: ${f.name} not regular file`);
+  async downloadDir(srcDir, dstDir, options = { filter: null, useFastget: false }) {
+    const _getDownloadList = async (srcDir, filter) => {
+      try {
+        let listing = await this.list(srcDir);
+        if (filter) {
+          return listing.filter((item) =>
+            filter(`${srcDir}/${item.name}`, item.type === 'd')
+          );
         }
+        return listing;
+      } catch (err) {
+        throw err.custom ? err : this.fmtError(err.message, '_getDownloadList', err.code);
       }
-      await Promise.all(downloadFiles);
+    };
+
+    const _prepareDestination = (dst) => {
+      try {
+        const localCheck = haveLocalCreate(dst);
+        if (!localCheck.status && localCheck.details === 'permission denied') {
+          throw this.fmtError(
+            `Bad path: ${dst}: ${localCheck.details}`,
+            'prepareDestination',
+            localCheck.code
+          );
+        } else if (localCheck.status && !localCheck.type) {
+          fs.mkdirSync(dst, { recursive: true });
+        } else if (localCheck.status && localCheck.type !== 'd') {
+          throw this.fmtError(
+            `Bad path: ${dstDir}: not a directory`,
+            '_prepareDestination',
+            errorCode.badPath
+          );
+        }
+      } catch (err) {
+        throw err.custom
+          ? err
+          : this.fmtError(err.message, '_prepareDestination', err.code);
+      }
+    };
+
+    const _downloadFiles = (remotePath, localPath, fileList, useFastget) => {
+      let listeners;
+      return new Promise((resolve, reject) => {
+        listeners = addTempListeners(this, '_downloadFIles', reject);
+        let pList = [];
+        for (const f of fileList) {
+          let src = `${remotePath}/${f.name}`;
+          let dst = join(localPath, f.name);
+          if (useFastget) {
+            pList.push(this.fastGet(src, dst, false));
+          } else {
+            pList.push(this.get(src, dst, false));
+          }
+          this.client.emit('download', { source: src, destination: dst });
+        }
+        return resolve(Promise.all(pList));
+      }).finally(() => {
+        removeTempListeners(this, listeners, '_downloadFiles');
+      });
+    };
+
+    try {
+      haveConnection(this, 'downloadDir');
+      let downloadList = await _getDownloadList(srcDir, options.filter);
+      _prepareDestination(dstDir);
+      let fileDownloads = downloadList.filter((i) => i.type !== 'd');
+      if (fileDownloads.length) {
+        await _downloadFiles(srcDir, dstDir, fileDownloads, options.useFastget);
+      }
+      let dirDownloads = downloadList.filter((i) => i.type === 'd');
+      for (const d of dirDownloads) {
+        let src = `${srcDir}/${d.name}`;
+        let dst = join(dstDir, d.name);
+        await this.downloadDir(src, dst);
+      }
       return `${srcDir} downloaded to ${dstDir}`;
     } catch (err) {
       throw err.custom
         ? err
-        : this.fmtError(`${err.message} ${srcDir}`, '_downloadDir', err.code);
-    }
-  }
-
-  async downloadDir(srcDir, dstDir, options) {
-    let listeners;
-    try {
-      listeners = addTempListeners(this, 'downloadDir');
-      haveConnection(this, 'downloadDir');
-      return await this._downloadDir(srcDir, dstDir, options);
-    } catch (err) {
-      throw err.custom ? err : this.fmtError(err, 'downloadDir', err.code);
-    } finally {
-      removeTempListeners(this, listeners, 'downloadDir');
+        : this.fmtError(`${err.message}: ${srcDir}`, 'downloadDir', err.code);
     }
   }
 
@@ -9080,7 +9195,7 @@ class SftpClient {
         resolve(true);
       };
       this.on('close', endCloseHandler);
-      if (this.client.sftp) {
+      if (this.sftp) {
         this.client.end();
       } else {
         // no actual connection exists - just resolve
@@ -9131,6 +9246,18 @@ function errorListener(client, name, reject) {
     }
   };
   return fn;
+}
+
+function globalListener(client, evt) {
+  return () => {
+    if (client.endCalled || client.errorHandled || client.closeHandled) {
+      // we are processing an expected event handled elsewhere
+      client.debugMsg(`Global ${evt} event: Ignoring expected and handled event`);
+    } else {
+      client.debugMsg(`Global ${evt} event: Handling unexpected event`);
+      client.sftp = undefined;
+    }
+  };
 }
 
 function endListener(client, name, reject) {
@@ -9344,10 +9471,10 @@ async function normalizeRemotePath(client, aPath) {
   try {
     if (aPath.startsWith('..')) {
       const root = await client.realPath('..');
-      return root + client.remotePathSep + aPath.slice(3);
+      return `${root}/${aPath.slice(3)}`;
     } else if (aPath.startsWith('.')) {
       const root = await client.realPath('.');
-      return root + client.remotePathSep + aPath.slice(2);
+      return `${root}/${aPath.slice(2)}`;
     }
     return aPath;
   } catch (err) {
@@ -9382,9 +9509,13 @@ function haveConnection(client, name, reject) {
 function sleep(ms) {
   return new Promise((resolve, reject) => {
     try {
-      setTimeout(() => {
-        resolve(true);
-      }, ms);
+      if (isNaN(ms) || ms < 0) {
+        reject('Argument must be  anumber >= 0');
+      } else {
+        setTimeout(() => {
+          resolve(true);
+        }, ms);
+      }
     } catch (err) {
       reject(err);
     }
@@ -9392,6 +9523,7 @@ function sleep(ms) {
 }
 
 module.exports = {
+  globalListener,
   errorListener,
   endListener,
   closeListener,
@@ -11145,6 +11277,7 @@ class Client extends EventEmitter {
     const DEBUG_HANDLER = (!debug ? undefined : (p, display, msg) => {
       debug(`Debug output from server: ${JSON.stringify(msg)}`);
     });
+    let serverSigAlgs;
     const proto = this._protocol = new Protocol({
       ident: this.config.ident,
       offer: (allOfferDefaults ? undefined : algorithms),
@@ -11196,6 +11329,17 @@ class Client extends EventEmitter {
           if (name === 'ssh-userauth')
             tryNextAuth();
         },
+        EXT_INFO: (p, exts) => {
+          if (serverSigAlgs === undefined) {
+            for (const ext of exts) {
+              if (ext.name === 'server-sig-algs') {
+                serverSigAlgs = ext.algs;
+                return;
+              }
+            }
+            serverSigAlgs = null;
+          }
+        },
         USERAUTH_BANNER: (p, msg) => {
           this.emit('banner', msg);
         },
@@ -11208,6 +11352,51 @@ class Client extends EventEmitter {
           this.emit('ready');
         },
         USERAUTH_FAILURE: (p, authMethods, partialSuccess) => {
+          // For key-based authentication, check if we should retry the current
+          // key with a different algorithm first
+          if (curAuth.keyAlgos) {
+            const oldKeyAlgo = curAuth.keyAlgos[0][0];
+            if (debug)
+              debug(`Client: ${curAuth.type} (${oldKeyAlgo}) auth failed`);
+            curAuth.keyAlgos.shift();
+            if (curAuth.keyAlgos.length) {
+              const [keyAlgo, hashAlgo] = curAuth.keyAlgos[0];
+              switch (curAuth.type) {
+                case 'agent':
+                  proto.authPK(
+                    curAuth.username,
+                    curAuth.agentCtx.currentKey(),
+                    keyAlgo
+                  );
+                  return;
+                case 'publickey':
+                  proto.authPK(curAuth.username, curAuth.key, keyAlgo);
+                  return;
+                case 'hostbased':
+                  proto.authHostbased(curAuth.username,
+                                      curAuth.key,
+                                      curAuth.localHostname,
+                                      curAuth.localUsername,
+                                      keyAlgo,
+                                      (buf, cb) => {
+                    const signature = curAuth.key.sign(buf, hashAlgo);
+                    if (signature instanceof Error) {
+                      signature.message =
+                        `Error while signing with key: ${signature.message}`;
+                      signature.level = 'client-authentication';
+                      this.emit('error', signature);
+                      return tryNextAuth();
+                    }
+
+                    cb(signature);
+                  });
+                  return;
+              }
+            } else {
+              curAuth.keyAlgos = undefined;
+            }
+          }
+
           if (curAuth.type === 'agent') {
             const pos = curAuth.agentCtx.pos();
             debug && debug(`Client: Agent key #${pos + 1} failed`);
@@ -11234,10 +11423,15 @@ class Client extends EventEmitter {
           }
         },
         USERAUTH_PK_OK: (p) => {
+          let keyAlgo;
+          let hashAlgo;
+          if (curAuth.keyAlgos)
+            [keyAlgo, hashAlgo] = curAuth.keyAlgos[0];
           if (curAuth.type === 'agent') {
             const key = curAuth.agentCtx.currentKey();
-            proto.authPK(curAuth.username, key, (buf, cb) => {
-              curAuth.agentCtx.sign(key, buf, {}, (err, signed) => {
+            proto.authPK(curAuth.username, key, keyAlgo, (buf, cb) => {
+              const opts = { hash: hashAlgo };
+              curAuth.agentCtx.sign(key, buf, opts, (err, signed) => {
                 if (err) {
                   err.level = 'agent';
                   this.emit('error', err);
@@ -11249,8 +11443,8 @@ class Client extends EventEmitter {
               });
             });
           } else if (curAuth.type === 'publickey') {
-            proto.authPK(curAuth.username, curAuth.key, (buf, cb) => {
-              const signature = curAuth.key.sign(buf);
+            proto.authPK(curAuth.username, curAuth.key, keyAlgo, (buf, cb) => {
+              const signature = curAuth.key.sign(buf, hashAlgo);
               if (signature instanceof Error) {
                 signature.message =
                   `Error signing data with key: ${signature.message}`;
@@ -11785,16 +11979,42 @@ class Client extends EventEmitter {
           case 'password':
             proto.authPassword(username, curAuth.password);
             break;
-          case 'publickey':
-            proto.authPK(username, curAuth.key);
+          case 'publickey': {
+            let keyAlgo;
+            curAuth.keyAlgos = getKeyAlgos(this, curAuth.key, serverSigAlgs);
+            if (curAuth.keyAlgos) {
+              if (curAuth.keyAlgos.length) {
+                keyAlgo = curAuth.keyAlgos[0][0];
+              } else {
+                return skipAuth(
+                  'Skipping key authentication (no mutual hash algorithm)'
+                );
+              }
+            }
+            proto.authPK(username, curAuth.key, keyAlgo);
             break;
-          case 'hostbased':
+          }
+          case 'hostbased': {
+            let keyAlgo;
+            let hashAlgo;
+            curAuth.keyAlgos = getKeyAlgos(this, curAuth.key, serverSigAlgs);
+            if (curAuth.keyAlgos) {
+              if (curAuth.keyAlgos.length) {
+                [keyAlgo, hashAlgo] = curAuth.keyAlgos[0];
+              } else {
+                return skipAuth(
+                  'Skipping hostbased authentication (no mutual hash algorithm)'
+                );
+              }
+            }
+
             proto.authHostbased(username,
                                 curAuth.key,
                                 curAuth.localHostname,
                                 curAuth.localUsername,
+                                keyAlgo,
                                 (buf, cb) => {
-              const signature = curAuth.key.sign(buf);
+              const signature = curAuth.key.sign(buf, hashAlgo);
               if (signature instanceof Error) {
                 signature.message =
                   `Error while signing with key: ${signature.message}`;
@@ -11806,6 +12026,7 @@ class Client extends EventEmitter {
               cb(signature);
             });
             break;
+          }
           case 'agent':
             curAuth.agentCtx.init((err) => {
               if (err) {
@@ -11850,8 +12071,21 @@ class Client extends EventEmitter {
           tryNextAuth();
         } else {
           const pos = curAuth.agentCtx.pos();
+          let keyAlgo;
+          curAuth.keyAlgos = getKeyAlgos(this, key, serverSigAlgs);
+          if (curAuth.keyAlgos) {
+            if (curAuth.keyAlgos.length) {
+              keyAlgo = curAuth.keyAlgos[0][0];
+            } else {
+              debug && debug(
+                `Agent: Skipping key #${pos + 1} (no mutual hash algorithm)`
+              );
+              tryNextAgentKey();
+              return;
+            }
+          }
           debug && debug(`Agent: Trying key #${pos + 1}`);
-          proto.authPK(curAuth.username, key);
+          proto.authPK(curAuth.username, key, keyAlgo);
         }
       }
     };
@@ -11882,7 +12116,6 @@ class Client extends EventEmitter {
           localAddress: this.config.localAddress,
           localPort: this.config.localPort
         });
-        sock.setNoDelay(true);
         sock.setMaxListeners(0);
         sock.setTimeout(typeof cfg.timeout === 'number' ? cfg.timeout : 0);
       };
@@ -12359,6 +12592,13 @@ class Client extends EventEmitter {
         sftp._init();
       });
     });
+
+    return this;
+  }
+
+  setNoDelay(noDelay) {
+    if (this._sock && typeof this._sock.setNoDelay === 'function')
+      this._sock.setNoDelay(noDelay);
 
     return this;
   }
@@ -12859,6 +13099,27 @@ function hostKeysProve(client, keys_, cb) {
   );
 }
 
+function getKeyAlgos(client, key, serverSigAlgs) {
+  switch (key.type) {
+    case 'ssh-rsa':
+      if (client._protocol._compatFlags & COMPAT.IMPLY_RSA_SHA2_SIGALGS) {
+        if (!Array.isArray(serverSigAlgs))
+          serverSigAlgs = ['rsa-sha2-256', 'rsa-sha2-512'];
+        else
+          serverSigAlgs = ['rsa-sha2-256', 'rsa-sha2-512', ...serverSigAlgs];
+      }
+      if (Array.isArray(serverSigAlgs)) {
+        if (serverSigAlgs.indexOf('rsa-sha2-256') !== -1)
+          return [['rsa-sha2-256', 'sha256']];
+        if (serverSigAlgs.indexOf('rsa-sha2-512') !== -1)
+          return [['rsa-sha2-512', 'sha512']];
+        if (serverSigAlgs.indexOf('ssh-rsa') === -1)
+          return [];
+      }
+      return [['ssh-rsa', 'sha1']];
+  }
+}
+
 module.exports = Client;
 
 
@@ -12995,6 +13256,7 @@ module.exports = {
   Server: __nccwpck_require__(2986),
   utils: {
     parseKey,
+    ...__nccwpck_require__(3823),
     sftp: {
       flagsToString,
       OPEN_MODE,
@@ -13002,6 +13264,596 @@ module.exports = {
       stringToFlags,
     },
   },
+};
+
+
+/***/ }),
+
+/***/ 3823:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+"use strict";
+
+
+const {
+  createCipheriv,
+  generateKeyPair: generateKeyPair_,
+  generateKeyPairSync: generateKeyPairSync_,
+  getCurves,
+  randomBytes,
+} = __nccwpck_require__(6113);
+
+const { Ber } = __nccwpck_require__(970);
+const bcrypt_pbkdf = (__nccwpck_require__(5447).pbkdf);
+
+const { CIPHER_INFO } = __nccwpck_require__(5708);
+
+const SALT_LEN = 16;
+const DEFAULT_ROUNDS = 16;
+
+const curves = getCurves();
+const ciphers = new Map(Object.entries(CIPHER_INFO));
+
+function makeArgs(type, opts) {
+  if (typeof type !== 'string')
+    throw new TypeError('Key type must be a string');
+
+  const publicKeyEncoding = { type: 'spki', format: 'der' };
+  const privateKeyEncoding = { type: 'pkcs8', format: 'der' };
+
+  switch (type.toLowerCase()) {
+    case 'rsa': {
+      if (typeof opts !== 'object' || opts === null)
+        throw new TypeError('Missing options object for RSA key');
+      const modulusLength = opts.bits;
+      if (!Number.isInteger(modulusLength))
+        throw new TypeError('RSA bits must be an integer');
+      if (modulusLength <= 0 || modulusLength > 16384)
+        throw new RangeError('RSA bits must be non-zero and <= 16384');
+      return ['rsa', { modulusLength, publicKeyEncoding, privateKeyEncoding }];
+    }
+    case 'ecdsa': {
+      if (typeof opts !== 'object' || opts === null)
+        throw new TypeError('Missing options object for ECDSA key');
+      if (!Number.isInteger(opts.bits))
+        throw new TypeError('ECDSA bits must be an integer');
+      let namedCurve;
+      switch (opts.bits) {
+        case 256:
+          namedCurve = 'prime256v1';
+          break;
+        case 384:
+          namedCurve = 'secp384r1';
+          break;
+        case 521:
+          namedCurve = 'secp521r1';
+          break;
+        default:
+          throw new Error('ECDSA bits must be 256, 384, or 521');
+      }
+      if (!curves.includes(namedCurve))
+        throw new Error('Unsupported ECDSA bits value');
+      return ['ec', { namedCurve, publicKeyEncoding, privateKeyEncoding }];
+    }
+    case 'ed25519':
+      return ['ed25519', { publicKeyEncoding, privateKeyEncoding }];
+    default:
+      throw new Error(`Unsupported key type: ${type}`);
+  }
+}
+
+function parseDERs(keyType, pub, priv) {
+  switch (keyType) {
+    case 'rsa': {
+      // Note: we don't need to parse the public key since the PKCS8 private key
+      // already includes the public key parameters
+
+      // Parse private key
+      let reader = new Ber.Reader(priv);
+      reader.readSequence();
+
+      // - Version
+      if (reader.readInt() !== 0)
+        throw new Error('Unsupported version in RSA private key');
+
+      // - Algorithm
+      reader.readSequence();
+      if (reader.readOID() !== '1.2.840.113549.1.1.1')
+        throw new Error('Bad RSA private OID');
+      // - Algorithm parameters (RSA has none)
+      if (reader.readByte() !== Ber.Null)
+        throw new Error('Malformed RSA private key (expected null)');
+      if (reader.readByte() !== 0x00) {
+        throw new Error(
+          'Malformed RSA private key (expected zero-length null)'
+        );
+      }
+
+      reader = new Ber.Reader(reader.readString(Ber.OctetString, true));
+      reader.readSequence();
+      if (reader.readInt() !== 0)
+        throw new Error('Unsupported version in RSA private key');
+      const n = reader.readString(Ber.Integer, true);
+      const e = reader.readString(Ber.Integer, true);
+      const d = reader.readString(Ber.Integer, true);
+      const p = reader.readString(Ber.Integer, true);
+      const q = reader.readString(Ber.Integer, true);
+      reader.readString(Ber.Integer, true); // dmp1
+      reader.readString(Ber.Integer, true); // dmq1
+      const iqmp = reader.readString(Ber.Integer, true);
+
+      /*
+        OpenSSH RSA private key:
+          string  "ssh-rsa"
+          string  n -- public
+          string  e -- public
+          string  d -- private
+          string  iqmp -- private
+          string  p -- private
+          string  q -- private
+      */
+      const keyName = Buffer.from('ssh-rsa');
+      const privBuf = Buffer.allocUnsafe(
+        4 + keyName.length
+        + 4 + n.length
+        + 4 + e.length
+        + 4 + d.length
+        + 4 + iqmp.length
+        + 4 + p.length
+        + 4 + q.length
+      );
+      let pos = 0;
+
+      privBuf.writeUInt32BE(keyName.length, pos += 0);
+      privBuf.set(keyName, pos += 4);
+      privBuf.writeUInt32BE(n.length, pos += keyName.length);
+      privBuf.set(n, pos += 4);
+      privBuf.writeUInt32BE(e.length, pos += n.length);
+      privBuf.set(e, pos += 4);
+      privBuf.writeUInt32BE(d.length, pos += e.length);
+      privBuf.set(d, pos += 4);
+      privBuf.writeUInt32BE(iqmp.length, pos += d.length);
+      privBuf.set(iqmp, pos += 4);
+      privBuf.writeUInt32BE(p.length, pos += iqmp.length);
+      privBuf.set(p, pos += 4);
+      privBuf.writeUInt32BE(q.length, pos += p.length);
+      privBuf.set(q, pos += 4);
+
+      /*
+        OpenSSH RSA public key:
+          string  "ssh-rsa"
+          string  e -- public
+          string  n -- public
+      */
+      const pubBuf = Buffer.allocUnsafe(
+        4 + keyName.length
+        + 4 + e.length
+        + 4 + n.length
+      );
+      pos = 0;
+
+      pubBuf.writeUInt32BE(keyName.length, pos += 0);
+      pubBuf.set(keyName, pos += 4);
+      pubBuf.writeUInt32BE(e.length, pos += keyName.length);
+      pubBuf.set(e, pos += 4);
+      pubBuf.writeUInt32BE(n.length, pos += e.length);
+      pubBuf.set(n, pos += 4);
+
+      return { sshName: keyName.toString(), priv: privBuf, pub: pubBuf };
+    }
+    case 'ec': {
+      // Parse public key
+      let reader = new Ber.Reader(pub);
+      reader.readSequence();
+
+      reader.readSequence();
+      if (reader.readOID() !== '1.2.840.10045.2.1')
+        throw new Error('Bad ECDSA public OID');
+      // Skip curve OID, we'll get it from the private key
+      reader.readOID();
+      let pubBin = reader.readString(Ber.BitString, true);
+      {
+        // Remove leading zero bytes
+        let i = 0;
+        for (; i < pubBin.length && pubBin[i] === 0x00; ++i);
+        if (i > 0)
+          pubBin = pubBin.slice(i);
+      }
+
+      // Parse private key
+      reader = new Ber.Reader(priv);
+      reader.readSequence();
+
+      // - Version
+      if (reader.readInt() !== 0)
+        throw new Error('Unsupported version in ECDSA private key');
+
+      reader.readSequence();
+      if (reader.readOID() !== '1.2.840.10045.2.1')
+        throw new Error('Bad ECDSA private OID');
+      const curveOID = reader.readOID();
+      let sshCurveName;
+      switch (curveOID) {
+        case '1.2.840.10045.3.1.7':
+          // prime256v1/secp256r1
+          sshCurveName = 'nistp256';
+          break;
+        case '1.3.132.0.34':
+          // secp384r1
+          sshCurveName = 'nistp384';
+          break;
+        case '1.3.132.0.35':
+          // secp521r1
+          sshCurveName = 'nistp521';
+          break;
+        default:
+          throw new Error('Unsupported curve in ECDSA private key');
+      }
+
+      reader = new Ber.Reader(reader.readString(Ber.OctetString, true));
+      reader.readSequence();
+
+      // - Version
+      if (reader.readInt() !== 1)
+        throw new Error('Unsupported version in ECDSA private key');
+
+      // Add leading zero byte to prevent negative bignum in private key
+      const privBin = Buffer.concat([
+        Buffer.from([0x00]),
+        reader.readString(Ber.OctetString, true)
+      ]);
+
+      /*
+        OpenSSH ECDSA private key:
+          string  "ecdsa-sha2-<sshCurveName>"
+          string  curve name
+          string  Q -- public
+          string  d -- private
+      */
+      const keyName = Buffer.from(`ecdsa-sha2-${sshCurveName}`);
+      sshCurveName = Buffer.from(sshCurveName);
+      const privBuf = Buffer.allocUnsafe(
+        4 + keyName.length
+        + 4 + sshCurveName.length
+        + 4 + pubBin.length
+        + 4 + privBin.length
+      );
+      let pos = 0;
+
+      privBuf.writeUInt32BE(keyName.length, pos += 0);
+      privBuf.set(keyName, pos += 4);
+      privBuf.writeUInt32BE(sshCurveName.length, pos += keyName.length);
+      privBuf.set(sshCurveName, pos += 4);
+      privBuf.writeUInt32BE(pubBin.length, pos += sshCurveName.length);
+      privBuf.set(pubBin, pos += 4);
+      privBuf.writeUInt32BE(privBin.length, pos += pubBin.length);
+      privBuf.set(privBin, pos += 4);
+
+      /*
+        OpenSSH ECDSA public key:
+          string  "ecdsa-sha2-<sshCurveName>"
+          string  curve name
+          string  Q -- public
+      */
+      const pubBuf = Buffer.allocUnsafe(
+        4 + keyName.length
+        + 4 + sshCurveName.length
+        + 4 + pubBin.length
+      );
+      pos = 0;
+
+      pubBuf.writeUInt32BE(keyName.length, pos += 0);
+      pubBuf.set(keyName, pos += 4);
+      pubBuf.writeUInt32BE(sshCurveName.length, pos += keyName.length);
+      pubBuf.set(sshCurveName, pos += 4);
+      pubBuf.writeUInt32BE(pubBin.length, pos += sshCurveName.length);
+      pubBuf.set(pubBin, pos += 4);
+
+      return { sshName: keyName.toString(), priv: privBuf, pub: pubBuf };
+    }
+    case 'ed25519': {
+      // Parse public key
+      let reader = new Ber.Reader(pub);
+      reader.readSequence();
+
+      // - Algorithm
+      reader.readSequence();
+      if (reader.readOID() !== '1.3.101.112')
+        throw new Error('Bad ED25519 public OID');
+      // - Attributes (absent for ED25519)
+
+      let pubBin = reader.readString(Ber.BitString, true);
+      {
+        // Remove leading zero bytes
+        let i = 0;
+        for (; i < pubBin.length && pubBin[i] === 0x00; ++i);
+        if (i > 0)
+          pubBin = pubBin.slice(i);
+      }
+
+      // Parse private key
+      reader = new Ber.Reader(priv);
+      reader.readSequence();
+
+      // - Version
+      if (reader.readInt() !== 0)
+        throw new Error('Unsupported version in ED25519 private key');
+
+      // - Algorithm
+      reader.readSequence();
+      if (reader.readOID() !== '1.3.101.112')
+        throw new Error('Bad ED25519 private OID');
+      // - Attributes (absent)
+
+      reader = new Ber.Reader(reader.readString(Ber.OctetString, true));
+      const privBin = reader.readString(Ber.OctetString, true);
+
+      /*
+        OpenSSH ed25519 private key:
+          string  "ssh-ed25519"
+          string  public key
+          string  private key + public key
+      */
+      const keyName = Buffer.from('ssh-ed25519');
+      const privBuf = Buffer.allocUnsafe(
+        4 + keyName.length
+        + 4 + pubBin.length
+        + 4 + (privBin.length + pubBin.length)
+      );
+      let pos = 0;
+
+      privBuf.writeUInt32BE(keyName.length, pos += 0);
+      privBuf.set(keyName, pos += 4);
+      privBuf.writeUInt32BE(pubBin.length, pos += keyName.length);
+      privBuf.set(pubBin, pos += 4);
+      privBuf.writeUInt32BE(
+        privBin.length + pubBin.length,
+        pos += pubBin.length
+      );
+      privBuf.set(privBin, pos += 4);
+      privBuf.set(pubBin, pos += privBin.length);
+
+      /*
+        OpenSSH ed25519 public key:
+          string  "ssh-ed25519"
+          string  public key
+      */
+      const pubBuf = Buffer.allocUnsafe(
+        4 + keyName.length
+        + 4 + pubBin.length
+      );
+      pos = 0;
+
+      pubBuf.writeUInt32BE(keyName.length, pos += 0);
+      pubBuf.set(keyName, pos += 4);
+      pubBuf.writeUInt32BE(pubBin.length, pos += keyName.length);
+      pubBuf.set(pubBin, pos += 4);
+
+      return { sshName: keyName.toString(), priv: privBuf, pub: pubBuf };
+    }
+  }
+}
+
+function convertKeys(keyType, pub, priv, opts) {
+  let format = 'new';
+  let encrypted;
+  let comment = '';
+  if (typeof opts === 'object' && opts !== null) {
+    if (typeof opts.comment === 'string' && opts.comment)
+      comment = opts.comment;
+    if (typeof opts.format === 'string' && opts.format)
+      format = opts.format;
+    if (opts.passphrase) {
+      let passphrase;
+      if (typeof opts.passphrase === 'string')
+        passphrase = Buffer.from(opts.passphrase);
+      else if (Buffer.isBuffer(opts.passphrase))
+        passphrase = opts.passphrase;
+      else
+        throw new Error('Invalid passphrase');
+
+      if (opts.cipher === undefined)
+        throw new Error('Missing cipher name');
+      const cipher = ciphers.get(opts.cipher);
+      if (cipher === undefined)
+        throw new Error('Invalid cipher name');
+
+      if (format === 'new') {
+        let rounds = DEFAULT_ROUNDS;
+        if (opts.rounds !== undefined) {
+          if (!Number.isInteger(opts.rounds))
+            throw new TypeError('rounds must be an integer');
+          if (opts.rounds > 0)
+            rounds = opts.rounds;
+        }
+
+        const gen = Buffer.allocUnsafe(cipher.keyLen + cipher.ivLen);
+        const salt = randomBytes(SALT_LEN);
+        const r = bcrypt_pbkdf(
+          passphrase,
+          passphrase.length,
+          salt,
+          salt.length,
+          gen,
+          gen.length,
+          rounds
+        );
+        if (r !== 0)
+          return new Error('Failed to generate information to encrypt key');
+
+        /*
+          string salt
+          uint32 rounds
+        */
+        const kdfOptions = Buffer.allocUnsafe(4 + salt.length + 4);
+        {
+          let pos = 0;
+          kdfOptions.writeUInt32BE(salt.length, pos += 0);
+          kdfOptions.set(salt, pos += 4);
+          kdfOptions.writeUInt32BE(rounds, pos += salt.length);
+        }
+
+        encrypted = {
+          cipher,
+          cipherName: opts.cipher,
+          kdfName: 'bcrypt',
+          kdfOptions,
+          key: gen.slice(0, cipher.keyLen),
+          iv: gen.slice(cipher.keyLen),
+        };
+      }
+    }
+  }
+
+  switch (format) {
+    case 'new': {
+      let privateB64 = '-----BEGIN OPENSSH PRIVATE KEY-----\n';
+      let publicB64;
+      /*
+        byte[]  "openssh-key-v1\0"
+        string  ciphername
+        string  kdfname
+        string  kdfoptions
+        uint32  number of keys N
+        string  publickey1
+        string  encrypted, padded list of private keys
+          uint32  checkint
+          uint32  checkint
+          byte[]  privatekey1
+          string  comment1
+          byte  1
+          byte  2
+          byte  3
+          ...
+          byte  padlen % 255
+      */
+      const cipherName = Buffer.from(encrypted ? encrypted.cipherName : 'none');
+      const kdfName = Buffer.from(encrypted ? encrypted.kdfName : 'none');
+      const kdfOptions = (encrypted ? encrypted.kdfOptions : Buffer.alloc(0));
+      const blockLen = (encrypted ? encrypted.cipher.blockLen : 8);
+
+      const parsed = parseDERs(keyType, pub, priv);
+
+      const checkInt = randomBytes(4);
+      const commentBin = Buffer.from(comment);
+      const privBlobLen = (4 + 4 + parsed.priv.length + 4 + commentBin.length);
+      let padding = [];
+      for (let i = 1; ((privBlobLen + padding.length) % blockLen); ++i)
+        padding.push(i & 0xFF);
+      padding = Buffer.from(padding);
+
+      let privBlob = Buffer.allocUnsafe(privBlobLen + padding.length);
+      let extra;
+      {
+        let pos = 0;
+        privBlob.set(checkInt, pos += 0);
+        privBlob.set(checkInt, pos += 4);
+        privBlob.set(parsed.priv, pos += 4);
+        privBlob.writeUInt32BE(commentBin.length, pos += parsed.priv.length);
+        privBlob.set(commentBin, pos += 4);
+        privBlob.set(padding, pos += commentBin.length);
+      }
+
+      if (encrypted) {
+        const options = { authTagLength: encrypted.cipher.authLen };
+        const cipher = createCipheriv(
+          encrypted.cipher.sslName,
+          encrypted.key,
+          encrypted.iv,
+          options
+        );
+        cipher.setAutoPadding(false);
+        privBlob = Buffer.concat([ cipher.update(privBlob), cipher.final() ]);
+        if (encrypted.cipher.authLen > 0)
+          extra = cipher.getAuthTag();
+        else
+          extra = Buffer.alloc(0);
+        encrypted.key.fill(0);
+        encrypted.iv.fill(0);
+      } else {
+        extra = Buffer.alloc(0);
+      }
+
+      const magicBytes = Buffer.from('openssh-key-v1\0');
+      const privBin = Buffer.allocUnsafe(
+        magicBytes.length
+          + 4 + cipherName.length
+          + 4 + kdfName.length
+          + 4 + kdfOptions.length
+          + 4
+          + 4 + parsed.pub.length
+          + 4 + privBlob.length
+          + extra.length
+      );
+      {
+        let pos = 0;
+        privBin.set(magicBytes, pos += 0);
+        privBin.writeUInt32BE(cipherName.length, pos += magicBytes.length);
+        privBin.set(cipherName, pos += 4);
+        privBin.writeUInt32BE(kdfName.length, pos += cipherName.length);
+        privBin.set(kdfName, pos += 4);
+        privBin.writeUInt32BE(kdfOptions.length, pos += kdfName.length);
+        privBin.set(kdfOptions, pos += 4);
+        privBin.writeUInt32BE(1, pos += kdfOptions.length);
+        privBin.writeUInt32BE(parsed.pub.length, pos += 4);
+        privBin.set(parsed.pub, pos += 4);
+        privBin.writeUInt32BE(privBlob.length, pos += parsed.pub.length);
+        privBin.set(privBlob, pos += 4);
+        privBin.set(extra, pos += privBlob.length);
+      }
+
+      {
+        const b64 = privBin.base64Slice(0, privBin.length);
+        let formatted = b64.replace(/.{64}/g, '$&\n');
+        if (b64.length & 63)
+          formatted += '\n';
+        privateB64 += formatted;
+      }
+
+      {
+        const b64 = parsed.pub.base64Slice(0, parsed.pub.length);
+        publicB64 = `${parsed.sshName} ${b64}${comment ? ` ${comment}` : ''}`;
+      }
+
+      privateB64 += '-----END OPENSSH PRIVATE KEY-----\n';
+      return {
+        private: privateB64,
+        public: publicB64,
+      };
+    }
+    default:
+      throw new Error('Invalid output key format');
+  }
+}
+
+function noop() {}
+
+module.exports = {
+  generateKeyPair: (keyType, opts, cb) => {
+    if (typeof opts === 'function') {
+      cb = opts;
+      opts = undefined;
+    }
+    if (typeof cb !== 'function')
+      cb = noop;
+    const args = makeArgs(keyType, opts);
+    generateKeyPair_(...args, (err, pub, priv) => {
+      if (err)
+        return cb(err);
+      let ret;
+      try {
+        ret = convertKeys(args[0], pub, priv, opts);
+      } catch (ex) {
+        return cb(ex);
+      }
+      cb(null, ret);
+    });
+  },
+  generateKeyPairSync: (keyType, opts) => {
+    const args = makeArgs(keyType, opts);
+    const { publicKey: pub, privateKey: priv } = generateKeyPairSync_(...args);
+    return convertKeys(args[0], pub, priv, opts);
+  }
 };
 
 
@@ -13057,12 +13909,14 @@ const { bindingAvailable, NullCipher, NullDecipher } = __nccwpck_require__(5708)
 const {
   COMPAT_CHECKS,
   DISCONNECT_REASON,
+  eddsaSupported,
   MESSAGE,
   SIGNALS,
   TERMINAL_MODE,
 } = __nccwpck_require__(6832);
 const {
-  DEFAULT_KEXINIT,
+  DEFAULT_KEXINIT_CLIENT,
+  DEFAULT_KEXINIT_SERVER,
   KexInit,
   kexinit,
   onKEXPayload,
@@ -13151,8 +14005,13 @@ class Protocol {
     let onHandshakeComplete = config.onHandshakeComplete;
     if (typeof onHandshakeComplete !== 'function')
       onHandshakeComplete = noop;
+    let firstHandshake;
     this._onHandshakeComplete = (...args) => {
       this._debug && this._debug('Handshake completed');
+      if (firstHandshake === undefined)
+        firstHandshake = true;
+      else
+        firstHandshake = false;
 
       // Process packets queued during a rekey where necessary
       const oldQueue = this._queue;
@@ -13177,6 +14036,9 @@ class Protocol {
         }
         this._debug && this._debug('... finished draining outbound queue');
       }
+
+      if (firstHandshake && this._server && this._kex.remoteExtInfoEnabled)
+        sendExtInfo(this);
 
       onHandshakeComplete(...args);
     };
@@ -13218,10 +14080,13 @@ class Protocol {
     }
 
     let offer = config.offer;
-    if (typeof offer !== 'object' || offer === null)
-      offer = DEFAULT_KEXINIT;
-    else if (offer.constructor !== KexInit)
+    if (typeof offer !== 'object' || offer === null) {
+      offer = (this._server ? DEFAULT_KEXINIT_SERVER : DEFAULT_KEXINIT_CLIENT);
+    } else if (offer.constructor !== KexInit) {
+      if (!this._server)
+        offer.kex = offer.kex.concat(['ext-info-c']);
       offer = new KexInit(offer);
+    }
     this._kex = undefined;
     this._kexinit = undefined;
     this._offer = offer;
@@ -13621,7 +14486,7 @@ class Protocol {
 
     sendPacket(this, this._packetRW.write.finalize(packet));
   }
-  authPK(username, pubKey, cbSign) {
+  authPK(username, pubKey, keyAlgo, cbSign) {
     if (this._server)
       throw new Error('Client-only method called in server mode');
 
@@ -13632,8 +14497,15 @@ class Protocol {
     const keyType = pubKey.type;
     pubKey = pubKey.getPublicSSH();
 
+    if (typeof keyAlgo === 'function') {
+      cbSign = keyAlgo;
+      keyAlgo = undefined;
+    }
+    if (!keyAlgo)
+      keyAlgo = keyType;
+
     const userLen = Buffer.byteLength(username);
-    const algoLen = Buffer.byteLength(keyType);
+    const algoLen = Buffer.byteLength(keyAlgo);
     const pubKeyLen = pubKey.length;
     const sessionID = this._kex.sessionID;
     const sesLen = sessionID.length;
@@ -13667,7 +14539,7 @@ class Protocol {
     packet[p += 9] = (cbSign ? 1 : 0);
 
     writeUInt32BE(packet, algoLen, ++p);
-    packet.utf8Write(keyType, p += 4, algoLen);
+    packet.utf8Write(keyAlgo, p += 4, algoLen);
 
     writeUInt32BE(packet, pubKeyLen, p += algoLen);
     packet.set(pubKey, p += 4);
@@ -13710,7 +14582,7 @@ class Protocol {
       packet[p += 9] = 1;
 
       writeUInt32BE(packet, algoLen, ++p);
-      packet.utf8Write(keyType, p += 4, algoLen);
+      packet.utf8Write(keyAlgo, p += 4, algoLen);
 
       writeUInt32BE(packet, pubKeyLen, p += algoLen);
       packet.set(pubKey, p += 4);
@@ -13718,7 +14590,7 @@ class Protocol {
       writeUInt32BE(packet, 4 + algoLen + 4 + sigLen, p += pubKeyLen);
 
       writeUInt32BE(packet, algoLen, p += 4);
-      packet.utf8Write(keyType, p += 4, algoLen);
+      packet.utf8Write(keyAlgo, p += 4, algoLen);
 
       writeUInt32BE(packet, sigLen, p += algoLen);
       packet.set(signature, p += 4);
@@ -13733,7 +14605,7 @@ class Protocol {
       sendPacket(this, this._packetRW.write.finalize(packet));
     });
   }
-  authHostbased(username, pubKey, hostname, userlocal, cbSign) {
+  authHostbased(username, pubKey, hostname, userlocal, keyAlgo, cbSign) {
     // TODO: Make DRY by sharing similar code with authPK()
     if (this._server)
       throw new Error('Client-only method called in server mode');
@@ -13745,8 +14617,15 @@ class Protocol {
     const keyType = pubKey.type;
     pubKey = pubKey.getPublicSSH();
 
+    if (typeof keyAlgo === 'function') {
+      cbSign = keyAlgo;
+      keyAlgo = undefined;
+    }
+    if (!keyAlgo)
+      keyAlgo = keyType;
+
     const userLen = Buffer.byteLength(username);
-    const algoLen = Buffer.byteLength(keyType);
+    const algoLen = Buffer.byteLength(keyAlgo);
     const pubKeyLen = pubKey.length;
     const sessionID = this._kex.sessionID;
     const sesLen = sessionID.length;
@@ -13773,7 +14652,7 @@ class Protocol {
     data.utf8Write('hostbased', p += 4, 9);
 
     writeUInt32BE(data, algoLen, p += 9);
-    data.utf8Write(keyType, p += 4, algoLen);
+    data.utf8Write(keyAlgo, p += 4, algoLen);
 
     writeUInt32BE(data, pubKeyLen, p += algoLen);
     data.set(pubKey, p += 4);
@@ -13800,7 +14679,7 @@ class Protocol {
 
       writeUInt32BE(packet, 4 + algoLen + 4 + sigLen, p += reqDataLen);
       writeUInt32BE(packet, algoLen, p += 4);
-      packet.utf8Write(keyType, p += 4, algoLen);
+      packet.utf8Write(keyAlgo, p += 4, algoLen);
       writeUInt32BE(packet, sigLen, p += algoLen);
       packet.set(signature, p += 4);
 
@@ -15085,6 +15964,31 @@ function modesToBytes(modes) {
     return bufferSlice(bytes, 0, b);
 
   return bytes;
+}
+
+function sendExtInfo(proto) {
+  let serverSigAlgs =
+    'ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521'
+      + 'rsa-sha2-512,rsa-sha2-256,ssh-rsa,ssh-dss';
+  if (eddsaSupported)
+    serverSigAlgs = `ssh-ed25519,${serverSigAlgs}`;
+  const algsLen = Buffer.byteLength(serverSigAlgs);
+
+  let p = proto._packetRW.write.allocStart;
+  const packet = proto._packetRW.write.alloc(1 + 4 + 4 + 15 + 4 + algsLen);
+
+  packet[p] = MESSAGE.EXT_INFO;
+
+  writeUInt32BE(packet, 1, ++p);
+
+  writeUInt32BE(packet, 15, p += 4);
+  packet.utf8Write('server-sig-algs', p += 4, 15);
+
+  writeUInt32BE(packet, algsLen, p += 15);
+  packet.utf8Write(serverSigAlgs, p += 4, algsLen);
+
+  proto._debug && proto._debug('Outbound: Sending EXT_INFO');
+  sendPacket(proto, proto._packetRW.write.finalize(packet));
 }
 
 module.exports = Protocol;
@@ -16686,7 +17590,17 @@ class SFTP extends EventEmitter {
     writeUInt32BE(buf, pathLen, p += 20);
     buf.utf8Write(path, p += 4, pathLen);
 
-    this._requests[reqid] = { cb };
+    this._requests[reqid] = {
+      cb: (err, names) => {
+        if (typeof cb !== 'function')
+          return;
+        if (err)
+          return cb(err);
+        if (!names || !names.length)
+          return cb(new Error('Response missing expanded path'));
+        cb(undefined, names[0].filename);
+      }
+    };
 
     const isBuffered = sendOrBuffer(this, buf);
     if (this._debug) {
@@ -16777,6 +17691,146 @@ class SFTP extends EventEmitter {
     if (this._debug) {
       const status = (isBuffered ? 'Buffered' : 'Sending');
       this._debug(`SFTP: Outbound: ${status} copy-data`);
+    }
+  }
+  ext_home_dir(username, cb) {
+    if (this.server)
+      throw new Error('Client-only method called in server mode');
+
+    const ext = this._extensions['home-directory'];
+    if (ext !== '1')
+      throw new Error('Server does not support this extended request');
+
+    if (typeof username !== 'string')
+      throw new TypeError('username is not a string');
+
+    /*
+      uint32    id
+      string    "home-directory"
+      string    username
+    */
+    let p = 0;
+    const usernameLen = Buffer.byteLength(username);
+    const buf = Buffer.allocUnsafe(
+      4 + 1
+      + 4
+      + 4 + 14
+      + 4 + usernameLen
+    );
+
+    writeUInt32BE(buf, buf.length - 4, p);
+    p += 4;
+
+    buf[p] = REQUEST.EXTENDED;
+    ++p;
+
+    const reqid = this._writeReqid = (this._writeReqid + 1) & MAX_REQID;
+    writeUInt32BE(buf, reqid, p);
+    p += 4;
+
+    writeUInt32BE(buf, 14, p);
+    p += 4;
+    buf.utf8Write('home-directory', p, 14);
+    p += 14;
+
+    writeUInt32BE(buf, usernameLen, p);
+    p += 4;
+    buf.utf8Write(username, p, usernameLen);
+    p += usernameLen;
+
+    this._requests[reqid] = {
+      cb: (err, names) => {
+        if (typeof cb !== 'function')
+          return;
+        if (err)
+          return cb(err);
+        if (!names || !names.length)
+          return cb(new Error('Response missing home directory'));
+        cb(undefined, names[0].filename);
+      }
+    };
+
+    const isBuffered = sendOrBuffer(this, buf);
+    if (this._debug) {
+      const status = (isBuffered ? 'Buffered' : 'Sending');
+      this._debug(`SFTP: Outbound: ${status} home-directory`);
+    }
+  }
+  ext_users_groups(uids, gids, cb) {
+    if (this.server)
+      throw new Error('Client-only method called in server mode');
+
+    const ext = this._extensions['users-groups-by-id@openssh.com'];
+    if (ext !== '1')
+      throw new Error('Server does not support this extended request');
+
+    if (!Array.isArray(uids))
+      throw new TypeError('uids is not an array');
+    for (const val of uids) {
+      if (!Number.isInteger(val) || val < 0 || val > (2 ** 32 - 1))
+        throw new Error('uid values must all be 32-bit unsigned integers');
+    }
+    if (!Array.isArray(gids))
+      throw new TypeError('gids is not an array');
+    for (const val of gids) {
+      if (!Number.isInteger(val) || val < 0 || val > (2 ** 32 - 1))
+        throw new Error('gid values must all be 32-bit unsigned integers');
+    }
+
+    /*
+      uint32    id
+      string    "users-groups-by-id@openssh.com"
+      string    uids
+        uint32    uid1
+        ...
+      string    gids
+        uint32    gid1
+        ...
+    */
+    let p = 0;
+    const buf = Buffer.allocUnsafe(
+      4 + 1
+      + 4
+      + 4 + 30
+      + 4 + (4 * uids.length)
+      + 4 + (4 * gids.length)
+    );
+
+    writeUInt32BE(buf, buf.length - 4, p);
+    p += 4;
+
+    buf[p] = REQUEST.EXTENDED;
+    ++p;
+
+    const reqid = this._writeReqid = (this._writeReqid + 1) & MAX_REQID;
+    writeUInt32BE(buf, reqid, p);
+    p += 4;
+
+    writeUInt32BE(buf, 30, p);
+    p += 4;
+    buf.utf8Write('users-groups-by-id@openssh.com', p, 30);
+    p += 30;
+
+    writeUInt32BE(buf, 4 * uids.length, p);
+    p += 4;
+    for (const val of uids) {
+      writeUInt32BE(buf, val, p);
+      p += 4;
+    }
+
+    writeUInt32BE(buf, 4 * gids.length, p);
+    p += 4;
+    for (const val of gids) {
+      writeUInt32BE(buf, val, p);
+      p += 4;
+    }
+
+    this._requests[reqid] = { extended: 'users-groups-by-id@openssh.com', cb };
+
+    const isBuffered = sendOrBuffer(this, buf);
+    if (this._debug) {
+      const status = (isBuffered ? 'Buffered' : 'Sending');
+      this._debug(`SFTP: Outbound: ${status} users-groups-by-id@openssh.com`);
     }
   }
   // ===========================================================================
@@ -18026,6 +19080,44 @@ const CLIENT_HANDLERS = {
               req.cb(undefined, limits);
             return;
           }
+          case 'users-groups-by-id@openssh.com': {
+            /*
+              string    usernames
+                string    username1
+                ...
+              string    groupnames
+                string    groupname1
+                ...
+            */
+            const usernameCount = bufferParser.readUInt32BE();
+            if (usernameCount === undefined)
+              break;
+            const usernames = new Array(usernameCount);
+            for (let i = 0; i < usernames.length; ++i)
+              usernames[i] = bufferParser.readString(true);
+
+            const groupnameCount = bufferParser.readUInt32BE();
+            if (groupnameCount === undefined)
+              break;
+            const groupnames = new Array(groupnameCount);
+            for (let i = 0; i < groupnames.length; ++i)
+              groupnames[i] = bufferParser.readString(true);
+            if (groupnames.length > 0
+                && groupnames[groupnames.length - 1] === undefined) {
+              break;
+            }
+
+            if (sftp._debug) {
+              sftp._debug(
+                'SFTP: Inbound: Received EXTENDED_REPLY '
+                  + `(id:${reqID}, ${req.extended})`
+              );
+            }
+            bufferParser.clear();
+            if (typeof req.cb === 'function')
+              req.cb(undefined, usernames, groupnames);
+            return;
+          }
           default:
             // Unknown extended request
             sftp._debug && sftp._debug(
@@ -18974,7 +20066,7 @@ const crypto = __nccwpck_require__(6113);
 
 let cpuInfo;
 try {
-  cpuInfo = __nccwpck_require__(7295)();
+  cpuInfo = __nccwpck_require__(4137)();
 } catch {}
 
 const { bindingAvailable, CIPHER_INFO, MAC_INFO } = __nccwpck_require__(5708);
@@ -19129,6 +20221,7 @@ const COMPAT = {
   OLD_EXIT: 1 << 1,
   DYN_RPORT_BUG: 1 << 2,
   BUG_DHGEX_LARGE: 1 << 3,
+  IMPLY_RSA_SHA2_SIGALGS: 1 << 4,
 };
 
 module.exports = {
@@ -19140,6 +20233,7 @@ module.exports = {
     DEBUG: 4,
     SERVICE_REQUEST: 5,
     SERVICE_ACCEPT: 6,
+    EXT_INFO: 7, // RFC 8308
 
     // Transport layer protocol -- algorithm negotiation (20-29)
     KEXINIT: 20,
@@ -19297,9 +20391,10 @@ module.exports = {
   COMPAT,
   COMPAT_CHECKS: [
     [ 'Cisco-1.25', COMPAT.BAD_DHGEX ],
-    [ /^Cisco-1\./, COMPAT.BUG_DHGEX_LARGE ],
+    [ /^Cisco-1[.]/, COMPAT.BUG_DHGEX_LARGE ],
     [ /^[0-9.]+$/, COMPAT.OLD_EXIT ], // old SSH.com implementations
-    [ /^OpenSSH_5\.\d+/, COMPAT.DYN_RPORT_BUG ],
+    [ /^OpenSSH_5[.][0-9]+/, COMPAT.DYN_RPORT_BUG ],
+    [ /^OpenSSH_7[.]4/, COMPAT.IMPLY_RSA_SHA2_SIGALGS ],
   ],
 
   // KEX proposal-related
@@ -19358,7 +20453,7 @@ let AESGCMDecipher;
 let ChaChaPolyDecipher;
 let GenericDecipher;
 try {
-  binding = __nccwpck_require__(9623);
+  binding = __nccwpck_require__(9041);
   ({ AESGCMCipher, ChaChaPolyCipher, GenericCipher,
      AESGCMDecipher, ChaChaPolyDecipher, GenericDecipher } = binding);
 } catch {}
@@ -21158,6 +22253,48 @@ module.exports = {
     const handler = self._handlers.SERVICE_ACCEPT;
     handler && handler(self, name);
   },
+  [MESSAGE.EXT_INFO]: (self, payload) => {
+    /*
+      byte       SSH_MSG_EXT_INFO
+      uint32     nr-extensions
+      repeat the following 2 fields "nr-extensions" times:
+        string   extension-name
+        string   extension-value (binary)
+    */
+    bufferParser.init(payload, 1);
+    const numExts = bufferParser.readUInt32BE();
+    let exts;
+    if (numExts !== undefined) {
+      exts = [];
+      for (let i = 0; i < numExts; ++i) {
+        const name = bufferParser.readString(true);
+        const data = bufferParser.readString();
+        if (data !== undefined) {
+          switch (name) {
+            case 'server-sig-algs': {
+              const algs = data.latin1Slice(0, data.length).split(',');
+              exts.push({ name, algs });
+              continue;
+            }
+            default:
+              continue;
+          }
+        }
+        // Malformed
+        exts = undefined;
+        break;
+      }
+    }
+    bufferParser.clear();
+
+    if (exts === undefined)
+      return doFatalError(self, 'Inbound: Malformed EXT_INFO packet');
+
+    self._debug && self._debug('Inbound: Received EXT_INFO');
+
+    const handler = self._handlers.EXT_INFO;
+    handler && handler(self, exts);
+  },
 
   // User auth protocol -- generic =============================================
   [MESSAGE.USERAUTH_REQUEST]: (self, payload) => {
@@ -21207,7 +22344,21 @@ module.exports = {
         const hasSig = bufferParser.readBool();
         if (hasSig !== undefined) {
           const keyAlgo = bufferParser.readString(true);
+          let realKeyAlgo = keyAlgo;
           const key = bufferParser.readString();
+
+          let hashAlgo;
+          switch (keyAlgo) {
+            case 'rsa-sha2-256':
+              realKeyAlgo = 'ssh-rsa';
+              hashAlgo = 'sha256';
+              break;
+            case 'rsa-sha2-512':
+              realKeyAlgo = 'ssh-rsa';
+              hashAlgo = 'sha512';
+              break;
+          }
+
           if (hasSig) {
             const blobEnd = bufferParser.pos();
             let signature = bufferParser.readString();
@@ -21218,7 +22369,7 @@ module.exports = {
                 signature = bufferSlice(signature, 4 + keyAlgo.length + 4);
               }
 
-              signature = sigSSHToASN1(signature, keyAlgo);
+              signature = sigSSHToASN1(signature, realKeyAlgo);
               if (signature) {
                 const sessionID = self._kex.sessionID;
                 const blob = Buffer.allocUnsafe(4 + sessionID.length + blobEnd);
@@ -21229,15 +22380,16 @@ module.exports = {
                   4 + sessionID.length
                 );
                 methodData = {
-                  keyAlgo,
+                  keyAlgo: realKeyAlgo,
                   key,
                   signature,
                   blob,
+                  hashAlgo,
                 };
               }
             }
           } else {
-            methodData = { keyAlgo, key };
+            methodData = { keyAlgo: realKeyAlgo, key, hashAlgo };
             methodDesc = 'publickey -- check';
           }
         }
@@ -21253,9 +22405,22 @@ module.exports = {
           string    signature
         */
         const keyAlgo = bufferParser.readString(true);
+        let realKeyAlgo = keyAlgo;
         const key = bufferParser.readString();
         const localHostname = bufferParser.readString(true);
         const localUsername = bufferParser.readString(true);
+
+        let hashAlgo;
+        switch (keyAlgo) {
+          case 'rsa-sha2-256':
+            realKeyAlgo = 'ssh-rsa';
+            hashAlgo = 'sha256';
+            break;
+          case 'rsa-sha2-512':
+            realKeyAlgo = 'ssh-rsa';
+            hashAlgo = 'sha512';
+            break;
+        }
 
         const blobEnd = bufferParser.pos();
         let signature = bufferParser.readString();
@@ -21266,7 +22431,7 @@ module.exports = {
             signature = bufferSlice(signature, 4 + keyAlgo.length + 4);
           }
 
-          signature = sigSSHToASN1(signature, keyAlgo);
+          signature = sigSSHToASN1(signature, realKeyAlgo);
           if (signature !== undefined) {
             const sessionID = self._kex.sessionID;
             const blob = Buffer.allocUnsafe(4 + sessionID.length + blobEnd);
@@ -21277,12 +22442,13 @@ module.exports = {
               4 + sessionID.length
             );
             methodData = {
-              keyAlgo,
+              keyAlgo: realKeyAlgo,
               key,
               signature,
               blob,
               localHostname,
               localUsername,
+              hashAlgo
             };
           }
         }
@@ -22456,12 +23622,15 @@ function handleKexInit(self, payload) {
   // Key exchange method =======================================================
   debug && debug(`Handshake: (local) KEX method: ${localKex}`);
   debug && debug(`Handshake: (remote) KEX method: ${remote.kex}`);
+  let remoteExtInfoEnabled;
   if (self._server) {
     serverList = localKex;
     clientList = remote.kex;
+    remoteExtInfoEnabled = (clientList.indexOf('ext-info-c') !== -1);
   } else {
     serverList = remote.kex;
     clientList = localKex;
+    remoteExtInfoEnabled = (serverList.indexOf('ext-info-s') !== -1);
   }
   // Check for agreeable key exchange algorithm
   for (i = 0;
@@ -22713,6 +23882,7 @@ function handleKexInit(self, payload) {
   }
 
   self._kex = createKeyExchange(init, self, payload);
+  self._kex.remoteExtInfoEnabled = remoteExtInfoEnabled;
   self._kex.start();
 }
 
@@ -22744,6 +23914,7 @@ const createKeyExchange = (() => {
 
       this.sessionID = (protocol._kex ? protocol._kex.sessionID : undefined);
       this.negotiated = negotiated;
+      this.remoteExtInfoEnabled = false;
       this._step = 1;
       this._public = null;
       this._dh = null;
@@ -22761,7 +23932,7 @@ const createKeyExchange = (() => {
       this._dhData = undefined;
       this._sig = undefined;
     }
-    finish() {
+    finish(scOnly) {
       if (this._finished)
         return false;
       this._finished = true;
@@ -23012,9 +24183,26 @@ const createKeyExchange = (() => {
           this._protocol._packetRW.write.finalize(packet, true)
         );
       }
-      trySendNEWKEYS(this);
 
-      const completeHandshake = () => {
+      if (isServer || !scOnly)
+        trySendNEWKEYS(this);
+
+      let hsCipherConfig;
+      let hsWrite;
+      const completeHandshake = (partial) => {
+        if (hsCipherConfig) {
+          trySendNEWKEYS(this);
+          hsCipherConfig.outbound.seqno = this._protocol._cipher.outSeqno;
+          this._protocol._cipher.free();
+          this._protocol._cipher = createCipher(hsCipherConfig);
+          this._protocol._packetRW.write = hsWrite;
+          hsCipherConfig = undefined;
+          hsWrite = undefined;
+          this._protocol._onHandshakeComplete(negotiated);
+
+          return false;
+        }
+
         if (!this.sessionID)
           this.sessionID = exchangeHash;
 
@@ -23097,9 +24285,8 @@ const createKeyExchange = (() => {
             macKey: (isServer ? scMacKey : csMacKey),
           },
         };
-        this._protocol._cipher && this._protocol._cipher.free();
-        this._protocol._decipher && this._protocol._decipher.free();
-        this._protocol._cipher = createCipher(config);
+        this._protocol._decipher.free();
+        hsCipherConfig = config;
         this._protocol._decipher = createDecipher(config);
 
         const rw = {
@@ -23166,7 +24353,8 @@ const createKeyExchange = (() => {
         }
         this._protocol._packetRW.read.cleanup();
         this._protocol._packetRW.write.cleanup();
-        this._protocol._packetRW = rw;
+        this._protocol._packetRW.read = rw.read;
+        hsWrite = rw.write;
 
         // Cleanup/reset various state
         this._public = null;
@@ -23179,13 +24367,16 @@ const createKeyExchange = (() => {
         this._dhData = undefined;
         this._sig = undefined;
 
-        this._protocol._onHandshakeComplete(negotiated);
-
+        if (!partial)
+          return completeHandshake();
         return false;
       };
+
+      if (isServer || scOnly)
+        this.finish = completeHandshake;
+
       if (!isServer)
-        return completeHandshake();
-      this.finish = completeHandshake;
+        return completeHandshake(scOnly);
     }
 
     start() {
@@ -23446,12 +24637,8 @@ const createKeyExchange = (() => {
           );
           this._receivedNEWKEYS = true;
           ++this._step;
-          if (this._protocol._server || this._hostVerified)
-            return this.finish();
 
-          // Signal to current decipher that we need to change to a new decipher
-          // for the next packet
-          return false;
+          return this.finish(!this._protocol._server && !this._hostVerified);
         default:
           return doFatalError(
             this._protocol,
@@ -23612,7 +24799,7 @@ const createKeyExchange = (() => {
     parse(payload) {
       const type = payload[0];
       switch (this._step) {
-        case 1:
+        case 1: {
           if (this._protocol._server) {
             if (type !== MESSAGE.KEXDH_GEX_REQUEST) {
               return doFatalError(
@@ -23687,6 +24874,7 @@ const createKeyExchange = (() => {
 
           ++this._step;
           break;
+        }
         case 2:
           if (this._protocol._server) {
             if (type !== MESSAGE.KEXDH_GEX_INIT) {
@@ -24043,7 +25231,23 @@ module.exports = {
   KexInit,
   kexinit,
   onKEXPayload,
-  DEFAULT_KEXINIT: new KexInit({
+  DEFAULT_KEXINIT_CLIENT: new KexInit({
+    kex: DEFAULT_KEX.concat(['ext-info-c']),
+    serverHostKey: DEFAULT_SERVER_HOST_KEY,
+    cs: {
+      cipher: DEFAULT_CIPHER,
+      mac: DEFAULT_MAC,
+      compress: DEFAULT_COMPRESSION,
+      lang: [],
+    },
+    sc: {
+      cipher: DEFAULT_CIPHER,
+      mac: DEFAULT_MAC,
+      compress: DEFAULT_COMPRESSION,
+      lang: [],
+    },
+  }),
+  DEFAULT_KEXINIT_SERVER: new KexInit({
     kex: DEFAULT_KEX,
     serverHostKey: DEFAULT_SERVER_HOST_KEY,
     cs: {
@@ -24585,7 +25789,7 @@ OpenSSH_Private.prototype = BaseKey;
       switch (kdfName) {
         case 'none':
           return new Error('Malformed OpenSSH private key');
-        case 'bcrypt':
+        case 'bcrypt': {
           /*
             string salt
             uint32 rounds
@@ -24607,6 +25811,7 @@ OpenSSH_Private.prototype = BaseKey;
           cipherKey = bufferSlice(gen, 0, encInfo.keyLen);
           cipherIV = bufferSlice(gen, encInfo.keyLen, gen.length);
           break;
+        }
       }
     } else if (kdfName !== 'none') {
       return new Error('Malformed OpenSSH private key');
@@ -24646,6 +25851,7 @@ OpenSSH_Private.prototype = BaseKey;
                                             cipherKey,
                                             cipherIV,
                                             options);
+          decipher.setAutoPadding(false);
           if (encInfo.authLen > 0) {
             if (data.length - data._pos < encInfo.authLen)
               return new Error('Malformed OpenSSH private key');
@@ -25005,7 +26211,7 @@ OpenSSH_Old_Private.prototype = BaseKey;
         }
         algo = 'sha1';
         break;
-      case 'EC':
+      case 'EC': {
         let ecSSLName;
         let ecPriv;
         let ecOID;
@@ -25054,6 +26260,7 @@ OpenSSH_Old_Private.prototype = BaseKey;
         pubPEM = genOpenSSLECDSAPub(ecOID, pubBlob);
         pubSSH = genOpenSSHECDSAPub(ecOID, pubBlob);
         break;
+      }
     }
 
     return new OpenSSH_Old_Private(type, '', privPEM, pubPEM, pubSSH, algo,
@@ -25129,9 +26336,7 @@ PPK_Private.prototype = BaseKey;
       if (cipherKey.length > encInfo.keyLen)
         cipherKey = bufferSlice(cipherKey, 0, encInfo.keyLen);
       try {
-        const decipher = createDecipheriv(encInfo.sslName,
-                                        cipherKey,
-                                        PPK_IV);
+        const decipher = createDecipheriv(encInfo.sslName, cipherKey, PPK_IV);
         decipher.setAutoPadding(false);
         privBlob = combineBuffers(decipher.update(privBlob),
                                   decipher.final());
@@ -26450,6 +27655,7 @@ class PKAuthContext extends AuthContext {
     super(protocol, username, service, method, cb);
 
     this.key = { algo: pkInfo.keyAlgo, data: pkInfo.key };
+    this.hashAlgo = pkInfo.hashAlgo;
     this.signature = pkInfo.signature;
     this.blob = pkInfo.blob;
   }
@@ -26469,6 +27675,7 @@ class HostbasedAuthContext extends AuthContext {
     super(protocol, username, service, method, cb);
 
     this.key = { algo: pkInfo.keyAlgo, data: pkInfo.key };
+    this.hashAlgo = pkInfo.hashAlgo;
     this.signature = pkInfo.signature;
     this.blob = pkInfo.blob;
     this.localHostname = pkInfo.localHostname;
@@ -27629,6 +28836,13 @@ class Client extends EventEmitter {
       else
         this.once('rekey', cb);
     }
+  }
+
+  setNoDelay(noDelay) {
+    if (this._sock && typeof this._sock.setNoDelay === 'function')
+      this._sock.setNoDelay(noDelay);
+
+    return this;
   }
 }
 
@@ -32301,19 +33515,17 @@ exports["default"] = _default;
 
 /***/ }),
 
-/***/ 9623:
-/***/ ((module) => {
+/***/ 4240:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-module.exports = eval("require")("./crypto/build/Release/sshcrypto.node");
-
+module.exports = require(__nccwpck_require__.ab + "build/Release/cpufeatures.node")
 
 /***/ }),
 
-/***/ 7295:
-/***/ ((module) => {
+/***/ 9041:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-module.exports = eval("require")("cpu-features");
-
+module.exports = require(__nccwpck_require__.ab + "lib/protocol/crypto/build/Release/sshcrypto.node")
 
 /***/ }),
 
@@ -32453,17 +33665,808 @@ module.exports = require("zlib");
 
 /***/ }),
 
-/***/ 2002:
-/***/ (function(module, __unused_webpack_exports, __nccwpck_require__) {
+/***/ 903:
+/***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
 
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.assertValidPattern = void 0;
+const MAX_PATTERN_LENGTH = 1024 * 64;
+const assertValidPattern = (pattern) => {
+    if (typeof pattern !== 'string') {
+        throw new TypeError('invalid pattern');
+    }
+    if (pattern.length > MAX_PATTERN_LENGTH) {
+        throw new TypeError('pattern is too long');
+    }
 };
-const index_js_1 = __importDefault(__nccwpck_require__(1953));
-module.exports = Object.assign(index_js_1.default, { default: index_js_1.default, minimatch: index_js_1.default });
-//# sourceMappingURL=index-cjs.js.map
+exports.assertValidPattern = assertValidPattern;
+//# sourceMappingURL=assert-valid-pattern.js.map
+
+/***/ }),
+
+/***/ 3839:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+// parse a single path portion
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.AST = void 0;
+const brace_expressions_js_1 = __nccwpck_require__(5822);
+const unescape_js_1 = __nccwpck_require__(7305);
+const types = new Set(['!', '?', '+', '*', '@']);
+const isExtglobType = (c) => types.has(c);
+// Patterns that get prepended to bind to the start of either the
+// entire string, or just a single path portion, to prevent dots
+// and/or traversal patterns, when needed.
+// Exts don't need the ^ or / bit, because the root binds that already.
+const startNoTraversal = '(?!(?:^|/)\\.\\.?(?:$|/))';
+const startNoDot = '(?!\\.)';
+// characters that indicate a start of pattern needs the "no dots" bit,
+// because a dot *might* be matched. ( is not in the list, because in
+// the case of a child extglob, it will handle the prevention itself.
+const addPatternStart = new Set(['[', '.']);
+// cases where traversal is A-OK, no dot prevention needed
+const justDots = new Set(['..', '.']);
+const reSpecials = new Set('().*{}+?[]^$\\!');
+const regExpEscape = (s) => s.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
+// any single thing other than /
+const qmark = '[^/]';
+// * => any number of characters
+const star = qmark + '*?';
+// use + when we need to ensure that *something* matches, because the * is
+// the only thing in the path portion.
+const starNoEmpty = qmark + '+?';
+// remove the \ chars that we added if we end up doing a nonmagic compare
+// const deslash = (s: string) => s.replace(/\\(.)/g, '$1')
+class AST {
+    type;
+    #root;
+    #hasMagic;
+    #uflag = false;
+    #parts = [];
+    #parent;
+    #parentIndex;
+    #negs;
+    #filledNegs = false;
+    #options;
+    #toString;
+    // set to true if it's an extglob with no children
+    // (which really means one child of '')
+    #emptyExt = false;
+    constructor(type, parent, options = {}) {
+        this.type = type;
+        // extglobs are inherently magical
+        if (type)
+            this.#hasMagic = true;
+        this.#parent = parent;
+        this.#root = this.#parent ? this.#parent.#root : this;
+        this.#options = this.#root === this ? options : this.#root.#options;
+        this.#negs = this.#root === this ? [] : this.#root.#negs;
+        if (type === '!' && !this.#root.#filledNegs)
+            this.#negs.push(this);
+        this.#parentIndex = this.#parent ? this.#parent.#parts.length : 0;
+    }
+    get hasMagic() {
+        /* c8 ignore start */
+        if (this.#hasMagic !== undefined)
+            return this.#hasMagic;
+        /* c8 ignore stop */
+        for (const p of this.#parts) {
+            if (typeof p === 'string')
+                continue;
+            if (p.type || p.hasMagic)
+                return (this.#hasMagic = true);
+        }
+        // note: will be undefined until we generate the regexp src and find out
+        return this.#hasMagic;
+    }
+    // reconstructs the pattern
+    toString() {
+        if (this.#toString !== undefined)
+            return this.#toString;
+        if (!this.type) {
+            return (this.#toString = this.#parts.map(p => String(p)).join(''));
+        }
+        else {
+            return (this.#toString =
+                this.type + '(' + this.#parts.map(p => String(p)).join('|') + ')');
+        }
+    }
+    #fillNegs() {
+        /* c8 ignore start */
+        if (this !== this.#root)
+            throw new Error('should only call on root');
+        if (this.#filledNegs)
+            return this;
+        /* c8 ignore stop */
+        // call toString() once to fill this out
+        this.toString();
+        this.#filledNegs = true;
+        let n;
+        while ((n = this.#negs.pop())) {
+            if (n.type !== '!')
+                continue;
+            // walk up the tree, appending everthing that comes AFTER parentIndex
+            let p = n;
+            let pp = p.#parent;
+            while (pp) {
+                for (let i = p.#parentIndex + 1; !pp.type && i < pp.#parts.length; i++) {
+                    for (const part of n.#parts) {
+                        /* c8 ignore start */
+                        if (typeof part === 'string') {
+                            throw new Error('string part in extglob AST??');
+                        }
+                        /* c8 ignore stop */
+                        part.copyIn(pp.#parts[i]);
+                    }
+                }
+                p = pp;
+                pp = p.#parent;
+            }
+        }
+        return this;
+    }
+    push(...parts) {
+        for (const p of parts) {
+            if (p === '')
+                continue;
+            /* c8 ignore start */
+            if (typeof p !== 'string' && !(p instanceof AST && p.#parent === this)) {
+                throw new Error('invalid part: ' + p);
+            }
+            /* c8 ignore stop */
+            this.#parts.push(p);
+        }
+    }
+    toJSON() {
+        const ret = this.type === null
+            ? this.#parts.slice().map(p => (typeof p === 'string' ? p : p.toJSON()))
+            : [this.type, ...this.#parts.map(p => p.toJSON())];
+        if (this.isStart() && !this.type)
+            ret.unshift([]);
+        if (this.isEnd() &&
+            (this === this.#root ||
+                (this.#root.#filledNegs && this.#parent?.type === '!'))) {
+            ret.push({});
+        }
+        return ret;
+    }
+    isStart() {
+        if (this.#root === this)
+            return true;
+        // if (this.type) return !!this.#parent?.isStart()
+        if (!this.#parent?.isStart())
+            return false;
+        if (this.#parentIndex === 0)
+            return true;
+        // if everything AHEAD of this is a negation, then it's still the "start"
+        const p = this.#parent;
+        for (let i = 0; i < this.#parentIndex; i++) {
+            const pp = p.#parts[i];
+            if (!(pp instanceof AST && pp.type === '!')) {
+                return false;
+            }
+        }
+        return true;
+    }
+    isEnd() {
+        if (this.#root === this)
+            return true;
+        if (this.#parent?.type === '!')
+            return true;
+        if (!this.#parent?.isEnd())
+            return false;
+        if (!this.type)
+            return this.#parent?.isEnd();
+        // if not root, it'll always have a parent
+        /* c8 ignore start */
+        const pl = this.#parent ? this.#parent.#parts.length : 0;
+        /* c8 ignore stop */
+        return this.#parentIndex === pl - 1;
+    }
+    copyIn(part) {
+        if (typeof part === 'string')
+            this.push(part);
+        else
+            this.push(part.clone(this));
+    }
+    clone(parent) {
+        const c = new AST(this.type, parent);
+        for (const p of this.#parts) {
+            c.copyIn(p);
+        }
+        return c;
+    }
+    static #parseAST(str, ast, pos, opt) {
+        let escaping = false;
+        let inBrace = false;
+        let braceStart = -1;
+        let braceNeg = false;
+        if (ast.type === null) {
+            // outside of a extglob, append until we find a start
+            let i = pos;
+            let acc = '';
+            while (i < str.length) {
+                const c = str.charAt(i++);
+                // still accumulate escapes at this point, but we do ignore
+                // starts that are escaped
+                if (escaping || c === '\\') {
+                    escaping = !escaping;
+                    acc += c;
+                    continue;
+                }
+                if (inBrace) {
+                    if (i === braceStart + 1) {
+                        if (c === '^' || c === '!') {
+                            braceNeg = true;
+                        }
+                    }
+                    else if (c === ']' && !(i === braceStart + 2 && braceNeg)) {
+                        inBrace = false;
+                    }
+                    acc += c;
+                    continue;
+                }
+                else if (c === '[') {
+                    inBrace = true;
+                    braceStart = i;
+                    braceNeg = false;
+                    acc += c;
+                    continue;
+                }
+                if (!opt.noext && isExtglobType(c) && str.charAt(i) === '(') {
+                    ast.push(acc);
+                    acc = '';
+                    const ext = new AST(c, ast);
+                    i = AST.#parseAST(str, ext, i, opt);
+                    ast.push(ext);
+                    continue;
+                }
+                acc += c;
+            }
+            ast.push(acc);
+            return i;
+        }
+        // some kind of extglob, pos is at the (
+        // find the next | or )
+        let i = pos + 1;
+        let part = new AST(null, ast);
+        const parts = [];
+        let acc = '';
+        while (i < str.length) {
+            const c = str.charAt(i++);
+            // still accumulate escapes at this point, but we do ignore
+            // starts that are escaped
+            if (escaping || c === '\\') {
+                escaping = !escaping;
+                acc += c;
+                continue;
+            }
+            if (inBrace) {
+                if (i === braceStart + 1) {
+                    if (c === '^' || c === '!') {
+                        braceNeg = true;
+                    }
+                }
+                else if (c === ']' && !(i === braceStart + 2 && braceNeg)) {
+                    inBrace = false;
+                }
+                acc += c;
+                continue;
+            }
+            else if (c === '[') {
+                inBrace = true;
+                braceStart = i;
+                braceNeg = false;
+                acc += c;
+                continue;
+            }
+            if (isExtglobType(c) && str.charAt(i) === '(') {
+                part.push(acc);
+                acc = '';
+                const ext = new AST(c, part);
+                part.push(ext);
+                i = AST.#parseAST(str, ext, i, opt);
+                continue;
+            }
+            if (c === '|') {
+                part.push(acc);
+                acc = '';
+                parts.push(part);
+                part = new AST(null, ast);
+                continue;
+            }
+            if (c === ')') {
+                if (acc === '' && ast.#parts.length === 0) {
+                    ast.#emptyExt = true;
+                }
+                part.push(acc);
+                acc = '';
+                ast.push(...parts, part);
+                return i;
+            }
+            acc += c;
+        }
+        // unfinished extglob
+        // if we got here, it was a malformed extglob! not an extglob, but
+        // maybe something else in there.
+        ast.type = null;
+        ast.#hasMagic = undefined;
+        ast.#parts = [str.substring(pos - 1)];
+        return i;
+    }
+    static fromGlob(pattern, options = {}) {
+        const ast = new AST(null, undefined, options);
+        AST.#parseAST(pattern, ast, 0, options);
+        return ast;
+    }
+    // returns the regular expression if there's magic, or the unescaped
+    // string if not.
+    toMMPattern() {
+        // should only be called on root
+        /* c8 ignore start */
+        if (this !== this.#root)
+            return this.#root.toMMPattern();
+        /* c8 ignore stop */
+        const glob = this.toString();
+        const [re, body, hasMagic, uflag] = this.toRegExpSource();
+        // if we're in nocase mode, and not nocaseMagicOnly, then we do
+        // still need a regular expression if we have to case-insensitively
+        // match capital/lowercase characters.
+        const anyMagic = hasMagic ||
+            this.#hasMagic ||
+            (this.#options.nocase &&
+                !this.#options.nocaseMagicOnly &&
+                glob.toUpperCase() !== glob.toLowerCase());
+        if (!anyMagic) {
+            return body;
+        }
+        const flags = (this.#options.nocase ? 'i' : '') + (uflag ? 'u' : '');
+        return Object.assign(new RegExp(`^${re}$`, flags), {
+            _src: re,
+            _glob: glob,
+        });
+    }
+    // returns the string match, the regexp source, whether there's magic
+    // in the regexp (so a regular expression is required) and whether or
+    // not the uflag is needed for the regular expression (for posix classes)
+    // TODO: instead of injecting the start/end at this point, just return
+    // the BODY of the regexp, along with the start/end portions suitable
+    // for binding the start/end in either a joined full-path makeRe context
+    // (where we bind to (^|/), or a standalone matchPart context (where
+    // we bind to ^, and not /).  Otherwise slashes get duped!
+    //
+    // In part-matching mode, the start is:
+    // - if not isStart: nothing
+    // - if traversal possible, but not allowed: ^(?!\.\.?$)
+    // - if dots allowed or not possible: ^
+    // - if dots possible and not allowed: ^(?!\.)
+    // end is:
+    // - if not isEnd(): nothing
+    // - else: $
+    //
+    // In full-path matching mode, we put the slash at the START of the
+    // pattern, so start is:
+    // - if first pattern: same as part-matching mode
+    // - if not isStart(): nothing
+    // - if traversal possible, but not allowed: /(?!\.\.?(?:$|/))
+    // - if dots allowed or not possible: /
+    // - if dots possible and not allowed: /(?!\.)
+    // end is:
+    // - if last pattern, same as part-matching mode
+    // - else nothing
+    //
+    // Always put the (?:$|/) on negated tails, though, because that has to be
+    // there to bind the end of the negated pattern portion, and it's easier to
+    // just stick it in now rather than try to inject it later in the middle of
+    // the pattern.
+    //
+    // We can just always return the same end, and leave it up to the caller
+    // to know whether it's going to be used joined or in parts.
+    // And, if the start is adjusted slightly, can do the same there:
+    // - if not isStart: nothing
+    // - if traversal possible, but not allowed: (?:/|^)(?!\.\.?$)
+    // - if dots allowed or not possible: (?:/|^)
+    // - if dots possible and not allowed: (?:/|^)(?!\.)
+    //
+    // But it's better to have a simpler binding without a conditional, for
+    // performance, so probably better to return both start options.
+    //
+    // Then the caller just ignores the end if it's not the first pattern,
+    // and the start always gets applied.
+    //
+    // But that's always going to be $ if it's the ending pattern, or nothing,
+    // so the caller can just attach $ at the end of the pattern when building.
+    //
+    // So the todo is:
+    // - better detect what kind of start is needed
+    // - return both flavors of starting pattern
+    // - attach $ at the end of the pattern when creating the actual RegExp
+    //
+    // Ah, but wait, no, that all only applies to the root when the first pattern
+    // is not an extglob. If the first pattern IS an extglob, then we need all
+    // that dot prevention biz to live in the extglob portions, because eg
+    // +(*|.x*) can match .xy but not .yx.
+    //
+    // So, return the two flavors if it's #root and the first child is not an
+    // AST, otherwise leave it to the child AST to handle it, and there,
+    // use the (?:^|/) style of start binding.
+    //
+    // Even simplified further:
+    // - Since the start for a join is eg /(?!\.) and the start for a part
+    // is ^(?!\.), we can just prepend (?!\.) to the pattern (either root
+    // or start or whatever) and prepend ^ or / at the Regexp construction.
+    toRegExpSource(allowDot) {
+        const dot = allowDot ?? !!this.#options.dot;
+        if (this.#root === this)
+            this.#fillNegs();
+        if (!this.type) {
+            const noEmpty = this.isStart() && this.isEnd();
+            const src = this.#parts
+                .map(p => {
+                const [re, _, hasMagic, uflag] = typeof p === 'string'
+                    ? AST.#parseGlob(p, this.#hasMagic, noEmpty)
+                    : p.toRegExpSource(allowDot);
+                this.#hasMagic = this.#hasMagic || hasMagic;
+                this.#uflag = this.#uflag || uflag;
+                return re;
+            })
+                .join('');
+            let start = '';
+            if (this.isStart()) {
+                if (typeof this.#parts[0] === 'string') {
+                    // this is the string that will match the start of the pattern,
+                    // so we need to protect against dots and such.
+                    // '.' and '..' cannot match unless the pattern is that exactly,
+                    // even if it starts with . or dot:true is set.
+                    const dotTravAllowed = this.#parts.length === 1 && justDots.has(this.#parts[0]);
+                    if (!dotTravAllowed) {
+                        const aps = addPatternStart;
+                        // check if we have a possibility of matching . or ..,
+                        // and prevent that.
+                        const needNoTrav = 
+                        // dots are allowed, and the pattern starts with [ or .
+                        (dot && aps.has(src.charAt(0))) ||
+                            // the pattern starts with \., and then [ or .
+                            (src.startsWith('\\.') && aps.has(src.charAt(2))) ||
+                            // the pattern starts with \.\., and then [ or .
+                            (src.startsWith('\\.\\.') && aps.has(src.charAt(4)));
+                        // no need to prevent dots if it can't match a dot, or if a
+                        // sub-pattern will be preventing it anyway.
+                        const needNoDot = !dot && !allowDot && aps.has(src.charAt(0));
+                        start = needNoTrav ? startNoTraversal : needNoDot ? startNoDot : '';
+                    }
+                }
+            }
+            // append the "end of path portion" pattern to negation tails
+            let end = '';
+            if (this.isEnd() &&
+                this.#root.#filledNegs &&
+                this.#parent?.type === '!') {
+                end = '(?:$|\\/)';
+            }
+            const final = start + src + end;
+            return [
+                final,
+                (0, unescape_js_1.unescape)(src),
+                (this.#hasMagic = !!this.#hasMagic),
+                this.#uflag,
+            ];
+        }
+        // We need to calculate the body *twice* if it's a repeat pattern
+        // at the start, once in nodot mode, then again in dot mode, so a
+        // pattern like *(?) can match 'x.y'
+        const repeated = this.type === '*' || this.type === '+';
+        // some kind of extglob
+        const start = this.type === '!' ? '(?:(?!(?:' : '(?:';
+        let body = this.#partsToRegExp(dot);
+        if (this.isStart() && this.isEnd() && !body && this.type !== '!') {
+            // invalid extglob, has to at least be *something* present, if it's
+            // the entire path portion.
+            const s = this.toString();
+            this.#parts = [s];
+            this.type = null;
+            this.#hasMagic = undefined;
+            return [s, (0, unescape_js_1.unescape)(this.toString()), false, false];
+        }
+        // XXX abstract out this map method
+        let bodyDotAllowed = !repeated || allowDot || dot || !startNoDot
+            ? ''
+            : this.#partsToRegExp(true);
+        if (bodyDotAllowed === body) {
+            bodyDotAllowed = '';
+        }
+        if (bodyDotAllowed) {
+            body = `(?:${body})(?:${bodyDotAllowed})*?`;
+        }
+        // an empty !() is exactly equivalent to a starNoEmpty
+        let final = '';
+        if (this.type === '!' && this.#emptyExt) {
+            final = (this.isStart() && !dot ? startNoDot : '') + starNoEmpty;
+        }
+        else {
+            const close = this.type === '!'
+                ? // !() must match something,but !(x) can match ''
+                    '))' +
+                        (this.isStart() && !dot && !allowDot ? startNoDot : '') +
+                        star +
+                        ')'
+                : this.type === '@'
+                    ? ')'
+                    : this.type === '?'
+                        ? ')?'
+                        : this.type === '+' && bodyDotAllowed
+                            ? ')'
+                            : this.type === '*' && bodyDotAllowed
+                                ? `)?`
+                                : `)${this.type}`;
+            final = start + body + close;
+        }
+        return [
+            final,
+            (0, unescape_js_1.unescape)(body),
+            (this.#hasMagic = !!this.#hasMagic),
+            this.#uflag,
+        ];
+    }
+    #partsToRegExp(dot) {
+        return this.#parts
+            .map(p => {
+            // extglob ASTs should only contain parent ASTs
+            /* c8 ignore start */
+            if (typeof p === 'string') {
+                throw new Error('string type in extglob ast??');
+            }
+            /* c8 ignore stop */
+            // can ignore hasMagic, because extglobs are already always magic
+            const [re, _, _hasMagic, uflag] = p.toRegExpSource(dot);
+            this.#uflag = this.#uflag || uflag;
+            return re;
+        })
+            .filter(p => !(this.isStart() && this.isEnd()) || !!p)
+            .join('|');
+    }
+    static #parseGlob(glob, hasMagic, noEmpty = false) {
+        let escaping = false;
+        let re = '';
+        let uflag = false;
+        for (let i = 0; i < glob.length; i++) {
+            const c = glob.charAt(i);
+            if (escaping) {
+                escaping = false;
+                re += (reSpecials.has(c) ? '\\' : '') + c;
+                continue;
+            }
+            if (c === '\\') {
+                if (i === glob.length - 1) {
+                    re += '\\\\';
+                }
+                else {
+                    escaping = true;
+                }
+                continue;
+            }
+            if (c === '[') {
+                const [src, needUflag, consumed, magic] = (0, brace_expressions_js_1.parseClass)(glob, i);
+                if (consumed) {
+                    re += src;
+                    uflag = uflag || needUflag;
+                    i += consumed - 1;
+                    hasMagic = hasMagic || magic;
+                    continue;
+                }
+            }
+            if (c === '*') {
+                if (noEmpty && glob === '*')
+                    re += starNoEmpty;
+                else
+                    re += star;
+                hasMagic = true;
+                continue;
+            }
+            if (c === '?') {
+                re += qmark;
+                hasMagic = true;
+                continue;
+            }
+            re += regExpEscape(c);
+        }
+        return [re, (0, unescape_js_1.unescape)(glob), !!hasMagic, uflag];
+    }
+}
+exports.AST = AST;
+//# sourceMappingURL=ast.js.map
+
+/***/ }),
+
+/***/ 5822:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+// translate the various posix character classes into unicode properties
+// this works across all unicode locales
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.parseClass = void 0;
+// { <posix class>: [<translation>, /u flag required, negated]
+const posixClasses = {
+    '[:alnum:]': ['\\p{L}\\p{Nl}\\p{Nd}', true],
+    '[:alpha:]': ['\\p{L}\\p{Nl}', true],
+    '[:ascii:]': ['\\x' + '00-\\x' + '7f', false],
+    '[:blank:]': ['\\p{Zs}\\t', true],
+    '[:cntrl:]': ['\\p{Cc}', true],
+    '[:digit:]': ['\\p{Nd}', true],
+    '[:graph:]': ['\\p{Z}\\p{C}', true, true],
+    '[:lower:]': ['\\p{Ll}', true],
+    '[:print:]': ['\\p{C}', true],
+    '[:punct:]': ['\\p{P}', true],
+    '[:space:]': ['\\p{Z}\\t\\r\\n\\v\\f', true],
+    '[:upper:]': ['\\p{Lu}', true],
+    '[:word:]': ['\\p{L}\\p{Nl}\\p{Nd}\\p{Pc}', true],
+    '[:xdigit:]': ['A-Fa-f0-9', false],
+};
+// only need to escape a few things inside of brace expressions
+// escapes: [ \ ] -
+const braceEscape = (s) => s.replace(/[[\]\\-]/g, '\\$&');
+// escape all regexp magic characters
+const regexpEscape = (s) => s.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
+// everything has already been escaped, we just have to join
+const rangesToString = (ranges) => ranges.join('');
+// takes a glob string at a posix brace expression, and returns
+// an equivalent regular expression source, and boolean indicating
+// whether the /u flag needs to be applied, and the number of chars
+// consumed to parse the character class.
+// This also removes out of order ranges, and returns ($.) if the
+// entire class just no good.
+const parseClass = (glob, position) => {
+    const pos = position;
+    /* c8 ignore start */
+    if (glob.charAt(pos) !== '[') {
+        throw new Error('not in a brace expression');
+    }
+    /* c8 ignore stop */
+    const ranges = [];
+    const negs = [];
+    let i = pos + 1;
+    let sawStart = false;
+    let uflag = false;
+    let escaping = false;
+    let negate = false;
+    let endPos = pos;
+    let rangeStart = '';
+    WHILE: while (i < glob.length) {
+        const c = glob.charAt(i);
+        if ((c === '!' || c === '^') && i === pos + 1) {
+            negate = true;
+            i++;
+            continue;
+        }
+        if (c === ']' && sawStart && !escaping) {
+            endPos = i + 1;
+            break;
+        }
+        sawStart = true;
+        if (c === '\\') {
+            if (!escaping) {
+                escaping = true;
+                i++;
+                continue;
+            }
+            // escaped \ char, fall through and treat like normal char
+        }
+        if (c === '[' && !escaping) {
+            // either a posix class, a collation equivalent, or just a [
+            for (const [cls, [unip, u, neg]] of Object.entries(posixClasses)) {
+                if (glob.startsWith(cls, i)) {
+                    // invalid, [a-[] is fine, but not [a-[:alpha]]
+                    if (rangeStart) {
+                        return ['$.', false, glob.length - pos, true];
+                    }
+                    i += cls.length;
+                    if (neg)
+                        negs.push(unip);
+                    else
+                        ranges.push(unip);
+                    uflag = uflag || u;
+                    continue WHILE;
+                }
+            }
+        }
+        // now it's just a normal character, effectively
+        escaping = false;
+        if (rangeStart) {
+            // throw this range away if it's not valid, but others
+            // can still match.
+            if (c > rangeStart) {
+                ranges.push(braceEscape(rangeStart) + '-' + braceEscape(c));
+            }
+            else if (c === rangeStart) {
+                ranges.push(braceEscape(c));
+            }
+            rangeStart = '';
+            i++;
+            continue;
+        }
+        // now might be the start of a range.
+        // can be either c-d or c-] or c<more...>] or c] at this point
+        if (glob.startsWith('-]', i + 1)) {
+            ranges.push(braceEscape(c + '-'));
+            i += 2;
+            continue;
+        }
+        if (glob.startsWith('-', i + 1)) {
+            rangeStart = c;
+            i += 2;
+            continue;
+        }
+        // not the start of a range, just a single character
+        ranges.push(braceEscape(c));
+        i++;
+    }
+    if (endPos < i) {
+        // didn't see the end of the class, not a valid class,
+        // but might still be valid as a literal match.
+        return ['', false, 0, false];
+    }
+    // if we got no ranges and no negates, then we have a range that
+    // cannot possibly match anything, and that poisons the whole glob
+    if (!ranges.length && !negs.length) {
+        return ['$.', false, glob.length - pos, true];
+    }
+    // if we got one positive range, and it's a single character, then that's
+    // not actually a magic pattern, it's just that one literal character.
+    // we should not treat that as "magic", we should just return the literal
+    // character. [_] is a perfectly valid way to escape glob magic chars.
+    if (negs.length === 0 &&
+        ranges.length === 1 &&
+        /^\\?.$/.test(ranges[0]) &&
+        !negate) {
+        const r = ranges[0].length === 2 ? ranges[0].slice(-1) : ranges[0];
+        return [regexpEscape(r), false, endPos - pos, false];
+    }
+    const sranges = '[' + (negate ? '^' : '') + rangesToString(ranges) + ']';
+    const snegs = '[' + (negate ? '' : '^') + rangesToString(negs) + ']';
+    const comb = ranges.length && negs.length
+        ? '(' + sranges + '|' + snegs + ')'
+        : ranges.length
+            ? sranges
+            : snegs;
+    return [comb, uflag, endPos - pos, true];
+};
+exports.parseClass = parseClass;
+//# sourceMappingURL=brace-expressions.js.map
+
+/***/ }),
+
+/***/ 9004:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.escape = void 0;
+/**
+ * Escape all magic characters in a glob pattern.
+ *
+ * If the {@link windowsPathsNoEscape | GlobOptions.windowsPathsNoEscape}
+ * option is used, then characters are escaped by wrapping in `[]`, because
+ * a magic character wrapped in a character class can only be satisfied by
+ * that exact character.  In this mode, `\` is _not_ escaped, because it is
+ * not interpreted as a magic character, but instead as a path separator.
+ */
+const escape = (s, { windowsPathsNoEscape = false, } = {}) => {
+    // don't need to escape +@! because we escape the parens
+    // that make those magic, and escaping ! as [!] isn't valid,
+    // because [!]] is a valid glob class meaning not ']'.
+    return windowsPathsNoEscape
+        ? s.replace(/[?*()[\]]/g, '[$&]')
+        : s.replace(/[?*()[\]\\]/g, '\\$&');
+};
+exports.escape = escape;
+//# sourceMappingURL=escape.js.map
 
 /***/ }),
 
@@ -32476,9 +34479,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.Minimatch = exports.match = exports.makeRe = exports.braceExpand = exports.defaults = exports.filter = exports.GLOBSTAR = exports.sep = exports.minimatch = void 0;
+exports.unescape = exports.escape = exports.AST = exports.Minimatch = exports.match = exports.makeRe = exports.braceExpand = exports.defaults = exports.filter = exports.GLOBSTAR = exports.sep = exports.minimatch = void 0;
+const brace_expansion_1 = __importDefault(__nccwpck_require__(3717));
+const assert_valid_pattern_js_1 = __nccwpck_require__(903);
+const ast_js_1 = __nccwpck_require__(3839);
+const escape_js_1 = __nccwpck_require__(9004);
+const unescape_js_1 = __nccwpck_require__(7305);
 const minimatch = (p, pattern, options = {}) => {
-    assertValidPattern(pattern);
+    (0, assert_valid_pattern_js_1.assertValidPattern)(pattern);
     // shortcut: comments match nothing.
     if (!options.nocomment && pattern.charAt(0) === '#') {
         return false;
@@ -32486,7 +34494,6 @@ const minimatch = (p, pattern, options = {}) => {
     return new Minimatch(pattern, options).match(p);
 };
 exports.minimatch = minimatch;
-exports["default"] = exports.minimatch;
 // Optimized checking for the most common glob patterns.
 const starDotExtRE = /^\*+([^+@!?\*\[\(]*)$/;
 const starDotExtTest = (ext) => (f) => !f.startsWith('.') && f.endsWith(ext);
@@ -32539,27 +34546,21 @@ const qmarksTestNoExtDot = ([$0]) => {
     return (f) => f.length === len && f !== '.' && f !== '..';
 };
 /* c8 ignore start */
-const platform = typeof process === 'object' && process
+const defaultPlatform = (typeof process === 'object' && process
     ? (typeof process.env === 'object' &&
         process.env &&
         process.env.__MINIMATCH_TESTING_PLATFORM__) ||
         process.platform
-    : 'posix';
-const isWindows = platform === 'win32';
-const path = isWindows ? { sep: '\\' } : { sep: '/' };
+    : 'posix');
+const path = {
+    win32: { sep: '\\' },
+    posix: { sep: '/' },
+};
 /* c8 ignore stop */
-exports.sep = path.sep;
+exports.sep = defaultPlatform === 'win32' ? path.win32.sep : path.posix.sep;
 exports.minimatch.sep = exports.sep;
 exports.GLOBSTAR = Symbol('globstar **');
 exports.minimatch.GLOBSTAR = exports.GLOBSTAR;
-const brace_expansion_1 = __importDefault(__nccwpck_require__(3717));
-const plTypes = {
-    '!': { open: '(?:(?!(?:', close: '))[^/]*?)' },
-    '?': { open: '(?:', close: ')?' },
-    '+': { open: '(?:', close: ')+' },
-    '*': { open: '(?:', close: ')*' },
-    '@': { open: '(?:', close: ')' },
-};
 // any single thing other than /
 // don't need to escape / when using new RegExp()
 const qmark = '[^/]';
@@ -32572,15 +34573,6 @@ const twoStarDot = '(?:(?!(?:\\/|^)(?:\\.{1,2})($|\\/)).)*?';
 // not a ^ or / followed by a dot,
 // followed by anything, any number of times.
 const twoStarNoDot = '(?:(?!(?:\\/|^)\\.).)*?';
-// "abc" -> { a:true, b:true, c:true }
-const charSet = (s) => s.split('').reduce((set, c) => {
-    set[c] = true;
-    return set;
-}, {});
-// characters that need to be escaped in RegExp.
-const reSpecials = charSet('().*{}+?[]^$\\!');
-// characters that indicate we have to add the pattern start
-const addPatternStartSet = charSet('[.(');
 const filter = (pattern, options = {}) => (p) => (0, exports.minimatch)(p, pattern, options);
 exports.filter = filter;
 exports.minimatch.filter = exports.filter;
@@ -32600,6 +34592,18 @@ const defaults = (def) => {
                 return orig.defaults(ext(def, options)).Minimatch;
             }
         },
+        AST: class AST extends orig.AST {
+            /* c8 ignore start */
+            constructor(type, parent, options = {}) {
+                super(type, parent, ext(def, options));
+            }
+            /* c8 ignore stop */
+            static fromGlob(pattern, options = {}) {
+                return orig.AST.fromGlob(pattern, ext(def, options));
+            }
+        },
+        unescape: (s, options = {}) => orig.unescape(s, ext(def, options)),
+        escape: (s, options = {}) => orig.escape(s, ext(def, options)),
         filter: (pattern, options = {}) => orig.filter(pattern, ext(def, options)),
         defaults: (options) => orig.defaults(ext(def, options)),
         makeRe: (pattern, options = {}) => orig.makeRe(pattern, ext(def, options)),
@@ -32622,7 +34626,7 @@ exports.minimatch.defaults = exports.defaults;
 // a{2..}b -> a{2..}b
 // a{b}c -> a{b}c
 const braceExpand = (pattern, options = {}) => {
-    assertValidPattern(pattern);
+    (0, assert_valid_pattern_js_1.assertValidPattern)(pattern);
     // Thanks to Yeting Li <https://github.com/yetingli> for
     // improving this regexp to avoid a ReDOS vulnerability.
     if (options.nobrace || !/\{(?:(?!\{).)*\}/.test(pattern)) {
@@ -32633,15 +34637,6 @@ const braceExpand = (pattern, options = {}) => {
 };
 exports.braceExpand = braceExpand;
 exports.minimatch.braceExpand = exports.braceExpand;
-const MAX_PATTERN_LENGTH = 1024 * 64;
-const assertValidPattern = (pattern) => {
-    if (typeof pattern !== 'string') {
-        throw new TypeError('invalid pattern');
-    }
-    if (pattern.length > MAX_PATTERN_LENGTH) {
-        throw new TypeError('pattern is too long');
-    }
-};
 // parse a component of the expanded set.
 // At this point, no pattern may contain "/" in it
 // so we're going to return a 2d array, where each entry is the full
@@ -32653,7 +34648,6 @@ const assertValidPattern = (pattern) => {
 // when it is the *only* thing in a path portion.  Otherwise, any series
 // of * is equivalent to a single *.  Globstar behavior is enabled by
 // default, and can be disabled by setting options.noglobstar.
-const SUBPARSE = Symbol('subparse');
 const makeRe = (pattern, options = {}) => new Minimatch(pattern, options).makeRe();
 exports.makeRe = makeRe;
 exports.minimatch.makeRe = exports.makeRe;
@@ -32668,10 +34662,8 @@ const match = (list, pattern, options = {}) => {
 exports.match = match;
 exports.minimatch.match = exports.match;
 // replace stuff like \* with *
-const globUnescape = (s) => s.replace(/\\(.)/g, '$1');
-const charUnescape = (s) => s.replace(/\\([^-\]])/g, '$1');
+const globMagic = /[?*]|[+@!]\(.*?\)|\[|\]/;
 const regExpEscape = (s) => s.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
-const braExpEscape = (s) => s.replace(/[[\]\\]/g, '\\$&');
 class Minimatch {
     options;
     set;
@@ -32685,12 +34677,18 @@ class Minimatch {
     partial;
     globSet;
     globParts;
+    nocase;
+    isWindows;
+    platform;
+    windowsNoMagicRoot;
     regexp;
     constructor(pattern, options = {}) {
-        assertValidPattern(pattern);
+        (0, assert_valid_pattern_js_1.assertValidPattern)(pattern);
         options = options || {};
         this.options = options;
         this.pattern = pattern;
+        this.platform = options.platform || defaultPlatform;
+        this.isWindows = this.platform === 'win32';
         this.windowsPathsNoEscape =
             !!options.windowsPathsNoEscape || options.allowWindowsEscape === false;
         if (this.windowsPathsNoEscape) {
@@ -32703,11 +34701,28 @@ class Minimatch {
         this.comment = false;
         this.empty = false;
         this.partial = !!options.partial;
+        this.nocase = !!this.options.nocase;
+        this.windowsNoMagicRoot =
+            options.windowsNoMagicRoot !== undefined
+                ? options.windowsNoMagicRoot
+                : !!(this.isWindows && this.nocase);
         this.globSet = [];
         this.globParts = [];
         this.set = [];
         // make the set of regexps etc.
         this.make();
+    }
+    hasMagic() {
+        if (this.options.magicalBraces && this.set.length > 1) {
+            return true;
+        }
+        for (const pattern of this.set) {
+            for (const part of pattern) {
+                if (typeof part !== 'string')
+                    return true;
+            }
+        }
+        return false;
     }
     debug(..._) { }
     make() {
@@ -32743,12 +34758,28 @@ class Minimatch {
         this.globParts = this.preprocess(rawGlobParts);
         this.debug(this.pattern, this.globParts);
         // glob --> regexps
-        let set = this.globParts.map((s, _, __) => s.map(ss => this.parse(ss)));
+        let set = this.globParts.map((s, _, __) => {
+            if (this.isWindows && this.windowsNoMagicRoot) {
+                // check if it's a drive or unc path.
+                const isUNC = s[0] === '' &&
+                    s[1] === '' &&
+                    (s[2] === '?' || !globMagic.test(s[2])) &&
+                    !globMagic.test(s[3]);
+                const isDrive = /^[a-z]:/i.test(s[0]);
+                if (isUNC) {
+                    return [...s.slice(0, 4), ...s.slice(4).map(ss => this.parse(ss))];
+                }
+                else if (isDrive) {
+                    return [s[0], ...s.slice(1).map(ss => this.parse(ss))];
+                }
+            }
+            return s.map(ss => this.parse(ss));
+        });
         this.debug(this.pattern, set);
         // filter out everything that didn't compile properly.
         this.set = set.filter(s => s.indexOf(false) === -1);
         // do not treat the ? in UNC paths as magic
-        if (isWindows) {
+        if (this.isWindows) {
             for (let i = 0; i < this.set.length; i++) {
                 const p = this.set[i];
                 if (p[0] === '' &&
@@ -32778,9 +34809,96 @@ class Minimatch {
                 }
             }
         }
-        globParts = this.firstPhasePreProcess(globParts);
-        globParts = this.secondPhasePreProcess(globParts);
+        const { optimizationLevel = 1 } = this.options;
+        if (optimizationLevel >= 2) {
+            // aggressive optimization for the purpose of fs walking
+            globParts = this.firstPhasePreProcess(globParts);
+            globParts = this.secondPhasePreProcess(globParts);
+        }
+        else if (optimizationLevel >= 1) {
+            // just basic optimizations to remove some .. parts
+            globParts = this.levelOneOptimize(globParts);
+        }
+        else {
+            globParts = this.adjascentGlobstarOptimize(globParts);
+        }
         return globParts;
+    }
+    // just get rid of adjascent ** portions
+    adjascentGlobstarOptimize(globParts) {
+        return globParts.map(parts => {
+            let gs = -1;
+            while (-1 !== (gs = parts.indexOf('**', gs + 1))) {
+                let i = gs;
+                while (parts[i + 1] === '**') {
+                    i++;
+                }
+                if (i !== gs) {
+                    parts.splice(gs, i - gs);
+                }
+            }
+            return parts;
+        });
+    }
+    // get rid of adjascent ** and resolve .. portions
+    levelOneOptimize(globParts) {
+        return globParts.map(parts => {
+            parts = parts.reduce((set, part) => {
+                const prev = set[set.length - 1];
+                if (part === '**' && prev === '**') {
+                    return set;
+                }
+                if (part === '..') {
+                    if (prev && prev !== '..' && prev !== '.' && prev !== '**') {
+                        set.pop();
+                        return set;
+                    }
+                }
+                set.push(part);
+                return set;
+            }, []);
+            return parts.length === 0 ? [''] : parts;
+        });
+    }
+    levelTwoFileOptimize(parts) {
+        if (!Array.isArray(parts)) {
+            parts = this.slashSplit(parts);
+        }
+        let didSomething = false;
+        do {
+            didSomething = false;
+            // <pre>/<e>/<rest> -> <pre>/<rest>
+            if (!this.preserveMultipleSlashes) {
+                for (let i = 1; i < parts.length - 1; i++) {
+                    const p = parts[i];
+                    // don't squeeze out UNC patterns
+                    if (i === 1 && p === '' && parts[0] === '')
+                        continue;
+                    if (p === '.' || p === '') {
+                        didSomething = true;
+                        parts.splice(i, 1);
+                        i--;
+                    }
+                }
+                if (parts[0] === '.' &&
+                    parts.length === 2 &&
+                    (parts[1] === '.' || parts[1] === '')) {
+                    didSomething = true;
+                    parts.pop();
+                }
+            }
+            // <pre>/<p>/../<rest> -> <pre>/<rest>
+            let dd = 0;
+            while (-1 !== (dd = parts.indexOf('..', dd + 1))) {
+                const p = parts[dd - 1];
+                if (p && p !== '.' && p !== '..' && p !== '**') {
+                    didSomething = true;
+                    parts.splice(dd - 1, 2);
+                    dd -= 2;
+                }
+            }
+        } while (didSomething);
+        return parts.length === 0 ? [''] : parts;
     }
     // First phase: single-pattern processing
     // <pre> is 1 or more portions
@@ -32793,7 +34911,7 @@ class Minimatch {
     // and ** cannot be reduced out by a .. pattern part like a regexp
     // or most strings (other than .., ., and '') can be.
     //
-    // <pre>/**/../<p>/<rest> -> {<pre>/../<p>/<rest>,<pre>/**/<p>/<rest>}
+    // <pre>/**/../<p>/<p>/<rest> -> {<pre>/../<p>/<p>/<rest>,<pre>/**/<p>/<p>/<rest>}
     // <pre>/<e>/<rest> -> <pre>/<rest>
     // <pre>/<p>/../<rest> -> <pre>/<rest>
     // **/**/<rest> -> **/<rest>
@@ -32804,7 +34922,7 @@ class Minimatch {
         let didSomething = false;
         do {
             didSomething = false;
-            // <pre>/**/../<p>/<rest> -> {<pre>/../<p>/<rest>,<pre>/**/<p>/<rest>}
+            // <pre>/**/../<p>/<p>/<rest> -> {<pre>/../<p>/<p>/<rest>,<pre>/**/<p>/<p>/<rest>}
             for (let parts of globParts) {
                 let gs = -1;
                 while (-1 !== (gs = parts.indexOf('**', gs + 1))) {
@@ -32820,10 +34938,17 @@ class Minimatch {
                     }
                     let next = parts[gs + 1];
                     const p = parts[gs + 2];
+                    const p2 = parts[gs + 3];
                     if (next !== '..')
                         continue;
-                    if (!p || p === '.' || p === '..')
+                    if (!p ||
+                        p === '.' ||
+                        p === '..' ||
+                        !p2 ||
+                        p2 === '.' ||
+                        p2 === '..') {
                         continue;
+                    }
                     didSomething = true;
                     // edit parts in place, and push the new one
                     parts.splice(gs, 1);
@@ -32845,9 +34970,11 @@ class Minimatch {
                             i--;
                         }
                     }
-                    if (parts[0] === '.') {
+                    if (parts[0] === '.' &&
+                        parts.length === 2 &&
+                        (parts[1] === '.' || parts[1] === '')) {
                         didSomething = true;
-                        parts.shift();
+                        parts.pop();
                     }
                 }
                 // <pre>/<p>/../<rest> -> <pre>/<rest>
@@ -32856,7 +34983,9 @@ class Minimatch {
                     const p = parts[dd - 1];
                     if (p && p !== '.' && p !== '..' && p !== '**') {
                         didSomething = true;
-                        parts.splice(dd - 1, 2);
+                        const needDot = dd === 1 && parts[dd + 1] === '**';
+                        const splin = needDot ? ['.'] : [];
+                        parts.splice(dd - 1, 2, ...splin);
                         if (parts.length === 0)
                             parts.push('');
                         dd -= 2;
@@ -32906,7 +35035,7 @@ class Minimatch {
             }
             else if (a[ai] === '*' &&
                 b[bi] &&
-                !b[bi].startsWith('.') &&
+                (this.options.dot || !b[bi].startsWith('.')) &&
                 b[bi] !== '**') {
                 if (which === 'b')
                     return false;
@@ -32955,41 +35084,43 @@ class Minimatch {
     // the parts match.
     matchOne(file, pattern, partial = false) {
         const options = this.options;
-        // a UNC pattern like //?/c:/* can match a path like c:/x
-        // and vice versa
-        if (isWindows) {
-            const fileUNC = file[0] === '' &&
+        // UNC paths like //?/X:/... can match X:/... and vice versa
+        // Drive letters in absolute drive or unc paths are always compared
+        // case-insensitively.
+        if (this.isWindows) {
+            const fileDrive = typeof file[0] === 'string' && /^[a-z]:$/i.test(file[0]);
+            const fileUNC = !fileDrive &&
+                file[0] === '' &&
                 file[1] === '' &&
                 file[2] === '?' &&
-                typeof file[3] === 'string' &&
                 /^[a-z]:$/i.test(file[3]);
-            const patternUNC = pattern[0] === '' &&
+            const patternDrive = typeof pattern[0] === 'string' && /^[a-z]:$/i.test(pattern[0]);
+            const patternUNC = !patternDrive &&
+                pattern[0] === '' &&
                 pattern[1] === '' &&
                 pattern[2] === '?' &&
                 typeof pattern[3] === 'string' &&
                 /^[a-z]:$/i.test(pattern[3]);
-            if (fileUNC && patternUNC) {
-                const fd = file[3];
-                const pd = pattern[3];
+            const fdi = fileUNC ? 3 : fileDrive ? 0 : undefined;
+            const pdi = patternUNC ? 3 : patternDrive ? 0 : undefined;
+            if (typeof fdi === 'number' && typeof pdi === 'number') {
+                const [fd, pd] = [file[fdi], pattern[pdi]];
                 if (fd.toLowerCase() === pd.toLowerCase()) {
-                    file[3] = pd;
+                    pattern[pdi] = fd;
+                    if (pdi > fdi) {
+                        pattern = pattern.slice(pdi);
+                    }
+                    else if (fdi > pdi) {
+                        file = file.slice(fdi);
+                    }
                 }
             }
-            else if (patternUNC && typeof file[0] === 'string') {
-                const pd = pattern[3];
-                const fd = file[0];
-                if (pd.toLowerCase() === fd.toLowerCase()) {
-                    pattern[3] = fd;
-                    pattern = pattern.slice(3);
-                }
-            }
-            else if (fileUNC && typeof pattern[0] === 'string') {
-                const fd = file[3];
-                if (fd.toLowerCase() === pattern[0].toLowerCase()) {
-                    pattern[0] = fd;
-                    file = file.slice(3);
-                }
-            }
+        }
+        // resolve and reduce . and .. portions in the file as well.
+        // dont' need to do the second phase, because it's only one string[]
+        const { optimizationLevel = 1 } = this.options;
+        if (optimizationLevel >= 2) {
+            file = this.levelTwoFileOptimize(file);
         }
         this.debug('matchOne', this, { file, pattern });
         this.debug('matchOne', file.length, pattern.length);
@@ -33138,8 +35269,8 @@ class Minimatch {
     braceExpand() {
         return (0, exports.braceExpand)(this.pattern, this.options);
     }
-    parse(pattern, isSub) {
-        assertValidPattern(pattern);
+    parse(pattern) {
+        (0, assert_valid_pattern_js_1.assertValidPattern)(pattern);
         const options = this.options;
         // shortcuts
         if (pattern === '**')
@@ -33150,387 +35281,35 @@ class Minimatch {
         // *, *.*, and *.<ext>  Add a fast check method for those.
         let m;
         let fastTest = null;
-        if (isSub !== SUBPARSE) {
-            if ((m = pattern.match(starRE))) {
-                fastTest = options.dot ? starTestDot : starTest;
-            }
-            else if ((m = pattern.match(starDotExtRE))) {
-                fastTest = (options.nocase
-                    ? options.dot
-                        ? starDotExtTestNocaseDot
-                        : starDotExtTestNocase
-                    : options.dot
-                        ? starDotExtTestDot
-                        : starDotExtTest)(m[1]);
-            }
-            else if ((m = pattern.match(qmarksRE))) {
-                fastTest = (options.nocase
-                    ? options.dot
-                        ? qmarksTestNocaseDot
-                        : qmarksTestNocase
-                    : options.dot
-                        ? qmarksTestDot
-                        : qmarksTest)(m);
-            }
-            else if ((m = pattern.match(starDotStarRE))) {
-                fastTest = options.dot ? starDotStarTestDot : starDotStarTest;
-            }
-            else if ((m = pattern.match(dotStarRE))) {
-                fastTest = dotStarTest;
-            }
+        if ((m = pattern.match(starRE))) {
+            fastTest = options.dot ? starTestDot : starTest;
         }
-        let re = '';
-        let hasMagic = false;
-        let escaping = false;
-        // ? => one single character
-        const patternListStack = [];
-        const negativeLists = [];
-        let stateChar = false;
-        let inClass = false;
-        let reClassStart = -1;
-        let classStart = -1;
-        let cs;
-        let pl;
-        let sp;
-        // . and .. never match anything that doesn't start with .,
-        // even when options.dot is set.  However, if the pattern
-        // starts with ., then traversal patterns can match.
-        let dotTravAllowed = pattern.charAt(0) === '.';
-        let dotFileAllowed = options.dot || dotTravAllowed;
-        const patternStart = () => dotTravAllowed
-            ? ''
-            : dotFileAllowed
-                ? '(?!(?:^|\\/)\\.{1,2}(?:$|\\/))'
-                : '(?!\\.)';
-        const subPatternStart = (p) => p.charAt(0) === '.'
-            ? ''
-            : options.dot
-                ? '(?!(?:^|\\/)\\.{1,2}(?:$|\\/))'
-                : '(?!\\.)';
-        const clearStateChar = () => {
-            if (stateChar) {
-                // we had some state-tracking character
-                // that wasn't consumed by this pass.
-                switch (stateChar) {
-                    case '*':
-                        re += star;
-                        hasMagic = true;
-                        break;
-                    case '?':
-                        re += qmark;
-                        hasMagic = true;
-                        break;
-                    default:
-                        re += '\\' + stateChar;
-                        break;
-                }
-                this.debug('clearStateChar %j %j', stateChar, re);
-                stateChar = false;
-            }
-        };
-        for (let i = 0, c; i < pattern.length && (c = pattern.charAt(i)); i++) {
-            this.debug('%s\t%s %s %j', pattern, i, re, c);
-            // skip over any that are escaped.
-            if (escaping) {
-                // completely not allowed, even escaped.
-                // should be impossible.
-                /* c8 ignore start */
-                if (c === '/') {
-                    return false;
-                }
-                /* c8 ignore stop */
-                if (reSpecials[c]) {
-                    re += '\\';
-                }
-                re += c;
-                escaping = false;
-                continue;
-            }
-            switch (c) {
-                // Should already be path-split by now.
-                /* c8 ignore start */
-                case '/': {
-                    return false;
-                }
-                /* c8 ignore stop */
-                case '\\':
-                    if (inClass && pattern.charAt(i + 1) === '-') {
-                        re += c;
-                        continue;
-                    }
-                    clearStateChar();
-                    escaping = true;
-                    continue;
-                // the various stateChar values
-                // for the "extglob" stuff.
-                case '?':
-                case '*':
-                case '+':
-                case '@':
-                case '!':
-                    this.debug('%s\t%s %s %j <-- stateChar', pattern, i, re, c);
-                    // all of those are literals inside a class, except that
-                    // the glob [!a] means [^a] in regexp
-                    if (inClass) {
-                        this.debug('  in class');
-                        if (c === '!' && i === classStart + 1)
-                            c = '^';
-                        re += c;
-                        continue;
-                    }
-                    // if we already have a stateChar, then it means
-                    // that there was something like ** or +? in there.
-                    // Handle the stateChar, then proceed with this one.
-                    this.debug('call clearStateChar %j', stateChar);
-                    clearStateChar();
-                    stateChar = c;
-                    // if extglob is disabled, then +(asdf|foo) isn't a thing.
-                    // just clear the statechar *now*, rather than even diving into
-                    // the patternList stuff.
-                    if (options.noext)
-                        clearStateChar();
-                    continue;
-                case '(': {
-                    if (inClass) {
-                        re += '(';
-                        continue;
-                    }
-                    if (!stateChar) {
-                        re += '\\(';
-                        continue;
-                    }
-                    const plEntry = {
-                        type: stateChar,
-                        start: i - 1,
-                        reStart: re.length,
-                        open: plTypes[stateChar].open,
-                        close: plTypes[stateChar].close,
-                    };
-                    this.debug(this.pattern, '\t', plEntry);
-                    patternListStack.push(plEntry);
-                    // negation is (?:(?!(?:js)(?:<rest>))[^/]*)
-                    re += plEntry.open;
-                    // next entry starts with a dot maybe?
-                    if (plEntry.start === 0 && plEntry.type !== '!') {
-                        dotTravAllowed = true;
-                        re += subPatternStart(pattern.slice(i + 1));
-                    }
-                    this.debug('plType %j %j', stateChar, re);
-                    stateChar = false;
-                    continue;
-                }
-                case ')': {
-                    const plEntry = patternListStack[patternListStack.length - 1];
-                    if (inClass || !plEntry) {
-                        re += '\\)';
-                        continue;
-                    }
-                    patternListStack.pop();
-                    // closing an extglob
-                    clearStateChar();
-                    hasMagic = true;
-                    pl = plEntry;
-                    // negation is (?:(?!js)[^/]*)
-                    // The others are (?:<pattern>)<type>
-                    re += pl.close;
-                    if (pl.type === '!') {
-                        negativeLists.push(Object.assign(pl, { reEnd: re.length }));
-                    }
-                    continue;
-                }
-                case '|': {
-                    const plEntry = patternListStack[patternListStack.length - 1];
-                    if (inClass || !plEntry) {
-                        re += '\\|';
-                        continue;
-                    }
-                    clearStateChar();
-                    re += '|';
-                    // next subpattern can start with a dot?
-                    if (plEntry.start === 0 && plEntry.type !== '!') {
-                        dotTravAllowed = true;
-                        re += subPatternStart(pattern.slice(i + 1));
-                    }
-                    continue;
-                }
-                // these are mostly the same in regexp and glob
-                case '[':
-                    // swallow any state-tracking char before the [
-                    clearStateChar();
-                    if (inClass) {
-                        re += '\\' + c;
-                        continue;
-                    }
-                    inClass = true;
-                    classStart = i;
-                    reClassStart = re.length;
-                    re += c;
-                    continue;
-                case ']':
-                    //  a right bracket shall lose its special
-                    //  meaning and represent itself in
-                    //  a bracket expression if it occurs
-                    //  first in the list.  -- POSIX.2 2.8.3.2
-                    if (i === classStart + 1 || !inClass) {
-                        re += '\\' + c;
-                        continue;
-                    }
-                    // split where the last [ was, make sure we don't have
-                    // an invalid re. if so, re-walk the contents of the
-                    // would-be class to re-translate any characters that
-                    // were passed through as-is
-                    // TODO: It would probably be faster to determine this
-                    // without a try/catch and a new RegExp, but it's tricky
-                    // to do safely.  For now, this is safe and works.
-                    cs = pattern.substring(classStart + 1, i);
-                    try {
-                        RegExp('[' + braExpEscape(charUnescape(cs)) + ']');
-                        // looks good, finish up the class.
-                        re += c;
-                    }
-                    catch (er) {
-                        // out of order ranges in JS are errors, but in glob syntax,
-                        // they're just a range that matches nothing.
-                        re = re.substring(0, reClassStart) + '(?:$.)'; // match nothing ever
-                    }
-                    hasMagic = true;
-                    inClass = false;
-                    continue;
-                default:
-                    // swallow any state char that wasn't consumed
-                    clearStateChar();
-                    if (reSpecials[c] && !(c === '^' && inClass)) {
-                        re += '\\';
-                    }
-                    re += c;
-                    break;
-            } // switch
-        } // for
-        // handle the case where we left a class open.
-        // "[abc" is valid, equivalent to "\[abc"
-        if (inClass) {
-            // split where the last [ was, and escape it
-            // this is a huge pita.  We now have to re-walk
-            // the contents of the would-be class to re-translate
-            // any characters that were passed through as-is
-            cs = pattern.slice(classStart + 1);
-            sp = this.parse(cs, SUBPARSE);
-            re = re.substring(0, reClassStart) + '\\[' + sp[0];
-            hasMagic = hasMagic || sp[1];
+        else if ((m = pattern.match(starDotExtRE))) {
+            fastTest = (options.nocase
+                ? options.dot
+                    ? starDotExtTestNocaseDot
+                    : starDotExtTestNocase
+                : options.dot
+                    ? starDotExtTestDot
+                    : starDotExtTest)(m[1]);
         }
-        // handle the case where we had a +( thing at the *end*
-        // of the pattern.
-        // each pattern list stack adds 3 chars, and we need to go through
-        // and escape any | chars that were passed through as-is for the regexp.
-        // Go through and escape them, taking care not to double-escape any
-        // | chars that were already escaped.
-        for (pl = patternListStack.pop(); pl; pl = patternListStack.pop()) {
-            let tail;
-            tail = re.slice(pl.reStart + pl.open.length);
-            this.debug(this.pattern, 'setting tail', re, pl);
-            // maybe some even number of \, then maybe 1 \, followed by a |
-            tail = tail.replace(/((?:\\{2}){0,64})(\\?)\|/g, (_, $1, $2) => {
-                if (!$2) {
-                    // the | isn't already escaped, so escape it.
-                    $2 = '\\';
-                    // should already be done
-                    /* c8 ignore start */
-                }
-                /* c8 ignore stop */
-                // need to escape all those slashes *again*, without escaping the
-                // one that we need for escaping the | character.  As it works out,
-                // escaping an even number of slashes can be done by simply repeating
-                // it exactly after itself.  That's why this trick works.
-                //
-                // I am sorry that you have to see this.
-                return $1 + $1 + $2 + '|';
-            });
-            this.debug('tail=%j\n   %s', tail, tail, pl, re);
-            const t = pl.type === '*' ? star : pl.type === '?' ? qmark : '\\' + pl.type;
-            hasMagic = true;
-            re = re.slice(0, pl.reStart) + t + '\\(' + tail;
+        else if ((m = pattern.match(qmarksRE))) {
+            fastTest = (options.nocase
+                ? options.dot
+                    ? qmarksTestNocaseDot
+                    : qmarksTestNocase
+                : options.dot
+                    ? qmarksTestDot
+                    : qmarksTest)(m);
         }
-        // handle trailing things that only matter at the very end.
-        clearStateChar();
-        if (escaping) {
-            // trailing \\
-            re += '\\\\';
+        else if ((m = pattern.match(starDotStarRE))) {
+            fastTest = options.dot ? starDotStarTestDot : starDotStarTest;
         }
-        // only need to apply the nodot start if the re starts with
-        // something that could conceivably capture a dot
-        const addPatternStart = addPatternStartSet[re.charAt(0)];
-        // Hack to work around lack of negative lookbehind in JS
-        // A pattern like: *.!(x).!(y|z) needs to ensure that a name
-        // like 'a.xyz.yz' doesn't match.  So, the first negative
-        // lookahead, has to look ALL the way ahead, to the end of
-        // the pattern.
-        for (let n = negativeLists.length - 1; n > -1; n--) {
-            const nl = negativeLists[n];
-            const nlBefore = re.slice(0, nl.reStart);
-            const nlFirst = re.slice(nl.reStart, nl.reEnd - 8);
-            let nlAfter = re.slice(nl.reEnd);
-            const nlLast = re.slice(nl.reEnd - 8, nl.reEnd) + nlAfter;
-            // Handle nested stuff like *(*.js|!(*.json)), where open parens
-            // mean that we should *not* include the ) in the bit that is considered
-            // "after" the negated section.
-            const closeParensBefore = nlBefore.split(')').length;
-            const openParensBefore = nlBefore.split('(').length - closeParensBefore;
-            let cleanAfter = nlAfter;
-            for (let i = 0; i < openParensBefore; i++) {
-                cleanAfter = cleanAfter.replace(/\)[+*?]?/, '');
-            }
-            nlAfter = cleanAfter;
-            const dollar = nlAfter === '' && isSub !== SUBPARSE ? '(?:$|\\/)' : '';
-            re = nlBefore + nlFirst + nlAfter + dollar + nlLast;
+        else if ((m = pattern.match(dotStarRE))) {
+            fastTest = dotStarTest;
         }
-        // if the re is not "" at this point, then we need to make sure
-        // it doesn't match against an empty path part.
-        // Otherwise a/* will match a/, which it should not.
-        if (re !== '' && hasMagic) {
-            re = '(?=.)' + re;
-        }
-        if (addPatternStart) {
-            re = patternStart() + re;
-        }
-        // parsing just a piece of a larger pattern.
-        if (isSub === SUBPARSE) {
-            return [re, hasMagic];
-        }
-        // if it's nocase, and the lcase/uppercase don't match, it's magic
-        if (options.nocase && !hasMagic && !options.nocaseMagicOnly) {
-            hasMagic = pattern.toUpperCase() !== pattern.toLowerCase();
-        }
-        // skip the regexp for non-magical patterns
-        // unescape anything in it, though, so that it'll be
-        // an exact match against a file etc.
-        if (!hasMagic) {
-            return globUnescape(pattern);
-        }
-        const flags = options.nocase ? 'i' : '';
-        try {
-            const ext = fastTest
-                ? {
-                    _glob: pattern,
-                    _src: re,
-                    test: fastTest,
-                }
-                : {
-                    _glob: pattern,
-                    _src: re,
-                };
-            return Object.assign(new RegExp('^' + re + '$', flags), ext);
-            /* c8 ignore start */
-        }
-        catch (er) {
-            // should be impossible
-            // If it was an invalid regular expression, then it can't match
-            // anything.  This trick looks for a character after the end of
-            // the string, which is of course impossible, except in multi-line
-            // mode, but it's not a /m regex.
-            this.debug('invalid regexp', er);
-            return new RegExp('$.');
-        }
-        /* c8 ignore stop */
+        const re = ast_js_1.AST.fromGlob(pattern, this.options).toMMPattern();
+        return fastTest ? Object.assign(re, { test: fastTest }) : re;
     }
     makeRe() {
         if (this.regexp || this.regexp === false)
@@ -33552,7 +35331,7 @@ class Minimatch {
             : options.dot
                 ? twoStarDot
                 : twoStarNoDot;
-        const flags = options.nocase ? 'i' : '';
+        const flags = new Set(options.nocase ? ['i'] : []);
         // regexpify non-globstar patterns
         // if ** is only item, then we just do one twoStar
         // if ** is first, and there are more, prepend (\/|twoStar\/)? to next
@@ -33561,11 +35340,17 @@ class Minimatch {
         // then filter out GLOBSTAR symbols
         let re = set
             .map(pattern => {
-            const pp = pattern.map(p => typeof p === 'string'
-                ? regExpEscape(p)
-                : p === exports.GLOBSTAR
-                    ? exports.GLOBSTAR
-                    : p._src);
+            const pp = pattern.map(p => {
+                if (p instanceof RegExp) {
+                    for (const f of p.flags.split(''))
+                        flags.add(f);
+                }
+                return typeof p === 'string'
+                    ? regExpEscape(p)
+                    : p === exports.GLOBSTAR
+                        ? exports.GLOBSTAR
+                        : p._src;
+            });
             pp.forEach((p, i) => {
                 const next = pp[i + 1];
                 const prev = pp[i - 1];
@@ -33591,14 +35376,17 @@ class Minimatch {
             return pp.filter(p => p !== exports.GLOBSTAR).join('/');
         })
             .join('|');
+        // need to wrap in parens if we had more than one thing with |,
+        // otherwise only the first will be anchored to ^ and the last to $
+        const [open, close] = set.length > 1 ? ['(?:', ')'] : ['', ''];
         // must match entire pattern
         // ending in a * or ** will make it less strict.
-        re = '^(?:' + re + ')$';
+        re = '^' + open + re + close + '$';
         // can match anything, as long as it's not this.
         if (this.negate)
-            re = '^(?!' + re + ').*$';
+            re = '^(?!' + re + ').+$';
         try {
-            this.regexp = new RegExp(re, flags);
+            this.regexp = new RegExp(re, [...flags].join(''));
             /* c8 ignore start */
         }
         catch (ex) {
@@ -33616,7 +35404,7 @@ class Minimatch {
         if (this.preserveMultipleSlashes) {
             return p.split('/');
         }
-        else if (isWindows && /^\/\/[^\/]+/.test(p)) {
+        else if (this.isWindows && /^\/\/[^\/]+/.test(p)) {
             // add an extra '' for the one we lose
             return ['', ...p.split(/\/+/)];
         }
@@ -33639,8 +35427,8 @@ class Minimatch {
         }
         const options = this.options;
         // windows: need to use /, not \
-        if (path.sep !== '/') {
-            f = f.split(path.sep).join('/');
+        if (this.isWindows) {
+            f = f.split('\\').join('/');
         }
         // treat the test path as a set of pathparts.
         const ff = this.slashSplit(f);
@@ -33684,8 +35472,50 @@ class Minimatch {
     }
 }
 exports.Minimatch = Minimatch;
+/* c8 ignore start */
+var ast_js_2 = __nccwpck_require__(3839);
+Object.defineProperty(exports, "AST", ({ enumerable: true, get: function () { return ast_js_2.AST; } }));
+var escape_js_2 = __nccwpck_require__(9004);
+Object.defineProperty(exports, "escape", ({ enumerable: true, get: function () { return escape_js_2.escape; } }));
+var unescape_js_2 = __nccwpck_require__(7305);
+Object.defineProperty(exports, "unescape", ({ enumerable: true, get: function () { return unescape_js_2.unescape; } }));
+/* c8 ignore stop */
+exports.minimatch.AST = ast_js_1.AST;
 exports.minimatch.Minimatch = Minimatch;
+exports.minimatch.escape = escape_js_1.escape;
+exports.minimatch.unescape = unescape_js_1.unescape;
 //# sourceMappingURL=index.js.map
+
+/***/ }),
+
+/***/ 7305:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.unescape = void 0;
+/**
+ * Un-escape a string that has been escaped with {@link escape}.
+ *
+ * If the {@link windowsPathsNoEscape} option is used, then square-brace
+ * escapes are removed, but not backslash escapes.  For example, it will turn
+ * the string `'[*]'` into `*`, but it will not turn `'\\*'` into `'*'`,
+ * becuase `\` is a path separator in `windowsPathsNoEscape` mode.
+ *
+ * When `windowsPathsNoEscape` is not set, then both brace escapes and
+ * backslash escapes are removed.
+ *
+ * Slashes (and backslashes in `windowsPathsNoEscape` mode) cannot be escaped
+ * or unescaped.
+ */
+const unescape = (s, { windowsPathsNoEscape = false, } = {}) => {
+    return windowsPathsNoEscape
+        ? s.replace(/\[([^\/\\])\]/g, '$1')
+        : s.replace(/((?!\\).|^)\[([^\/\\])\]/g, '$1$2').replace(/\\([^\/])/g, '$1');
+};
+exports.unescape = unescape;
+//# sourceMappingURL=unescape.js.map
 
 /***/ }),
 
@@ -33693,7 +35523,7 @@ exports.minimatch.Minimatch = Minimatch;
 /***/ ((module) => {
 
 "use strict";
-module.exports = {"i8":"1.11.0"};
+module.exports = {"i8":"1.14.0"};
 
 /***/ })
 
