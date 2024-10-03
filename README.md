@@ -77,9 +77,13 @@ jobs:
           remoteDir: '/'                             # Required, Absolute path only.
           exclude: '.git*,.DS_Store'                 # Optional. exclude patterns (glob) like .gitignore, use ',' to split, Default to ''.
 ´´´
+
 ## Upload newer files
 
 the action will check `modifyTime` and upload the newer files if `forceUpload` is false.
 but you should restore the modified time before uploading.
 here is an action that can change the modified time: https://github.com/marketplace/actions/git-restore-mtime
 
+## Other Options
+
+[Crane](https://github.com/wangyucode/crane) is a simple, fast, and secure tool written in Rust for downloading and deploying your `.tar.gz` archive files without the need for server passwords or keys.
