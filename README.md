@@ -54,6 +54,7 @@ this is a github action script for upload files to server via SFTP protocol.
 ### Example for a complete github action file
 
 ```yml
+
 name: Upload complete repo (e.g. website) to a SFTP destination
 
 on: [push]
@@ -76,7 +77,7 @@ jobs:
           localDir: '.'                              # Required, Absolute or relative to cwd.
           remoteDir: '/'                             # Required, Absolute path only.
           exclude: '.git*,.DS_Store'                 # Optional. exclude patterns (glob) like .gitignore, use ',' to split, Default to ''.
-´´´
+```
 
 ## Upload newer files
 
