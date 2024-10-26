@@ -3,14 +3,16 @@ const fs = require('fs');
 const { default: minimatch } = require('minimatch');
 
 new Deployer({
-    host: '192.168.0.99',
-    privateKey: fs.readFileSync('./id'),
+    host: 'wycode.cn',
+    privateKey: fs.readFileSync('./id').toString(),
     compress: true,
     localDir: './test',
-    remoteDir: '/root/test/'
+    remoteDir: '/tmp/test/',
+    username: 'ubuntu'
 }, {
-    exclude: ['folder4', '**/file3'],
+    exclude: ['folder4', '**/file3',  '**/not-remove/'],
     dryRun: false,
     removeExtraFilesOnServer: true,
+    forceUpload: false,
 }).sync();
 // console.log(minimatch('/aaa/folder4/'.replace(/^\//,""), 'aaa/folder4/'))

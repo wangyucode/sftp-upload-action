@@ -31,9 +31,6 @@ inputs:
   passphrase:
     required: false
     default: ''
-  agent:
-    required: false
-    default: ''
   exclude:
     required: false
     default: ''
@@ -44,5 +41,5 @@ inputs:
     required: false
     default: false
 runs:
-  using: 'node16'
+  using: 'node20'
   main: 'dist/index.js'

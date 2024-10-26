@@ -1,13 +1,13 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 262:
+/***/ 8310:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-const { lstat, opendir } = __nccwpck_require__(3292);
-const Client = __nccwpck_require__(7551);
-const path = __nccwpck_require__(1017);
-const { default: minimatch } = __nccwpck_require__(2002);
+const { lstat, opendir } = __nccwpck_require__(1943);
+const Client = __nccwpck_require__(9215);
+const path = __nccwpck_require__(6928);
+const { minimatch } = __nccwpck_require__(6507);
 
 class Deployer {
 
@@ -26,46 +26,54 @@ class Deployer {
         this.sftp = new Client();
         this.localFiles = [];
         this.remoteFiles = [];
+        this.removeExtraFiles = [];
 
     }
 
     async sync() {
-        await this.readLocalFiles(this.config.localDir);
+        await this.sftp.connect(this.config);
+        console.log('connected to server');
 
+        await this.listLocalFiles(this.config.localDir);
         console.log(`found ${this.localFiles.length} local files`);
 
-        await this.sftp.connect(this.config).catch(console.error);
-        await this.readRemoteFiles(this.config.remoteDir);
-
+        await this.listRemoteFiles(this.config.remoteDir);
         console.log(`found ${this.remoteFiles.length} remote files`);
 
         await this.upload();
+        console.log('upload successfully');
+        if(this.options.removeExtraFilesOnServer) await this.deleteExtraFilesOnServer();
+        
         await this.sftp.end();
+        console.log('disconnected from server');
     }
 
     async upload() {
         // upload files to remote
         for (const l of this.localFiles) {
-            if (this.isIgnoreFile(`${l.path}${l.isDirectory ? '/' : ''}`)) {
-                console.log(`ignoring local ${l.path}`);
-                continue;
-            }
-            const r = this.remoteFiles.find(r => r.path === l.path);
+            const r = this.remoteFiles.find(r => r.path === l.path.replace(/\\/g, '/'));
             const localFile = path.join(this.config.localDir, l.path);
-            const remoteFile = path.join(this.config.remoteDir, l.path).replace(/\\/g, '/');
+            const remoteFile = path.posix.join(this.config.remoteDir, l.path.replace(/\\/g, '/'));
             if (this.options.forceUpload) {
                 console.log(`${this.options.dryRun ? 'Dry-run: ' : ''} force upload -> ${l.path}`);
-                if (!this.options.dryRun) {
-                    // remove before upload
-                    if (r) {
-                        if (r.isDirectory) {
-                            await this.sftp.rmdir(remoteFile, true);
-                        } else {
-                            await this.sftp.delete(remoteFile, true);
-                        }
+                // remove before upload
+                if (r) {
+                    if (r.isDirectory) {
+                        console.log(`${this.options.dryRun ? 'Dry-run: ' : ''}deleting folder -> ${remoteFile}`);
+                        if (!this.options.dryRun) await this.sftp.rmdir(remoteFile, true);
+                    } else {
+                        console.log(`${this.options.dryRun ? 'Dry-run: ' : ''}deleting file -> ${remoteFile}`);
+                        if (!this.options.dryRun) await this.sftp.delete(remoteFile, true);
                     }
-                    await this.sftp.put(localFile, remoteFile);
                 }
+                if (l.isDirectory) {
+                    console.log(`${this.options.dryRun ? 'Dry-run: ' : ''}creating folder -> ${remoteFile}`);
+                    if (!this.options.dryRun) await this.sftp.mkdir(remoteFile, true);
+                } else {
+                    console.log(`${this.options.dryRun ? 'Dry-run: ' : ''}uploading file -> ${remoteFile}`);
+                    if (!this.options.dryRun) await this.sftp.put(localFile, remoteFile);
+                }
+
             } else {
                 if (r) {
                     if (r.isDirectory !== l.isDirectory) {
@@ -83,10 +91,10 @@ class Deployer {
                     }
                 } else if (!l.isDirectory) {
                     console.log(`${this.options.dryRun ? 'Dry-run: ' : ''}creating file -> ${remoteFile}`);
-                    if (!this.options.dryRun){
+                    if (!this.options.dryRun) {
                         await this.sftp.mkdir(path.dirname(remoteFile), true);
                         await this.sftp.put(localFile, remoteFile);
-                    } 
+                    }
                 } else {
                     console.log(`${this.options.dryRun ? 'Dry-run: ' : ''}creating folder -> ${remoteFile}`);
                     if (!this.options.dryRun) await this.sftp.mkdir(remoteFile, true);
@@ -96,73 +104,80 @@ class Deployer {
     }
 
 
-    async readLocalFiles(localPath) {
+    async listLocalFiles(localPath) {
         const stats = await lstat(localPath);
         if (stats.isDirectory()) {
             const dir = await opendir(localPath);
             for await (const file of dir) {
                 const filePath = path.join(localPath, file.name);
+                const relativePath = this.getRelativePath(filePath, false);
+                if (this.isIgnoreFile(path.posix.resolve(relativePath))) {
+                    console.log(`ignored local -> ${relativePath}`);
+                    continue;
+                }
                 if (file.isDirectory()) {
-                    console.log(`reading local folder -> ${filePath}`);
-                    this.localFiles.push({ path: this.getRelativePath(filePath, false), isDirectory: true });
+                    this.localFiles.push({ path: relativePath, isDirectory: true });
                     // recursion
-                    await this.readLocalFiles(filePath);
+                    await this.listLocalFiles(filePath);
                 } else {
-                    console.log(`reading local file -> ${filePath}`);
                     const fileState = await lstat(filePath);
-                    this.localFiles.push({ path: this.getRelativePath(filePath, false), size: fileState.size, mtime: fileState.mtimeMs });
+                    this.localFiles.push({ path: relativePath, size: fileState.size, mtime: fileState.mtimeMs });
                 }
             }
         } else {
-            console.log(`reading local file -> ${localPath}`);
             this.localFiles.push({ path: this.getRelativePath(localPath, false), size: stats.size, mtime: stats.mtimeMs });
         }
     }
 
-    async readRemoteFiles(remotePath) {
-        let canNotReadFolder = false;
-        const stats = await this.sftp.stat(remotePath).catch(() => {
-            console.error(`can not read remote folder -> ${remotePath}`);
-            canNotReadFolder = true;
-        });
-        if (canNotReadFolder) return;
-        if (stats.isDirectory) {
+    async listRemoteFiles(remotePath) {
+        let fileInfo = await this.sftp.exists(remotePath);
+        if (!fileInfo) {
+            console.log(`remote folder not exist -> ${remotePath}`);
+            return;
+        }
+        if (fileInfo === 'd') {
             const filesOnServer = await this.sftp.list(remotePath);
             for (const file of filesOnServer) {
                 const filePath = path.posix.join(remotePath, file.name);
                 const relativePath = this.getRelativePath(filePath, true);
-                let removed = false;
-                // remove extra files on remote side
-                if (this.options.removeExtraFilesOnServer) {
-                    removed = await this.removeExtraFilesOnServer(relativePath, file.type === 'd');
+
+                if (this.isIgnoreFile(`${relativePath}${file.type === 'd' ? '/' : ''}`)) {
+                    console.log(`ignoring remote ${relativePath}`);
+                    continue;
                 }
+
+                if (this.options.removeExtraFilesOnServer) {
+                    const localFile = this.localFiles.find(l => relativePath === l.path.replace(/\\/g, '/'));
+                    if(!localFile){
+                        console.log(`found extra remote file -> ${filePath}`);
+                        this.removeExtraFiles.push({filePath, isDirectory: file.type === 'd'});
+                    }
+                }
+
                 if (file.type === 'd') {
                     // recursion
-                    if (!removed) {
-                        console.log(`reading remote folder -> ${filePath}`);
-                        this.remoteFiles.push({ path: relativePath, isDirectory: true });
-                        await this.readRemoteFiles(filePath);
-                    }
+                    this.remoteFiles.push({ path: relativePath, isDirectory: true });
+                    await this.listRemoteFiles(filePath);
                 } else {
-                    if (!removed) {
-                        console.log(`reading remote file -> ${filePath}`);
-                        this.remoteFiles.push({ path: relativePath, size: file.size, mtime: file.modifyTime });
-                    }
+                    this.remoteFiles.push({ path: relativePath, size: file.size, mtime: file.modifyTime });
                 }
             }
         } else {
-            console.log(`reading remote file -> ${remotePath}`);
             this.remoteFiles.push({ path: this.getRelativePath(remotePath, true), size: stats.size, mtime: stats.modifyTime });
+        }
+    }
+
+
+    async deleteExtraFilesOnServer() {
+        for (const file of this.removeExtraFiles) {
+            console.log(`${this.options.dryRun ? 'Dry-run: ' : ''}removing extra ${file.isDirectory ? 'folder' : 'file'} '${file.filePath}' on remote.`);
+            if (!this.options.dryRun) file.isDirectory ? await this.sftp.rmdir(file.filePath, true) : await this.sftp.delete(file.filePath);
         }
     }
 
     async removeExtraFilesOnServer(remotePath, isDirectory) {
         const exist = this.localFiles.some(l => l.path === remotePath);
         if (exist) return false;
-        if (this.isIgnoreFile(`${remotePath}${isDirectory ? '/' : ''}`)) {
-            console.log(`ignoring remote ${remotePath}`);
-            return false;
-        }
         console.log(`${this.options.dryRun ? 'Dry-run: ' : ''}removing extra ${isDirectory ? 'folder' : 'file'} '${remotePath}' on remote.`);
         const remoteFile = path.posix.join(this.config.remoteDir, remotePath);
         if (!this.options.dryRun) isDirectory ? await this.sftp.rmdir(remoteFile, true) : await this.sftp.delete(remoteFile);
@@ -170,13 +185,13 @@ class Deployer {
     }
 
     getRelativePath(file, isRemote) {
-        const dirPath = isRemote ? path.resolve(this.config.remoteDir) : path.resolve(this.config.localDir);
-        const filePath = isRemote ? path.resolve(file) : path.resolve(file);
+        const dirPath = isRemote ? path.posix.resolve(this.config.remoteDir) : path.resolve(this.config.localDir);
+        const filePath = isRemote ? path.posix.resolve(file) : path.resolve(file);
         return dirPath === filePath ? filePath : filePath.replace(dirPath, '');
     }
 
     isIgnoreFile(path) {
-        return this.options.exclude.some(pattern => minimatch(path.replace(/^\//, ''), pattern));
+        return this.options.exclude.some(pattern => minimatch(path, pattern));
     }
 }
 
@@ -184,14 +199,18 @@ module.exports = { Deployer };
 
 /***/ }),
 
-/***/ 7351:
+/***/ 4914:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
 
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
 }) : (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     o[k2] = m[k];
@@ -204,14 +223,14 @@ var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
     __setModuleDefault(result, mod);
     return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.issue = exports.issueCommand = void 0;
-const os = __importStar(__nccwpck_require__(2037));
-const utils_1 = __nccwpck_require__(5278);
+const os = __importStar(__nccwpck_require__(857));
+const utils_1 = __nccwpck_require__(302);
 /**
  * Commands
  *
@@ -266,13 +285,13 @@ class Command {
     }
 }
 function escapeData(s) {
-    return utils_1.toCommandValue(s)
+    return (0, utils_1.toCommandValue)(s)
         .replace(/%/g, '%25')
         .replace(/\r/g, '%0D')
         .replace(/\n/g, '%0A');
 }
 function escapeProperty(s) {
-    return utils_1.toCommandValue(s)
+    return (0, utils_1.toCommandValue)(s)
         .replace(/%/g, '%25')
         .replace(/\r/g, '%0D')
         .replace(/\n/g, '%0A')
@@ -283,14 +302,18 @@ function escapeProperty(s) {
 
 /***/ }),
 
-/***/ 2186:
+/***/ 7484:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
 
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
 }) : (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     o[k2] = m[k];
@@ -303,7 +326,7 @@ var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
     __setModuleDefault(result, mod);
     return result;
 };
@@ -317,13 +340,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.getIDToken = exports.getState = exports.saveState = exports.group = exports.endGroup = exports.startGroup = exports.info = exports.notice = exports.warning = exports.error = exports.debug = exports.isDebug = exports.setFailed = exports.setCommandEcho = exports.setOutput = exports.getBooleanInput = exports.getMultilineInput = exports.getInput = exports.addPath = exports.setSecret = exports.exportVariable = exports.ExitCode = void 0;
-const command_1 = __nccwpck_require__(7351);
-const file_command_1 = __nccwpck_require__(717);
-const utils_1 = __nccwpck_require__(5278);
-const os = __importStar(__nccwpck_require__(2037));
-const path = __importStar(__nccwpck_require__(1017));
-const oidc_utils_1 = __nccwpck_require__(8041);
+exports.platform = exports.toPlatformPath = exports.toWin32Path = exports.toPosixPath = exports.markdownSummary = exports.summary = exports.getIDToken = exports.getState = exports.saveState = exports.group = exports.endGroup = exports.startGroup = exports.info = exports.notice = exports.warning = exports.error = exports.debug = exports.isDebug = exports.setFailed = exports.setCommandEcho = exports.setOutput = exports.getBooleanInput = exports.getMultilineInput = exports.getInput = exports.addPath = exports.setSecret = exports.exportVariable = exports.ExitCode = void 0;
+const command_1 = __nccwpck_require__(4914);
+const file_command_1 = __nccwpck_require__(4753);
+const utils_1 = __nccwpck_require__(302);
+const os = __importStar(__nccwpck_require__(857));
+const path = __importStar(__nccwpck_require__(6928));
+const oidc_utils_1 = __nccwpck_require__(5306);
 /**
  * The code to exit an action
  */
@@ -337,7 +360,7 @@ var ExitCode;
      * A code indicating that the action was a failure
      */
     ExitCode[ExitCode["Failure"] = 1] = "Failure";
-})(ExitCode = exports.ExitCode || (exports.ExitCode = {}));
+})(ExitCode || (exports.ExitCode = ExitCode = {}));
 //-----------------------------------------------------------------------
 // Variables
 //-----------------------------------------------------------------------
@@ -348,13 +371,13 @@ var ExitCode;
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function exportVariable(name, val) {
-    const convertedVal = utils_1.toCommandValue(val);
+    const convertedVal = (0, utils_1.toCommandValue)(val);
     process.env[name] = convertedVal;
     const filePath = process.env['GITHUB_ENV'] || '';
     if (filePath) {
-        return file_command_1.issueFileCommand('ENV', file_command_1.prepareKeyValueMessage(name, val));
+        return (0, file_command_1.issueFileCommand)('ENV', (0, file_command_1.prepareKeyValueMessage)(name, val));
     }
-    command_1.issueCommand('set-env', { name }, convertedVal);
+    (0, command_1.issueCommand)('set-env', { name }, convertedVal);
 }
 exports.exportVariable = exportVariable;
 /**
@@ -362,7 +385,7 @@ exports.exportVariable = exportVariable;
  * @param secret value of the secret
  */
 function setSecret(secret) {
-    command_1.issueCommand('add-mask', {}, secret);
+    (0, command_1.issueCommand)('add-mask', {}, secret);
 }
 exports.setSecret = setSecret;
 /**
@@ -372,10 +395,10 @@ exports.setSecret = setSecret;
 function addPath(inputPath) {
     const filePath = process.env['GITHUB_PATH'] || '';
     if (filePath) {
-        file_command_1.issueFileCommand('PATH', inputPath);
+        (0, file_command_1.issueFileCommand)('PATH', inputPath);
     }
     else {
-        command_1.issueCommand('add-path', {}, inputPath);
+        (0, command_1.issueCommand)('add-path', {}, inputPath);
     }
     process.env['PATH'] = `${inputPath}${path.delimiter}${process.env['PATH']}`;
 }
@@ -450,10 +473,10 @@ exports.getBooleanInput = getBooleanInput;
 function setOutput(name, value) {
     const filePath = process.env['GITHUB_OUTPUT'] || '';
     if (filePath) {
-        return file_command_1.issueFileCommand('OUTPUT', file_command_1.prepareKeyValueMessage(name, value));
+        return (0, file_command_1.issueFileCommand)('OUTPUT', (0, file_command_1.prepareKeyValueMessage)(name, value));
     }
     process.stdout.write(os.EOL);
-    command_1.issueCommand('set-output', { name }, utils_1.toCommandValue(value));
+    (0, command_1.issueCommand)('set-output', { name }, (0, utils_1.toCommandValue)(value));
 }
 exports.setOutput = setOutput;
 /**
@@ -462,7 +485,7 @@ exports.setOutput = setOutput;
  *
  */
 function setCommandEcho(enabled) {
-    command_1.issue('echo', enabled ? 'on' : 'off');
+    (0, command_1.issue)('echo', enabled ? 'on' : 'off');
 }
 exports.setCommandEcho = setCommandEcho;
 //-----------------------------------------------------------------------
@@ -493,7 +516,7 @@ exports.isDebug = isDebug;
  * @param message debug message
  */
 function debug(message) {
-    command_1.issueCommand('debug', {}, message);
+    (0, command_1.issueCommand)('debug', {}, message);
 }
 exports.debug = debug;
 /**
@@ -502,7 +525,7 @@ exports.debug = debug;
  * @param properties optional properties to add to the annotation.
  */
 function error(message, properties = {}) {
-    command_1.issueCommand('error', utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
+    (0, command_1.issueCommand)('error', (0, utils_1.toCommandProperties)(properties), message instanceof Error ? message.toString() : message);
 }
 exports.error = error;
 /**
@@ -511,7 +534,7 @@ exports.error = error;
  * @param properties optional properties to add to the annotation.
  */
 function warning(message, properties = {}) {
-    command_1.issueCommand('warning', utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
+    (0, command_1.issueCommand)('warning', (0, utils_1.toCommandProperties)(properties), message instanceof Error ? message.toString() : message);
 }
 exports.warning = warning;
 /**
@@ -520,7 +543,7 @@ exports.warning = warning;
  * @param properties optional properties to add to the annotation.
  */
 function notice(message, properties = {}) {
-    command_1.issueCommand('notice', utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
+    (0, command_1.issueCommand)('notice', (0, utils_1.toCommandProperties)(properties), message instanceof Error ? message.toString() : message);
 }
 exports.notice = notice;
 /**
@@ -539,14 +562,14 @@ exports.info = info;
  * @param name The name of the output group
  */
 function startGroup(name) {
-    command_1.issue('group', name);
+    (0, command_1.issue)('group', name);
 }
 exports.startGroup = startGroup;
 /**
  * End an output group.
  */
 function endGroup() {
-    command_1.issue('endgroup');
+    (0, command_1.issue)('endgroup');
 }
 exports.endGroup = endGroup;
 /**
@@ -584,9 +607,9 @@ exports.group = group;
 function saveState(name, value) {
     const filePath = process.env['GITHUB_STATE'] || '';
     if (filePath) {
-        return file_command_1.issueFileCommand('STATE', file_command_1.prepareKeyValueMessage(name, value));
+        return (0, file_command_1.issueFileCommand)('STATE', (0, file_command_1.prepareKeyValueMessage)(name, value));
     }
-    command_1.issueCommand('save-state', { name }, utils_1.toCommandValue(value));
+    (0, command_1.issueCommand)('save-state', { name }, (0, utils_1.toCommandValue)(value));
 }
 exports.saveState = saveState;
 /**
@@ -608,25 +631,29 @@ exports.getIDToken = getIDToken;
 /**
  * Summary exports
  */
-var summary_1 = __nccwpck_require__(1327);
+var summary_1 = __nccwpck_require__(1847);
 Object.defineProperty(exports, "summary", ({ enumerable: true, get: function () { return summary_1.summary; } }));
 /**
  * @deprecated use core.summary
  */
-var summary_2 = __nccwpck_require__(1327);
+var summary_2 = __nccwpck_require__(1847);
 Object.defineProperty(exports, "markdownSummary", ({ enumerable: true, get: function () { return summary_2.markdownSummary; } }));
 /**
  * Path exports
  */
-var path_utils_1 = __nccwpck_require__(2981);
+var path_utils_1 = __nccwpck_require__(1976);
 Object.defineProperty(exports, "toPosixPath", ({ enumerable: true, get: function () { return path_utils_1.toPosixPath; } }));
 Object.defineProperty(exports, "toWin32Path", ({ enumerable: true, get: function () { return path_utils_1.toWin32Path; } }));
 Object.defineProperty(exports, "toPlatformPath", ({ enumerable: true, get: function () { return path_utils_1.toPlatformPath; } }));
+/**
+ * Platform utilities exports
+ */
+exports.platform = __importStar(__nccwpck_require__(8968));
 //# sourceMappingURL=core.js.map
 
 /***/ }),
 
-/***/ 717:
+/***/ 4753:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -634,7 +661,11 @@ Object.defineProperty(exports, "toPlatformPath", ({ enumerable: true, get: funct
 // For internal use, subject to change.
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
 }) : (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     o[k2] = m[k];
@@ -647,7 +678,7 @@ var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
     __setModuleDefault(result, mod);
     return result;
 };
@@ -655,10 +686,10 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.prepareKeyValueMessage = exports.issueFileCommand = void 0;
 // We use any as a valid input type
 /* eslint-disable @typescript-eslint/no-explicit-any */
-const fs = __importStar(__nccwpck_require__(7147));
-const os = __importStar(__nccwpck_require__(2037));
-const uuid_1 = __nccwpck_require__(5840);
-const utils_1 = __nccwpck_require__(5278);
+const crypto = __importStar(__nccwpck_require__(6982));
+const fs = __importStar(__nccwpck_require__(9896));
+const os = __importStar(__nccwpck_require__(857));
+const utils_1 = __nccwpck_require__(302);
 function issueFileCommand(command, message) {
     const filePath = process.env[`GITHUB_${command}`];
     if (!filePath) {
@@ -667,14 +698,14 @@ function issueFileCommand(command, message) {
     if (!fs.existsSync(filePath)) {
         throw new Error(`Missing file at path: ${filePath}`);
     }
-    fs.appendFileSync(filePath, `${utils_1.toCommandValue(message)}${os.EOL}`, {
+    fs.appendFileSync(filePath, `${(0, utils_1.toCommandValue)(message)}${os.EOL}`, {
         encoding: 'utf8'
     });
 }
 exports.issueFileCommand = issueFileCommand;
 function prepareKeyValueMessage(key, value) {
-    const delimiter = `ghadelimiter_${uuid_1.v4()}`;
-    const convertedValue = utils_1.toCommandValue(value);
+    const delimiter = `ghadelimiter_${crypto.randomUUID()}`;
+    const convertedValue = (0, utils_1.toCommandValue)(value);
     // These should realistically never happen, but just in case someone finds a
     // way to exploit uuid generation let's not allow keys or values that contain
     // the delimiter.
@@ -691,7 +722,7 @@ exports.prepareKeyValueMessage = prepareKeyValueMessage;
 
 /***/ }),
 
-/***/ 8041:
+/***/ 5306:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -707,9 +738,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.OidcClient = void 0;
-const http_client_1 = __nccwpck_require__(6255);
-const auth_1 = __nccwpck_require__(5526);
-const core_1 = __nccwpck_require__(2186);
+const http_client_1 = __nccwpck_require__(4844);
+const auth_1 = __nccwpck_require__(4552);
+const core_1 = __nccwpck_require__(7484);
 class OidcClient {
     static createHttpClient(allowRetry = true, maxRetry = 10) {
         const requestOptions = {
@@ -741,7 +772,7 @@ class OidcClient {
                 .catch(error => {
                 throw new Error(`Failed to get ID Token. \n 
         Error Code : ${error.statusCode}\n 
-        Error Message: ${error.result.message}`);
+        Error Message: ${error.message}`);
             });
             const id_token = (_a = res.result) === null || _a === void 0 ? void 0 : _a.value;
             if (!id_token) {
@@ -759,9 +790,9 @@ class OidcClient {
                     const encodedAudience = encodeURIComponent(audience);
                     id_token_url = `${id_token_url}&audience=${encodedAudience}`;
                 }
-                core_1.debug(`ID token url is ${id_token_url}`);
+                (0, core_1.debug)(`ID token url is ${id_token_url}`);
                 const id_token = yield OidcClient.getCall(id_token_url);
-                core_1.setSecret(id_token);
+                (0, core_1.setSecret)(id_token);
                 return id_token;
             }
             catch (error) {
@@ -775,14 +806,18 @@ exports.OidcClient = OidcClient;
 
 /***/ }),
 
-/***/ 2981:
+/***/ 1976:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
 
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
 }) : (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     o[k2] = m[k];
@@ -795,13 +830,13 @@ var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
     __setModuleDefault(result, mod);
     return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.toPlatformPath = exports.toWin32Path = exports.toPosixPath = void 0;
-const path = __importStar(__nccwpck_require__(1017));
+const path = __importStar(__nccwpck_require__(6928));
 /**
  * toPosixPath converts the given path to the posix form. On Windows, \\ will be
  * replaced with /.
@@ -840,7 +875,108 @@ exports.toPlatformPath = toPlatformPath;
 
 /***/ }),
 
-/***/ 1327:
+/***/ 8968:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.getDetails = exports.isLinux = exports.isMacOS = exports.isWindows = exports.arch = exports.platform = void 0;
+const os_1 = __importDefault(__nccwpck_require__(857));
+const exec = __importStar(__nccwpck_require__(5236));
+const getWindowsInfo = () => __awaiter(void 0, void 0, void 0, function* () {
+    const { stdout: version } = yield exec.getExecOutput('powershell -command "(Get-CimInstance -ClassName Win32_OperatingSystem).Version"', undefined, {
+        silent: true
+    });
+    const { stdout: name } = yield exec.getExecOutput('powershell -command "(Get-CimInstance -ClassName Win32_OperatingSystem).Caption"', undefined, {
+        silent: true
+    });
+    return {
+        name: name.trim(),
+        version: version.trim()
+    };
+});
+const getMacOsInfo = () => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b, _c, _d;
+    const { stdout } = yield exec.getExecOutput('sw_vers', undefined, {
+        silent: true
+    });
+    const version = (_b = (_a = stdout.match(/ProductVersion:\s*(.+)/)) === null || _a === void 0 ? void 0 : _a[1]) !== null && _b !== void 0 ? _b : '';
+    const name = (_d = (_c = stdout.match(/ProductName:\s*(.+)/)) === null || _c === void 0 ? void 0 : _c[1]) !== null && _d !== void 0 ? _d : '';
+    return {
+        name,
+        version
+    };
+});
+const getLinuxInfo = () => __awaiter(void 0, void 0, void 0, function* () {
+    const { stdout } = yield exec.getExecOutput('lsb_release', ['-i', '-r', '-s'], {
+        silent: true
+    });
+    const [name, version] = stdout.trim().split('\n');
+    return {
+        name,
+        version
+    };
+});
+exports.platform = os_1.default.platform();
+exports.arch = os_1.default.arch();
+exports.isWindows = exports.platform === 'win32';
+exports.isMacOS = exports.platform === 'darwin';
+exports.isLinux = exports.platform === 'linux';
+function getDetails() {
+    return __awaiter(this, void 0, void 0, function* () {
+        return Object.assign(Object.assign({}, (yield (exports.isWindows
+            ? getWindowsInfo()
+            : exports.isMacOS
+                ? getMacOsInfo()
+                : getLinuxInfo()))), { platform: exports.platform,
+            arch: exports.arch,
+            isWindows: exports.isWindows,
+            isMacOS: exports.isMacOS,
+            isLinux: exports.isLinux });
+    });
+}
+exports.getDetails = getDetails;
+//# sourceMappingURL=platform.js.map
+
+/***/ }),
+
+/***/ 1847:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -856,8 +992,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.summary = exports.markdownSummary = exports.SUMMARY_DOCS_URL = exports.SUMMARY_ENV_VAR = void 0;
-const os_1 = __nccwpck_require__(2037);
-const fs_1 = __nccwpck_require__(7147);
+const os_1 = __nccwpck_require__(857);
+const fs_1 = __nccwpck_require__(9896);
 const { access, appendFile, writeFile } = fs_1.promises;
 exports.SUMMARY_ENV_VAR = 'GITHUB_STEP_SUMMARY';
 exports.SUMMARY_DOCS_URL = 'https://docs.github.com/actions/using-workflows/workflow-commands-for-github-actions#adding-a-job-summary';
@@ -1130,7 +1266,7 @@ exports.summary = _summary;
 
 /***/ }),
 
-/***/ 5278:
+/***/ 302:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -1177,7 +1313,742 @@ exports.toCommandProperties = toCommandProperties;
 
 /***/ }),
 
-/***/ 5526:
+/***/ 5236:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.getExecOutput = exports.exec = void 0;
+const string_decoder_1 = __nccwpck_require__(3193);
+const tr = __importStar(__nccwpck_require__(6665));
+/**
+ * Exec a command.
+ * Output will be streamed to the live console.
+ * Returns promise with return code
+ *
+ * @param     commandLine        command to execute (can include additional args). Must be correctly escaped.
+ * @param     args               optional arguments for tool. Escaping is handled by the lib.
+ * @param     options            optional exec options.  See ExecOptions
+ * @returns   Promise<number>    exit code
+ */
+function exec(commandLine, args, options) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const commandArgs = tr.argStringToArray(commandLine);
+        if (commandArgs.length === 0) {
+            throw new Error(`Parameter 'commandLine' cannot be null or empty.`);
+        }
+        // Path to tool to execute should be first arg
+        const toolPath = commandArgs[0];
+        args = commandArgs.slice(1).concat(args || []);
+        const runner = new tr.ToolRunner(toolPath, args, options);
+        return runner.exec();
+    });
+}
+exports.exec = exec;
+/**
+ * Exec a command and get the output.
+ * Output will be streamed to the live console.
+ * Returns promise with the exit code and collected stdout and stderr
+ *
+ * @param     commandLine           command to execute (can include additional args). Must be correctly escaped.
+ * @param     args                  optional arguments for tool. Escaping is handled by the lib.
+ * @param     options               optional exec options.  See ExecOptions
+ * @returns   Promise<ExecOutput>   exit code, stdout, and stderr
+ */
+function getExecOutput(commandLine, args, options) {
+    var _a, _b;
+    return __awaiter(this, void 0, void 0, function* () {
+        let stdout = '';
+        let stderr = '';
+        //Using string decoder covers the case where a mult-byte character is split
+        const stdoutDecoder = new string_decoder_1.StringDecoder('utf8');
+        const stderrDecoder = new string_decoder_1.StringDecoder('utf8');
+        const originalStdoutListener = (_a = options === null || options === void 0 ? void 0 : options.listeners) === null || _a === void 0 ? void 0 : _a.stdout;
+        const originalStdErrListener = (_b = options === null || options === void 0 ? void 0 : options.listeners) === null || _b === void 0 ? void 0 : _b.stderr;
+        const stdErrListener = (data) => {
+            stderr += stderrDecoder.write(data);
+            if (originalStdErrListener) {
+                originalStdErrListener(data);
+            }
+        };
+        const stdOutListener = (data) => {
+            stdout += stdoutDecoder.write(data);
+            if (originalStdoutListener) {
+                originalStdoutListener(data);
+            }
+        };
+        const listeners = Object.assign(Object.assign({}, options === null || options === void 0 ? void 0 : options.listeners), { stdout: stdOutListener, stderr: stdErrListener });
+        const exitCode = yield exec(commandLine, args, Object.assign(Object.assign({}, options), { listeners }));
+        //flush any remaining characters
+        stdout += stdoutDecoder.end();
+        stderr += stderrDecoder.end();
+        return {
+            exitCode,
+            stdout,
+            stderr
+        };
+    });
+}
+exports.getExecOutput = getExecOutput;
+//# sourceMappingURL=exec.js.map
+
+/***/ }),
+
+/***/ 6665:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.argStringToArray = exports.ToolRunner = void 0;
+const os = __importStar(__nccwpck_require__(857));
+const events = __importStar(__nccwpck_require__(4434));
+const child = __importStar(__nccwpck_require__(5317));
+const path = __importStar(__nccwpck_require__(6928));
+const io = __importStar(__nccwpck_require__(4994));
+const ioUtil = __importStar(__nccwpck_require__(5207));
+const timers_1 = __nccwpck_require__(3557);
+/* eslint-disable @typescript-eslint/unbound-method */
+const IS_WINDOWS = process.platform === 'win32';
+/*
+ * Class for running command line tools. Handles quoting and arg parsing in a platform agnostic way.
+ */
+class ToolRunner extends events.EventEmitter {
+    constructor(toolPath, args, options) {
+        super();
+        if (!toolPath) {
+            throw new Error("Parameter 'toolPath' cannot be null or empty.");
+        }
+        this.toolPath = toolPath;
+        this.args = args || [];
+        this.options = options || {};
+    }
+    _debug(message) {
+        if (this.options.listeners && this.options.listeners.debug) {
+            this.options.listeners.debug(message);
+        }
+    }
+    _getCommandString(options, noPrefix) {
+        const toolPath = this._getSpawnFileName();
+        const args = this._getSpawnArgs(options);
+        let cmd = noPrefix ? '' : '[command]'; // omit prefix when piped to a second tool
+        if (IS_WINDOWS) {
+            // Windows + cmd file
+            if (this._isCmdFile()) {
+                cmd += toolPath;
+                for (const a of args) {
+                    cmd += ` ${a}`;
+                }
+            }
+            // Windows + verbatim
+            else if (options.windowsVerbatimArguments) {
+                cmd += `"${toolPath}"`;
+                for (const a of args) {
+                    cmd += ` ${a}`;
+                }
+            }
+            // Windows (regular)
+            else {
+                cmd += this._windowsQuoteCmdArg(toolPath);
+                for (const a of args) {
+                    cmd += ` ${this._windowsQuoteCmdArg(a)}`;
+                }
+            }
+        }
+        else {
+            // OSX/Linux - this can likely be improved with some form of quoting.
+            // creating processes on Unix is fundamentally different than Windows.
+            // on Unix, execvp() takes an arg array.
+            cmd += toolPath;
+            for (const a of args) {
+                cmd += ` ${a}`;
+            }
+        }
+        return cmd;
+    }
+    _processLineBuffer(data, strBuffer, onLine) {
+        try {
+            let s = strBuffer + data.toString();
+            let n = s.indexOf(os.EOL);
+            while (n > -1) {
+                const line = s.substring(0, n);
+                onLine(line);
+                // the rest of the string ...
+                s = s.substring(n + os.EOL.length);
+                n = s.indexOf(os.EOL);
+            }
+            return s;
+        }
+        catch (err) {
+            // streaming lines to console is best effort.  Don't fail a build.
+            this._debug(`error processing line. Failed with error ${err}`);
+            return '';
+        }
+    }
+    _getSpawnFileName() {
+        if (IS_WINDOWS) {
+            if (this._isCmdFile()) {
+                return process.env['COMSPEC'] || 'cmd.exe';
+            }
+        }
+        return this.toolPath;
+    }
+    _getSpawnArgs(options) {
+        if (IS_WINDOWS) {
+            if (this._isCmdFile()) {
+                let argline = `/D /S /C "${this._windowsQuoteCmdArg(this.toolPath)}`;
+                for (const a of this.args) {
+                    argline += ' ';
+                    argline += options.windowsVerbatimArguments
+                        ? a
+                        : this._windowsQuoteCmdArg(a);
+                }
+                argline += '"';
+                return [argline];
+            }
+        }
+        return this.args;
+    }
+    _endsWith(str, end) {
+        return str.endsWith(end);
+    }
+    _isCmdFile() {
+        const upperToolPath = this.toolPath.toUpperCase();
+        return (this._endsWith(upperToolPath, '.CMD') ||
+            this._endsWith(upperToolPath, '.BAT'));
+    }
+    _windowsQuoteCmdArg(arg) {
+        // for .exe, apply the normal quoting rules that libuv applies
+        if (!this._isCmdFile()) {
+            return this._uvQuoteCmdArg(arg);
+        }
+        // otherwise apply quoting rules specific to the cmd.exe command line parser.
+        // the libuv rules are generic and are not designed specifically for cmd.exe
+        // command line parser.
+        //
+        // for a detailed description of the cmd.exe command line parser, refer to
+        // http://stackoverflow.com/questions/4094699/how-does-the-windows-command-interpreter-cmd-exe-parse-scripts/7970912#7970912
+        // need quotes for empty arg
+        if (!arg) {
+            return '""';
+        }
+        // determine whether the arg needs to be quoted
+        const cmdSpecialChars = [
+            ' ',
+            '\t',
+            '&',
+            '(',
+            ')',
+            '[',
+            ']',
+            '{',
+            '}',
+            '^',
+            '=',
+            ';',
+            '!',
+            "'",
+            '+',
+            ',',
+            '`',
+            '~',
+            '|',
+            '<',
+            '>',
+            '"'
+        ];
+        let needsQuotes = false;
+        for (const char of arg) {
+            if (cmdSpecialChars.some(x => x === char)) {
+                needsQuotes = true;
+                break;
+            }
+        }
+        // short-circuit if quotes not needed
+        if (!needsQuotes) {
+            return arg;
+        }
+        // the following quoting rules are very similar to the rules that by libuv applies.
+        //
+        // 1) wrap the string in quotes
+        //
+        // 2) double-up quotes - i.e. " => ""
+        //
+        //    this is different from the libuv quoting rules. libuv replaces " with \", which unfortunately
+        //    doesn't work well with a cmd.exe command line.
+        //
+        //    note, replacing " with "" also works well if the arg is passed to a downstream .NET console app.
+        //    for example, the command line:
+        //          foo.exe "myarg:""my val"""
+        //    is parsed by a .NET console app into an arg array:
+        //          [ "myarg:\"my val\"" ]
+        //    which is the same end result when applying libuv quoting rules. although the actual
+        //    command line from libuv quoting rules would look like:
+        //          foo.exe "myarg:\"my val\""
+        //
+        // 3) double-up slashes that precede a quote,
+        //    e.g.  hello \world    => "hello \world"
+        //          hello\"world    => "hello\\""world"
+        //          hello\\"world   => "hello\\\\""world"
+        //          hello world\    => "hello world\\"
+        //
+        //    technically this is not required for a cmd.exe command line, or the batch argument parser.
+        //    the reasons for including this as a .cmd quoting rule are:
+        //
+        //    a) this is optimized for the scenario where the argument is passed from the .cmd file to an
+        //       external program. many programs (e.g. .NET console apps) rely on the slash-doubling rule.
+        //
+        //    b) it's what we've been doing previously (by deferring to node default behavior) and we
+        //       haven't heard any complaints about that aspect.
+        //
+        // note, a weakness of the quoting rules chosen here, is that % is not escaped. in fact, % cannot be
+        // escaped when used on the command line directly - even though within a .cmd file % can be escaped
+        // by using %%.
+        //
+        // the saving grace is, on the command line, %var% is left as-is if var is not defined. this contrasts
+        // the line parsing rules within a .cmd file, where if var is not defined it is replaced with nothing.
+        //
+        // one option that was explored was replacing % with ^% - i.e. %var% => ^%var^%. this hack would
+        // often work, since it is unlikely that var^ would exist, and the ^ character is removed when the
+        // variable is used. the problem, however, is that ^ is not removed when %* is used to pass the args
+        // to an external program.
+        //
+        // an unexplored potential solution for the % escaping problem, is to create a wrapper .cmd file.
+        // % can be escaped within a .cmd file.
+        let reverse = '"';
+        let quoteHit = true;
+        for (let i = arg.length; i > 0; i--) {
+            // walk the string in reverse
+            reverse += arg[i - 1];
+            if (quoteHit && arg[i - 1] === '\\') {
+                reverse += '\\'; // double the slash
+            }
+            else if (arg[i - 1] === '"') {
+                quoteHit = true;
+                reverse += '"'; // double the quote
+            }
+            else {
+                quoteHit = false;
+            }
+        }
+        reverse += '"';
+        return reverse
+            .split('')
+            .reverse()
+            .join('');
+    }
+    _uvQuoteCmdArg(arg) {
+        // Tool runner wraps child_process.spawn() and needs to apply the same quoting as
+        // Node in certain cases where the undocumented spawn option windowsVerbatimArguments
+        // is used.
+        //
+        // Since this function is a port of quote_cmd_arg from Node 4.x (technically, lib UV,
+        // see https://github.com/nodejs/node/blob/v4.x/deps/uv/src/win/process.c for details),
+        // pasting copyright notice from Node within this function:
+        //
+        //      Copyright Joyent, Inc. and other Node contributors. All rights reserved.
+        //
+        //      Permission is hereby granted, free of charge, to any person obtaining a copy
+        //      of this software and associated documentation files (the "Software"), to
+        //      deal in the Software without restriction, including without limitation the
+        //      rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+        //      sell copies of the Software, and to permit persons to whom the Software is
+        //      furnished to do so, subject to the following conditions:
+        //
+        //      The above copyright notice and this permission notice shall be included in
+        //      all copies or substantial portions of the Software.
+        //
+        //      THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+        //      IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+        //      FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+        //      AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+        //      LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+        //      FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+        //      IN THE SOFTWARE.
+        if (!arg) {
+            // Need double quotation for empty argument
+            return '""';
+        }
+        if (!arg.includes(' ') && !arg.includes('\t') && !arg.includes('"')) {
+            // No quotation needed
+            return arg;
+        }
+        if (!arg.includes('"') && !arg.includes('\\')) {
+            // No embedded double quotes or backslashes, so I can just wrap
+            // quote marks around the whole thing.
+            return `"${arg}"`;
+        }
+        // Expected input/output:
+        //   input : hello"world
+        //   output: "hello\"world"
+        //   input : hello""world
+        //   output: "hello\"\"world"
+        //   input : hello\world
+        //   output: hello\world
+        //   input : hello\\world
+        //   output: hello\\world
+        //   input : hello\"world
+        //   output: "hello\\\"world"
+        //   input : hello\\"world
+        //   output: "hello\\\\\"world"
+        //   input : hello world\
+        //   output: "hello world\\" - note the comment in libuv actually reads "hello world\"
+        //                             but it appears the comment is wrong, it should be "hello world\\"
+        let reverse = '"';
+        let quoteHit = true;
+        for (let i = arg.length; i > 0; i--) {
+            // walk the string in reverse
+            reverse += arg[i - 1];
+            if (quoteHit && arg[i - 1] === '\\') {
+                reverse += '\\';
+            }
+            else if (arg[i - 1] === '"') {
+                quoteHit = true;
+                reverse += '\\';
+            }
+            else {
+                quoteHit = false;
+            }
+        }
+        reverse += '"';
+        return reverse
+            .split('')
+            .reverse()
+            .join('');
+    }
+    _cloneExecOptions(options) {
+        options = options || {};
+        const result = {
+            cwd: options.cwd || process.cwd(),
+            env: options.env || process.env,
+            silent: options.silent || false,
+            windowsVerbatimArguments: options.windowsVerbatimArguments || false,
+            failOnStdErr: options.failOnStdErr || false,
+            ignoreReturnCode: options.ignoreReturnCode || false,
+            delay: options.delay || 10000
+        };
+        result.outStream = options.outStream || process.stdout;
+        result.errStream = options.errStream || process.stderr;
+        return result;
+    }
+    _getSpawnOptions(options, toolPath) {
+        options = options || {};
+        const result = {};
+        result.cwd = options.cwd;
+        result.env = options.env;
+        result['windowsVerbatimArguments'] =
+            options.windowsVerbatimArguments || this._isCmdFile();
+        if (options.windowsVerbatimArguments) {
+            result.argv0 = `"${toolPath}"`;
+        }
+        return result;
+    }
+    /**
+     * Exec a tool.
+     * Output will be streamed to the live console.
+     * Returns promise with return code
+     *
+     * @param     tool     path to tool to exec
+     * @param     options  optional exec options.  See ExecOptions
+     * @returns   number
+     */
+    exec() {
+        return __awaiter(this, void 0, void 0, function* () {
+            // root the tool path if it is unrooted and contains relative pathing
+            if (!ioUtil.isRooted(this.toolPath) &&
+                (this.toolPath.includes('/') ||
+                    (IS_WINDOWS && this.toolPath.includes('\\')))) {
+                // prefer options.cwd if it is specified, however options.cwd may also need to be rooted
+                this.toolPath = path.resolve(process.cwd(), this.options.cwd || process.cwd(), this.toolPath);
+            }
+            // if the tool is only a file name, then resolve it from the PATH
+            // otherwise verify it exists (add extension on Windows if necessary)
+            this.toolPath = yield io.which(this.toolPath, true);
+            return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
+                this._debug(`exec tool: ${this.toolPath}`);
+                this._debug('arguments:');
+                for (const arg of this.args) {
+                    this._debug(`   ${arg}`);
+                }
+                const optionsNonNull = this._cloneExecOptions(this.options);
+                if (!optionsNonNull.silent && optionsNonNull.outStream) {
+                    optionsNonNull.outStream.write(this._getCommandString(optionsNonNull) + os.EOL);
+                }
+                const state = new ExecState(optionsNonNull, this.toolPath);
+                state.on('debug', (message) => {
+                    this._debug(message);
+                });
+                if (this.options.cwd && !(yield ioUtil.exists(this.options.cwd))) {
+                    return reject(new Error(`The cwd: ${this.options.cwd} does not exist!`));
+                }
+                const fileName = this._getSpawnFileName();
+                const cp = child.spawn(fileName, this._getSpawnArgs(optionsNonNull), this._getSpawnOptions(this.options, fileName));
+                let stdbuffer = '';
+                if (cp.stdout) {
+                    cp.stdout.on('data', (data) => {
+                        if (this.options.listeners && this.options.listeners.stdout) {
+                            this.options.listeners.stdout(data);
+                        }
+                        if (!optionsNonNull.silent && optionsNonNull.outStream) {
+                            optionsNonNull.outStream.write(data);
+                        }
+                        stdbuffer = this._processLineBuffer(data, stdbuffer, (line) => {
+                            if (this.options.listeners && this.options.listeners.stdline) {
+                                this.options.listeners.stdline(line);
+                            }
+                        });
+                    });
+                }
+                let errbuffer = '';
+                if (cp.stderr) {
+                    cp.stderr.on('data', (data) => {
+                        state.processStderr = true;
+                        if (this.options.listeners && this.options.listeners.stderr) {
+                            this.options.listeners.stderr(data);
+                        }
+                        if (!optionsNonNull.silent &&
+                            optionsNonNull.errStream &&
+                            optionsNonNull.outStream) {
+                            const s = optionsNonNull.failOnStdErr
+                                ? optionsNonNull.errStream
+                                : optionsNonNull.outStream;
+                            s.write(data);
+                        }
+                        errbuffer = this._processLineBuffer(data, errbuffer, (line) => {
+                            if (this.options.listeners && this.options.listeners.errline) {
+                                this.options.listeners.errline(line);
+                            }
+                        });
+                    });
+                }
+                cp.on('error', (err) => {
+                    state.processError = err.message;
+                    state.processExited = true;
+                    state.processClosed = true;
+                    state.CheckComplete();
+                });
+                cp.on('exit', (code) => {
+                    state.processExitCode = code;
+                    state.processExited = true;
+                    this._debug(`Exit code ${code} received from tool '${this.toolPath}'`);
+                    state.CheckComplete();
+                });
+                cp.on('close', (code) => {
+                    state.processExitCode = code;
+                    state.processExited = true;
+                    state.processClosed = true;
+                    this._debug(`STDIO streams have closed for tool '${this.toolPath}'`);
+                    state.CheckComplete();
+                });
+                state.on('done', (error, exitCode) => {
+                    if (stdbuffer.length > 0) {
+                        this.emit('stdline', stdbuffer);
+                    }
+                    if (errbuffer.length > 0) {
+                        this.emit('errline', errbuffer);
+                    }
+                    cp.removeAllListeners();
+                    if (error) {
+                        reject(error);
+                    }
+                    else {
+                        resolve(exitCode);
+                    }
+                });
+                if (this.options.input) {
+                    if (!cp.stdin) {
+                        throw new Error('child process missing stdin');
+                    }
+                    cp.stdin.end(this.options.input);
+                }
+            }));
+        });
+    }
+}
+exports.ToolRunner = ToolRunner;
+/**
+ * Convert an arg string to an array of args. Handles escaping
+ *
+ * @param    argString   string of arguments
+ * @returns  string[]    array of arguments
+ */
+function argStringToArray(argString) {
+    const args = [];
+    let inQuotes = false;
+    let escaped = false;
+    let arg = '';
+    function append(c) {
+        // we only escape double quotes.
+        if (escaped && c !== '"') {
+            arg += '\\';
+        }
+        arg += c;
+        escaped = false;
+    }
+    for (let i = 0; i < argString.length; i++) {
+        const c = argString.charAt(i);
+        if (c === '"') {
+            if (!escaped) {
+                inQuotes = !inQuotes;
+            }
+            else {
+                append(c);
+            }
+            continue;
+        }
+        if (c === '\\' && escaped) {
+            append(c);
+            continue;
+        }
+        if (c === '\\' && inQuotes) {
+            escaped = true;
+            continue;
+        }
+        if (c === ' ' && !inQuotes) {
+            if (arg.length > 0) {
+                args.push(arg);
+                arg = '';
+            }
+            continue;
+        }
+        append(c);
+    }
+    if (arg.length > 0) {
+        args.push(arg.trim());
+    }
+    return args;
+}
+exports.argStringToArray = argStringToArray;
+class ExecState extends events.EventEmitter {
+    constructor(options, toolPath) {
+        super();
+        this.processClosed = false; // tracks whether the process has exited and stdio is closed
+        this.processError = '';
+        this.processExitCode = 0;
+        this.processExited = false; // tracks whether the process has exited
+        this.processStderr = false; // tracks whether stderr was written to
+        this.delay = 10000; // 10 seconds
+        this.done = false;
+        this.timeout = null;
+        if (!toolPath) {
+            throw new Error('toolPath must not be empty');
+        }
+        this.options = options;
+        this.toolPath = toolPath;
+        if (options.delay) {
+            this.delay = options.delay;
+        }
+    }
+    CheckComplete() {
+        if (this.done) {
+            return;
+        }
+        if (this.processClosed) {
+            this._setResult();
+        }
+        else if (this.processExited) {
+            this.timeout = timers_1.setTimeout(ExecState.HandleTimeout, this.delay, this);
+        }
+    }
+    _debug(message) {
+        this.emit('debug', message);
+    }
+    _setResult() {
+        // determine whether there is an error
+        let error;
+        if (this.processExited) {
+            if (this.processError) {
+                error = new Error(`There was an error when attempting to execute the process '${this.toolPath}'. This may indicate the process failed to start. Error: ${this.processError}`);
+            }
+            else if (this.processExitCode !== 0 && !this.options.ignoreReturnCode) {
+                error = new Error(`The process '${this.toolPath}' failed with exit code ${this.processExitCode}`);
+            }
+            else if (this.processStderr && this.options.failOnStdErr) {
+                error = new Error(`The process '${this.toolPath}' failed because one or more lines were written to the STDERR stream`);
+            }
+        }
+        // clear the timeout
+        if (this.timeout) {
+            clearTimeout(this.timeout);
+            this.timeout = null;
+        }
+        this.done = true;
+        this.emit('done', error, this.processExitCode);
+    }
+    static HandleTimeout(state) {
+        if (state.done) {
+            return;
+        }
+        if (!state.processClosed && state.processExited) {
+            const message = `The STDIO streams did not close within ${state.delay /
+                1000} seconds of the exit event from process '${state.toolPath}'. This may indicate a child process inherited the STDIO streams and has not yet exited.`;
+            state._debug(message);
+        }
+        state._setResult();
+    }
+}
+//# sourceMappingURL=toolrunner.js.map
+
+/***/ }),
+
+/***/ 4552:
 /***/ (function(__unused_webpack_module, exports) {
 
 "use strict";
@@ -1265,7 +2136,7 @@ exports.PersonalAccessTokenCredentialHandler = PersonalAccessTokenCredentialHand
 
 /***/ }),
 
-/***/ 6255:
+/***/ 4844:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -1301,10 +2172,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.HttpClient = exports.isHttps = exports.HttpClientResponse = exports.HttpClientError = exports.getProxyUrl = exports.MediaTypes = exports.Headers = exports.HttpCodes = void 0;
-const http = __importStar(__nccwpck_require__(3685));
-const https = __importStar(__nccwpck_require__(5687));
-const pm = __importStar(__nccwpck_require__(9835));
-const tunnel = __importStar(__nccwpck_require__(4294));
+const http = __importStar(__nccwpck_require__(8611));
+const https = __importStar(__nccwpck_require__(5692));
+const pm = __importStar(__nccwpck_require__(4988));
+const tunnel = __importStar(__nccwpck_require__(770));
 var HttpCodes;
 (function (HttpCodes) {
     HttpCodes[HttpCodes["OK"] = 200] = "OK";
@@ -1877,7 +2748,7 @@ const lowercaseKeys = (obj) => Object.keys(obj).reduce((c, k) => ((c[k.toLowerCa
 
 /***/ }),
 
-/***/ 9835:
+/***/ 4988:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -1945,7 +2816,503 @@ exports.checkBypass = checkBypass;
 
 /***/ }),
 
-/***/ 9348:
+/***/ 5207:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var _a;
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.getCmdPath = exports.tryGetExecutablePath = exports.isRooted = exports.isDirectory = exports.exists = exports.READONLY = exports.UV_FS_O_EXLOCK = exports.IS_WINDOWS = exports.unlink = exports.symlink = exports.stat = exports.rmdir = exports.rm = exports.rename = exports.readlink = exports.readdir = exports.open = exports.mkdir = exports.lstat = exports.copyFile = exports.chmod = void 0;
+const fs = __importStar(__nccwpck_require__(9896));
+const path = __importStar(__nccwpck_require__(6928));
+_a = fs.promises
+// export const {open} = 'fs'
+, exports.chmod = _a.chmod, exports.copyFile = _a.copyFile, exports.lstat = _a.lstat, exports.mkdir = _a.mkdir, exports.open = _a.open, exports.readdir = _a.readdir, exports.readlink = _a.readlink, exports.rename = _a.rename, exports.rm = _a.rm, exports.rmdir = _a.rmdir, exports.stat = _a.stat, exports.symlink = _a.symlink, exports.unlink = _a.unlink;
+// export const {open} = 'fs'
+exports.IS_WINDOWS = process.platform === 'win32';
+// See https://github.com/nodejs/node/blob/d0153aee367422d0858105abec186da4dff0a0c5/deps/uv/include/uv/win.h#L691
+exports.UV_FS_O_EXLOCK = 0x10000000;
+exports.READONLY = fs.constants.O_RDONLY;
+function exists(fsPath) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            yield exports.stat(fsPath);
+        }
+        catch (err) {
+            if (err.code === 'ENOENT') {
+                return false;
+            }
+            throw err;
+        }
+        return true;
+    });
+}
+exports.exists = exists;
+function isDirectory(fsPath, useStat = false) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const stats = useStat ? yield exports.stat(fsPath) : yield exports.lstat(fsPath);
+        return stats.isDirectory();
+    });
+}
+exports.isDirectory = isDirectory;
+/**
+ * On OSX/Linux, true if path starts with '/'. On Windows, true for paths like:
+ * \, \hello, \\hello\share, C:, and C:\hello (and corresponding alternate separator cases).
+ */
+function isRooted(p) {
+    p = normalizeSeparators(p);
+    if (!p) {
+        throw new Error('isRooted() parameter "p" cannot be empty');
+    }
+    if (exports.IS_WINDOWS) {
+        return (p.startsWith('\\') || /^[A-Z]:/i.test(p) // e.g. \ or \hello or \\hello
+        ); // e.g. C: or C:\hello
+    }
+    return p.startsWith('/');
+}
+exports.isRooted = isRooted;
+/**
+ * Best effort attempt to determine whether a file exists and is executable.
+ * @param filePath    file path to check
+ * @param extensions  additional file extensions to try
+ * @return if file exists and is executable, returns the file path. otherwise empty string.
+ */
+function tryGetExecutablePath(filePath, extensions) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let stats = undefined;
+        try {
+            // test file exists
+            stats = yield exports.stat(filePath);
+        }
+        catch (err) {
+            if (err.code !== 'ENOENT') {
+                // eslint-disable-next-line no-console
+                console.log(`Unexpected error attempting to determine if executable file exists '${filePath}': ${err}`);
+            }
+        }
+        if (stats && stats.isFile()) {
+            if (exports.IS_WINDOWS) {
+                // on Windows, test for valid extension
+                const upperExt = path.extname(filePath).toUpperCase();
+                if (extensions.some(validExt => validExt.toUpperCase() === upperExt)) {
+                    return filePath;
+                }
+            }
+            else {
+                if (isUnixExecutable(stats)) {
+                    return filePath;
+                }
+            }
+        }
+        // try each extension
+        const originalFilePath = filePath;
+        for (const extension of extensions) {
+            filePath = originalFilePath + extension;
+            stats = undefined;
+            try {
+                stats = yield exports.stat(filePath);
+            }
+            catch (err) {
+                if (err.code !== 'ENOENT') {
+                    // eslint-disable-next-line no-console
+                    console.log(`Unexpected error attempting to determine if executable file exists '${filePath}': ${err}`);
+                }
+            }
+            if (stats && stats.isFile()) {
+                if (exports.IS_WINDOWS) {
+                    // preserve the case of the actual file (since an extension was appended)
+                    try {
+                        const directory = path.dirname(filePath);
+                        const upperName = path.basename(filePath).toUpperCase();
+                        for (const actualName of yield exports.readdir(directory)) {
+                            if (upperName === actualName.toUpperCase()) {
+                                filePath = path.join(directory, actualName);
+                                break;
+                            }
+                        }
+                    }
+                    catch (err) {
+                        // eslint-disable-next-line no-console
+                        console.log(`Unexpected error attempting to determine the actual case of the file '${filePath}': ${err}`);
+                    }
+                    return filePath;
+                }
+                else {
+                    if (isUnixExecutable(stats)) {
+                        return filePath;
+                    }
+                }
+            }
+        }
+        return '';
+    });
+}
+exports.tryGetExecutablePath = tryGetExecutablePath;
+function normalizeSeparators(p) {
+    p = p || '';
+    if (exports.IS_WINDOWS) {
+        // convert slashes on Windows
+        p = p.replace(/\//g, '\\');
+        // remove redundant slashes
+        return p.replace(/\\\\+/g, '\\');
+    }
+    // remove redundant slashes
+    return p.replace(/\/\/+/g, '/');
+}
+// on Mac/Linux, test the execute bit
+//     R   W  X  R  W X R W X
+//   256 128 64 32 16 8 4 2 1
+function isUnixExecutable(stats) {
+    return ((stats.mode & 1) > 0 ||
+        ((stats.mode & 8) > 0 && stats.gid === process.getgid()) ||
+        ((stats.mode & 64) > 0 && stats.uid === process.getuid()));
+}
+// Get the path of cmd.exe in windows
+function getCmdPath() {
+    var _a;
+    return (_a = process.env['COMSPEC']) !== null && _a !== void 0 ? _a : `cmd.exe`;
+}
+exports.getCmdPath = getCmdPath;
+//# sourceMappingURL=io-util.js.map
+
+/***/ }),
+
+/***/ 4994:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.findInPath = exports.which = exports.mkdirP = exports.rmRF = exports.mv = exports.cp = void 0;
+const assert_1 = __nccwpck_require__(2613);
+const path = __importStar(__nccwpck_require__(6928));
+const ioUtil = __importStar(__nccwpck_require__(5207));
+/**
+ * Copies a file or folder.
+ * Based off of shelljs - https://github.com/shelljs/shelljs/blob/9237f66c52e5daa40458f94f9565e18e8132f5a6/src/cp.js
+ *
+ * @param     source    source path
+ * @param     dest      destination path
+ * @param     options   optional. See CopyOptions.
+ */
+function cp(source, dest, options = {}) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const { force, recursive, copySourceDirectory } = readCopyOptions(options);
+        const destStat = (yield ioUtil.exists(dest)) ? yield ioUtil.stat(dest) : null;
+        // Dest is an existing file, but not forcing
+        if (destStat && destStat.isFile() && !force) {
+            return;
+        }
+        // If dest is an existing directory, should copy inside.
+        const newDest = destStat && destStat.isDirectory() && copySourceDirectory
+            ? path.join(dest, path.basename(source))
+            : dest;
+        if (!(yield ioUtil.exists(source))) {
+            throw new Error(`no such file or directory: ${source}`);
+        }
+        const sourceStat = yield ioUtil.stat(source);
+        if (sourceStat.isDirectory()) {
+            if (!recursive) {
+                throw new Error(`Failed to copy. ${source} is a directory, but tried to copy without recursive flag.`);
+            }
+            else {
+                yield cpDirRecursive(source, newDest, 0, force);
+            }
+        }
+        else {
+            if (path.relative(source, newDest) === '') {
+                // a file cannot be copied to itself
+                throw new Error(`'${newDest}' and '${source}' are the same file`);
+            }
+            yield copyFile(source, newDest, force);
+        }
+    });
+}
+exports.cp = cp;
+/**
+ * Moves a path.
+ *
+ * @param     source    source path
+ * @param     dest      destination path
+ * @param     options   optional. See MoveOptions.
+ */
+function mv(source, dest, options = {}) {
+    return __awaiter(this, void 0, void 0, function* () {
+        if (yield ioUtil.exists(dest)) {
+            let destExists = true;
+            if (yield ioUtil.isDirectory(dest)) {
+                // If dest is directory copy src into dest
+                dest = path.join(dest, path.basename(source));
+                destExists = yield ioUtil.exists(dest);
+            }
+            if (destExists) {
+                if (options.force == null || options.force) {
+                    yield rmRF(dest);
+                }
+                else {
+                    throw new Error('Destination already exists');
+                }
+            }
+        }
+        yield mkdirP(path.dirname(dest));
+        yield ioUtil.rename(source, dest);
+    });
+}
+exports.mv = mv;
+/**
+ * Remove a path recursively with force
+ *
+ * @param inputPath path to remove
+ */
+function rmRF(inputPath) {
+    return __awaiter(this, void 0, void 0, function* () {
+        if (ioUtil.IS_WINDOWS) {
+            // Check for invalid characters
+            // https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file
+            if (/[*"<>|]/.test(inputPath)) {
+                throw new Error('File path must not contain `*`, `"`, `<`, `>` or `|` on Windows');
+            }
+        }
+        try {
+            // note if path does not exist, error is silent
+            yield ioUtil.rm(inputPath, {
+                force: true,
+                maxRetries: 3,
+                recursive: true,
+                retryDelay: 300
+            });
+        }
+        catch (err) {
+            throw new Error(`File was unable to be removed ${err}`);
+        }
+    });
+}
+exports.rmRF = rmRF;
+/**
+ * Make a directory.  Creates the full path with folders in between
+ * Will throw if it fails
+ *
+ * @param   fsPath        path to create
+ * @returns Promise<void>
+ */
+function mkdirP(fsPath) {
+    return __awaiter(this, void 0, void 0, function* () {
+        assert_1.ok(fsPath, 'a path argument must be provided');
+        yield ioUtil.mkdir(fsPath, { recursive: true });
+    });
+}
+exports.mkdirP = mkdirP;
+/**
+ * Returns path of a tool had the tool actually been invoked.  Resolves via paths.
+ * If you check and the tool does not exist, it will throw.
+ *
+ * @param     tool              name of the tool
+ * @param     check             whether to check if tool exists
+ * @returns   Promise<string>   path to tool
+ */
+function which(tool, check) {
+    return __awaiter(this, void 0, void 0, function* () {
+        if (!tool) {
+            throw new Error("parameter 'tool' is required");
+        }
+        // recursive when check=true
+        if (check) {
+            const result = yield which(tool, false);
+            if (!result) {
+                if (ioUtil.IS_WINDOWS) {
+                    throw new Error(`Unable to locate executable file: ${tool}. Please verify either the file path exists or the file can be found within a directory specified by the PATH environment variable. Also verify the file has a valid extension for an executable file.`);
+                }
+                else {
+                    throw new Error(`Unable to locate executable file: ${tool}. Please verify either the file path exists or the file can be found within a directory specified by the PATH environment variable. Also check the file mode to verify the file is executable.`);
+                }
+            }
+            return result;
+        }
+        const matches = yield findInPath(tool);
+        if (matches && matches.length > 0) {
+            return matches[0];
+        }
+        return '';
+    });
+}
+exports.which = which;
+/**
+ * Returns a list of all occurrences of the given tool on the system path.
+ *
+ * @returns   Promise<string[]>  the paths of the tool
+ */
+function findInPath(tool) {
+    return __awaiter(this, void 0, void 0, function* () {
+        if (!tool) {
+            throw new Error("parameter 'tool' is required");
+        }
+        // build the list of extensions to try
+        const extensions = [];
+        if (ioUtil.IS_WINDOWS && process.env['PATHEXT']) {
+            for (const extension of process.env['PATHEXT'].split(path.delimiter)) {
+                if (extension) {
+                    extensions.push(extension);
+                }
+            }
+        }
+        // if it's rooted, return it if exists. otherwise return empty.
+        if (ioUtil.isRooted(tool)) {
+            const filePath = yield ioUtil.tryGetExecutablePath(tool, extensions);
+            if (filePath) {
+                return [filePath];
+            }
+            return [];
+        }
+        // if any path separators, return empty
+        if (tool.includes(path.sep)) {
+            return [];
+        }
+        // build the list of directories
+        //
+        // Note, technically "where" checks the current directory on Windows. From a toolkit perspective,
+        // it feels like we should not do this. Checking the current directory seems like more of a use
+        // case of a shell, and the which() function exposed by the toolkit should strive for consistency
+        // across platforms.
+        const directories = [];
+        if (process.env.PATH) {
+            for (const p of process.env.PATH.split(path.delimiter)) {
+                if (p) {
+                    directories.push(p);
+                }
+            }
+        }
+        // find all matches
+        const matches = [];
+        for (const directory of directories) {
+            const filePath = yield ioUtil.tryGetExecutablePath(path.join(directory, tool), extensions);
+            if (filePath) {
+                matches.push(filePath);
+            }
+        }
+        return matches;
+    });
+}
+exports.findInPath = findInPath;
+function readCopyOptions(options) {
+    const force = options.force == null ? true : options.force;
+    const recursive = Boolean(options.recursive);
+    const copySourceDirectory = options.copySourceDirectory == null
+        ? true
+        : Boolean(options.copySourceDirectory);
+    return { force, recursive, copySourceDirectory };
+}
+function cpDirRecursive(sourceDir, destDir, currentDepth, force) {
+    return __awaiter(this, void 0, void 0, function* () {
+        // Ensure there is not a run away recursive copy
+        if (currentDepth >= 255)
+            return;
+        currentDepth++;
+        yield mkdirP(destDir);
+        const files = yield ioUtil.readdir(sourceDir);
+        for (const fileName of files) {
+            const srcFile = `${sourceDir}/${fileName}`;
+            const destFile = `${destDir}/${fileName}`;
+            const srcFileStat = yield ioUtil.lstat(srcFile);
+            if (srcFileStat.isDirectory()) {
+                // Recurse
+                yield cpDirRecursive(srcFile, destFile, currentDepth, force);
+            }
+            else {
+                yield copyFile(srcFile, destFile, force);
+            }
+        }
+        // Change the mode for the newly created directory
+        yield ioUtil.chmod(destDir, (yield ioUtil.stat(sourceDir)).mode);
+    });
+}
+// Buffered file copy
+function copyFile(srcFile, destFile, force) {
+    return __awaiter(this, void 0, void 0, function* () {
+        if ((yield ioUtil.lstat(srcFile)).isSymbolicLink()) {
+            // unlink/re-link it
+            try {
+                yield ioUtil.lstat(destFile);
+                yield ioUtil.unlink(destFile);
+            }
+            catch (e) {
+                // Try to override file permission
+                if (e.code === 'EPERM') {
+                    yield ioUtil.chmod(destFile, '0666');
+                    yield ioUtil.unlink(destFile);
+                }
+                // other errors = it doesn't exist, no work to do
+            }
+            // Copy over symlink
+            const symlinkFull = yield ioUtil.readlink(srcFile);
+            yield ioUtil.symlink(symlinkFull, destFile, ioUtil.IS_WINDOWS ? 'junction' : null);
+        }
+        else if (!(yield ioUtil.exists(destFile)) || force) {
+            yield ioUtil.copyFile(srcFile, destFile);
+        }
+    });
+}
+//# sourceMappingURL=io.js.map
+
+/***/ }),
+
+/***/ 6656:
 /***/ ((module) => {
 
 // Copyright 2011 Mark Cavage <mcavage@gmail.com> All rights reserved.
@@ -1965,16 +3332,16 @@ module.exports = {
 
 /***/ }),
 
-/***/ 194:
+/***/ 7703:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 // Copyright 2011 Mark Cavage <mcavage@gmail.com> All rights reserved.
 
-var errors = __nccwpck_require__(9348);
-var types = __nccwpck_require__(2473);
+var errors = __nccwpck_require__(6656);
+var types = __nccwpck_require__(254);
 
-var Reader = __nccwpck_require__(290);
-var Writer = __nccwpck_require__(3200);
+var Reader = __nccwpck_require__(1996);
+var Writer = __nccwpck_require__(9816);
 
 
 // --- Exports
@@ -1999,16 +3366,16 @@ for (var e in errors) {
 
 /***/ }),
 
-/***/ 290:
+/***/ 1996:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 // Copyright 2011 Mark Cavage <mcavage@gmail.com> All rights reserved.
 
-var assert = __nccwpck_require__(9491);
-var Buffer = (__nccwpck_require__(5118).Buffer);
+var assert = __nccwpck_require__(2613);
+var Buffer = (__nccwpck_require__(2803).Buffer);
 
-var ASN1 = __nccwpck_require__(2473);
-var errors = __nccwpck_require__(9348);
+var ASN1 = __nccwpck_require__(254);
+var errors = __nccwpck_require__(6656);
 
 
 // --- Globals
@@ -2268,7 +3635,7 @@ module.exports = Reader;
 
 /***/ }),
 
-/***/ 2473:
+/***/ 254:
 /***/ ((module) => {
 
 // Copyright 2011 Mark Cavage <mcavage@gmail.com> All rights reserved.
@@ -2311,15 +3678,15 @@ module.exports = {
 
 /***/ }),
 
-/***/ 3200:
+/***/ 9816:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 // Copyright 2011 Mark Cavage <mcavage@gmail.com> All rights reserved.
 
-var assert = __nccwpck_require__(9491);
-var Buffer = (__nccwpck_require__(5118).Buffer);
-var ASN1 = __nccwpck_require__(2473);
-var errors = __nccwpck_require__(9348);
+var assert = __nccwpck_require__(2613);
+var Buffer = (__nccwpck_require__(2803).Buffer);
+var ASN1 = __nccwpck_require__(254);
+var errors = __nccwpck_require__(6656);
 
 
 // --- Globals
@@ -2635,7 +4002,7 @@ module.exports = Writer;
 
 /***/ }),
 
-/***/ 970:
+/***/ 9837:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 // Copyright 2011 Mark Cavage <mcavage@gmail.com> All rights reserved.
@@ -2643,7 +4010,7 @@ module.exports = Writer;
 // If you have no idea what ASN.1 or BER is, see this:
 // ftp://ftp.rsa.com/pub/pkcs/ascii/layman.asc
 
-var Ber = __nccwpck_require__(194);
+var Ber = __nccwpck_require__(7703);
 
 
 
@@ -2662,7 +4029,7 @@ module.exports = {
 
 /***/ }),
 
-/***/ 9417:
+/***/ 9380:
 /***/ ((module) => {
 
 "use strict";
@@ -2732,13 +4099,13 @@ function range(a, b, str) {
 
 /***/ }),
 
-/***/ 5447:
+/***/ 686:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
 
 
-var crypto_hash_sha512 = (__nccwpck_require__(8729).lowlevel.crypto_hash);
+var crypto_hash_sha512 = (__nccwpck_require__(668).lowlevel).crypto_hash;
 
 /*
  * This file is a 1:1 port from the OpenBSD blowfish.c and bcrypt_pbkdf.c. As a
@@ -3296,10 +4663,10 @@ module.exports = {
 
 /***/ }),
 
-/***/ 3717:
+/***/ 4691:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-var balanced = __nccwpck_require__(9417);
+var balanced = __nccwpck_require__(9380);
 
 module.exports = expandTop;
 
@@ -3506,7 +4873,7 @@ function expand(str, isTop) {
 
 /***/ }),
 
-/***/ 3018:
+/***/ 4718:
 /***/ ((module) => {
 
 /* eslint-disable node/no-deprecated-api */
@@ -3585,15 +4952,15 @@ module.exports = bufferFrom
 
 /***/ }),
 
-/***/ 5107:
+/***/ 8015:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-var Writable = (__nccwpck_require__(1642).Writable)
-var inherits = __nccwpck_require__(4124)
-var bufferFrom = __nccwpck_require__(3018)
+var Writable = (__nccwpck_require__(6131).Writable)
+var inherits = __nccwpck_require__(9598)
+var bufferFrom = __nccwpck_require__(4718)
 
 if (typeof Uint8Array === 'undefined') {
-  var U8 = (__nccwpck_require__(5027)/* .Uint8Array */ .U2)
+  var U8 = (__nccwpck_require__(2317)/* .Uint8Array */ .SE)
 } else {
   var U8 = Uint8Array
 }
@@ -3736,7 +5103,20 @@ function u8Concat (parts) {
 
 /***/ }),
 
-/***/ 2997:
+/***/ 4982:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+"use strict";
+
+
+const binding = __nccwpck_require__(5243);
+
+module.exports = binding.getCPUInfo;
+
+
+/***/ }),
+
+/***/ 4339:
 /***/ ((module) => {
 
 "use strict";
@@ -3791,23 +5171,23 @@ module.exports = createError;
 
 /***/ }),
 
-/***/ 4124:
+/***/ 9598:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 try {
-  var util = __nccwpck_require__(3837);
+  var util = __nccwpck_require__(9023);
   /* istanbul ignore next */
   if (typeof util.inherits !== 'function') throw '';
   module.exports = util.inherits;
 } catch (e) {
   /* istanbul ignore next */
-  module.exports = __nccwpck_require__(8544);
+  module.exports = __nccwpck_require__(6589);
 }
 
 
 /***/ }),
 
-/***/ 8544:
+/***/ 6589:
 /***/ ((module) => {
 
 if (typeof Object.create === 'function') {
@@ -3841,14 +5221,14 @@ if (typeof Object.create === 'function') {
 
 /***/ }),
 
-/***/ 4742:
+/***/ 390:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
 
 
-var errcode = __nccwpck_require__(2997);
-var retry = __nccwpck_require__(4347);
+var errcode = __nccwpck_require__(4339);
+var retry = __nccwpck_require__(5546);
 
 var hasOwn = Object.prototype.hasOwnProperty;
 
@@ -3901,7 +5281,7 @@ module.exports = promiseRetry;
 
 /***/ }),
 
-/***/ 7214:
+/***/ 5500:
 /***/ ((module) => {
 
 "use strict";
@@ -4020,12 +5400,12 @@ createErrorType('ERR_UNKNOWN_ENCODING', function (arg) {
 }, TypeError);
 createErrorType('ERR_STREAM_UNSHIFT_AFTER_END_EVENT', 'stream.unshift() after end event');
 
-module.exports.q = codes;
+module.exports.F = codes;
 
 
 /***/ }),
 
-/***/ 1359:
+/***/ 2063:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
@@ -4070,11 +5450,11 @@ var objectKeys = Object.keys || function (obj) {
 
 module.exports = Duplex;
 
-var Readable = __nccwpck_require__(1433);
+var Readable = __nccwpck_require__(6893);
 
-var Writable = __nccwpck_require__(6993);
+var Writable = __nccwpck_require__(8797);
 
-__nccwpck_require__(4124)(Duplex, Readable);
+__nccwpck_require__(9598)(Duplex, Readable);
 
 {
   // Allow the keys array to be GC'ed.
@@ -4171,7 +5551,7 @@ Object.defineProperty(Duplex.prototype, 'destroyed', {
 
 /***/ }),
 
-/***/ 1542:
+/***/ 5283:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
@@ -4202,9 +5582,9 @@ Object.defineProperty(Duplex.prototype, 'destroyed', {
 
 module.exports = PassThrough;
 
-var Transform = __nccwpck_require__(4415);
+var Transform = __nccwpck_require__(2337);
 
-__nccwpck_require__(4124)(PassThrough, Transform);
+__nccwpck_require__(9598)(PassThrough, Transform);
 
 function PassThrough(options) {
   if (!(this instanceof PassThrough)) return new PassThrough(options);
@@ -4217,7 +5597,7 @@ PassThrough.prototype._transform = function (chunk, encoding, cb) {
 
 /***/ }),
 
-/***/ 1433:
+/***/ 6893:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
@@ -4252,7 +5632,7 @@ var Duplex;
 Readable.ReadableState = ReadableState;
 /*<replacement>*/
 
-var EE = (__nccwpck_require__(2361).EventEmitter);
+var EE = (__nccwpck_require__(4434).EventEmitter);
 
 var EElistenerCount = function EElistenerCount(emitter, type) {
   return emitter.listeners(type).length;
@@ -4262,11 +5642,11 @@ var EElistenerCount = function EElistenerCount(emitter, type) {
 /*<replacement>*/
 
 
-var Stream = __nccwpck_require__(2387);
+var Stream = __nccwpck_require__(3283);
 /*</replacement>*/
 
 
-var Buffer = (__nccwpck_require__(4300).Buffer);
+var Buffer = (__nccwpck_require__(181).Buffer);
 
 var OurUint8Array = global.Uint8Array || function () {};
 
@@ -4280,7 +5660,7 @@ function _isUint8Array(obj) {
 /*<replacement>*/
 
 
-var debugUtil = __nccwpck_require__(3837);
+var debugUtil = __nccwpck_require__(9023);
 
 var debug;
 
@@ -4292,14 +5672,14 @@ if (debugUtil && debugUtil.debuglog) {
 /*</replacement>*/
 
 
-var BufferList = __nccwpck_require__(6522);
+var BufferList = __nccwpck_require__(7336);
 
-var destroyImpl = __nccwpck_require__(7049);
+var destroyImpl = __nccwpck_require__(5089);
 
-var _require = __nccwpck_require__(9948),
+var _require = __nccwpck_require__(4874),
     getHighWaterMark = _require.getHighWaterMark;
 
-var _require$codes = (__nccwpck_require__(7214)/* .codes */ .q),
+var _require$codes = (__nccwpck_require__(5500)/* .codes */ .F),
     ERR_INVALID_ARG_TYPE = _require$codes.ERR_INVALID_ARG_TYPE,
     ERR_STREAM_PUSH_AFTER_EOF = _require$codes.ERR_STREAM_PUSH_AFTER_EOF,
     ERR_METHOD_NOT_IMPLEMENTED = _require$codes.ERR_METHOD_NOT_IMPLEMENTED,
@@ -4310,7 +5690,7 @@ var StringDecoder;
 var createReadableStreamAsyncIterator;
 var from;
 
-__nccwpck_require__(4124)(Readable, Stream);
+__nccwpck_require__(9598)(Readable, Stream);
 
 var errorOrDestroy = destroyImpl.errorOrDestroy;
 var kProxyEvents = ['error', 'close', 'destroy', 'pause', 'resume'];
@@ -4327,7 +5707,7 @@ function prependListener(emitter, event, fn) {
 }
 
 function ReadableState(options, stream, isDuplex) {
-  Duplex = Duplex || __nccwpck_require__(1359);
+  Duplex = Duplex || __nccwpck_require__(2063);
   options = options || {}; // Duplex streams are both readable and writable, but share
   // the same options object.
   // However, some cases require setting options to different
@@ -4383,14 +5763,14 @@ function ReadableState(options, stream, isDuplex) {
   this.encoding = null;
 
   if (options.encoding) {
-    if (!StringDecoder) StringDecoder = (__nccwpck_require__(4841)/* .StringDecoder */ .s);
+    if (!StringDecoder) StringDecoder = (__nccwpck_require__(634)/* .StringDecoder */ .I);
     this.decoder = new StringDecoder(options.encoding);
     this.encoding = options.encoding;
   }
 }
 
 function Readable(options) {
-  Duplex = Duplex || __nccwpck_require__(1359);
+  Duplex = Duplex || __nccwpck_require__(2063);
   if (!(this instanceof Readable)) return new Readable(options); // Checking for a Stream.Duplex instance is faster here instead of inside
   // the ReadableState constructor, at least with V8 6.5
 
@@ -4545,7 +5925,7 @@ Readable.prototype.isPaused = function () {
 
 
 Readable.prototype.setEncoding = function (enc) {
-  if (!StringDecoder) StringDecoder = (__nccwpck_require__(4841)/* .StringDecoder */ .s);
+  if (!StringDecoder) StringDecoder = (__nccwpck_require__(634)/* .StringDecoder */ .I);
   var decoder = new StringDecoder(enc);
   this._readableState.decoder = decoder; // If setEncoding(null), decoder.encoding equals utf8
 
@@ -5229,7 +6609,7 @@ Readable.prototype.wrap = function (stream) {
 if (typeof Symbol === 'function') {
   Readable.prototype[Symbol.asyncIterator] = function () {
     if (createReadableStreamAsyncIterator === undefined) {
-      createReadableStreamAsyncIterator = __nccwpck_require__(3306);
+      createReadableStreamAsyncIterator = __nccwpck_require__(4868);
     }
 
     return createReadableStreamAsyncIterator(this);
@@ -5331,7 +6711,7 @@ function endReadableNT(state, stream) {
 if (typeof Symbol === 'function') {
   Readable.from = function (iterable, opts) {
     if (from === undefined) {
-      from = __nccwpck_require__(9082);
+      from = __nccwpck_require__(4659);
     }
 
     return from(Readable, iterable, opts);
@@ -5348,7 +6728,7 @@ function indexOf(xs, x) {
 
 /***/ }),
 
-/***/ 4415:
+/***/ 2337:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
@@ -5417,15 +6797,15 @@ function indexOf(xs, x) {
 
 module.exports = Transform;
 
-var _require$codes = (__nccwpck_require__(7214)/* .codes */ .q),
+var _require$codes = (__nccwpck_require__(5500)/* .codes */ .F),
     ERR_METHOD_NOT_IMPLEMENTED = _require$codes.ERR_METHOD_NOT_IMPLEMENTED,
     ERR_MULTIPLE_CALLBACK = _require$codes.ERR_MULTIPLE_CALLBACK,
     ERR_TRANSFORM_ALREADY_TRANSFORMING = _require$codes.ERR_TRANSFORM_ALREADY_TRANSFORMING,
     ERR_TRANSFORM_WITH_LENGTH_0 = _require$codes.ERR_TRANSFORM_WITH_LENGTH_0;
 
-var Duplex = __nccwpck_require__(1359);
+var Duplex = __nccwpck_require__(2063);
 
-__nccwpck_require__(4124)(Transform, Duplex);
+__nccwpck_require__(9598)(Transform, Duplex);
 
 function afterTransform(er, data) {
   var ts = this._transformState;
@@ -5556,7 +6936,7 @@ function done(stream, er, data) {
 
 /***/ }),
 
-/***/ 6993:
+/***/ 8797:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
@@ -5619,17 +6999,17 @@ Writable.WritableState = WritableState;
 /*<replacement>*/
 
 var internalUtil = {
-  deprecate: __nccwpck_require__(7127)
+  deprecate: __nccwpck_require__(4488)
 };
 /*</replacement>*/
 
 /*<replacement>*/
 
-var Stream = __nccwpck_require__(2387);
+var Stream = __nccwpck_require__(3283);
 /*</replacement>*/
 
 
-var Buffer = (__nccwpck_require__(4300).Buffer);
+var Buffer = (__nccwpck_require__(181).Buffer);
 
 var OurUint8Array = global.Uint8Array || function () {};
 
@@ -5641,12 +7021,12 @@ function _isUint8Array(obj) {
   return Buffer.isBuffer(obj) || obj instanceof OurUint8Array;
 }
 
-var destroyImpl = __nccwpck_require__(7049);
+var destroyImpl = __nccwpck_require__(5089);
 
-var _require = __nccwpck_require__(9948),
+var _require = __nccwpck_require__(4874),
     getHighWaterMark = _require.getHighWaterMark;
 
-var _require$codes = (__nccwpck_require__(7214)/* .codes */ .q),
+var _require$codes = (__nccwpck_require__(5500)/* .codes */ .F),
     ERR_INVALID_ARG_TYPE = _require$codes.ERR_INVALID_ARG_TYPE,
     ERR_METHOD_NOT_IMPLEMENTED = _require$codes.ERR_METHOD_NOT_IMPLEMENTED,
     ERR_MULTIPLE_CALLBACK = _require$codes.ERR_MULTIPLE_CALLBACK,
@@ -5658,12 +7038,12 @@ var _require$codes = (__nccwpck_require__(7214)/* .codes */ .q),
 
 var errorOrDestroy = destroyImpl.errorOrDestroy;
 
-__nccwpck_require__(4124)(Writable, Stream);
+__nccwpck_require__(9598)(Writable, Stream);
 
 function nop() {}
 
 function WritableState(options, stream, isDuplex) {
-  Duplex = Duplex || __nccwpck_require__(1359);
+  Duplex = Duplex || __nccwpck_require__(2063);
   options = options || {}; // Duplex streams are both readable and writable, but share
   // the same options object.
   // However, some cases require setting options to different
@@ -5789,7 +7169,7 @@ if (typeof Symbol === 'function' && Symbol.hasInstance && typeof Function.protot
 }
 
 function Writable(options) {
-  Duplex = Duplex || __nccwpck_require__(1359); // Writable ctor is applied to Duplexes, too.
+  Duplex = Duplex || __nccwpck_require__(2063); // Writable ctor is applied to Duplexes, too.
   // `realHasInstance` is necessary because using plain `instanceof`
   // would return false, as no `_writableState` property is attached.
   // Trying to use the custom `instanceof` for Writable here will also break the
@@ -6260,7 +7640,7 @@ Writable.prototype._destroy = function (err, cb) {
 
 /***/ }),
 
-/***/ 3306:
+/***/ 4868:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
@@ -6270,7 +7650,7 @@ var _Object$setPrototypeO;
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-var finished = __nccwpck_require__(6080);
+var finished = __nccwpck_require__(6815);
 
 var kLastResolve = Symbol('lastResolve');
 var kLastReject = Symbol('lastReject');
@@ -6474,7 +7854,7 @@ module.exports = createReadableStreamAsyncIterator;
 
 /***/ }),
 
-/***/ 6522:
+/***/ 7336:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
@@ -6492,10 +7872,10 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-var _require = __nccwpck_require__(4300),
+var _require = __nccwpck_require__(181),
     Buffer = _require.Buffer;
 
-var _require2 = __nccwpck_require__(3837),
+var _require2 = __nccwpck_require__(9023),
     inspect = _require2.inspect;
 
 var custom = inspect && inspect.custom || 'inspect';
@@ -6691,7 +8071,7 @@ function () {
 
 /***/ }),
 
-/***/ 7049:
+/***/ 5089:
 /***/ ((module) => {
 
 "use strict";
@@ -6803,7 +8183,7 @@ module.exports = {
 
 /***/ }),
 
-/***/ 6080:
+/***/ 6815:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
@@ -6811,7 +8191,7 @@ module.exports = {
 // permission from the author, Mathias Buus (@mafintosh).
 
 
-var ERR_STREAM_PREMATURE_CLOSE = (__nccwpck_require__(7214)/* .codes.ERR_STREAM_PREMATURE_CLOSE */ .q.ERR_STREAM_PREMATURE_CLOSE);
+var ERR_STREAM_PREMATURE_CLOSE = (__nccwpck_require__(5500)/* .codes */ .F).ERR_STREAM_PREMATURE_CLOSE;
 
 function once(callback) {
   var called = false;
@@ -6914,7 +8294,7 @@ module.exports = eos;
 
 /***/ }),
 
-/***/ 9082:
+/***/ 4659:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
@@ -6930,7 +8310,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-var ERR_INVALID_ARG_TYPE = (__nccwpck_require__(7214)/* .codes.ERR_INVALID_ARG_TYPE */ .q.ERR_INVALID_ARG_TYPE);
+var ERR_INVALID_ARG_TYPE = (__nccwpck_require__(5500)/* .codes */ .F).ERR_INVALID_ARG_TYPE;
 
 function from(Readable, iterable, opts) {
   var iterator;
@@ -6985,7 +8365,7 @@ module.exports = from;
 
 /***/ }),
 
-/***/ 6989:
+/***/ 6701:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
@@ -7004,7 +8384,7 @@ function once(callback) {
   };
 }
 
-var _require$codes = (__nccwpck_require__(7214)/* .codes */ .q),
+var _require$codes = (__nccwpck_require__(5500)/* .codes */ .F),
     ERR_MISSING_ARGS = _require$codes.ERR_MISSING_ARGS,
     ERR_STREAM_DESTROYED = _require$codes.ERR_STREAM_DESTROYED;
 
@@ -7023,7 +8403,7 @@ function destroyer(stream, reading, writing, callback) {
   stream.on('close', function () {
     closed = true;
   });
-  if (eos === undefined) eos = __nccwpck_require__(6080);
+  if (eos === undefined) eos = __nccwpck_require__(6815);
   eos(stream, {
     readable: reading,
     writable: writing
@@ -7089,13 +8469,13 @@ module.exports = pipeline;
 
 /***/ }),
 
-/***/ 9948:
+/***/ 4874:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
 
 
-var ERR_INVALID_OPT_VALUE = (__nccwpck_require__(7214)/* .codes.ERR_INVALID_OPT_VALUE */ .q.ERR_INVALID_OPT_VALUE);
+var ERR_INVALID_OPT_VALUE = (__nccwpck_require__(5500)/* .codes */ .F).ERR_INVALID_OPT_VALUE;
 
 function highWaterMarkFrom(options, isDuplex, duplexKey) {
   return options.highWaterMark != null ? options.highWaterMark : isDuplex ? options[duplexKey] : null;
@@ -7123,48 +8503,48 @@ module.exports = {
 
 /***/ }),
 
-/***/ 2387:
+/***/ 3283:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-module.exports = __nccwpck_require__(2781);
+module.exports = __nccwpck_require__(2203);
 
 
 /***/ }),
 
-/***/ 1642:
+/***/ 6131:
 /***/ ((module, exports, __nccwpck_require__) => {
 
-var Stream = __nccwpck_require__(2781);
+var Stream = __nccwpck_require__(2203);
 if (process.env.READABLE_STREAM === 'disable' && Stream) {
   module.exports = Stream.Readable;
   Object.assign(module.exports, Stream);
   module.exports.Stream = Stream;
 } else {
-  exports = module.exports = __nccwpck_require__(1433);
+  exports = module.exports = __nccwpck_require__(6893);
   exports.Stream = Stream || exports;
   exports.Readable = exports;
-  exports.Writable = __nccwpck_require__(6993);
-  exports.Duplex = __nccwpck_require__(1359);
-  exports.Transform = __nccwpck_require__(4415);
-  exports.PassThrough = __nccwpck_require__(1542);
-  exports.finished = __nccwpck_require__(6080);
-  exports.pipeline = __nccwpck_require__(6989);
+  exports.Writable = __nccwpck_require__(8797);
+  exports.Duplex = __nccwpck_require__(2063);
+  exports.Transform = __nccwpck_require__(2337);
+  exports.PassThrough = __nccwpck_require__(5283);
+  exports.finished = __nccwpck_require__(6815);
+  exports.pipeline = __nccwpck_require__(6701);
 }
 
 
 /***/ }),
 
-/***/ 4347:
+/***/ 5546:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-module.exports = __nccwpck_require__(6244);
+module.exports = __nccwpck_require__(7084);
 
 /***/ }),
 
-/***/ 6244:
+/***/ 7084:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
-var RetryOperation = __nccwpck_require__(5369);
+var RetryOperation = __nccwpck_require__(9538);
 
 exports.operation = function(options) {
   var timeouts = exports.timeouts(options);
@@ -7268,7 +8648,7 @@ exports.wrap = function(obj, options, methods) {
 
 /***/ }),
 
-/***/ 5369:
+/***/ 9538:
 /***/ ((module) => {
 
 function RetryOperation(timeouts, options) {
@@ -7433,12 +8813,12 @@ RetryOperation.prototype.mainError = function() {
 
 /***/ }),
 
-/***/ 1867:
+/***/ 3058:
 /***/ ((module, exports, __nccwpck_require__) => {
 
 /*! safe-buffer. MIT License. Feross Aboukhadijeh <https://feross.org/opensource> */
 /* eslint-disable node/no-deprecated-api */
-var buffer = __nccwpck_require__(4300)
+var buffer = __nccwpck_require__(181)
 var Buffer = buffer.Buffer
 
 // alternative to using Object.keys for old browsers
@@ -7505,7 +8885,7 @@ SafeBuffer.allocUnsafeSlow = function (size) {
 
 /***/ }),
 
-/***/ 5118:
+/***/ 2803:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
@@ -7513,7 +8893,7 @@ SafeBuffer.allocUnsafeSlow = function (size) {
 
 
 
-var buffer = __nccwpck_require__(4300)
+var buffer = __nccwpck_require__(181)
 var Buffer = buffer.Buffer
 
 var safer = {}
@@ -7590,7 +8970,7 @@ module.exports = safer
 
 /***/ }),
 
-/***/ 3232:
+/***/ 7874:
 /***/ ((module) => {
 
 const errorCode = {
@@ -7620,18 +9000,18 @@ module.exports = {
 
 /***/ }),
 
-/***/ 7551:
+/***/ 9215:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
 
-
-const { Client } = __nccwpck_require__(5869);
-const fs = __nccwpck_require__(7147);
-const concat = __nccwpck_require__(5107);
-const promiseRetry = __nccwpck_require__(4742);
-const { join, parse } = __nccwpck_require__(1017);
+const { Client } = __nccwpck_require__(5472);
+const fs = __nccwpck_require__(3024);
+const concat = __nccwpck_require__(8015);
+const promiseRetry = __nccwpck_require__(390);
+const { join, parse } = __nccwpck_require__(6760);
 const {
+  globalListener,
   addTempListeners,
   removeTempListeners,
   haveConnection,
@@ -7639,62 +9019,41 @@ const {
   localExists,
   haveLocalAccess,
   haveLocalCreate,
-} = __nccwpck_require__(9432);
-const { errorCode } = __nccwpck_require__(3232);
+  partition,
+} = __nccwpck_require__(2890);
+const { errorCode } = __nccwpck_require__(7874);
 
 class SftpClient {
-  constructor(clientName) {
-    this.version = '9.0.4';
+  constructor(
+    clientName = 'sftp',
+    callbacks = {
+      error: (err) => console.error(`Global error listener: ${err.message}`),
+      end: () => console.log('Global end listener: end event raised'),
+      close: () => console.log('Global close listener: close event raised'),
+    },
+  ) {
+    this.version = '11.0.0';
     this.client = new Client();
     this.sftp = undefined;
-    this.clientName = clientName ? clientName : 'sftp';
+    this.clientName = clientName;
     this.endCalled = false;
     this.errorHandled = false;
     this.closeHandled = false;
     this.endHandled = false;
-    this.remotePathSep = '/';
     this.remotePlatform = 'unix';
     this.debug = undefined;
-
-    this.client.on('close', () => {
-      if (this.endCalled || this.errorHandled || this.closeHandled) {
-        // we are processing an expected end event or close event handled elsewhere
-        this.debugMsg('Global: Ignoring handled close event');
-      } else {
-        this.debugMsg('Global: Handling unexpected close event');
-        this.sftp = undefined;
-      }
-    });
-
-    this.client.on('end', () => {
-      if (this.endCalled || this.errorHandled || this.endHandled) {
-        // end event expected or handled elsewhere
-        this.debugMsg('Global: Ignoring hanlded end event');
-      } else {
-        this.debugMsg('Global: Handling unexpected end event');
-        this.sftp = undefined;
-      }
-    });
-
-    this.client.on('error', (err) => {
-      if (this.endCalled || this.errorHandled) {
-        // error event expected or handled elsewhere
-        this.debugMsg(`Global: Ignoring handled error: ${err.message}`);
-      } else {
-        this.debugMsg(`Global; Handling unexpected error; ${err.message}`);
-        this.sftp = undefined;
-        console.log(
-          `ssh2-sftp-client: Unexpected error: ${err.message}. Error code: ${err.code}`
-        );
-      }
-    });
+    this.promiseLimit = 10;
+    this.eventCallbacks = callbacks;
+    this.client.on('close', globalListener(this, 'close', this.eventCallbacks));
+    this.client.on('end', globalListener(this, 'end', this.eventCallbacks));
+    this.client.on('error', globalListener(this, 'error', this.eventCallbacks));
   }
 
   debugMsg(msg, obj) {
     if (this.debug) {
       if (obj) {
         this.debug(
-          `CLIENT[${this.clientName}]: ${msg} ${JSON.stringify(obj, null, ' ')}`
+          `CLIENT[${this.clientName}]: ${msg} ${JSON.stringify(obj, null, ' ')}`,
         );
       } else {
         this.debug(`CLIENT[${this.clientName}]: ${msg}`);
@@ -7714,25 +9073,29 @@ class SftpClient {
       code = errorCode.generic;
     } else if (typeof err === 'string') {
       msg = `${name}: ${err}${retry}`;
-      code = eCode ? eCode : errorCode.generic;
+      code = eCode || errorCode.generic;
     } else if (err.custom) {
       msg = `${name}->${err.message}${retry}`;
       code = err.code;
     } else {
       switch (err.code) {
-        case 'ENOTFOUND':
+        case 'ENOTFOUND': {
           msg = `${name}: Address lookup failed for host${retry}`;
           break;
-        case 'ECONNREFUSED':
+        }
+        case 'ECONNREFUSED': {
           msg = `${name}: Remote host refused connection${retry}`;
           break;
-        case 'ECONNRESET':
+        }
+        case 'ECONNRESET': {
           msg = `${name}: Remote host has reset the connection: ${err.message}${retry}`;
           break;
-        default:
+        }
+        default: {
           msg = `${name}: ${err.message}${retry}`;
+        }
       }
-      code = err.code ? err.code : errorCode.generic;
+      code = err.code || errorCode.generic;
     }
     const newError = new Error(msg);
     newError.code = code;
@@ -7772,21 +9135,18 @@ class SftpClient {
    * @param {Object} config - an SFTP configuration object
    *
    * @return {Promise<Object>} which will resolve to an sftp client object
-   *
    */
   getConnection(config) {
     let doReady, listeners;
     return new Promise((resolve, reject) => {
       listeners = addTempListeners(this, 'getConnection', reject);
       doReady = () => {
-        this.debugMsg('getConnection ready listener: got connection - promise resolved');
         resolve(true);
       };
       this.on('ready', doReady);
       try {
         this.client.connect(config);
       } catch (err) {
-        this.debugMsg(`getConnection: ${err.message}`);
         reject(err);
       }
     }).finally(() => {
@@ -7801,7 +9161,6 @@ class SftpClient {
         if (err) {
           reject(this.fmtError(err, 'getSftpChannel', err.code));
         } else {
-          this.debugMsg('getSftpChannel: SFTP channel established');
           this.sftp = sftp;
           resolve(sftp);
         }
@@ -7819,7 +9178,6 @@ class SftpClient {
    * @param {Object} config - an SFTP configuration object
    *
    * @return {Promise<Object>} which will resolve to an sftp client object
-   *
    */
   async connect(config) {
     let listeners;
@@ -7831,16 +9189,17 @@ class SftpClient {
         this.debugMsg('connect: Debugging turned on');
         this.debugMsg(`ssh2-sftp-client Version: ${this.version} `, process.versions);
       }
+      this.promiseLimit = config.promiseLimit ?? 10;
       if (this.sftp) {
         throw this.fmtError(
           'An existing SFTP connection is already defined',
           'connect',
-          errorCode.connect
+          errorCode.connect,
         );
       }
       const retryOpts = {
         retries: config.retries ?? 1,
-        factor: config.factor ?? 2,
+        factor: config.retry_factor ?? 2,
         minTimeout: config.retry_minTimeout ?? 25000,
       };
       await promiseRetry(retryOpts, async (retry, attempt) => {
@@ -7851,8 +9210,9 @@ class SftpClient {
           switch (err.code) {
             case 'ENOTFOUND':
             case 'ECONNREFUSED':
-            case 'ERR_SOCKET_BAD_PORT':
+            case 'ERR_SOCKET_BAD_PORT': {
               throw err;
+            }
             case undefined: {
               if (
                 err.message.endsWith('All configured authentication methods failed') ||
@@ -7863,12 +9223,14 @@ class SftpClient {
               retry(err);
               break;
             }
-            default:
+            default: {
               retry(err);
+            }
           }
         }
       });
       const sftp = await this.getSftpChannel();
+      this.endCalled = false;
       return sftp;
     } catch (err) {
       this.end();
@@ -7887,39 +9249,30 @@ class SftpClient {
    * Returns undefined if the path does not exists.
    *
    * @param {String} remotePath - remote path, may be relative
+   * @param {Boolean} addListeners - (Optional) add event listeners. Default = true
    * @returns {Promise<String>} - remote absolute path or ''
    */
-  _realPath(rPath) {
+  realPath(remotePath, addListeners = true) {
+    let listeners;
     return new Promise((resolve, reject) => {
-      this.debugMsg(`_realPath -> ${rPath}`);
-      this.sftp.realpath(rPath, (err, absPath) => {
+      if (addListeners) {
+        listeners = addTempListeners(this, 'realPath', reject);
+      }
+      this.sftp.realpath(remotePath, (err, absPath) => {
         if (err) {
           if (err.code === 2) {
-            this.debugMsg('_realPath <- ""');
             resolve('');
           } else {
-            reject(this.fmtError(`${err.message} ${rPath}`, 'realPath', err.code));
+            reject(this.fmtError(`${err.message} ${remotePath}`, 'realPath', err.code));
           }
         }
-        this.debugMsg(`_realPath <- ${absPath}`);
         resolve(absPath);
       });
+    }).finally(() => {
+      if (addListeners) {
+        removeTempListeners(this, listeners, 'realPath');
+      }
     });
-  }
-
-  async realPath(remotePath) {
-    let listeners;
-    try {
-      listeners = addTempListeners(this, 'realPath');
-      haveConnection(this, 'realPath');
-      return await this._realPath(remotePath);
-    } catch (e) {
-      throw e.custom
-        ? e
-        : this.fmtError(`${e.message} ${remotePath}`, 'realPath', e.code);
-    } finally {
-      removeTempListeners(this, listeners, 'realPath');
-    }
   }
 
   /**
@@ -7934,20 +9287,23 @@ class SftpClient {
   }
 
   /**
-   * Retrieves attributes for path
+   * Retrieves attributes for path using cmd, which is either
+   * this.sftp.stat or this.sftp.lstat
    *
+   * @param {Function} cmd - either this.sftp.stat or this.sftp.lstat
    * @param {String} remotePath - a string containing the path to a file
+   * @param {Boolean} addListeners - (Optional) if true add event listeners. Default true.
    * @return {Promise<Object>} stats - attributes info
    */
-  _stat(aPath) {
+  _xstat(cmd, aPath, addListeners = true) {
+    let listeners;
     return new Promise((resolve, reject) => {
-      this.debugMsg(`_stat: ${aPath}`);
-      this.sftp.stat(aPath, (err, stats) => {
+      const cb = (err, stats) => {
         if (err) {
           if (err.code === 2 || err.code === 4) {
-            reject(this.fmtError(`No such file: ${aPath}`, '_stat', errorCode.notexist));
+            reject(this.fmtError(`No such file: ${aPath}`, '_xstat', errorCode.notexist));
           } else {
-            reject(this.fmtError(`${err.message} ${aPath}`, '_stat', err.code));
+            reject(this.fmtError(`${err.message} ${aPath}`, '_xstat', err.code));
           }
         } else {
           const result = {
@@ -7965,24 +9321,59 @@ class SftpClient {
             isFIFO: stats.isFIFO(),
             isSocket: stats.isSocket(),
           };
-          this.debugMsg('_stat: stats <- ', result);
           resolve(result);
         }
-      });
+      };
+      if (addListeners) {
+        listeners = addTempListeners(this, '_xstat', reject);
+      }
+      if (cmd === 'stat') {
+        this.sftp.stat(aPath, cb);
+      } else {
+        this.sftp.lstat(aPath, cb);
+      }
+    }).finally(() => {
+      if (addListeners) {
+        removeTempListeners(this, listeners, '_xstat');
+      }
     });
   }
 
+  /*
+   * Use the stat command to obtain attributes associated with a remote path.
+   * THe difference between stat and lstat is that stat, in the case of symbolic
+   * links, will return the attributes associated with the target of the link. With
+   * lstat, attributes associated with the symbolic link rather than the target are
+   * returned.
+   *
+   * @param {String} remotePath - path to an object on the remote server
+   * @return {Promise<Object>} stats - attributes info
+   */
   async stat(remotePath) {
-    let listeners;
     try {
-      listeners = addTempListeners(this, 'stat');
       haveConnection(this, 'stat');
-      const absPath = await normalizeRemotePath(this, remotePath);
-      return await this._stat(absPath);
+      return await this._xstat('stat', remotePath);
     } catch (err) {
       throw err.custom ? err : this.fmtError(err, 'stat', err.code);
-    } finally {
-      removeTempListeners(this, listeners, 'stat');
+    }
+  }
+
+  /*
+   * Use the lstat command to obtain attributes associated with a remote path.
+   * THe difference between stat and lstat is that stat, in the case of symbolic
+   * links, will return the attributes associated with the target of the link. With
+   * lstat, attributes associated with the symbolic link rather than the target are
+   * returned.
+   *
+   * @param {String} remotePath - path to an object on the remote server
+   * @return {Promise<Object>} stats - attributes info
+   */
+  async lstat(remotePath) {
+    try {
+      haveConnection(this, 'lstat');
+      return await this._xstat('lstat', remotePath);
+    } catch (err) {
+      throw err.custom ? err : this.fmtError(err, 'lstat', err.code);
     }
   }
 
@@ -7997,48 +9388,26 @@ class SftpClient {
    * @return {Promise<Boolean|String>} returns false if object does not exist. Returns type of
    *                   object if it does
    */
-  async _exists(rPath) {
-    try {
-      const absPath = await normalizeRemotePath(this, rPath);
-      this.debugMsg(`exists: ${rPath} -> ${absPath}`);
-      const info = await this._stat(absPath);
-      this.debugMsg('exists: <- ', info);
-      if (info.isDirectory) {
-        this.debugMsg(`exists: ${rPath} = d`);
-        return 'd';
-      }
-      if (info.isSymbolicLink) {
-        this.debugMsg(`exists: ${rPath} = l`);
-        return 'l';
-      }
-      if (info.isFile) {
-        this.debugMsg(`exists: ${rPath} = -`);
-        return '-';
-      }
-      this.debugMsg(`exists: ${rPath} = false`);
-      return false;
-    } catch (err) {
-      if (err.code === errorCode.notexist) {
-        this.debugMsg(`exists: ${rPath} = false errorCode = ${err.code}`);
-        return false;
-      }
-      throw err.custom ? err : this.fmtError(err.message, 'exists', err.code);
-    }
-  }
-
   async exists(remotePath) {
-    let listeners;
     try {
-      listeners = addTempListeners(this, 'exists');
-      haveConnection(this, 'exists');
       if (remotePath === '.') {
         return 'd';
       }
-      return await this._exists(remotePath);
+      const info = await this.lstat(remotePath);
+      if (info.isDirectory) {
+        return 'd';
+      } else if (info.isSymbolicLink) {
+        return 'l';
+      } else if (info.isFile) {
+        return '-';
+      } else {
+        return false;
+      }
     } catch (err) {
-      throw err.custom ? err : this.fmtError(err, 'exists', err.code);
-    } finally {
-      removeTempListeners(this, listeners, 'exists');
+      if (err.code === errorCode.notexist) {
+        return false;
+      }
+      throw err.custom ? err : this.fmtError(err.message, 'exists', err.code);
     }
   }
 
@@ -8053,53 +9422,51 @@ class SftpClient {
    *
    * @param {String} remotePath - path to remote directory
    * @param {function} filter - a filter function used to select return entries
+   * @param {Boolean} addListeners - (Optional) if true, add listeners. Default true
    * @returns {Promise<Array>} array of file description objects
    */
-  _list(remotePath, filter) {
-    return new Promise((resolve, reject) => {
-      this.sftp.readdir(remotePath, (err, fileList) => {
-        if (err) {
-          reject(this.fmtError(`${err.message} ${remotePath}`, 'list', err.code));
-        } else {
-          const reg = /-/gi;
-          const newList = fileList.map((item) => {
-            return {
-              type: item.longname.slice(0, 1),
-              name: item.filename,
-              size: item.attrs.size,
-              modifyTime: item.attrs.mtime * 1000,
-              accessTime: item.attrs.atime * 1000,
-              rights: {
-                user: item.longname.slice(1, 4).replace(reg, ''),
-                group: item.longname.slice(4, 7).replace(reg, ''),
-                other: item.longname.slice(7, 10).replace(reg, ''),
-              },
-              owner: item.attrs.uid,
-              group: item.attrs.gid,
-              longname: item.longname,
-            };
-          });
-          if (filter) {
-            resolve(newList.filter((item) => filter(item)));
-          } else {
-            resolve(newList);
-          }
-        }
-      });
-    });
-  }
-
-  async list(remotePath, filter) {
+  list(remotePath, filter, addListeners = true) {
     let listeners;
-    try {
-      listeners = addTempListeners(this, 'list');
-      haveConnection(this, 'list');
-      return await this._list(remotePath, filter);
-    } catch (e) {
-      throw e.custom ? e : this.fmtError(`${e.message} ${remotePath}`, 'list', e.code);
-    } finally {
-      removeTempListeners(this, listeners, 'list');
-    }
+    return new Promise((resolve, reject) => {
+      if (addListeners) {
+        listeners = addTempListeners(this, 'list', reject);
+      }
+      if (haveConnection(this, 'list', reject)) {
+        this.sftp.readdir(remotePath, (err, fileList) => {
+          if (err) {
+            reject(this.fmtError(`${err.message} ${remotePath}`, 'list', err.code));
+          } else {
+            const reg = /-/gi;
+            const newList = fileList.map((item) => {
+              return {
+                type: item.longname.slice(0, 1),
+                name: item.filename,
+                size: item.attrs.size,
+                modifyTime: item.attrs.mtime * 1000,
+                accessTime: item.attrs.atime * 1000,
+                rights: {
+                  user: item.longname.slice(1, 4).replaceAll(reg, ''),
+                  group: item.longname.slice(4, 7).replaceAll(reg, ''),
+                  other: item.longname.slice(7, 10).replaceAll(reg, ''),
+                },
+                owner: item.attrs.uid,
+                group: item.attrs.gid,
+                longname: item.longname,
+              };
+            });
+            if (filter) {
+              resolve(newList.filter((item) => filter(item)));
+            } else {
+              resolve(newList);
+            }
+          }
+        });
+      }
+    }).finally(() => {
+      if (addListeners) {
+        removeTempListeners(this, listeners, 'list');
+      }
+    });
   }
 
   /**
@@ -8114,6 +9481,7 @@ class SftpClient {
    * @param {string|stream|undefined} dst - data destination
    * @param {Object} options - options object with supported properties of readStreamOptions,
    *                          writeStreamOptions and pipeOptions.
+   * @param {Boolean} addListeners - (Optional) if true, add listeners. Default true
    *
    * *Important Note*: The ability to set ''autoClose' on read/write streams and 'end' on pipe() calls
    * is no longer supported. New methods 'createReadStream()' and 'createWriteStream()' have been
@@ -8121,81 +9489,79 @@ class SftpClient {
    *
    * @return {Promise<String|Stream|Buffer>}
    */
-  _get(rPath, dst, opts) {
-    let rdr, wtr;
+  get(remotePath, dst, options, addListeners = true) {
+    let listeners, rdr, wtr;
     return new Promise((resolve, reject) => {
-      opts = {
-        ...opts,
-        readStreamOptions: { autoClose: true },
-        writeStreamOptions: { autoClose: true },
-        pipeOptions: { end: true },
-      };
-      rdr = this.sftp.createReadStream(rPath, opts.readStreamOptions);
-      rdr.once('error', (err) => {
-        if (dst && typeof dst !== 'string' && !dst.destroyed) {
-          dst.destroy();
-        }
-        reject(this.fmtError(`${err.message} ${rPath}`, '_get', err.code));
-      });
-      if (dst === undefined) {
-        // no dst specified, return buffer of data
-        this.debugMsg('get resolving buffer of data');
-        wtr = concat((buff) => {
-          resolve(buff);
+      if (addListeners) {
+        listeners = addTempListeners(this, 'get', reject);
+      }
+      if (haveConnection(this, 'get', reject)) {
+        options = {
+          readStreamOptions: { ...options?.readStreamOptions, autoClose: true },
+          writeStreamOptions: {
+            ...options?.writeStreamOptions,
+            autoClose: true,
+          },
+          pipeOptions: { ...options?.pipeOptions, end: true },
+        };
+        rdr = this.sftp.createReadStream(remotePath, options.readStreamOptions);
+        rdr.once('error', (err) => {
+          if (dst && typeof dst === 'string' && wtr && !wtr.destroyed) {
+            wtr.destroy();
+          }
+          reject(this.fmtError(`${err.message} ${remotePath}`, 'get', err.code));
         });
-      } else if (typeof dst === 'string') {
-        // dst local file path
-        this.debugMsg('get returning local file');
-        const localCheck = haveLocalCreate(dst);
-        if (!localCheck.status) {
+        if (dst === undefined) {
+          // no dst specified, return buffer of data
+          this.debugMsg('get resolving with buffer of data');
+          wtr = concat((buff) => {
+            resolve(buff);
+          });
+        } else if (typeof dst === 'string') {
+          // dst local file path
+          this.debugMsg(`get called with file path destination ${dst}`);
+          const localCheck = haveLocalCreate(dst);
+          if (localCheck.status) {
+            wtr = fs.createWriteStream(dst, options.writeStreamOptions);
+          } else {
+            reject(
+              this.fmtError(
+                `Bad path: ${dst}: ${localCheck.details}`,
+                'get',
+                localCheck.code,
+              ),
+            );
+          }
+        } else {
+          this.debugMsg('get called with stream destination');
+          wtr = dst;
+        }
+        wtr.once('error', (err) => {
           reject(
             this.fmtError(
-              `Bad path: ${dst}: ${localCheck.details}`,
+              `${err.message} ${typeof dst === 'string' ? dst : '<stream>'}`,
               'get',
-              localCheck.code
-            )
+              err.code,
+            ),
           );
-          return;
-        } else {
-          wtr = fs.createWriteStream(dst, opts.writeStreamOptions);
-        }
-      } else {
-        this.debugMsg('get: returning data into supplied stream');
-        wtr = dst;
+        });
+        rdr.once('end', () => {
+          if (typeof dst === 'string') {
+            resolve(dst);
+          } else if (dst !== undefined) {
+            resolve(wtr);
+          }
+        });
+        rdr.pipe(wtr, options.pipeOptions);
       }
-      wtr.once('error', (err) => {
-        reject(
-          this.fmtError(
-            `${err.message} ${typeof dst === 'string' ? dst : '<stream>'}`,
-            'get',
-            err.code
-          )
-        );
-      });
-      rdr.once('end', () => {
-        if (typeof dst === 'string') {
-          this.debugMsg('get: resolving with dst filename');
-          resolve(dst);
-        } else if (dst !== undefined) {
-          this.debugMsg('get: resolving with writer stream object');
-          resolve(wtr);
-        }
-      });
-      rdr.pipe(wtr, opts.pipeOptions);
+    }).finally(() => {
+      if (rdr && !rdr.destroyed) {
+        rdr.destroy();
+      }
+      if (addListeners) {
+        removeTempListeners(this, listeners, 'get');
+      }
     });
-  }
-
-  async get(remotePath, dst, options) {
-    let listeners;
-    try {
-      listeners = addTempListeners(this, 'get');
-      haveConnection(this, 'get');
-      return await this._get(remotePath, dst, options);
-    } catch (e) {
-      throw e.custom ? e : this.fmtError(`${e.message} ${remotePath}`, 'get', e.code);
-    } finally {
-      removeTempListeners(this, listeners, 'get');
-    }
   }
 
   /**
@@ -8203,30 +9569,41 @@ class SftpClient {
    * Downloads a file at remotePath to localPath using parallel reads
    * for faster throughput.
    *
+   * WARNING: The functionality of fastGet is heavily dependent on the capabilities
+   * of the remote SFTP server. Not all sftp server support or fully support this
+   * functionality. See the Platform Quirks & Warnings section of the README.
+   *
    * @param {String} remotePath
    * @param {String} localPath
    * @param {Object} options
    * @return {Promise<String>} the result of downloading the file
    */
-  _fastGet(rPath, lPath, opts) {
+  _fastGet(rPath, lPath, opts, addListeners = true) {
+    let listeners;
     return new Promise((resolve, reject) => {
-      this.sftp.fastGet(rPath, lPath, opts, (err) => {
-        if (err) {
-          reject(this.fmtError(`${err.message} Remote: ${rPath} Local: ${lPath}`));
-        }
-        resolve(`${rPath} was successfully download to ${lPath}!`);
-      });
+      if (addListeners) {
+        listeners = addTempListeners(this, '_fastGet', reject);
+      }
+      if (haveConnection(this, '_fastGet', reject)) {
+        this.sftp.fastGet(rPath, lPath, opts, (err) => {
+          if (err) {
+            reject(this.fmtError(`${err.message} Remote: ${rPath} Local: ${lPath}`));
+          }
+          resolve(`${rPath} was successfully download to ${lPath}!`);
+        });
+      }
+    }).finally(() => {
+      if (addListeners) {
+        removeTempListeners(this, listeners, '_fastGet');
+      }
     });
   }
 
   async fastGet(remotePath, localPath, options) {
-    let listeners;
     try {
-      listeners = addTempListeners(this, 'fastGet');
-      haveConnection(this, 'fastGet');
       const ftype = await this.exists(remotePath);
       if (ftype !== '-') {
-        const msg = `${!ftype ? 'No such file ' : 'Not a regular file'} ${remotePath}`;
+        const msg = `${ftype ? 'Not a regular file' : 'No such file '} ${remotePath}`;
         throw this.fmtError(msg, 'fastGet', errorCode.badPath);
       }
       const localCheck = haveLocalCreate(localPath);
@@ -8234,14 +9611,12 @@ class SftpClient {
         throw this.fmtError(
           `Bad path: ${localPath}: ${localCheck.details}`,
           'fastGet',
-          errorCode.badPath
+          errorCode.badPath,
         );
       }
       return await this._fastGet(remotePath, localPath, options);
     } catch (err) {
       throw this.fmtError(err, 'fastGet');
-    } finally {
-      removeTempListeners(this, listeners, 'fastGet');
     }
   }
 
@@ -8253,53 +9628,62 @@ class SftpClient {
    * See 'fastPut' at
    * https://github.com/mscdex/ssh2-streams/blob/master/SFTPStream.md
    *
-   * @param {String} localPath
-   * @param {String} remotePath
-   * @param {Object} options
+   * WARNING: The fastPut functionality is heavily dependent on the capabilities of
+   * the remote sftp server. Many sftp servers do not support or do not fully support this
+   * functionality. See the Platform Quirks & Warnings section of the README for more details.
+   *
+   * @param {String} localPath - path to local file to put
+   * @param {String} remotePath - destination path for put file
+   * @param {Object} options - additonal fastPut options
+   * @param {Boolean} addListeners - (Optional) if true, add listeners. Default true.
    * @return {Promise<String>} the result of downloading the file
    */
-  _fastPut(lPath, rPath, opts) {
+  _fastPut(lPath, rPath, opts, addListeners = true) {
+    let listeners;
     return new Promise((resolve, reject) => {
-      this.sftp.fastPut(lPath, rPath, opts, (err) => {
-        if (err) {
-          reject(
-            this.fmtError(
-              `${err.message} Local: ${lPath} Remote: ${rPath}`,
-              'fastPut',
-              err.code
-            )
-          );
-        }
-        resolve(`${lPath} was successfully uploaded to ${rPath}!`);
-      });
+      if (addListeners) {
+        listeners = addTempListeners(this, '_fastPut', reject);
+      }
+      if (haveConnection(this, '_fastPut', reject)) {
+        this.sftp.fastPut(lPath, rPath, opts, (err) => {
+          if (err) {
+            reject(
+              this.fmtError(
+                `${err.message} Local: ${lPath} Remote: ${rPath}`,
+                'fastPut',
+                err.code,
+              ),
+            );
+          }
+          resolve(`${lPath} was successfully uploaded to ${rPath}!`);
+        });
+      }
+    }).finally(() => {
+      if (addListeners) {
+        removeTempListeners(this, listeners, '_fastPut');
+      }
     });
   }
 
   async fastPut(localPath, remotePath, options) {
-    let listeners;
     try {
-      listeners = addTempListeners(this, 'fastPut');
-      this.debugMsg(`fastPut -> local ${localPath} remote ${remotePath}`);
-      haveConnection(this, 'fastPut');
       const localCheck = haveLocalAccess(localPath);
       if (!localCheck.status) {
         throw this.fmtError(
           `Bad path: ${localPath}: ${localCheck.details}`,
           'fastPut',
-          localCheck.code
+          localCheck.code,
         );
       } else if (localCheck.status && localExists(localPath) === 'd') {
         throw this.fmtError(
           `Bad path: ${localPath} not a regular file`,
           'fastgPut',
-          errorCode.badPath
+          errorCode.badPath,
         );
       }
       return await this._fastPut(localPath, remotePath, options);
     } catch (e) {
       throw e.custom ? e : this.fmtError(e.message, 'fastPut', e.code);
-    } finally {
-      removeTempListeners(this, listeners, 'fastPut');
     }
   }
 
@@ -8320,64 +9704,84 @@ class SftpClient {
    *
    * @return {Promise<String>}
    */
-  _put(lPath, rPath, opts) {
-    let wtr, rdr;
+  _put(lPath, rPath, opts, addListeners = true) {
+    let listeners, wtr, rdr;
     return new Promise((resolve, reject) => {
+      if (addListeners) {
+        listeners = addTempListeners(this, '_put', reject);
+      }
       opts = {
-        ...opts,
-        readStreamOptions: { autoClose: true },
-        writeStreamOptions: { autoClose: true },
-        pipeOptions: { end: true },
+        readStreamOptions: { ...opts?.readStreamOptions, autoClose: true },
+        writeStreamOptions: { ...opts?.writeStreamOptions, autoClose: true },
+        pipeOptions: { ...opts?.pipeOptions, end: true },
       };
-      wtr = this.sftp.createWriteStream(rPath, opts.writeStreamOptions);
-      wtr.once('error', (err) => {
-        reject(this.fmtError(`${err.message} ${rPath}`, 'put', err.code));
-      });
-      wtr.once('close', () => {
-        resolve(`Uploaded data stream to ${rPath}`);
-      });
-      if (lPath instanceof Buffer) {
-        this.debugMsg('put source is a buffer');
-        wtr.end(lPath);
-      } else {
-        rdr =
-          typeof lPath === 'string'
-            ? fs.createReadStream(lPath, opts.readStreamOptions)
-            : lPath;
-        rdr.once('error', (err) => {
+      if (haveConnection(this, '_put', reject)) {
+        wtr = this.sftp.createWriteStream(rPath, opts.writeStreamOptions);
+        wtr.once('error', (err) => {
+          if (typeof lPath === 'string' && rdr && !rdr.destroyed) {
+            rdr.destroy();
+          }
           reject(
             this.fmtError(
-              `${err.message} ${typeof lPath === 'string' ? lPath : '<stream>'}`,
+              `Write stream error: ${err.message} ${rPath}`,
               '_put',
-              err.code
-            )
+              err.code,
+            ),
           );
         });
-        rdr.pipe(wtr, opts.pipeOptions);
+        wtr.once('close', () => {
+          resolve(`Uploaded data stream to ${rPath}`);
+        });
+        if (lPath instanceof Buffer) {
+          this.debugMsg('put source is a buffer');
+          wtr.end(lPath);
+        } else {
+          if (typeof lPath === 'string') {
+            this.debugMsg('put source is string path');
+            rdr = fs.createReadStream(lPath, opts.readStreamOptions);
+          } else {
+            this.debugMsg('put source is a stream');
+            rdr = lPath;
+          }
+          rdr.once('error', (err) => {
+            reject(
+              this.fmtError(
+                `Read stream error: ${err.message} ${
+                  typeof lPath === 'string' ? lPath : '<stream>'
+                }`,
+                '_put',
+                err.code,
+              ),
+            );
+          });
+          rdr.pipe(wtr, opts.pipeOptions);
+        }
+      }
+    }).finally(() => {
+      if (wtr && !wtr.destroyed) {
+        wtr.destroy();
+      }
+      if (addListeners) {
+        removeTempListeners(this, listeners, '_put');
       }
     });
   }
 
   async put(localSrc, remotePath, options) {
-    let listeners;
     try {
-      listeners = addTempListeners(this, 'put');
-      haveConnection(this, 'put');
       if (typeof localSrc === 'string') {
         const localCheck = haveLocalAccess(localSrc);
         if (!localCheck.status) {
           throw this.fmtError(
             `Bad path: ${localSrc} ${localCheck.details}`,
             'put',
-            localCheck.code
+            localCheck.code,
           );
         }
       }
       return await this._put(localSrc, remotePath, options);
     } catch (e) {
-      throw e.custom ? e : this.fmtError(e.message, 'put', e.code);
-    } finally {
-      removeTempListeners(this, listeners, 'put');
+      throw e.custom ? e : this.fmtError(`Re-thrown: ${e.message}`, 'put', e.code);
     }
   }
 
@@ -8389,51 +9793,55 @@ class SftpClient {
    * @param  {Object} options
    * @return {Promise<String>}
    */
-  _append(input, rPath, opts) {
+  _append(input, rPath, opts, addListeners = true) {
+    let listeners;
     return new Promise((resolve, reject) => {
-      this.debugMsg(`append -> remote: ${rPath} `, opts);
-      opts.flags = 'a';
-      const stream = this.sftp.createWriteStream(rPath, opts);
-      stream.on('error', (err) => {
-        reject(this.fmtError(`${err.message} ${rPath}`, 'append', err.code));
-      });
-      stream.on('close', () => {
-        resolve(`Appended data to ${rPath}`);
-      });
-      if (input instanceof Buffer) {
-        stream.write(input);
-        stream.end();
-      } else {
-        input.pipe(stream);
+      if (addListeners) {
+        listeners = addTempListeners(this, '_append', reject);
+      }
+      if (haveConnection(this, '_append', reject)) {
+        opts.flags = 'a';
+        const stream = this.sftp.createWriteStream(rPath, opts);
+        stream.on('error', (err) => {
+          reject(this.fmtError(`${err.message} ${rPath}`, 'append', err.code));
+        });
+        stream.on('close', () => {
+          resolve(`Appended data to ${rPath}`);
+        });
+        if (input instanceof Buffer) {
+          stream.write(input);
+          stream.end();
+        } else {
+          input.pipe(stream);
+        }
+      }
+    }).finally(() => {
+      if (addListeners) {
+        removeTempListeners(this, listeners, '_append');
       }
     });
   }
 
   async append(input, remotePath, options = {}) {
-    let listeners;
     try {
-      listeners = addTempListeners(this, 'append');
       if (typeof input === 'string') {
         throw this.fmtError(
           'Cannot append one file to another',
           'append',
-          errorCode.badPath
+          errorCode.badPath,
         );
       }
-      haveConnection(this, 'append');
       const fileType = await this.exists(remotePath);
       if (fileType && fileType === 'd') {
         throw this.fmtError(
           `Bad path: ${remotePath}: cannot append to a directory`,
           'append',
-          errorCode.badPath
+          errorCode.badPath,
         );
       }
-      await this._append(input, remotePath, options);
+      return await this._append(input, remotePath, options);
     } catch (e) {
       throw e.custom ? e : this.fmtError(e.message, 'append', e.code);
-    } finally {
-      removeTempListeners(this, listeners, 'append');
     }
   }
 
@@ -8446,8 +9854,12 @@ class SftpClient {
    * @param {boolean} recursive - if true, recursively create directories
    * @return {Promise<String>}
    */
-  _doMkdir(p) {
+  _doMkdir(p, addListeners = true) {
+    let listeners;
     return new Promise((resolve, reject) => {
+      if (addListeners) {
+        listeners = addTempListeners(this, '_doMkdir', reject);
+      }
       this.sftp.mkdir(p, (err) => {
         if (err) {
           if (err.code === 4) {
@@ -8456,16 +9868,16 @@ class SftpClient {
               this.fmtError(
                 `Bad path: ${p} permission denied`,
                 '_doMkdir',
-                errorCode.badPath
-              )
+                errorCode.badPath,
+              ),
             );
           } else if (err.code === 2) {
             reject(
               this.fmtError(
                 `Bad path: ${p} parent not a directory or not exist`,
                 '_doMkdir',
-                errorCode.badPath
-              )
+                errorCode.badPath,
+              ),
             );
           } else {
             reject(this.fmtError(`${err.message} ${p}`, '_doMkdir', err.code));
@@ -8474,6 +9886,10 @@ class SftpClient {
           resolve(`${p} directory created`);
         }
       });
+    }).finally(() => {
+      if (addListeners) {
+        removeTempListeners(this, listeners, '_doMkdir');
+      }
     });
   }
 
@@ -8485,7 +9901,7 @@ class SftpClient {
         throw this.fmtError(
           `Bad path: ${rPath} already exists as a file`,
           '_mkdir',
-          errorCode.badPath
+          errorCode.badPath,
         );
       } else if (targetExists) {
         return `${rPath} already exists`;
@@ -8502,7 +9918,7 @@ class SftpClient {
           throw this.fmtError(
             `Bad path: ${dir} not a directory`,
             '_mkdir',
-            errorCode.badPath
+            errorCode.badPath,
           );
         }
       }
@@ -8515,15 +9931,11 @@ class SftpClient {
   }
 
   async mkdir(remotePath, recursive = false) {
-    let listeners;
     try {
-      listeners = addTempListeners(this, '_mkdir');
       haveConnection(this, 'mkdir');
       return await this._mkdir(remotePath, recursive);
     } catch (err) {
       throw this.fmtError(`${err.message}`, 'mkdir', err.code);
-    } finally {
-      removeTempListeners(this, listeners, 'append');
     }
   }
 
@@ -8537,69 +9949,76 @@ class SftpClient {
    *                             directory
    * @return {Promise<String>}
    */
-  async rmdir(remotePath, recursive = false) {
-    const _rmdir = (p) => {
+  async rmdir(remoteDir, recursive = false) {
+    const _rmdir = (dir) => {
+      let listeners;
       return new Promise((resolve, reject) => {
-        this.debugMsg(`rmdir -> ${p}`);
-        this.sftp.rmdir(p, (err) => {
+        listeners = addTempListeners(this, '_rmdir', reject);
+        this.sftp.rmdir(dir, (err) => {
           if (err) {
-            reject(this.fmtError(`${err.message} ${p}`, 'rmdir', err.code));
+            reject(this.fmtError(`${err.message} ${dir}`, 'rmdir', err.code));
           }
           resolve('Successfully removed directory');
         });
+      }).finally(() => {
+        removeTempListeners(this, listeners, '_rmdir');
       });
     };
 
-    const _dormdir = async (p, recur) => {
-      try {
-        if (recur) {
-          const list = await this.list(p);
-          if (list.length) {
-            const files = list.filter((item) => item.type !== 'd');
-            const dirs = list.filter((item) => item.type === 'd');
-            this.debugMsg('rmdir contents (files): ', files);
-            this.debugMsg('rmdir contents (dirs): ', dirs);
-            for (const d of dirs) {
-              await _dormdir(`${p}${this.remotePathSep}${d.name}`, true);
-            }
-            const promiseList = [];
-            for (const f of files) {
-              promiseList.push(this._delete(`${p}${this.remotePathSep}${f.name}`));
-            }
-            await Promise.all(promiseList);
-          }
+    const _delFiles = (path, fileList) => {
+      let listeners;
+      return new Promise((resolve, reject) => {
+        listeners = addTempListeners(this, '_delFiles', reject);
+        const pList = [];
+        for (const f of fileList) {
+          pList.push(this.delete(`${path}/${f.name}`, true, false));
         }
-        return await _rmdir(p);
-      } catch (err) {
-        throw err.custom ? err : this.fmtError(err, '_dormdir', err.code);
-      }
+        resolve(pList);
+      })
+        .then((p) => {
+          return Promise.all(p);
+        })
+        .finally(() => {
+          removeTempListeners(this, listeners, '_delFiles');
+        });
     };
 
-    let listeners;
     try {
-      listeners = addTempListeners(this, 'rmdir');
-      haveConnection(this, 'rmdir');
-      const absPath = await normalizeRemotePath(this, remotePath);
-      const dirStatus = await this.exists(absPath);
-      if (dirStatus && dirStatus !== 'd') {
+      const absPath = await normalizeRemotePath(this, remoteDir);
+      const existStatus = await this.exists(absPath);
+      if (!existStatus) {
         throw this.fmtError(
-          `Bad path: ${absPath} not a directory`,
+          `Bad Path: ${remoteDir}: No such directory`,
           'rmdir',
-          errorCode.badPath
+          errorCode.badPath,
         );
-      } else if (!dirStatus) {
-        throw this.fmtError(
-          `Bad path: ${absPath} No such file`,
-          'rmdir',
-          errorCode.badPath
-        );
-      } else {
-        return await _dormdir(absPath, recursive);
       }
+      if (existStatus !== 'd') {
+        throw this.fmtError(
+          `Bad Path: ${remoteDir}: Not a directory`,
+          'rmdir',
+          errorCode.badPath,
+        );
+      }
+      if (!recursive) {
+        return await _rmdir(absPath);
+      }
+      const listing = await this.list(absPath);
+      if (!listing.length) {
+        return await _rmdir(absPath);
+      }
+      const fileList = listing.filter((i) => i.type !== 'd');
+      const dirList = listing.filter((i) => i.type === 'd');
+      await _delFiles(absPath, fileList);
+      for (const d of dirList) {
+        await this.rmdir(`${absPath}/${d.name}`, true);
+      }
+      await _rmdir(absPath);
+      return 'Successfully removed directory';
     } catch (err) {
-      throw err.custom ? err : this.fmtError(err.message, 'rmdir', err.code);
-    } finally {
-      removeTempListeners(this, listeners, 'rmdir');
+      throw err.custom
+        ? err
+        : this.fmtError(`${err.message} ${remoteDir}`, 'rmdir', err.code);
     }
   }
 
@@ -8612,34 +10031,28 @@ class SftpClient {
    * @param {boolean} notFoundOK - if true, ignore errors for missing target.
    *                               Default is false.
    * @return {Promise<String>} with string 'Successfully deleted file' once resolved
-   *
    */
-  _delete(rPath, notFoundOK) {
+  delete(remotePath, notFoundOK = false, addListeners = true) {
+    let listeners;
     return new Promise((resolve, reject) => {
-      this.sftp.unlink(rPath, (err) => {
+      if (addListeners) {
+        listeners = addTempListeners(this, 'delete', reject);
+      }
+      this.sftp.unlink(remotePath, (err) => {
         if (err) {
           if (notFoundOK && err.code === 2) {
-            resolve(`Successfully deleted ${rPath}`);
+            resolve(`Successfully deleted ${remotePath}`);
           } else {
-            reject(this.fmtError(`${err.message} ${rPath}`, 'delete', err.code));
+            reject(this.fmtError(`${err.message} ${remotePath}`, 'delete', err.code));
           }
         }
-        resolve(`Successfully deleted ${rPath}`);
+        resolve(`Successfully deleted ${remotePath}`);
       });
+    }).finally(() => {
+      if (addListeners) {
+        removeTempListeners(this, listeners, 'delete');
+      }
     });
-  }
-
-  async delete(remotePath, notFoundOK = false) {
-    let listeners;
-    try {
-      listeners = addTempListeners(this, 'delete');
-      haveConnection(this, 'delete');
-      return await this._delete(remotePath, notFoundOK);
-    } catch (err) {
-      throw err.custom ? err : this.fmtError(err.message, 'delete', err.code);
-    } finally {
-      removeTempListeners(this, listeners, 'delete');
-    }
   }
 
   /**
@@ -8649,40 +10062,35 @@ class SftpClient {
    *
    * @param {string} fromPath - path to the file to be renamed.
    * @param {string} toPath - path to the new name.
+   * @param {Boolean} addListeners - (Optional) if true, add listeners. Default true
    *
    * @return {Promise<String>}
-   *
    */
-  _rename(fPath, tPath) {
-    return new Promise((resolve, reject) => {
-      this.sftp.rename(fPath, tPath, (err) => {
-        if (err) {
-          reject(
-            this.fmtError(
-              `${err.message} From: ${fPath} To: ${tPath}`,
-              '_rename',
-              err.code
-            )
-          );
-        }
-        resolve(`Successfully renamed ${fPath} to ${tPath}`);
-      });
-    });
-  }
-
-  async rename(fromPath, toPath) {
+  rename(fPath, tPath, addListeners = true) {
     let listeners;
-    try {
-      listeners = addTempListeners(this, 'rename');
-      haveConnection(this, 'rename');
-      return await this._rename(fromPath, toPath);
-    } catch (err) {
-      throw err.custom
-        ? err
-        : this.fmtError(`${err.message} ${fromPath} ${toPath}`, 'rename', err.code);
-    } finally {
-      removeTempListeners(this, listeners, 'rename');
-    }
+    return new Promise((resolve, reject) => {
+      if (addListeners) {
+        listeners = addTempListeners(this, 'rename', reject);
+      }
+      if (haveConnection(this, 'rename', reject)) {
+        this.sftp.rename(fPath, tPath, (err) => {
+          if (err) {
+            reject(
+              this.fmtError(
+                `${err.message} From: ${fPath} To: ${tPath}`,
+                '_rename',
+                err.code,
+              ),
+            );
+          }
+          resolve(`Successfully renamed ${fPath} to ${tPath}`);
+        });
+      }
+    }).finally(() => {
+      if (addListeners) {
+        removeTempListeners(this, listeners, 'rename');
+      }
+    });
   }
 
   /**
@@ -8693,40 +10101,33 @@ class SftpClient {
    *
    * @param {string} fromPath - path to the file to be renamed.
    * @param {string} toPath - path  the new name.
+   * @param {Boolean} addListeners - (Optional) if true, add listeners. Default true
    *
    * @return {Promise<String>}
-   *
    */
-  _posixRename(fPath, tPath) {
-    return new Promise((resolve, reject) => {
-      this.sftp.ext_openssh_rename(fPath, tPath, (err) => {
-        if (err) {
-          reject(
-            this.fmtError(
-              `${err.message} From: ${fPath} To: ${tPath}`,
-              '_posixRename',
-              err.code
-            )
-          );
-        }
-        resolve(`Successful POSIX rename ${fPath} to ${tPath}`);
-      });
-    });
-  }
-
-  async posixRename(fromPath, toPath) {
+  posixRename(fPath, tPath, addListeners = true) {
     let listeners;
-    try {
-      listeners = addTempListeners(this, 'posixRename');
-      haveConnection(this, 'posixRename');
-      return await this._posixRename(fromPath, toPath);
-    } catch (err) {
-      throw err.custom
-        ? err
-        : this.fmtError(`${err.message} ${fromPath} ${toPath}`, 'posixRename', err.code);
-    } finally {
+    return new Promise((resolve, reject) => {
+      if (addListeners) {
+        listeners = addTempListeners(this, 'posixRename', reject);
+      }
+      if (haveConnection(this, 'posixRename', reject)) {
+        this.sftp.ext_openssh_rename(fPath, tPath, (err) => {
+          if (err) {
+            reject(
+              this.fmtError(
+                `${err.message} From: ${fPath} To: ${tPath}`,
+                '_posixRename',
+                err.code,
+              ),
+            );
+          }
+          resolve(`Successful POSIX rename ${fPath} to ${tPath}`);
+        });
+      }
+    }).finally(() => {
       removeTempListeners(this, listeners, 'posixRename');
-    }
+    });
   }
 
   /**
@@ -8736,33 +10137,29 @@ class SftpClient {
    *
    * @param {string} remotePath - path to the remote target object.
    * @param {number | string} mode - the new octal mode to set
+   * @param {boolean} addListeners - (Optional) if true, add listeners. Default true.
    *
    * @return {Promise<String>}
    */
-  _chmod(rPath, mode) {
-    return new Promise((resolve, reject) => {
-      this.sftp.chmod(rPath, mode, (err) => {
-        if (err) {
-          reject(this.fmtError(`${err.message} ${rPath}`, '_chmod', err.code));
-        }
-        resolve('Successfully change file mode');
-      });
-    });
-  }
-
-  async chmod(remotePath, mode) {
+  chmod(rPath, mode, addListeners = true) {
     let listeners;
-    try {
-      listeners = addTempListeners(this, 'chmod');
-      haveConnection(this, 'chmod');
-      return await this._chmod(remotePath, mode);
-    } catch (err) {
-      throw err.custom
-        ? err
-        : this.fmtError(`${err.message} ${remotePath}`, 'chmod', err.code);
-    } finally {
-      removeTempListeners(this, listeners, 'chmod');
-    }
+    return new Promise((resolve, reject) => {
+      if (addListeners) {
+        listeners = addTempListeners(this, 'chmod', reject);
+      }
+      if (haveConnection(this, 'chmod', reject)) {
+        this.sftp.chmod(rPath, mode, (err) => {
+          if (err) {
+            reject(this.fmtError(`${err.message} ${rPath}`, '_chmod', err.code));
+          }
+          resolve('Successfully change file mode');
+        });
+      }
+    }).finally(() => {
+      if (addListeners) {
+        removeTempListeners(this, listeners, 'chmod');
+      }
+    });
   }
 
   /**
@@ -8774,44 +10171,87 @@ class SftpClient {
    * @param {String} srcDir - local source directory
    * @param {String} dstDir - remote destination directory
    * @param {Object} options - (Optional) An object with 2 supported properties,
-   * 'filter' and 'useFastput'. The first argument is the full path of the item
+   * 'filter' and 'useFastput'. Filter is a function of two arguments.
+   * The first argument is the full path of a directory entry from the directory
    * to be uploaded and the second argument is a boolean, which will be true if
-   * the target path is for a directory. If the function returns true, the item
+   * the target path is for a directory. If the function returns true, this item
    * will be uploaded and excluded when it returns false. The 'useFastput' property is a
    * boolean value. When true, the 'fastPut()' method will be used to upload files. Default
    * is to use the slower, but more supported 'put()' method.
    *
-   * @returns {Promise<String>}
+   * @returns {Promise<Array>}
    */
-  async _uploadDir(srcDir, dstDir, options) {
-    try {
+  async uploadDir(srcDir, dstDir, options) {
+    const getRemoteStatus = async (dstDir) => {
       const absDstDir = await normalizeRemotePath(this, dstDir);
-      this.debugMsg(`uploadDir <- SRC = ${srcDir} DST = ${absDstDir}`);
+      const status = await this.exists(absDstDir);
+      if (status && status !== 'd') {
+        throw this.fmtError(
+          `Bad path ${absDstDir} Not a directory`,
+          'getRemoteStatus',
+          errorCode.badPath,
+        );
+      }
+      return { remoteDir: absDstDir, remoteStatus: status };
+    };
+
+    const checkLocalStatus = (srcDir) => {
       const srcType = localExists(srcDir);
       if (!srcType) {
         throw this.fmtError(
           `Bad path: ${srcDir} not exist`,
-          '_uploadDir',
-          errorCode.badPath
+          'getLocalStatus',
+          errorCode.badPath,
         );
       }
       if (srcType !== 'd') {
         throw this.fmtError(
           `Bad path: ${srcDir}: not a directory`,
-          '_uploadDir',
-          errorCode.badPath
+          'getLocalStatus',
+          errorCode.badPath,
         );
       }
-      const dstStatus = await this.exists(absDstDir);
-      if (dstStatus && dstStatus !== 'd') {
-        throw this.fmtError(
-          `Bad path ${absDstDir} Not a directory`,
-          '_uploadDir',
-          errorCode.badPath
-        );
+      return srcType;
+    };
+
+    const uploadFiles = async (srcDir, dstDir, fileList, useFastput) => {
+      let listeners = addTempListeners(this, 'uploadFiles');
+
+      try {
+        const uploadList = [];
+        for (const f of fileList) {
+          const src = join(srcDir, f.name);
+          const dst = `${dstDir}/${f.name}`;
+          uploadList.push([src, dst]);
+        }
+        const uploadGroups = partition(uploadList, this.promiseLimit);
+        const func = useFastput ? this._fastPut.bind(this) : this._put.bind(this);
+        const uploadResults = [];
+        for (const group of uploadGroups) {
+          const pList = [];
+          for (const [src, dst] of group) {
+            pList.push(func(src, dst, null, false));
+            this.client.emit('upload', { source: src, destination: dst });
+          }
+          const groupResults = await Promise.all(pList);
+          for (const r of groupResults) {
+            uploadResults.push(r);
+          }
+        }
+        return uploadResults;
+      } catch (e) {
+        throw this.fmtError(`${e.message} ${srcDir} to ${dstDir}`, 'uploadFiles', e.code);
+      } finally {
+        removeTempListeners(this, listeners, uploadFiles);
       }
-      if (!dstStatus) {
-        await this._mkdir(absDstDir, true);
+    };
+
+    try {
+      haveConnection(this, 'uploadDir');
+      const { remoteDir, remoteStatus } = await getRemoteStatus(dstDir);
+      checkLocalStatus(srcDir);
+      if (!remoteStatus) {
+        await this._mkdir(remoteDir, true);
       }
       let dirEntries = fs.readdirSync(srcDir, {
         encoding: 'utf8',
@@ -8819,46 +10259,22 @@ class SftpClient {
       });
       if (options?.filter) {
         dirEntries = dirEntries.filter((item) =>
-          options.filter(join(srcDir, item.name), item.isDirectory())
+          options.filter(join(srcDir, item.name), item.isDirectory()),
         );
       }
-      let fileUploads = [];
-      for (const e of dirEntries) {
-        const newSrc = join(srcDir, e.name);
-        const newDst = `${absDstDir}${this.remotePathSep}${e.name}`;
-        if (e.isDirectory()) {
-          await this.uploadDir(newSrc, newDst, options);
-        } else if (e.isFile()) {
-          if (options?.useFastput) {
-            fileUploads.push(this._fastPut(newSrc, newDst));
-          } else {
-            fileUploads.push(this._put(newSrc, newDst));
-          }
-          this.client.emit('upload', { source: newSrc, destination: newDst });
-        } else {
-          this.debugMsg(`uploadDir: File ignored: ${e.name} not a regular file`);
-        }
-        await Promise.all(fileUploads);
+      const dirUploads = dirEntries.filter((item) => item.isDirectory());
+      const fileUploads = dirEntries.filter((item) => !item.isDirectory());
+      await uploadFiles(srcDir, remoteDir, fileUploads, options?.useFastput);
+      for (const d of dirUploads) {
+        const src = join(srcDir, d.name);
+        const dst = `${remoteDir}/${d.name}`;
+        await this.uploadDir(src, dst, options);
       }
-      return `${srcDir} uploaded to ${absDstDir}`;
+      return `${srcDir} uploaded to ${dstDir}`;
     } catch (err) {
       throw err.custom
         ? err
-        : this.fmtError(`${err.message} ${srcDir}`, '_uploadDir', err.code);
-    }
-  }
-
-  async uploadDir(srcDir, dstDir, options) {
-    let listeners;
-    try {
-      listeners = addTempListeners(this, 'uploadDir');
-      this.debugMsg(`uploadDir -> SRC = ${srcDir} DST = ${dstDir}`);
-      haveConnection(this, 'uploadDir');
-      return await this._uploadDir(srcDir, dstDir, options);
-    } catch (err) {
-      throw err.custom ? err : this.fmtError(err, 'uploadDir');
-    } finally {
-      removeTempListeners(this, listeners, 'chmod');
+        : this.fmtError(`${err.message} ${srcDir}`, 'uploadDir', err.code);
     }
   }
 
@@ -8877,76 +10293,107 @@ class SftpClient {
    * is for a directory. If the function returns true, the item will be
    * downloaded and excluded if teh function returns false.
    *
-   * @returns {Promise<String>}
+   * @returns {Promise<Array>}
    */
-  async _downloadDir(srcDir, dstDir, options) {
-    try {
-      let fileList = await this._list(srcDir);
-      if (options?.filter) {
-        fileList = fileList.filter((item) =>
-          options.filter(
-            `${srcDir}${this.remotePathSep}${item.name}`,
-            item.type === 'd' ? true : false
-          )
-        );
-      }
-      const localCheck = haveLocalCreate(dstDir);
-      if (!localCheck.status && localCheck.details === 'permission denied') {
-        throw this.fmtError(
-          `Bad path: ${dstDir}: ${localCheck.details}`,
-          'downloadDir',
-          localCheck.code
-        );
-      } else if (localCheck.status && !localCheck.type) {
-        fs.mkdirSync(dstDir, { recursive: true });
-      } else if (localCheck.status && localCheck.type !== 'd') {
-        throw this.fmtError(
-          `Bad path: ${dstDir}: not a directory`,
-          'downloadDir',
-          errorCode.badPath
-        );
-      }
-      let downloadFiles = [];
-      for (const f of fileList) {
-        const newSrc = `${srcDir}${this.remotePathSep}${f.name}`;
-        const newDst = join(dstDir, f.name);
-        if (f.type === 'd') {
-          await this._downloadDir(newSrc, newDst, options);
-        } else if (f.type === '-') {
-          if (options?.useFasget) {
-            downloadFiles.push(this._fastGet(newSrc, newDst));
-          } else {
-            downloadFiles.push(this._get(newSrc, newDst));
-          }
-          this.client.emit('download', { source: newSrc, destination: newDst });
-        } else {
-          this.debugMsg(`downloadDir: File ignored: ${f.name} not regular file`);
+  async downloadDir(srcDir, dstDir, options = { filter: null, useFastget: false }) {
+    const getDownloadList = async (srcDir, filter) => {
+      try {
+        const listing = await this.list(srcDir);
+        if (filter) {
+          return listing.filter((item) =>
+            filter(`${srcDir}/${item.name}`, item.type === 'd'),
+          );
         }
+        return listing;
+      } catch (err) {
+        throw err.custom ? err : this.fmtError(err.message, '_getDownloadList', err.code);
       }
-      await Promise.all(downloadFiles);
+    };
+
+    const prepareDestination = (dst) => {
+      try {
+        const localCheck = haveLocalCreate(dst);
+        if (!localCheck.status && localCheck.details === 'permission denied') {
+          throw this.fmtError(
+            `Bad path: ${dst}: ${localCheck.details}`,
+            'prepareDestination',
+            localCheck.code,
+          );
+        } else if (localCheck.status && !localCheck.type) {
+          fs.mkdirSync(dst, { recursive: true });
+        } else if (localCheck.status && localCheck.type !== 'd') {
+          throw this.fmtError(
+            `Bad path: ${dstDir}: not a directory`,
+            '_prepareDestination',
+            errorCode.badPath,
+          );
+        }
+      } catch (err) {
+        throw err.custom
+          ? err
+          : this.fmtError(err.message, '_prepareDestination', err.code);
+      }
+    };
+
+    const downloadFiles = async (remotePath, localPath, fileList, useFastget) => {
+      let listeners = addTempListeners(this, 'downloadFIles');
+
+      try {
+        const downloadList = [];
+        for (const f of fileList) {
+          const src = `${remotePath}/${f.name}`;
+          const dst = join(localPath, f.name);
+          downloadList.push([src, dst]);
+        }
+        const downloadGroups = partition(downloadList, this.promiseLimit);
+        const func = useFastget ? this._fastGet.bind(this) : this.get.bind(this);
+        const downloadResults = [];
+        for (const group of downloadGroups) {
+          const pList = [];
+          for (const [src, dst] of group) {
+            pList.push(func(src, dst, null, false));
+            this.client.emit('download', { source: src, destination: dst });
+          }
+          const groupResults = await Promise.all(pList);
+          for (const r of groupResults) {
+            downloadResults.push(r);
+          }
+        }
+        return downloadResults;
+      } catch (e) {
+        throw this.fmtError(
+          `${e.message} ${srcDir} to ${dstDir}`,
+          'downloadFiles',
+          e.code,
+        );
+      } finally {
+        removeTempListeners(this, listeners, 'downloadFiles');
+      }
+    };
+
+    try {
+      haveConnection(this, 'downloadDir');
+      const downloadList = await getDownloadList(srcDir, options.filter);
+      prepareDestination(dstDir);
+      const fileDownloads = downloadList.filter((i) => i.type !== 'd');
+      if (fileDownloads.length) {
+        await downloadFiles(srcDir, dstDir, fileDownloads, options.useFastget);
+      }
+      const dirDownloads = downloadList.filter((i) => i.type === 'd');
+      for (const d of dirDownloads) {
+        const src = `${srcDir}/${d.name}`;
+        const dst = join(dstDir, d.name);
+        await this.downloadDir(src, dst, options);
+      }
       return `${srcDir} downloaded to ${dstDir}`;
     } catch (err) {
       throw err.custom
         ? err
-        : this.fmtError(`${err.message} ${srcDir}`, '_downloadDir', err.code);
-    }
-  }
-
-  async downloadDir(srcDir, dstDir, options) {
-    let listeners;
-    try {
-      listeners = addTempListeners(this, 'downloadDir');
-      haveConnection(this, 'downloadDir');
-      return await this._downloadDir(srcDir, dstDir, options);
-    } catch (err) {
-      throw err.custom ? err : this.fmtError(err, 'downloadDir', err.code);
-    } finally {
-      removeTempListeners(this, listeners, 'downloadDir');
+        : this.fmtError(`${err.message}: ${srcDir}`, 'downloadDir', err.code);
     }
   }
 
   /**
-   *
    * Returns a read stream object. This is a low level method which will return a read stream
    * connected to the remote file object specified as an argument. Client code is fully responsible
    * for managing this stream object i.e. adding any necessary listeners and disposing of the object etc.
@@ -8956,7 +10403,6 @@ class SftpClient {
    * @param {Object} options - options to pass to the create stream process
    *
    * @returns {Object} a read stream object
-   *
    */
   createReadStream(remotePath, options) {
     let listeners;
@@ -8973,7 +10419,6 @@ class SftpClient {
   }
 
   /**
-   *
    * Create a write stream object connected to a file on the remote sftp server.
    * This is a low level method which will return a write stream for the remote file specified
    * in the 'remotePath' argument. Client code to responsible for managing this object once created.
@@ -8983,7 +10428,6 @@ class SftpClient {
    * @param (Object} options - options to pass to the create write stream process)
    *
    * @returns {Object} a stream object
-   *
    */
   createWriteStream(remotePath, options) {
     let listeners;
@@ -9010,7 +10454,6 @@ class SftpClient {
    * @param {String} dstPath - destination path for the copy.
    *
    * @returns {String}.
-   *
    */
   _rcopy(srcPath, dstPath) {
     return new Promise((resolve, reject) => {
@@ -9040,7 +10483,7 @@ class SftpClient {
         throw this.fmtError(
           `Source does not exist ${srcPath}`,
           'rcopy',
-          errorCode.badPath
+          errorCode.badPath,
         );
       }
       if (srcExists !== '-') {
@@ -9052,7 +10495,7 @@ class SftpClient {
         throw this.fmtError(
           `Destination already exists ${dstPath}`,
           'rcopy',
-          errorCode.badPath
+          errorCode.badPath,
         );
       }
       return this._rcopy(srcPath, dstPath);
@@ -9080,7 +10523,8 @@ class SftpClient {
         resolve(true);
       };
       this.on('close', endCloseHandler);
-      if (this.client.sftp) {
+      if (this.sftp) {
+        this.debugMsg('end: Ending SFTP connection');
         this.client.end();
       } else {
         // no actual connection exists - just resolve
@@ -9090,7 +10534,6 @@ class SftpClient {
     }).finally(() => {
       removeTempListeners(this, listeners, 'end');
       this.removeListener('close', endCloseHandler);
-      this.endCalled = false;
     });
   }
 }
@@ -9100,12 +10543,60 @@ module.exports = SftpClient;
 
 /***/ }),
 
-/***/ 9432:
+/***/ 2890:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-const fs = __nccwpck_require__(7147);
-const path = __nccwpck_require__(1017);
-const { errorCode } = __nccwpck_require__(3232);
+const { statSync, constants, accessSync } = __nccwpck_require__(3024);
+const { dirname } = __nccwpck_require__(6760);
+const { errorCode } = __nccwpck_require__(7874);
+
+function eventHandled(client) {
+  if (client.errorHandled || client.endHandled || client.closeHandled) {
+    return true;
+  }
+  return false;
+}
+
+function globalListener(client, evt, eventCallbacks) {
+  if (evt === 'error') {
+    return (err) => {
+      if (client.errorHandled) {
+        client.debugMsg(`Global error event: Ignoring handled error ${err.message}`);
+        return;
+      }
+      client.debugMsg(`Global error event: ${err.message}`);
+      client.errorHandled = true;
+      if (eventCallbacks?.error) {
+        eventCallbacks.error(err);
+      }
+    };
+  }
+  if (evt === 'end') {
+    return () => {
+      if (client.endCalled || client.endHandled) {
+        client.debugMsg('Global end event: Ignoring handled end event');
+        return;
+      }
+      client.debugMsg('Global end event: Handling end event');
+      client.endHandled = true;
+      if (eventCallbacks?.end) {
+        eventCallbacks.end();
+      }
+    };
+  }
+  return () => {
+    if (client.endCalled || client.closeHandled) {
+      client.debugMsg('Global close event: Ignoring handled close event');
+    } else {
+      client.debugMsg('Global close event: Handling close event');
+      client.closeHandled = true;
+      client.sftp = undefined;
+      if (eventCallbacks?.close) {
+        eventCallbacks.close();
+      }
+    }
+  };
+}
 
 /**
  * Simple default error listener. Will reformat the error message and
@@ -9115,12 +10606,13 @@ const { errorCode } = __nccwpck_require__(3232);
  * @throws {Error} Throws new error
  */
 function errorListener(client, name, reject) {
-  const fn = (err) => {
-    if (client.endCalled || client.errorHandled) {
+  const fn = function (err) {
+    if (eventHandled(client)) {
       // error already handled or expected - ignore
-      client.debugMsg(`${name} errorListener - ignoring handled error`);
+      client.debugMsg(`${name} errorListener - ignoring handled error ${err.message}`);
       return;
     }
+    client.debugMsg(`${name} errorListener - handling error ${err.message}`);
     client.errorHandled = true;
     const newError = new Error(`${name}: ${err.message}`);
     newError.code = err.code;
@@ -9136,21 +10628,20 @@ function errorListener(client, name, reject) {
 function endListener(client, name, reject) {
   const fn = function () {
     client.sftp = undefined;
-    if (client.endCalled || client.endHandled || client.errorHandled) {
+    if (client.endCalled || eventHandled(client)) {
       // end event already handled - ignore
-      client.debugMsg(`${name} endListener - ignoring handled error`);
+      client.debugMsg(`${name} endListener - ignoring handled end event`);
       return;
     }
     client.endHandled = true;
-    client.debugMsg(`${name} Unexpected end event - ignoring`);
-    // Don't reject/throw error, just log it and move on
-    // after invalidating the connection
-    // const err = new Error(`${name} Unexpected end event raised`);
-    // if (reject) {
-    //   reject(err);
-    // } else {
-    //   throw err;
-    // }
+    client.debugMsg(`${name} endListener - handling unexpected end event`);
+    const newError = new Error(`${name}: Unexpected end event`);
+    newError.code = errorCode.ERR_GENERIC_CLIENT;
+    if (reject) {
+      reject(newError);
+    } else {
+      throw newError;
+    }
   };
   return fn;
 }
@@ -9158,26 +10649,20 @@ function endListener(client, name, reject) {
 function closeListener(client, name, reject) {
   const fn = function () {
     client.sftp = undefined;
-    if (
-      client.endCalled ||
-      client.closeHandled ||
-      client.errorHandled ||
-      client.endHandled
-    ) {
+    if (client.endCalled || eventHandled(client)) {
       // handled or expected close event - ignore
-      client.debugMsg(`${name} closeListener - ignoring handled error`);
+      client.debugMsg(`${name} closeListener - ignoring handled close event`);
       return;
     }
     client.closeHandled = true;
-    client.debugMsg(`${name} Unexpected close event raised - ignoring`);
-    // Don't throw/reject on close events. Just invalidate the connection
-    // and move on.
-    // const err = new Error(`${name}: Unexpected close event raised`);
-    // if (reject) {
-    //   reject(err);
-    // } else {
-    //   throw err;
-    // }
+    client.debugMsg(`${name} closeListener - handling unexpected close event`);
+    const newError = new Error(`${name}: Unexpected close event`);
+    newError.code = errorCode.ERR_GENERIC_CLIENT;
+    if (reject) {
+      reject(newError);
+    } else {
+      throw newError;
+    }
   };
   return fn;
 }
@@ -9218,7 +10703,7 @@ function removeTempListeners(client, listeners, name) {
  * @returns {string | boolean} returns a string for object type if it exists, false otherwise
  */
 function localExists(filePath) {
-  const stats = fs.statSync(filePath, { throwIfNoEntry: false });
+  const stats = statSync(filePath, { throwIfNoEntry: false });
   if (!stats) {
     return false;
   } else if (stats.isDirectory()) {
@@ -9249,11 +10734,10 @@ function localExists(filePath) {
  * @returns {Object} with properties status, type, details and code
  */
 function haveLocalAccess(filePath, mode = 'r') {
-  const accessMode =
-    fs.constants.F_OK | (mode === 'w') ? fs.constants.W_OK : fs.constants.R_OK;
+  const accessMode = constants.F_OK | (mode === 'w') ? constants.W_OK : constants.R_OK;
 
   try {
-    fs.accessSync(filePath, accessMode);
+    accessSync(filePath, accessMode);
     const type = localExists(filePath);
     return {
       status: true,
@@ -9263,32 +10747,36 @@ function haveLocalAccess(filePath, mode = 'r') {
     };
   } catch (err) {
     switch (err.errno) {
-      case -2:
+      case -2: {
         return {
           status: false,
           type: null,
           details: 'not exist',
           code: -2,
         };
-      case -13:
+      }
+      case -13: {
         return {
           status: false,
           type: localExists(filePath),
           details: 'permission denied',
           code: -13,
         };
-      case -20:
+      }
+      case -20: {
         return {
           status: false,
           type: null,
           details: 'parent not a directory',
         };
-      default:
+      }
+      default: {
         return {
           status: false,
           type: null,
           details: err.message,
         };
+      }
     }
   }
 }
@@ -9304,38 +10792,41 @@ function haveLocalAccess(filePath, mode = 'r') {
  */
 function haveLocalCreate(filePath) {
   const { status, details, type } = haveLocalAccess(filePath, 'w');
-  if (!status && details === 'permission denied') {
-    //throw new Error(`Bad path: ${filePath}: permission denied`);
-    return {
-      status,
-      details,
-      type,
-    };
-  } else if (!status) {
-    const dirPath = path.dirname(filePath);
-    const localCheck = haveLocalAccess(dirPath, 'w');
-    if (localCheck.status && localCheck.type !== 'd') {
-      //throw new Error(`Bad path: ${dirPath}: not a directory`);
+  if (!status) {
+    // filePath does not exist. Can we create it?
+    if (details === 'permission denied') {
+      // don't have permission
       return {
-        status: false,
-        details: `${dirPath}: not a directory`,
-        type: null,
+        status,
+        details,
+        type,
       };
-    } else if (!localCheck.status) {
-      //throw new Error(`Bad path: ${dirPath}: ${localCheck.details}`);
+    }
+    // to create it, parent must be directory and writeable
+    const dirPath = dirname(filePath);
+    const localCheck = haveLocalAccess(dirPath, 'w');
+    if (!localCheck.status) {
+      // no access to parent directory
       return {
         status: localCheck.status,
         details: `${dirPath}: ${localCheck.details}`,
         type: null,
       };
-    } else {
+    }
+    // exists, is it a directory?
+    if (localCheck.type !== 'd') {
       return {
-        status: true,
-        details: 'access OK',
+        status: false,
+        details: `${dirPath}: not a directory`,
         type: null,
-        code: 0,
       };
     }
+    return {
+      status: true,
+      details: 'access OK',
+      type: null,
+      code: 0,
+    };
   }
   return { status, details, type };
 }
@@ -9344,10 +10835,10 @@ async function normalizeRemotePath(client, aPath) {
   try {
     if (aPath.startsWith('..')) {
       const root = await client.realPath('..');
-      return root + client.remotePathSep + aPath.slice(3);
+      return `${root}/${aPath.slice(3)}`;
     } else if (aPath.startsWith('.')) {
       const root = await client.realPath('.');
-      return root + client.remotePathSep + aPath.slice(2);
+      return `${root}/${aPath.slice(2)}`;
     }
     return aPath;
   } catch (err) {
@@ -9382,16 +10873,34 @@ function haveConnection(client, name, reject) {
 function sleep(ms) {
   return new Promise((resolve, reject) => {
     try {
-      setTimeout(() => {
-        resolve(true);
-      }, ms);
+      if (Number.isNaN(Number.parseInt(ms)) || ms < 0) {
+        reject('Argument must be a number >= 0');
+      } else {
+        setTimeout(() => {
+          resolve(true);
+        }, ms);
+      }
     } catch (err) {
       reject(err);
     }
   });
 }
 
+function partition(input, size) {
+  let output = [];
+
+  if (size < 1) {
+    throw new Error('Partition size must be greater than zero');
+  }
+
+  for (let i = 0; i < input.length; i += size) {
+    output[output.length] = input.slice(i, i + size);
+  }
+  return output;
+}
+
 module.exports = {
+  globalListener,
   errorListener,
   endListener,
   closeListener,
@@ -9403,12 +10912,13 @@ module.exports = {
   localExists,
   haveConnection,
   sleep,
+  partition,
 };
 
 
 /***/ }),
 
-/***/ 3204:
+/***/ 5683:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
@@ -9418,12 +10928,12 @@ const {
   Duplex: DuplexStream,
   Readable: ReadableStream,
   Writable: WritableStream,
-} = __nccwpck_require__(2781);
+} = __nccwpck_require__(2203);
 
 const {
   CHANNEL_EXTENDED_DATATYPE: { STDERR },
-} = __nccwpck_require__(6832);
-const { bufferSlice } = __nccwpck_require__(9475);
+} = __nccwpck_require__(4020);
+const { bufferSlice } = __nccwpck_require__(2184);
 
 const PACKET_SIZE = 32 * 1024;
 const MAX_WINDOW = 2 * 1024 * 1024;
@@ -9711,26 +11221,26 @@ module.exports = {
 
 /***/ }),
 
-/***/ 9054:
+/***/ 3849:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
 
 
-const { Socket } = __nccwpck_require__(1808);
-const { Duplex } = __nccwpck_require__(2781);
-const { resolve } = __nccwpck_require__(1017);
-const { readFile } = __nccwpck_require__(7147);
-const { execFile, spawn } = __nccwpck_require__(2081);
+const { Socket } = __nccwpck_require__(9278);
+const { Duplex } = __nccwpck_require__(2203);
+const { resolve } = __nccwpck_require__(6928);
+const { readFile } = __nccwpck_require__(9896);
+const { execFile, spawn } = __nccwpck_require__(5317);
 
-const { isParsedKey, parseKey } = __nccwpck_require__(2218);
+const { isParsedKey, parseKey } = __nccwpck_require__(1789);
 
 const {
   makeBufferParser,
   readUInt32BE,
   writeUInt32BE,
   writeUInt32LE,
-} = __nccwpck_require__(9475);
+} = __nccwpck_require__(2184);
 
 function once(cb) {
   let called = false;
@@ -10842,7 +12352,7 @@ module.exports = {
 
 /***/ }),
 
-/***/ 6063:
+/***/ 6297:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
@@ -10856,10 +12366,10 @@ const {
   createHash,
   getHashes,
   randomFillSync,
-} = __nccwpck_require__(6113);
-const { Socket } = __nccwpck_require__(1808);
-const { lookup: dnsLookup } = __nccwpck_require__(9523);
-const EventEmitter = __nccwpck_require__(2361);
+} = __nccwpck_require__(6982);
+const { Socket } = __nccwpck_require__(9278);
+const { lookup: dnsLookup } = __nccwpck_require__(2250);
+const EventEmitter = __nccwpck_require__(4434);
 const HASHES = getHashes();
 
 const {
@@ -10878,11 +12388,11 @@ const {
   SUPPORTED_KEX,
   SUPPORTED_MAC,
   SUPPORTED_SERVER_HOST_KEY,
-} = __nccwpck_require__(6832);
-const { init: cryptoInit } = __nccwpck_require__(5708);
-const Protocol = __nccwpck_require__(9031);
-const { parseKey } = __nccwpck_require__(2218);
-const { SFTP } = __nccwpck_require__(2026);
+} = __nccwpck_require__(4020);
+const { init: cryptoInit } = __nccwpck_require__(2888);
+const Protocol = __nccwpck_require__(7841);
+const { parseKey } = __nccwpck_require__(1789);
+const { SFTP } = __nccwpck_require__(4996);
 const {
   bufferCopy,
   makeBufferParser,
@@ -10890,23 +12400,23 @@ const {
   readUInt32BE,
   sigSSHToASN1,
   writeUInt32BE,
-} = __nccwpck_require__(9475);
+} = __nccwpck_require__(2184);
 
-const { AgentContext, createAgent, isAgent } = __nccwpck_require__(9054);
+const { AgentContext, createAgent, isAgent } = __nccwpck_require__(3849);
 const {
   Channel,
   MAX_WINDOW,
   PACKET_SIZE,
   windowAdjust,
   WINDOW_THRESHOLD,
-} = __nccwpck_require__(3204);
+} = __nccwpck_require__(5683);
 const {
   ChannelManager,
   generateAlgorithmList,
   isWritable,
   onChannelOpenFailure,
   onCHANNEL_CLOSE,
-} = __nccwpck_require__(834);
+} = __nccwpck_require__(2137);
 
 const bufferParser = makeBufferParser();
 const sigParser = makeBufferParser();
@@ -11121,16 +12631,14 @@ class Client extends EventEmitter {
     let hostVerifier;
     if (typeof cfg.hostVerifier === 'function') {
       const hashCb = cfg.hostVerifier;
-      let hasher;
+      let hashAlgo;
       if (HASHES.indexOf(cfg.hostHash) !== -1) {
         // Default to old behavior of hashing on user's behalf
-        hasher = createHash(cfg.hostHash);
+        hashAlgo = cfg.hostHash;
       }
       hostVerifier = (key, verify) => {
-        if (hasher) {
-          hasher.update(key);
-          key = hasher.digest('hex');
-        }
+        if (hashAlgo)
+          key = createHash(hashAlgo).update(key).digest('hex');
         const ret = hashCb(key, verify);
         if (ret !== undefined)
           verify(ret);
@@ -11145,6 +12653,7 @@ class Client extends EventEmitter {
     const DEBUG_HANDLER = (!debug ? undefined : (p, display, msg) => {
       debug(`Debug output from server: ${JSON.stringify(msg)}`);
     });
+    let serverSigAlgs;
     const proto = this._protocol = new Protocol({
       ident: this.config.ident,
       offer: (allOfferDefaults ? undefined : algorithms),
@@ -11196,6 +12705,17 @@ class Client extends EventEmitter {
           if (name === 'ssh-userauth')
             tryNextAuth();
         },
+        EXT_INFO: (p, exts) => {
+          if (serverSigAlgs === undefined) {
+            for (const ext of exts) {
+              if (ext.name === 'server-sig-algs') {
+                serverSigAlgs = ext.algs;
+                return;
+              }
+            }
+            serverSigAlgs = null;
+          }
+        },
         USERAUTH_BANNER: (p, msg) => {
           this.emit('banner', msg);
         },
@@ -11208,6 +12728,51 @@ class Client extends EventEmitter {
           this.emit('ready');
         },
         USERAUTH_FAILURE: (p, authMethods, partialSuccess) => {
+          // For key-based authentication, check if we should retry the current
+          // key with a different algorithm first
+          if (curAuth.keyAlgos) {
+            const oldKeyAlgo = curAuth.keyAlgos[0][0];
+            if (debug)
+              debug(`Client: ${curAuth.type} (${oldKeyAlgo}) auth failed`);
+            curAuth.keyAlgos.shift();
+            if (curAuth.keyAlgos.length) {
+              const [keyAlgo, hashAlgo] = curAuth.keyAlgos[0];
+              switch (curAuth.type) {
+                case 'agent':
+                  proto.authPK(
+                    curAuth.username,
+                    curAuth.agentCtx.currentKey(),
+                    keyAlgo
+                  );
+                  return;
+                case 'publickey':
+                  proto.authPK(curAuth.username, curAuth.key, keyAlgo);
+                  return;
+                case 'hostbased':
+                  proto.authHostbased(curAuth.username,
+                                      curAuth.key,
+                                      curAuth.localHostname,
+                                      curAuth.localUsername,
+                                      keyAlgo,
+                                      (buf, cb) => {
+                    const signature = curAuth.key.sign(buf, hashAlgo);
+                    if (signature instanceof Error) {
+                      signature.message =
+                        `Error while signing with key: ${signature.message}`;
+                      signature.level = 'client-authentication';
+                      this.emit('error', signature);
+                      return tryNextAuth();
+                    }
+
+                    cb(signature);
+                  });
+                  return;
+              }
+            } else {
+              curAuth.keyAlgos = undefined;
+            }
+          }
+
           if (curAuth.type === 'agent') {
             const pos = curAuth.agentCtx.pos();
             debug && debug(`Client: Agent key #${pos + 1} failed`);
@@ -11234,10 +12799,15 @@ class Client extends EventEmitter {
           }
         },
         USERAUTH_PK_OK: (p) => {
+          let keyAlgo;
+          let hashAlgo;
+          if (curAuth.keyAlgos)
+            [keyAlgo, hashAlgo] = curAuth.keyAlgos[0];
           if (curAuth.type === 'agent') {
             const key = curAuth.agentCtx.currentKey();
-            proto.authPK(curAuth.username, key, (buf, cb) => {
-              curAuth.agentCtx.sign(key, buf, {}, (err, signed) => {
+            proto.authPK(curAuth.username, key, keyAlgo, (buf, cb) => {
+              const opts = { hash: hashAlgo };
+              curAuth.agentCtx.sign(key, buf, opts, (err, signed) => {
                 if (err) {
                   err.level = 'agent';
                   this.emit('error', err);
@@ -11249,8 +12819,8 @@ class Client extends EventEmitter {
               });
             });
           } else if (curAuth.type === 'publickey') {
-            proto.authPK(curAuth.username, curAuth.key, (buf, cb) => {
-              const signature = curAuth.key.sign(buf);
+            proto.authPK(curAuth.username, curAuth.key, keyAlgo, (buf, cb) => {
+              const signature = curAuth.key.sign(buf, hashAlgo);
               if (signature instanceof Error) {
                 signature.message =
                   `Error signing data with key: ${signature.message}`;
@@ -11785,16 +13355,42 @@ class Client extends EventEmitter {
           case 'password':
             proto.authPassword(username, curAuth.password);
             break;
-          case 'publickey':
-            proto.authPK(username, curAuth.key);
+          case 'publickey': {
+            let keyAlgo;
+            curAuth.keyAlgos = getKeyAlgos(this, curAuth.key, serverSigAlgs);
+            if (curAuth.keyAlgos) {
+              if (curAuth.keyAlgos.length) {
+                keyAlgo = curAuth.keyAlgos[0][0];
+              } else {
+                return skipAuth(
+                  'Skipping key authentication (no mutual hash algorithm)'
+                );
+              }
+            }
+            proto.authPK(username, curAuth.key, keyAlgo);
             break;
-          case 'hostbased':
+          }
+          case 'hostbased': {
+            let keyAlgo;
+            let hashAlgo;
+            curAuth.keyAlgos = getKeyAlgos(this, curAuth.key, serverSigAlgs);
+            if (curAuth.keyAlgos) {
+              if (curAuth.keyAlgos.length) {
+                [keyAlgo, hashAlgo] = curAuth.keyAlgos[0];
+              } else {
+                return skipAuth(
+                  'Skipping hostbased authentication (no mutual hash algorithm)'
+                );
+              }
+            }
+
             proto.authHostbased(username,
                                 curAuth.key,
                                 curAuth.localHostname,
                                 curAuth.localUsername,
+                                keyAlgo,
                                 (buf, cb) => {
-              const signature = curAuth.key.sign(buf);
+              const signature = curAuth.key.sign(buf, hashAlgo);
               if (signature instanceof Error) {
                 signature.message =
                   `Error while signing with key: ${signature.message}`;
@@ -11806,6 +13402,7 @@ class Client extends EventEmitter {
               cb(signature);
             });
             break;
+          }
           case 'agent':
             curAuth.agentCtx.init((err) => {
               if (err) {
@@ -11850,8 +13447,21 @@ class Client extends EventEmitter {
           tryNextAuth();
         } else {
           const pos = curAuth.agentCtx.pos();
+          let keyAlgo;
+          curAuth.keyAlgos = getKeyAlgos(this, key, serverSigAlgs);
+          if (curAuth.keyAlgos) {
+            if (curAuth.keyAlgos.length) {
+              keyAlgo = curAuth.keyAlgos[0][0];
+            } else {
+              debug && debug(
+                `Agent: Skipping key #${pos + 1} (no mutual hash algorithm)`
+              );
+              tryNextAgentKey();
+              return;
+            }
+          }
           debug && debug(`Agent: Trying key #${pos + 1}`);
-          proto.authPK(curAuth.username, key);
+          proto.authPK(curAuth.username, key, keyAlgo);
         }
       }
     };
@@ -11882,7 +13492,6 @@ class Client extends EventEmitter {
           localAddress: this.config.localAddress,
           localPort: this.config.localPort
         });
-        sock.setNoDelay(true);
         sock.setMaxListeners(0);
         sock.setTimeout(typeof cfg.timeout === 'number' ? cfg.timeout : 0);
       };
@@ -12359,6 +13968,13 @@ class Client extends EventEmitter {
         sftp._init();
       });
     });
+
+    return this;
+  }
+
+  setNoDelay(noDelay) {
+    if (this._sock && typeof this._sock.setNoDelay === 'function')
+      this._sock.setNoDelay(noDelay);
 
     return this;
   }
@@ -12859,20 +14475,41 @@ function hostKeysProve(client, keys_, cb) {
   );
 }
 
+function getKeyAlgos(client, key, serverSigAlgs) {
+  switch (key.type) {
+    case 'ssh-rsa':
+      if (client._protocol._compatFlags & COMPAT.IMPLY_RSA_SHA2_SIGALGS) {
+        if (!Array.isArray(serverSigAlgs))
+          serverSigAlgs = ['rsa-sha2-256', 'rsa-sha2-512'];
+        else
+          serverSigAlgs = ['rsa-sha2-256', 'rsa-sha2-512', ...serverSigAlgs];
+      }
+      if (Array.isArray(serverSigAlgs)) {
+        if (serverSigAlgs.indexOf('rsa-sha2-256') !== -1)
+          return [['rsa-sha2-256', 'sha256']];
+        if (serverSigAlgs.indexOf('rsa-sha2-512') !== -1)
+          return [['rsa-sha2-512', 'sha512']];
+        if (serverSigAlgs.indexOf('ssh-rsa') === -1)
+          return [];
+      }
+      return [['ssh-rsa', 'sha1']];
+  }
+}
+
 module.exports = Client;
 
 
 /***/ }),
 
-/***/ 2994:
+/***/ 137:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
 
-const { Agent: HttpAgent } = __nccwpck_require__(3685);
-const { Agent: HttpsAgent } = __nccwpck_require__(5687);
-const { connect: tlsConnect } = __nccwpck_require__(4404);
+const { Agent: HttpAgent } = __nccwpck_require__(8611);
+const { Agent: HttpsAgent } = __nccwpck_require__(5692);
+const { connect: tlsConnect } = __nccwpck_require__(4756);
 
 let Client;
 
@@ -12892,7 +14529,7 @@ for (const ctor of [HttpAgent, HttpsAgent]) {
       const dstPort = options.port;
 
       if (Client === undefined)
-        Client = __nccwpck_require__(6063);
+        Client = __nccwpck_require__(6297);
 
       const client = new Client();
       let triedForward = false;
@@ -12956,7 +14593,7 @@ function decorateStream(stream, ctor, options) {
 
 /***/ }),
 
-/***/ 5869:
+/***/ 5472:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
@@ -12969,32 +14606,33 @@ const {
   CygwinAgent,
   OpenSSHAgent,
   PageantAgent,
-} = __nccwpck_require__(9054);
+} = __nccwpck_require__(3849);
 const {
   SSHTTPAgent: HTTPAgent,
   SSHTTPSAgent: HTTPSAgent,
-} = __nccwpck_require__(2994);
-const { parseKey } = __nccwpck_require__(2218);
+} = __nccwpck_require__(137);
+const { parseKey } = __nccwpck_require__(1789);
 const {
   flagsToString,
   OPEN_MODE,
   STATUS_CODE,
   stringToFlags,
-} = __nccwpck_require__(2026);
+} = __nccwpck_require__(4996);
 
 module.exports = {
   AgentProtocol,
   BaseAgent,
   createAgent,
-  Client: __nccwpck_require__(6063),
+  Client: __nccwpck_require__(6297),
   CygwinAgent,
   HTTPAgent,
   HTTPSAgent,
   OpenSSHAgent,
   PageantAgent,
-  Server: __nccwpck_require__(2986),
+  Server: __nccwpck_require__(2605),
   utils: {
     parseKey,
+    ...__nccwpck_require__(3489),
     sftp: {
       flagsToString,
       OPEN_MODE,
@@ -13007,7 +14645,597 @@ module.exports = {
 
 /***/ }),
 
-/***/ 9031:
+/***/ 3489:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+"use strict";
+
+
+const {
+  createCipheriv,
+  generateKeyPair: generateKeyPair_,
+  generateKeyPairSync: generateKeyPairSync_,
+  getCurves,
+  randomBytes,
+} = __nccwpck_require__(6982);
+
+const { Ber } = __nccwpck_require__(9837);
+const bcrypt_pbkdf = (__nccwpck_require__(686).pbkdf);
+
+const { CIPHER_INFO } = __nccwpck_require__(2888);
+
+const SALT_LEN = 16;
+const DEFAULT_ROUNDS = 16;
+
+const curves = getCurves();
+const ciphers = new Map(Object.entries(CIPHER_INFO));
+
+function makeArgs(type, opts) {
+  if (typeof type !== 'string')
+    throw new TypeError('Key type must be a string');
+
+  const publicKeyEncoding = { type: 'spki', format: 'der' };
+  const privateKeyEncoding = { type: 'pkcs8', format: 'der' };
+
+  switch (type.toLowerCase()) {
+    case 'rsa': {
+      if (typeof opts !== 'object' || opts === null)
+        throw new TypeError('Missing options object for RSA key');
+      const modulusLength = opts.bits;
+      if (!Number.isInteger(modulusLength))
+        throw new TypeError('RSA bits must be an integer');
+      if (modulusLength <= 0 || modulusLength > 16384)
+        throw new RangeError('RSA bits must be non-zero and <= 16384');
+      return ['rsa', { modulusLength, publicKeyEncoding, privateKeyEncoding }];
+    }
+    case 'ecdsa': {
+      if (typeof opts !== 'object' || opts === null)
+        throw new TypeError('Missing options object for ECDSA key');
+      if (!Number.isInteger(opts.bits))
+        throw new TypeError('ECDSA bits must be an integer');
+      let namedCurve;
+      switch (opts.bits) {
+        case 256:
+          namedCurve = 'prime256v1';
+          break;
+        case 384:
+          namedCurve = 'secp384r1';
+          break;
+        case 521:
+          namedCurve = 'secp521r1';
+          break;
+        default:
+          throw new Error('ECDSA bits must be 256, 384, or 521');
+      }
+      if (!curves.includes(namedCurve))
+        throw new Error('Unsupported ECDSA bits value');
+      return ['ec', { namedCurve, publicKeyEncoding, privateKeyEncoding }];
+    }
+    case 'ed25519':
+      return ['ed25519', { publicKeyEncoding, privateKeyEncoding }];
+    default:
+      throw new Error(`Unsupported key type: ${type}`);
+  }
+}
+
+function parseDERs(keyType, pub, priv) {
+  switch (keyType) {
+    case 'rsa': {
+      // Note: we don't need to parse the public key since the PKCS8 private key
+      // already includes the public key parameters
+
+      // Parse private key
+      let reader = new Ber.Reader(priv);
+      reader.readSequence();
+
+      // - Version
+      if (reader.readInt() !== 0)
+        throw new Error('Unsupported version in RSA private key');
+
+      // - Algorithm
+      reader.readSequence();
+      if (reader.readOID() !== '1.2.840.113549.1.1.1')
+        throw new Error('Bad RSA private OID');
+      // - Algorithm parameters (RSA has none)
+      if (reader.readByte() !== Ber.Null)
+        throw new Error('Malformed RSA private key (expected null)');
+      if (reader.readByte() !== 0x00) {
+        throw new Error(
+          'Malformed RSA private key (expected zero-length null)'
+        );
+      }
+
+      reader = new Ber.Reader(reader.readString(Ber.OctetString, true));
+      reader.readSequence();
+      if (reader.readInt() !== 0)
+        throw new Error('Unsupported version in RSA private key');
+      const n = reader.readString(Ber.Integer, true);
+      const e = reader.readString(Ber.Integer, true);
+      const d = reader.readString(Ber.Integer, true);
+      const p = reader.readString(Ber.Integer, true);
+      const q = reader.readString(Ber.Integer, true);
+      reader.readString(Ber.Integer, true); // dmp1
+      reader.readString(Ber.Integer, true); // dmq1
+      const iqmp = reader.readString(Ber.Integer, true);
+
+      /*
+        OpenSSH RSA private key:
+          string  "ssh-rsa"
+          string  n -- public
+          string  e -- public
+          string  d -- private
+          string  iqmp -- private
+          string  p -- private
+          string  q -- private
+      */
+      const keyName = Buffer.from('ssh-rsa');
+      const privBuf = Buffer.allocUnsafe(
+        4 + keyName.length
+        + 4 + n.length
+        + 4 + e.length
+        + 4 + d.length
+        + 4 + iqmp.length
+        + 4 + p.length
+        + 4 + q.length
+      );
+      let pos = 0;
+
+      privBuf.writeUInt32BE(keyName.length, pos += 0);
+      privBuf.set(keyName, pos += 4);
+      privBuf.writeUInt32BE(n.length, pos += keyName.length);
+      privBuf.set(n, pos += 4);
+      privBuf.writeUInt32BE(e.length, pos += n.length);
+      privBuf.set(e, pos += 4);
+      privBuf.writeUInt32BE(d.length, pos += e.length);
+      privBuf.set(d, pos += 4);
+      privBuf.writeUInt32BE(iqmp.length, pos += d.length);
+      privBuf.set(iqmp, pos += 4);
+      privBuf.writeUInt32BE(p.length, pos += iqmp.length);
+      privBuf.set(p, pos += 4);
+      privBuf.writeUInt32BE(q.length, pos += p.length);
+      privBuf.set(q, pos += 4);
+
+      /*
+        OpenSSH RSA public key:
+          string  "ssh-rsa"
+          string  e -- public
+          string  n -- public
+      */
+      const pubBuf = Buffer.allocUnsafe(
+        4 + keyName.length
+        + 4 + e.length
+        + 4 + n.length
+      );
+      pos = 0;
+
+      pubBuf.writeUInt32BE(keyName.length, pos += 0);
+      pubBuf.set(keyName, pos += 4);
+      pubBuf.writeUInt32BE(e.length, pos += keyName.length);
+      pubBuf.set(e, pos += 4);
+      pubBuf.writeUInt32BE(n.length, pos += e.length);
+      pubBuf.set(n, pos += 4);
+
+      return { sshName: keyName.toString(), priv: privBuf, pub: pubBuf };
+    }
+    case 'ec': {
+      // Parse public key
+      let reader = new Ber.Reader(pub);
+      reader.readSequence();
+
+      reader.readSequence();
+      if (reader.readOID() !== '1.2.840.10045.2.1')
+        throw new Error('Bad ECDSA public OID');
+      // Skip curve OID, we'll get it from the private key
+      reader.readOID();
+      let pubBin = reader.readString(Ber.BitString, true);
+      {
+        // Remove leading zero bytes
+        let i = 0;
+        for (; i < pubBin.length && pubBin[i] === 0x00; ++i);
+        if (i > 0)
+          pubBin = pubBin.slice(i);
+      }
+
+      // Parse private key
+      reader = new Ber.Reader(priv);
+      reader.readSequence();
+
+      // - Version
+      if (reader.readInt() !== 0)
+        throw new Error('Unsupported version in ECDSA private key');
+
+      reader.readSequence();
+      if (reader.readOID() !== '1.2.840.10045.2.1')
+        throw new Error('Bad ECDSA private OID');
+      const curveOID = reader.readOID();
+      let sshCurveName;
+      switch (curveOID) {
+        case '1.2.840.10045.3.1.7':
+          // prime256v1/secp256r1
+          sshCurveName = 'nistp256';
+          break;
+        case '1.3.132.0.34':
+          // secp384r1
+          sshCurveName = 'nistp384';
+          break;
+        case '1.3.132.0.35':
+          // secp521r1
+          sshCurveName = 'nistp521';
+          break;
+        default:
+          throw new Error('Unsupported curve in ECDSA private key');
+      }
+
+      reader = new Ber.Reader(reader.readString(Ber.OctetString, true));
+      reader.readSequence();
+
+      // - Version
+      if (reader.readInt() !== 1)
+        throw new Error('Unsupported version in ECDSA private key');
+
+      // Add leading zero byte to prevent negative bignum in private key
+      const privBin = Buffer.concat([
+        Buffer.from([0x00]),
+        reader.readString(Ber.OctetString, true)
+      ]);
+
+      /*
+        OpenSSH ECDSA private key:
+          string  "ecdsa-sha2-<sshCurveName>"
+          string  curve name
+          string  Q -- public
+          string  d -- private
+      */
+      const keyName = Buffer.from(`ecdsa-sha2-${sshCurveName}`);
+      sshCurveName = Buffer.from(sshCurveName);
+      const privBuf = Buffer.allocUnsafe(
+        4 + keyName.length
+        + 4 + sshCurveName.length
+        + 4 + pubBin.length
+        + 4 + privBin.length
+      );
+      let pos = 0;
+
+      privBuf.writeUInt32BE(keyName.length, pos += 0);
+      privBuf.set(keyName, pos += 4);
+      privBuf.writeUInt32BE(sshCurveName.length, pos += keyName.length);
+      privBuf.set(sshCurveName, pos += 4);
+      privBuf.writeUInt32BE(pubBin.length, pos += sshCurveName.length);
+      privBuf.set(pubBin, pos += 4);
+      privBuf.writeUInt32BE(privBin.length, pos += pubBin.length);
+      privBuf.set(privBin, pos += 4);
+
+      /*
+        OpenSSH ECDSA public key:
+          string  "ecdsa-sha2-<sshCurveName>"
+          string  curve name
+          string  Q -- public
+      */
+      const pubBuf = Buffer.allocUnsafe(
+        4 + keyName.length
+        + 4 + sshCurveName.length
+        + 4 + pubBin.length
+      );
+      pos = 0;
+
+      pubBuf.writeUInt32BE(keyName.length, pos += 0);
+      pubBuf.set(keyName, pos += 4);
+      pubBuf.writeUInt32BE(sshCurveName.length, pos += keyName.length);
+      pubBuf.set(sshCurveName, pos += 4);
+      pubBuf.writeUInt32BE(pubBin.length, pos += sshCurveName.length);
+      pubBuf.set(pubBin, pos += 4);
+
+      return { sshName: keyName.toString(), priv: privBuf, pub: pubBuf };
+    }
+    case 'ed25519': {
+      // Parse public key
+      let reader = new Ber.Reader(pub);
+      reader.readSequence();
+
+      // - Algorithm
+      reader.readSequence();
+      if (reader.readOID() !== '1.3.101.112')
+        throw new Error('Bad ED25519 public OID');
+      // - Attributes (absent for ED25519)
+
+      let pubBin = reader.readString(Ber.BitString, true);
+      {
+        // Remove leading zero bytes
+        let i = 0;
+        for (; i < pubBin.length && pubBin[i] === 0x00; ++i);
+        if (i > 0)
+          pubBin = pubBin.slice(i);
+      }
+
+      // Parse private key
+      reader = new Ber.Reader(priv);
+      reader.readSequence();
+
+      // - Version
+      if (reader.readInt() !== 0)
+        throw new Error('Unsupported version in ED25519 private key');
+
+      // - Algorithm
+      reader.readSequence();
+      if (reader.readOID() !== '1.3.101.112')
+        throw new Error('Bad ED25519 private OID');
+      // - Attributes (absent)
+
+      reader = new Ber.Reader(reader.readString(Ber.OctetString, true));
+      const privBin = reader.readString(Ber.OctetString, true);
+
+      /*
+        OpenSSH ed25519 private key:
+          string  "ssh-ed25519"
+          string  public key
+          string  private key + public key
+      */
+      const keyName = Buffer.from('ssh-ed25519');
+      const privBuf = Buffer.allocUnsafe(
+        4 + keyName.length
+        + 4 + pubBin.length
+        + 4 + (privBin.length + pubBin.length)
+      );
+      let pos = 0;
+
+      privBuf.writeUInt32BE(keyName.length, pos += 0);
+      privBuf.set(keyName, pos += 4);
+      privBuf.writeUInt32BE(pubBin.length, pos += keyName.length);
+      privBuf.set(pubBin, pos += 4);
+      privBuf.writeUInt32BE(
+        privBin.length + pubBin.length,
+        pos += pubBin.length
+      );
+      privBuf.set(privBin, pos += 4);
+      privBuf.set(pubBin, pos += privBin.length);
+
+      /*
+        OpenSSH ed25519 public key:
+          string  "ssh-ed25519"
+          string  public key
+      */
+      const pubBuf = Buffer.allocUnsafe(
+        4 + keyName.length
+        + 4 + pubBin.length
+      );
+      pos = 0;
+
+      pubBuf.writeUInt32BE(keyName.length, pos += 0);
+      pubBuf.set(keyName, pos += 4);
+      pubBuf.writeUInt32BE(pubBin.length, pos += keyName.length);
+      pubBuf.set(pubBin, pos += 4);
+
+      return { sshName: keyName.toString(), priv: privBuf, pub: pubBuf };
+    }
+  }
+}
+
+function convertKeys(keyType, pub, priv, opts) {
+  let format = 'new';
+  let encrypted;
+  let comment = '';
+  if (typeof opts === 'object' && opts !== null) {
+    if (typeof opts.comment === 'string' && opts.comment)
+      comment = opts.comment;
+    if (typeof opts.format === 'string' && opts.format)
+      format = opts.format;
+    if (opts.passphrase) {
+      let passphrase;
+      if (typeof opts.passphrase === 'string')
+        passphrase = Buffer.from(opts.passphrase);
+      else if (Buffer.isBuffer(opts.passphrase))
+        passphrase = opts.passphrase;
+      else
+        throw new Error('Invalid passphrase');
+
+      if (opts.cipher === undefined)
+        throw new Error('Missing cipher name');
+      const cipher = ciphers.get(opts.cipher);
+      if (cipher === undefined)
+        throw new Error('Invalid cipher name');
+
+      if (format === 'new') {
+        let rounds = DEFAULT_ROUNDS;
+        if (opts.rounds !== undefined) {
+          if (!Number.isInteger(opts.rounds))
+            throw new TypeError('rounds must be an integer');
+          if (opts.rounds > 0)
+            rounds = opts.rounds;
+        }
+
+        const gen = Buffer.allocUnsafe(cipher.keyLen + cipher.ivLen);
+        const salt = randomBytes(SALT_LEN);
+        const r = bcrypt_pbkdf(
+          passphrase,
+          passphrase.length,
+          salt,
+          salt.length,
+          gen,
+          gen.length,
+          rounds
+        );
+        if (r !== 0)
+          return new Error('Failed to generate information to encrypt key');
+
+        /*
+          string salt
+          uint32 rounds
+        */
+        const kdfOptions = Buffer.allocUnsafe(4 + salt.length + 4);
+        {
+          let pos = 0;
+          kdfOptions.writeUInt32BE(salt.length, pos += 0);
+          kdfOptions.set(salt, pos += 4);
+          kdfOptions.writeUInt32BE(rounds, pos += salt.length);
+        }
+
+        encrypted = {
+          cipher,
+          cipherName: opts.cipher,
+          kdfName: 'bcrypt',
+          kdfOptions,
+          key: gen.slice(0, cipher.keyLen),
+          iv: gen.slice(cipher.keyLen),
+        };
+      }
+    }
+  }
+
+  switch (format) {
+    case 'new': {
+      let privateB64 = '-----BEGIN OPENSSH PRIVATE KEY-----\n';
+      let publicB64;
+      /*
+        byte[]  "openssh-key-v1\0"
+        string  ciphername
+        string  kdfname
+        string  kdfoptions
+        uint32  number of keys N
+        string  publickey1
+        string  encrypted, padded list of private keys
+          uint32  checkint
+          uint32  checkint
+          byte[]  privatekey1
+          string  comment1
+          byte  1
+          byte  2
+          byte  3
+          ...
+          byte  padlen % 255
+      */
+      const cipherName = Buffer.from(encrypted ? encrypted.cipherName : 'none');
+      const kdfName = Buffer.from(encrypted ? encrypted.kdfName : 'none');
+      const kdfOptions = (encrypted ? encrypted.kdfOptions : Buffer.alloc(0));
+      const blockLen = (encrypted ? encrypted.cipher.blockLen : 8);
+
+      const parsed = parseDERs(keyType, pub, priv);
+
+      const checkInt = randomBytes(4);
+      const commentBin = Buffer.from(comment);
+      const privBlobLen = (4 + 4 + parsed.priv.length + 4 + commentBin.length);
+      let padding = [];
+      for (let i = 1; ((privBlobLen + padding.length) % blockLen); ++i)
+        padding.push(i & 0xFF);
+      padding = Buffer.from(padding);
+
+      let privBlob = Buffer.allocUnsafe(privBlobLen + padding.length);
+      let extra;
+      {
+        let pos = 0;
+        privBlob.set(checkInt, pos += 0);
+        privBlob.set(checkInt, pos += 4);
+        privBlob.set(parsed.priv, pos += 4);
+        privBlob.writeUInt32BE(commentBin.length, pos += parsed.priv.length);
+        privBlob.set(commentBin, pos += 4);
+        privBlob.set(padding, pos += commentBin.length);
+      }
+
+      if (encrypted) {
+        const options = { authTagLength: encrypted.cipher.authLen };
+        const cipher = createCipheriv(
+          encrypted.cipher.sslName,
+          encrypted.key,
+          encrypted.iv,
+          options
+        );
+        cipher.setAutoPadding(false);
+        privBlob = Buffer.concat([ cipher.update(privBlob), cipher.final() ]);
+        if (encrypted.cipher.authLen > 0)
+          extra = cipher.getAuthTag();
+        else
+          extra = Buffer.alloc(0);
+        encrypted.key.fill(0);
+        encrypted.iv.fill(0);
+      } else {
+        extra = Buffer.alloc(0);
+      }
+
+      const magicBytes = Buffer.from('openssh-key-v1\0');
+      const privBin = Buffer.allocUnsafe(
+        magicBytes.length
+          + 4 + cipherName.length
+          + 4 + kdfName.length
+          + 4 + kdfOptions.length
+          + 4
+          + 4 + parsed.pub.length
+          + 4 + privBlob.length
+          + extra.length
+      );
+      {
+        let pos = 0;
+        privBin.set(magicBytes, pos += 0);
+        privBin.writeUInt32BE(cipherName.length, pos += magicBytes.length);
+        privBin.set(cipherName, pos += 4);
+        privBin.writeUInt32BE(kdfName.length, pos += cipherName.length);
+        privBin.set(kdfName, pos += 4);
+        privBin.writeUInt32BE(kdfOptions.length, pos += kdfName.length);
+        privBin.set(kdfOptions, pos += 4);
+        privBin.writeUInt32BE(1, pos += kdfOptions.length);
+        privBin.writeUInt32BE(parsed.pub.length, pos += 4);
+        privBin.set(parsed.pub, pos += 4);
+        privBin.writeUInt32BE(privBlob.length, pos += parsed.pub.length);
+        privBin.set(privBlob, pos += 4);
+        privBin.set(extra, pos += privBlob.length);
+      }
+
+      {
+        const b64 = privBin.base64Slice(0, privBin.length);
+        let formatted = b64.replace(/.{64}/g, '$&\n');
+        if (b64.length & 63)
+          formatted += '\n';
+        privateB64 += formatted;
+      }
+
+      {
+        const b64 = parsed.pub.base64Slice(0, parsed.pub.length);
+        publicB64 = `${parsed.sshName} ${b64}${comment ? ` ${comment}` : ''}`;
+      }
+
+      privateB64 += '-----END OPENSSH PRIVATE KEY-----\n';
+      return {
+        private: privateB64,
+        public: publicB64,
+      };
+    }
+    default:
+      throw new Error('Invalid output key format');
+  }
+}
+
+function noop() {}
+
+module.exports = {
+  generateKeyPair: (keyType, opts, cb) => {
+    if (typeof opts === 'function') {
+      cb = opts;
+      opts = undefined;
+    }
+    if (typeof cb !== 'function')
+      cb = noop;
+    const args = makeArgs(keyType, opts);
+    generateKeyPair_(...args, (err, pub, priv) => {
+      if (err)
+        return cb(err);
+      let ret;
+      try {
+        ret = convertKeys(args[0], pub, priv, opts);
+      } catch (ex) {
+        return cb(ex);
+      }
+      cb(null, ret);
+    });
+  },
+  generateKeyPairSync: (keyType, opts) => {
+    const args = makeArgs(keyType, opts);
+    const { publicKey: pub, privateKey: priv } = generateKeyPairSync_(...args);
+    return convertKeys(args[0], pub, priv, opts);
+  }
+};
+
+
+/***/ }),
+
+/***/ 7841:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
@@ -13051,26 +15279,28 @@ module.exports = {
 
 
 
-const { inspect } = __nccwpck_require__(3837);
+const { inspect } = __nccwpck_require__(9023);
 
-const { bindingAvailable, NullCipher, NullDecipher } = __nccwpck_require__(5708);
+const { bindingAvailable, NullCipher, NullDecipher } = __nccwpck_require__(2888);
 const {
   COMPAT_CHECKS,
   DISCONNECT_REASON,
+  eddsaSupported,
   MESSAGE,
   SIGNALS,
   TERMINAL_MODE,
-} = __nccwpck_require__(6832);
+} = __nccwpck_require__(4020);
 const {
-  DEFAULT_KEXINIT,
+  DEFAULT_KEXINIT_CLIENT,
+  DEFAULT_KEXINIT_SERVER,
   KexInit,
   kexinit,
   onKEXPayload,
-} = __nccwpck_require__(4126);
+} = __nccwpck_require__(4637);
 const {
   parseKey,
-} = __nccwpck_require__(2218);
-const MESSAGE_HANDLERS = __nccwpck_require__(172);
+} = __nccwpck_require__(1789);
+const MESSAGE_HANDLERS = __nccwpck_require__(9244);
 const {
   bufferCopy,
   bufferFill,
@@ -13078,15 +15308,15 @@ const {
   convertSignature,
   sendPacket,
   writeUInt32BE,
-} = __nccwpck_require__(9475);
+} = __nccwpck_require__(2184);
 const {
   PacketReader,
   PacketWriter,
   ZlibPacketReader,
   ZlibPacketWriter,
-} = __nccwpck_require__(6715);
+} = __nccwpck_require__(4592);
 
-const MODULE_VER = (__nccwpck_require__(6674)/* .version */ .i8);
+const MODULE_VER = (__nccwpck_require__(8342)/* .version */ .rE);
 
 const VALID_DISCONNECT_REASONS = new Map(
   Object.values(DISCONNECT_REASON).map((n) => [n, 1])
@@ -13151,8 +15381,13 @@ class Protocol {
     let onHandshakeComplete = config.onHandshakeComplete;
     if (typeof onHandshakeComplete !== 'function')
       onHandshakeComplete = noop;
+    let firstHandshake;
     this._onHandshakeComplete = (...args) => {
       this._debug && this._debug('Handshake completed');
+      if (firstHandshake === undefined)
+        firstHandshake = true;
+      else
+        firstHandshake = false;
 
       // Process packets queued during a rekey where necessary
       const oldQueue = this._queue;
@@ -13177,6 +15412,9 @@ class Protocol {
         }
         this._debug && this._debug('... finished draining outbound queue');
       }
+
+      if (firstHandshake && this._server && this._kex.remoteExtInfoEnabled)
+        sendExtInfo(this);
 
       onHandshakeComplete(...args);
     };
@@ -13218,11 +15456,21 @@ class Protocol {
     }
 
     let offer = config.offer;
-    if (typeof offer !== 'object' || offer === null)
-      offer = DEFAULT_KEXINIT;
-    else if (offer.constructor !== KexInit)
+    if (typeof offer !== 'object' || offer === null) {
+      offer = (this._server ? DEFAULT_KEXINIT_SERVER : DEFAULT_KEXINIT_CLIENT);
+    } else if (offer.constructor !== KexInit) {
+      if (this._server) {
+        offer.kex = offer.kex.concat(['kex-strict-s-v00@openssh.com']);
+      } else {
+        offer.kex = offer.kex.concat([
+          'ext-info-c',
+          'kex-strict-c-v00@openssh.com',
+        ]);
+      }
       offer = new KexInit(offer);
+    }
     this._kex = undefined;
+    this._strictMode = undefined;
     this._kexinit = undefined;
     this._offer = offer;
     this._cipher = new NullCipher(0, this._onWrite);
@@ -13621,7 +15869,7 @@ class Protocol {
 
     sendPacket(this, this._packetRW.write.finalize(packet));
   }
-  authPK(username, pubKey, cbSign) {
+  authPK(username, pubKey, keyAlgo, cbSign) {
     if (this._server)
       throw new Error('Client-only method called in server mode');
 
@@ -13632,8 +15880,15 @@ class Protocol {
     const keyType = pubKey.type;
     pubKey = pubKey.getPublicSSH();
 
+    if (typeof keyAlgo === 'function') {
+      cbSign = keyAlgo;
+      keyAlgo = undefined;
+    }
+    if (!keyAlgo)
+      keyAlgo = keyType;
+
     const userLen = Buffer.byteLength(username);
-    const algoLen = Buffer.byteLength(keyType);
+    const algoLen = Buffer.byteLength(keyAlgo);
     const pubKeyLen = pubKey.length;
     const sessionID = this._kex.sessionID;
     const sesLen = sessionID.length;
@@ -13667,7 +15922,7 @@ class Protocol {
     packet[p += 9] = (cbSign ? 1 : 0);
 
     writeUInt32BE(packet, algoLen, ++p);
-    packet.utf8Write(keyType, p += 4, algoLen);
+    packet.utf8Write(keyAlgo, p += 4, algoLen);
 
     writeUInt32BE(packet, pubKeyLen, p += algoLen);
     packet.set(pubKey, p += 4);
@@ -13710,7 +15965,7 @@ class Protocol {
       packet[p += 9] = 1;
 
       writeUInt32BE(packet, algoLen, ++p);
-      packet.utf8Write(keyType, p += 4, algoLen);
+      packet.utf8Write(keyAlgo, p += 4, algoLen);
 
       writeUInt32BE(packet, pubKeyLen, p += algoLen);
       packet.set(pubKey, p += 4);
@@ -13718,7 +15973,7 @@ class Protocol {
       writeUInt32BE(packet, 4 + algoLen + 4 + sigLen, p += pubKeyLen);
 
       writeUInt32BE(packet, algoLen, p += 4);
-      packet.utf8Write(keyType, p += 4, algoLen);
+      packet.utf8Write(keyAlgo, p += 4, algoLen);
 
       writeUInt32BE(packet, sigLen, p += algoLen);
       packet.set(signature, p += 4);
@@ -13733,7 +15988,7 @@ class Protocol {
       sendPacket(this, this._packetRW.write.finalize(packet));
     });
   }
-  authHostbased(username, pubKey, hostname, userlocal, cbSign) {
+  authHostbased(username, pubKey, hostname, userlocal, keyAlgo, cbSign) {
     // TODO: Make DRY by sharing similar code with authPK()
     if (this._server)
       throw new Error('Client-only method called in server mode');
@@ -13745,8 +16000,15 @@ class Protocol {
     const keyType = pubKey.type;
     pubKey = pubKey.getPublicSSH();
 
+    if (typeof keyAlgo === 'function') {
+      cbSign = keyAlgo;
+      keyAlgo = undefined;
+    }
+    if (!keyAlgo)
+      keyAlgo = keyType;
+
     const userLen = Buffer.byteLength(username);
-    const algoLen = Buffer.byteLength(keyType);
+    const algoLen = Buffer.byteLength(keyAlgo);
     const pubKeyLen = pubKey.length;
     const sessionID = this._kex.sessionID;
     const sesLen = sessionID.length;
@@ -13773,7 +16035,7 @@ class Protocol {
     data.utf8Write('hostbased', p += 4, 9);
 
     writeUInt32BE(data, algoLen, p += 9);
-    data.utf8Write(keyType, p += 4, algoLen);
+    data.utf8Write(keyAlgo, p += 4, algoLen);
 
     writeUInt32BE(data, pubKeyLen, p += algoLen);
     data.set(pubKey, p += 4);
@@ -13800,7 +16062,7 @@ class Protocol {
 
       writeUInt32BE(packet, 4 + algoLen + 4 + sigLen, p += reqDataLen);
       writeUInt32BE(packet, algoLen, p += 4);
-      packet.utf8Write(keyType, p += 4, algoLen);
+      packet.utf8Write(keyAlgo, p += 4, algoLen);
       writeUInt32BE(packet, sigLen, p += algoLen);
       packet.set(signature, p += 4);
 
@@ -15087,25 +17349,50 @@ function modesToBytes(modes) {
   return bytes;
 }
 
+function sendExtInfo(proto) {
+  let serverSigAlgs =
+    'ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521'
+      + 'rsa-sha2-512,rsa-sha2-256,ssh-rsa,ssh-dss';
+  if (eddsaSupported)
+    serverSigAlgs = `ssh-ed25519,${serverSigAlgs}`;
+  const algsLen = Buffer.byteLength(serverSigAlgs);
+
+  let p = proto._packetRW.write.allocStart;
+  const packet = proto._packetRW.write.alloc(1 + 4 + 4 + 15 + 4 + algsLen);
+
+  packet[p] = MESSAGE.EXT_INFO;
+
+  writeUInt32BE(packet, 1, ++p);
+
+  writeUInt32BE(packet, 15, p += 4);
+  packet.utf8Write('server-sig-algs', p += 4, 15);
+
+  writeUInt32BE(packet, algsLen, p += 15);
+  packet.utf8Write(serverSigAlgs, p += 4, algsLen);
+
+  proto._debug && proto._debug('Outbound: Sending EXT_INFO');
+  sendPacket(proto, proto._packetRW.write.finalize(packet));
+}
+
 module.exports = Protocol;
 
 
 /***/ }),
 
-/***/ 2026:
+/***/ 4996:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
 
 
-const EventEmitter = __nccwpck_require__(2361);
-const fs = __nccwpck_require__(7147);
+const EventEmitter = __nccwpck_require__(4434);
+const fs = __nccwpck_require__(9896);
 const { constants } = fs;
 const {
   Readable: ReadableStream,
   Writable: WritableStream
-} = __nccwpck_require__(2781);
-const { inherits, isDate } = __nccwpck_require__(3837);
+} = __nccwpck_require__(2203);
+const { inherits, types: { isDate } } = __nccwpck_require__(9023);
 
 const FastBuffer = Buffer[Symbol.species];
 
@@ -15114,7 +17401,7 @@ const {
   bufferSlice,
   makeBufferParser,
   writeUInt32BE,
-} = __nccwpck_require__(9475);
+} = __nccwpck_require__(2184);
 
 const ATTR = {
   SIZE: 0x00000001,
@@ -16686,7 +18973,17 @@ class SFTP extends EventEmitter {
     writeUInt32BE(buf, pathLen, p += 20);
     buf.utf8Write(path, p += 4, pathLen);
 
-    this._requests[reqid] = { cb };
+    this._requests[reqid] = {
+      cb: (err, names) => {
+        if (typeof cb !== 'function')
+          return;
+        if (err)
+          return cb(err);
+        if (!names || !names.length)
+          return cb(new Error('Response missing expanded path'));
+        cb(undefined, names[0].filename);
+      }
+    };
 
     const isBuffered = sendOrBuffer(this, buf);
     if (this._debug) {
@@ -16777,6 +19074,146 @@ class SFTP extends EventEmitter {
     if (this._debug) {
       const status = (isBuffered ? 'Buffered' : 'Sending');
       this._debug(`SFTP: Outbound: ${status} copy-data`);
+    }
+  }
+  ext_home_dir(username, cb) {
+    if (this.server)
+      throw new Error('Client-only method called in server mode');
+
+    const ext = this._extensions['home-directory'];
+    if (ext !== '1')
+      throw new Error('Server does not support this extended request');
+
+    if (typeof username !== 'string')
+      throw new TypeError('username is not a string');
+
+    /*
+      uint32    id
+      string    "home-directory"
+      string    username
+    */
+    let p = 0;
+    const usernameLen = Buffer.byteLength(username);
+    const buf = Buffer.allocUnsafe(
+      4 + 1
+      + 4
+      + 4 + 14
+      + 4 + usernameLen
+    );
+
+    writeUInt32BE(buf, buf.length - 4, p);
+    p += 4;
+
+    buf[p] = REQUEST.EXTENDED;
+    ++p;
+
+    const reqid = this._writeReqid = (this._writeReqid + 1) & MAX_REQID;
+    writeUInt32BE(buf, reqid, p);
+    p += 4;
+
+    writeUInt32BE(buf, 14, p);
+    p += 4;
+    buf.utf8Write('home-directory', p, 14);
+    p += 14;
+
+    writeUInt32BE(buf, usernameLen, p);
+    p += 4;
+    buf.utf8Write(username, p, usernameLen);
+    p += usernameLen;
+
+    this._requests[reqid] = {
+      cb: (err, names) => {
+        if (typeof cb !== 'function')
+          return;
+        if (err)
+          return cb(err);
+        if (!names || !names.length)
+          return cb(new Error('Response missing home directory'));
+        cb(undefined, names[0].filename);
+      }
+    };
+
+    const isBuffered = sendOrBuffer(this, buf);
+    if (this._debug) {
+      const status = (isBuffered ? 'Buffered' : 'Sending');
+      this._debug(`SFTP: Outbound: ${status} home-directory`);
+    }
+  }
+  ext_users_groups(uids, gids, cb) {
+    if (this.server)
+      throw new Error('Client-only method called in server mode');
+
+    const ext = this._extensions['users-groups-by-id@openssh.com'];
+    if (ext !== '1')
+      throw new Error('Server does not support this extended request');
+
+    if (!Array.isArray(uids))
+      throw new TypeError('uids is not an array');
+    for (const val of uids) {
+      if (!Number.isInteger(val) || val < 0 || val > (2 ** 32 - 1))
+        throw new Error('uid values must all be 32-bit unsigned integers');
+    }
+    if (!Array.isArray(gids))
+      throw new TypeError('gids is not an array');
+    for (const val of gids) {
+      if (!Number.isInteger(val) || val < 0 || val > (2 ** 32 - 1))
+        throw new Error('gid values must all be 32-bit unsigned integers');
+    }
+
+    /*
+      uint32    id
+      string    "users-groups-by-id@openssh.com"
+      string    uids
+        uint32    uid1
+        ...
+      string    gids
+        uint32    gid1
+        ...
+    */
+    let p = 0;
+    const buf = Buffer.allocUnsafe(
+      4 + 1
+      + 4
+      + 4 + 30
+      + 4 + (4 * uids.length)
+      + 4 + (4 * gids.length)
+    );
+
+    writeUInt32BE(buf, buf.length - 4, p);
+    p += 4;
+
+    buf[p] = REQUEST.EXTENDED;
+    ++p;
+
+    const reqid = this._writeReqid = (this._writeReqid + 1) & MAX_REQID;
+    writeUInt32BE(buf, reqid, p);
+    p += 4;
+
+    writeUInt32BE(buf, 30, p);
+    p += 4;
+    buf.utf8Write('users-groups-by-id@openssh.com', p, 30);
+    p += 30;
+
+    writeUInt32BE(buf, 4 * uids.length, p);
+    p += 4;
+    for (const val of uids) {
+      writeUInt32BE(buf, val, p);
+      p += 4;
+    }
+
+    writeUInt32BE(buf, 4 * gids.length, p);
+    p += 4;
+    for (const val of gids) {
+      writeUInt32BE(buf, val, p);
+      p += 4;
+    }
+
+    this._requests[reqid] = { extended: 'users-groups-by-id@openssh.com', cb };
+
+    const isBuffered = sendOrBuffer(this, buf);
+    if (this._debug) {
+      const status = (isBuffered ? 'Buffered' : 'Sending');
+      this._debug(`SFTP: Outbound: ${status} users-groups-by-id@openssh.com`);
     }
   }
   // ===========================================================================
@@ -18026,6 +20463,44 @@ const CLIENT_HANDLERS = {
               req.cb(undefined, limits);
             return;
           }
+          case 'users-groups-by-id@openssh.com': {
+            /*
+              string    usernames
+                string    username1
+                ...
+              string    groupnames
+                string    groupname1
+                ...
+            */
+            const usernameCount = bufferParser.readUInt32BE();
+            if (usernameCount === undefined)
+              break;
+            const usernames = new Array(usernameCount);
+            for (let i = 0; i < usernames.length; ++i)
+              usernames[i] = bufferParser.readString(true);
+
+            const groupnameCount = bufferParser.readUInt32BE();
+            if (groupnameCount === undefined)
+              break;
+            const groupnames = new Array(groupnameCount);
+            for (let i = 0; i < groupnames.length; ++i)
+              groupnames[i] = bufferParser.readString(true);
+            if (groupnames.length > 0
+                && groupnames[groupnames.length - 1] === undefined) {
+              break;
+            }
+
+            if (sftp._debug) {
+              sftp._debug(
+                'SFTP: Inbound: Received EXTENDED_REPLY '
+                  + `(id:${reqID}, ${req.extended})`
+              );
+            }
+            bufferParser.clear();
+            if (typeof req.cb === 'function')
+              req.cb(undefined, usernames, groupnames);
+            return;
+          }
           default:
             // Unknown extended request
             sftp._debug && sftp._debug(
@@ -18506,7 +20981,7 @@ const {
   ERR_INVALID_ARG_TYPE,
   ERR_OUT_OF_RANGE,
   validateNumber
-} = __nccwpck_require__(7609);
+} = __nccwpck_require__(3208);
 
 const kMinPoolSpace = 128;
 
@@ -18964,20 +21439,20 @@ module.exports = {
 
 /***/ }),
 
-/***/ 6832:
+/***/ 4020:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
 
 
-const crypto = __nccwpck_require__(6113);
+const crypto = __nccwpck_require__(6982);
 
 let cpuInfo;
 try {
-  cpuInfo = __nccwpck_require__(7295)();
+  cpuInfo = __nccwpck_require__(4982)();
 } catch {}
 
-const { bindingAvailable, CIPHER_INFO, MAC_INFO } = __nccwpck_require__(5708);
+const { bindingAvailable, CIPHER_INFO, MAC_INFO } = __nccwpck_require__(2888);
 
 const eddsaSupported = (() => {
   if (typeof crypto.sign === 'function'
@@ -19129,6 +21604,7 @@ const COMPAT = {
   OLD_EXIT: 1 << 1,
   DYN_RPORT_BUG: 1 << 2,
   BUG_DHGEX_LARGE: 1 << 3,
+  IMPLY_RSA_SHA2_SIGALGS: 1 << 4,
 };
 
 module.exports = {
@@ -19140,6 +21616,7 @@ module.exports = {
     DEBUG: 4,
     SERVICE_REQUEST: 5,
     SERVICE_ACCEPT: 6,
+    EXT_INFO: 7, // RFC 8308
 
     // Transport layer protocol -- algorithm negotiation (20-29)
     KEXINIT: 20,
@@ -19297,9 +21774,10 @@ module.exports = {
   COMPAT,
   COMPAT_CHECKS: [
     [ 'Cisco-1.25', COMPAT.BAD_DHGEX ],
-    [ /^Cisco-1\./, COMPAT.BUG_DHGEX_LARGE ],
+    [ /^Cisco-1[.]/, COMPAT.BUG_DHGEX_LARGE ],
     [ /^[0-9.]+$/, COMPAT.OLD_EXIT ], // old SSH.com implementations
-    [ /^OpenSSH_5\.\d+/, COMPAT.DYN_RPORT_BUG ],
+    [ /^OpenSSH_5[.][0-9]+/, COMPAT.DYN_RPORT_BUG ],
+    [ /^OpenSSH_7[.]4/, COMPAT.IMPLY_RSA_SHA2_SIGALGS ],
   ],
 
   // KEX proposal-related
@@ -19325,7 +21803,7 @@ module.exports.DISCONNECT_REASON_BY_VALUE =
 
 /***/ }),
 
-/***/ 5708:
+/***/ 2888:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
@@ -19339,9 +21817,9 @@ module.exports.DISCONNECT_REASON_BY_VALUE =
 
 const {
   createCipheriv, createDecipheriv, createHmac, randomFillSync, timingSafeEqual
-} = __nccwpck_require__(6113);
+} = __nccwpck_require__(6982);
 
-const { readUInt32BE, writeUInt32BE } = __nccwpck_require__(9475);
+const { readUInt32BE, writeUInt32BE } = __nccwpck_require__(2184);
 
 const FastBuffer = Buffer[Symbol.species];
 const MAX_SEQNO = 2 ** 32 - 1;
@@ -19358,7 +21836,7 @@ let AESGCMDecipher;
 let ChaChaPolyDecipher;
 let GenericDecipher;
 try {
-  binding = __nccwpck_require__(9623);
+  binding = __nccwpck_require__(8440);
   ({ AESGCMCipher, ChaChaPolyCipher, GenericCipher,
      AESGCMDecipher, ChaChaPolyDecipher, GenericDecipher } = binding);
 } catch {}
@@ -20912,7 +23390,7 @@ module.exports = {
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve, reject) => {
       try {
-        POLY1305_WASM_MODULE = await __nccwpck_require__(4989)();
+        POLY1305_WASM_MODULE = await __nccwpck_require__(7830)();
         POLY1305_RESULT_MALLOC = POLY1305_WASM_MODULE._malloc(16);
         poly1305_auth = POLY1305_WASM_MODULE.cwrap(
           'poly1305_auth',
@@ -20935,7 +23413,7 @@ module.exports = {
 
 /***/ }),
 
-/***/ 4989:
+/***/ 7830:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 
@@ -20948,7 +23426,7 @@ function(createPoly1305) {
 
 
 var b;b||(b=typeof createPoly1305 !== 'undefined' ? createPoly1305 : {});var q,r;b.ready=new Promise(function(a,c){q=a;r=c});var u={},w;for(w in b)b.hasOwnProperty(w)&&(u[w]=b[w]);var x="object"===typeof window,y="function"===typeof importScripts,z="object"===typeof process&&"object"===typeof process.versions&&"string"===typeof process.versions.node,B="",C,D,E,F,G;
-if(z)B=y?(__nccwpck_require__(1017).dirname)(B)+"/":__dirname+"/",C=function(a,c){var d=H(a);if(d)return c?d:d.toString();F||(F=__nccwpck_require__(7147));G||(G=__nccwpck_require__(1017));a=G.normalize(a);return F.readFileSync(a,c?null:"utf8")},E=function(a){a=C(a,!0);a.buffer||(a=new Uint8Array(a));assert(a.buffer);return a},D=function(a,c,d){var e=H(a);e&&c(e);F||(F=__nccwpck_require__(7147));G||(G=__nccwpck_require__(1017));a=G.normalize(a);F.readFile(a,function(f,l){f?d(f):c(l.buffer)})},1<process.argv.length&&process.argv[1].replace(/\\/g,"/"),process.argv.slice(2),
+if(z)B=y?(__nccwpck_require__(6928).dirname)(B)+"/":__dirname+"/",C=function(a,c){var d=H(a);if(d)return c?d:d.toString();F||(F=__nccwpck_require__(9896));G||(G=__nccwpck_require__(6928));a=G.normalize(a);return F.readFileSync(a,c?null:"utf8")},E=function(a){a=C(a,!0);a.buffer||(a=new Uint8Array(a));assert(a.buffer);return a},D=function(a,c,d){var e=H(a);e&&c(e);F||(F=__nccwpck_require__(9896));G||(G=__nccwpck_require__(6928));a=G.normalize(a);F.readFile(a,function(f,l){f?d(f):c(l.buffer)})},1<process.argv.length&&process.argv[1].replace(/\\/g,"/"),process.argv.slice(2),
 b.inspect=function(){return"[Emscripten Module object]"};else if(x||y)y?B=self.location.href:"undefined"!==typeof document&&document.currentScript&&(B=document.currentScript.src),_scriptDir&&(B=_scriptDir),0!==B.indexOf("blob:")?B=B.substr(0,B.lastIndexOf("/")+1):B="",C=function(a){try{var c=new XMLHttpRequest;c.open("GET",a,!1);c.send(null);return c.responseText}catch(f){if(a=H(a)){c=[];for(var d=0;d<a.length;d++){var e=a[d];255<e&&(ba&&assert(!1,"Character code "+e+" ("+String.fromCharCode(e)+")  at offset "+
 d+" not in 0x00-0xFF."),e&=255);c.push(String.fromCharCode(e))}return c.join("")}throw f;}},y&&(E=function(a){try{var c=new XMLHttpRequest;c.open("GET",a,!1);c.responseType="arraybuffer";c.send(null);return new Uint8Array(c.response)}catch(d){if(a=H(a))return a;throw d;}}),D=function(a,c,d){var e=new XMLHttpRequest;e.open("GET",a,!0);e.responseType="arraybuffer";e.onload=function(){if(200==e.status||0==e.status&&e.response)c(e.response);else{var f=H(a);f?c(f.buffer):d()}};e.onerror=d;e.send(null)};
 b.print||console.log.bind(console);var I=b.printErr||console.warn.bind(console);for(w in u)u.hasOwnProperty(w)&&(b[w]=u[w]);u=null;var J;b.wasmBinary&&(J=b.wasmBinary);var noExitRuntime=b.noExitRuntime||!0;"object"!==typeof WebAssembly&&K("no native wasm support detected");var L,M=!1;function assert(a,c){a||K("Assertion failed: "+c)}function N(a){var c=b["_"+a];assert(c,"Cannot call unknown function "+a+", make sure it is exported");return c}
@@ -20982,7 +23460,7 @@ else {}
 
 /***/ }),
 
-/***/ 172:
+/***/ 9244:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
@@ -20990,8 +23468,8 @@ else {}
 
 const MESSAGE_HANDLERS = new Array(256);
 [
-  (__nccwpck_require__(4126).HANDLERS),
-  __nccwpck_require__(6475),
+  (__nccwpck_require__(4637).HANDLERS),
+  __nccwpck_require__(9964),
 ].forEach((handlers) => {
   // eslint-disable-next-line prefer-const
   for (let [type, handler] of Object.entries(handlers)) {
@@ -21006,7 +23484,7 @@ module.exports = MESSAGE_HANDLERS;
 
 /***/ }),
 
-/***/ 6475:
+/***/ 9964:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
@@ -21018,18 +23496,18 @@ const {
   doFatalError,
   sigSSHToASN1,
   writeUInt32BE,
-} = __nccwpck_require__(9475);
+} = __nccwpck_require__(2184);
 
 const {
   CHANNEL_OPEN_FAILURE,
   COMPAT,
   MESSAGE,
   TERMINAL_MODE,
-} = __nccwpck_require__(6832);
+} = __nccwpck_require__(4020);
 
 const {
   parseKey,
-} = __nccwpck_require__(2218);
+} = __nccwpck_require__(1789);
 
 const TERMINAL_MODE_BY_VALUE =
   Array.from(Object.entries(TERMINAL_MODE))
@@ -21158,6 +23636,48 @@ module.exports = {
     const handler = self._handlers.SERVICE_ACCEPT;
     handler && handler(self, name);
   },
+  [MESSAGE.EXT_INFO]: (self, payload) => {
+    /*
+      byte       SSH_MSG_EXT_INFO
+      uint32     nr-extensions
+      repeat the following 2 fields "nr-extensions" times:
+        string   extension-name
+        string   extension-value (binary)
+    */
+    bufferParser.init(payload, 1);
+    const numExts = bufferParser.readUInt32BE();
+    let exts;
+    if (numExts !== undefined) {
+      exts = [];
+      for (let i = 0; i < numExts; ++i) {
+        const name = bufferParser.readString(true);
+        const data = bufferParser.readString();
+        if (data !== undefined) {
+          switch (name) {
+            case 'server-sig-algs': {
+              const algs = data.latin1Slice(0, data.length).split(',');
+              exts.push({ name, algs });
+              continue;
+            }
+            default:
+              continue;
+          }
+        }
+        // Malformed
+        exts = undefined;
+        break;
+      }
+    }
+    bufferParser.clear();
+
+    if (exts === undefined)
+      return doFatalError(self, 'Inbound: Malformed EXT_INFO packet');
+
+    self._debug && self._debug('Inbound: Received EXT_INFO');
+
+    const handler = self._handlers.EXT_INFO;
+    handler && handler(self, exts);
+  },
 
   // User auth protocol -- generic =============================================
   [MESSAGE.USERAUTH_REQUEST]: (self, payload) => {
@@ -21207,7 +23727,21 @@ module.exports = {
         const hasSig = bufferParser.readBool();
         if (hasSig !== undefined) {
           const keyAlgo = bufferParser.readString(true);
+          let realKeyAlgo = keyAlgo;
           const key = bufferParser.readString();
+
+          let hashAlgo;
+          switch (keyAlgo) {
+            case 'rsa-sha2-256':
+              realKeyAlgo = 'ssh-rsa';
+              hashAlgo = 'sha256';
+              break;
+            case 'rsa-sha2-512':
+              realKeyAlgo = 'ssh-rsa';
+              hashAlgo = 'sha512';
+              break;
+          }
+
           if (hasSig) {
             const blobEnd = bufferParser.pos();
             let signature = bufferParser.readString();
@@ -21218,7 +23752,7 @@ module.exports = {
                 signature = bufferSlice(signature, 4 + keyAlgo.length + 4);
               }
 
-              signature = sigSSHToASN1(signature, keyAlgo);
+              signature = sigSSHToASN1(signature, realKeyAlgo);
               if (signature) {
                 const sessionID = self._kex.sessionID;
                 const blob = Buffer.allocUnsafe(4 + sessionID.length + blobEnd);
@@ -21229,15 +23763,16 @@ module.exports = {
                   4 + sessionID.length
                 );
                 methodData = {
-                  keyAlgo,
+                  keyAlgo: realKeyAlgo,
                   key,
                   signature,
                   blob,
+                  hashAlgo,
                 };
               }
             }
           } else {
-            methodData = { keyAlgo, key };
+            methodData = { keyAlgo: realKeyAlgo, key, hashAlgo };
             methodDesc = 'publickey -- check';
           }
         }
@@ -21253,9 +23788,22 @@ module.exports = {
           string    signature
         */
         const keyAlgo = bufferParser.readString(true);
+        let realKeyAlgo = keyAlgo;
         const key = bufferParser.readString();
         const localHostname = bufferParser.readString(true);
         const localUsername = bufferParser.readString(true);
+
+        let hashAlgo;
+        switch (keyAlgo) {
+          case 'rsa-sha2-256':
+            realKeyAlgo = 'ssh-rsa';
+            hashAlgo = 'sha256';
+            break;
+          case 'rsa-sha2-512':
+            realKeyAlgo = 'ssh-rsa';
+            hashAlgo = 'sha512';
+            break;
+        }
 
         const blobEnd = bufferParser.pos();
         let signature = bufferParser.readString();
@@ -21266,7 +23814,7 @@ module.exports = {
             signature = bufferSlice(signature, 4 + keyAlgo.length + 4);
           }
 
-          signature = sigSSHToASN1(signature, keyAlgo);
+          signature = sigSSHToASN1(signature, realKeyAlgo);
           if (signature !== undefined) {
             const sessionID = self._kex.sessionID;
             const blob = Buffer.allocUnsafe(4 + sessionID.length + blobEnd);
@@ -21277,12 +23825,13 @@ module.exports = {
               4 + sessionID.length
             );
             methodData = {
-              keyAlgo,
+              keyAlgo: realKeyAlgo,
               key,
               signature,
               blob,
               localHostname,
               localUsername,
+              hashAlgo
             };
           }
         }
@@ -22228,7 +24777,7 @@ module.exports = {
 
 /***/ }),
 
-/***/ 4126:
+/***/ 4637:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
@@ -22243,9 +24792,9 @@ const {
   diffieHellman,
   generateKeyPairSync,
   randomFillSync,
-} = __nccwpck_require__(6113);
+} = __nccwpck_require__(6982);
 
-const { Ber } = __nccwpck_require__(970);
+const { Ber } = __nccwpck_require__(9837);
 
 const {
   COMPAT,
@@ -22257,14 +24806,14 @@ const {
   DEFAULT_COMPRESSION,
   DISCONNECT_REASON,
   MESSAGE,
-} = __nccwpck_require__(6832);
+} = __nccwpck_require__(4020);
 const {
   CIPHER_INFO,
   createCipher,
   createDecipher,
   MAC_INFO,
-} = __nccwpck_require__(5708);
-const { parseDERKey } = __nccwpck_require__(2218);
+} = __nccwpck_require__(2888);
+const { parseDERKey } = __nccwpck_require__(1789);
 const {
   bufferFill,
   bufferParser,
@@ -22273,13 +24822,13 @@ const {
   FastBuffer,
   sigSSHToASN1,
   writeUInt32BE,
-} = __nccwpck_require__(9475);
+} = __nccwpck_require__(2184);
 const {
   PacketReader,
   PacketWriter,
   ZlibPacketReader,
   ZlibPacketWriter,
-} = __nccwpck_require__(6715);
+} = __nccwpck_require__(4592);
 
 let MESSAGE_HANDLERS;
 
@@ -22456,12 +25005,39 @@ function handleKexInit(self, payload) {
   // Key exchange method =======================================================
   debug && debug(`Handshake: (local) KEX method: ${localKex}`);
   debug && debug(`Handshake: (remote) KEX method: ${remote.kex}`);
+  let remoteExtInfoEnabled;
   if (self._server) {
     serverList = localKex;
     clientList = remote.kex;
+    remoteExtInfoEnabled = (clientList.indexOf('ext-info-c') !== -1);
   } else {
     serverList = remote.kex;
     clientList = localKex;
+    remoteExtInfoEnabled = (serverList.indexOf('ext-info-s') !== -1);
+  }
+  if (self._strictMode === undefined) {
+    if (self._server) {
+      self._strictMode =
+        (clientList.indexOf('kex-strict-c-v00@openssh.com') !== -1);
+    } else {
+      self._strictMode =
+        (serverList.indexOf('kex-strict-s-v00@openssh.com') !== -1);
+    }
+    // Note: We check for seqno of 1 instead of 0 since we increment before
+    //       calling the packet handler
+    if (self._strictMode) {
+      debug && debug('Handshake: strict KEX mode enabled');
+      if (self._decipher.inSeqno !== 1) {
+        if (debug)
+          debug('Handshake: KEXINIT not first packet in strict KEX mode');
+        return doFatalError(
+          self,
+          'Handshake failed: KEXINIT not first packet in strict KEX mode',
+          'handshake',
+          DISCONNECT_REASON.KEY_EXCHANGE_FAILED
+        );
+      }
+    }
   }
   // Check for agreeable key exchange algorithm
   for (i = 0;
@@ -22469,7 +25045,7 @@ function handleKexInit(self, payload) {
        ++i);
   if (i === clientList.length) {
     // No suitable match found!
-    debug && debug('Handshake: No matching key exchange algorithm');
+    debug && debug('Handshake: no matching key exchange algorithm');
     return doFatalError(
       self,
       'Handshake failed: no matching key exchange algorithm',
@@ -22713,6 +25289,7 @@ function handleKexInit(self, payload) {
   }
 
   self._kex = createKeyExchange(init, self, payload);
+  self._kex.remoteExtInfoEnabled = remoteExtInfoEnabled;
   self._kex.start();
 }
 
@@ -22744,6 +25321,7 @@ const createKeyExchange = (() => {
 
       this.sessionID = (protocol._kex ? protocol._kex.sessionID : undefined);
       this.negotiated = negotiated;
+      this.remoteExtInfoEnabled = false;
       this._step = 1;
       this._public = null;
       this._dh = null;
@@ -22761,7 +25339,7 @@ const createKeyExchange = (() => {
       this._dhData = undefined;
       this._sig = undefined;
     }
-    finish() {
+    finish(scOnly) {
       if (this._finished)
         return false;
       this._finished = true;
@@ -23012,9 +25590,26 @@ const createKeyExchange = (() => {
           this._protocol._packetRW.write.finalize(packet, true)
         );
       }
-      trySendNEWKEYS(this);
 
-      const completeHandshake = () => {
+      if (isServer || !scOnly)
+        trySendNEWKEYS(this);
+
+      let hsCipherConfig;
+      let hsWrite;
+      const completeHandshake = (partial) => {
+        if (hsCipherConfig) {
+          trySendNEWKEYS(this);
+          hsCipherConfig.outbound.seqno = this._protocol._cipher.outSeqno;
+          this._protocol._cipher.free();
+          this._protocol._cipher = createCipher(hsCipherConfig);
+          this._protocol._packetRW.write = hsWrite;
+          hsCipherConfig = undefined;
+          hsWrite = undefined;
+          this._protocol._onHandshakeComplete(negotiated);
+
+          return false;
+        }
+
         if (!this.sessionID)
           this.sessionID = exchangeHash;
 
@@ -23097,9 +25692,8 @@ const createKeyExchange = (() => {
             macKey: (isServer ? scMacKey : csMacKey),
           },
         };
-        this._protocol._cipher && this._protocol._cipher.free();
-        this._protocol._decipher && this._protocol._decipher.free();
-        this._protocol._cipher = createCipher(config);
+        this._protocol._decipher.free();
+        hsCipherConfig = config;
         this._protocol._decipher = createDecipher(config);
 
         const rw = {
@@ -23166,7 +25760,8 @@ const createKeyExchange = (() => {
         }
         this._protocol._packetRW.read.cleanup();
         this._protocol._packetRW.write.cleanup();
-        this._protocol._packetRW = rw;
+        this._protocol._packetRW.read = rw.read;
+        hsWrite = rw.write;
 
         // Cleanup/reset various state
         this._public = null;
@@ -23179,13 +25774,16 @@ const createKeyExchange = (() => {
         this._dhData = undefined;
         this._sig = undefined;
 
-        this._protocol._onHandshakeComplete(negotiated);
-
+        if (!partial)
+          return completeHandshake();
         return false;
       };
+
+      if (isServer || scOnly)
+        this.finish = completeHandshake;
+
       if (!isServer)
-        return completeHandshake();
-      this.finish = completeHandshake;
+        return completeHandshake(scOnly);
     }
 
     start() {
@@ -23445,13 +26043,11 @@ const createKeyExchange = (() => {
             'Inbound: NEWKEYS'
           );
           this._receivedNEWKEYS = true;
+          if (this._protocol._strictMode)
+            this._protocol._decipher.inSeqno = 0;
           ++this._step;
-          if (this._protocol._server || this._hostVerified)
-            return this.finish();
 
-          // Signal to current decipher that we need to change to a new decipher
-          // for the next packet
-          return false;
+          return this.finish(!this._protocol._server && !this._hostVerified);
         default:
           return doFatalError(
             this._protocol,
@@ -23612,7 +26208,7 @@ const createKeyExchange = (() => {
     parse(payload) {
       const type = payload[0];
       switch (this._step) {
-        case 1:
+        case 1: {
           if (this._protocol._server) {
             if (type !== MESSAGE.KEXDH_GEX_REQUEST) {
               return doFatalError(
@@ -23687,6 +26283,7 @@ const createKeyExchange = (() => {
 
           ++this._step;
           break;
+        }
         case 2:
           if (this._protocol._server) {
             if (type !== MESSAGE.KEXDH_GEX_INIT) {
@@ -23968,13 +26565,22 @@ function onKEXPayload(state, payload) {
   payload = this._packetRW.read.read(payload);
 
   const type = payload[0];
+
+  if (!this._strictMode) {
+    switch (type) {
+      case MESSAGE.IGNORE:
+      case MESSAGE.UNIMPLEMENTED:
+      case MESSAGE.DEBUG:
+        if (!MESSAGE_HANDLERS)
+          MESSAGE_HANDLERS = __nccwpck_require__(9244);
+        return MESSAGE_HANDLERS[type](this, payload);
+    }
+  }
+
   switch (type) {
     case MESSAGE.DISCONNECT:
-    case MESSAGE.IGNORE:
-    case MESSAGE.UNIMPLEMENTED:
-    case MESSAGE.DEBUG:
       if (!MESSAGE_HANDLERS)
-        MESSAGE_HANDLERS = __nccwpck_require__(172);
+        MESSAGE_HANDLERS = __nccwpck_require__(9244);
       return MESSAGE_HANDLERS[type](this, payload);
     case MESSAGE.KEXINIT:
       if (!state.firstPacket) {
@@ -23988,6 +26594,8 @@ function onKEXPayload(state, payload) {
       state.firstPacket = false;
       return handleKexInit(this, payload);
     default:
+      // Ensure packet is either an algorithm negotiation or KEX
+      // algorithm-specific packet
       if (type < 20 || type > 49) {
         return doFatalError(
           this,
@@ -24036,6 +26644,8 @@ function trySendNEWKEYS(kex) {
       kex._protocol._packetRW.write.finalize(packet, true)
     );
     kex._sentNEWKEYS = true;
+    if (kex._protocol._strictMode)
+      kex._protocol._cipher.outSeqno = 0;
   }
 }
 
@@ -24043,8 +26653,24 @@ module.exports = {
   KexInit,
   kexinit,
   onKEXPayload,
-  DEFAULT_KEXINIT: new KexInit({
-    kex: DEFAULT_KEX,
+  DEFAULT_KEXINIT_CLIENT: new KexInit({
+    kex: DEFAULT_KEX.concat(['ext-info-c', 'kex-strict-c-v00@openssh.com']),
+    serverHostKey: DEFAULT_SERVER_HOST_KEY,
+    cs: {
+      cipher: DEFAULT_CIPHER,
+      mac: DEFAULT_MAC,
+      compress: DEFAULT_COMPRESSION,
+      lang: [],
+    },
+    sc: {
+      cipher: DEFAULT_CIPHER,
+      mac: DEFAULT_MAC,
+      compress: DEFAULT_COMPRESSION,
+      lang: [],
+    },
+  }),
+  DEFAULT_KEXINIT_SERVER: new KexInit({
+    kex: DEFAULT_KEX.concat(['kex-strict-s-v00@openssh.com']),
     serverHostKey: DEFAULT_SERVER_HOST_KEY,
     cs: {
       cipher: DEFAULT_CIPHER,
@@ -24067,7 +26693,7 @@ module.exports = {
 
 /***/ }),
 
-/***/ 2218:
+/***/ 1789:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
@@ -24087,21 +26713,21 @@ const {
   getCiphers,
   sign: sign_,
   verify: verify_,
-} = __nccwpck_require__(6113);
+} = __nccwpck_require__(6982);
 const supportedOpenSSLCiphers = getCiphers();
 
-const { Ber } = __nccwpck_require__(970);
-const bcrypt_pbkdf = (__nccwpck_require__(5447).pbkdf);
+const { Ber } = __nccwpck_require__(9837);
+const bcrypt_pbkdf = (__nccwpck_require__(686).pbkdf);
 
-const { CIPHER_INFO } = __nccwpck_require__(5708);
-const { eddsaSupported, SUPPORTED_CIPHER } = __nccwpck_require__(6832);
+const { CIPHER_INFO } = __nccwpck_require__(2888);
+const { eddsaSupported, SUPPORTED_CIPHER } = __nccwpck_require__(4020);
 const {
   bufferSlice,
   makeBufferParser,
   readString,
   readUInt32BE,
   writeUInt32BE,
-} = __nccwpck_require__(9475);
+} = __nccwpck_require__(2184);
 
 const SYM_HASH_ALGO = Symbol('Hash Algorithm');
 const SYM_PRIV_PEM = Symbol('Private key PEM');
@@ -24519,7 +27145,7 @@ const BaseKey = {
       this.type === parsed.type
       && this[SYM_PRIV_PEM] === parsed[SYM_PRIV_PEM]
       && this[SYM_PUB_PEM] === parsed[SYM_PUB_PEM]
-      && this[SYM_PUB_SSH] === parsed[SYM_PUB_SSH]
+      && this[SYM_PUB_SSH].equals(parsed[SYM_PUB_SSH])
     );
   },
 };
@@ -24585,7 +27211,7 @@ OpenSSH_Private.prototype = BaseKey;
       switch (kdfName) {
         case 'none':
           return new Error('Malformed OpenSSH private key');
-        case 'bcrypt':
+        case 'bcrypt': {
           /*
             string salt
             uint32 rounds
@@ -24607,6 +27233,7 @@ OpenSSH_Private.prototype = BaseKey;
           cipherKey = bufferSlice(gen, 0, encInfo.keyLen);
           cipherIV = bufferSlice(gen, encInfo.keyLen, gen.length);
           break;
+        }
       }
     } else if (kdfName !== 'none') {
       return new Error('Malformed OpenSSH private key');
@@ -24646,6 +27273,7 @@ OpenSSH_Private.prototype = BaseKey;
                                             cipherKey,
                                             cipherIV,
                                             options);
+          decipher.setAutoPadding(false);
           if (encInfo.authLen > 0) {
             if (data.length - data._pos < encInfo.authLen)
               return new Error('Malformed OpenSSH private key');
@@ -25005,7 +27633,7 @@ OpenSSH_Old_Private.prototype = BaseKey;
         }
         algo = 'sha1';
         break;
-      case 'EC':
+      case 'EC': {
         let ecSSLName;
         let ecPriv;
         let ecOID;
@@ -25054,6 +27682,7 @@ OpenSSH_Old_Private.prototype = BaseKey;
         pubPEM = genOpenSSLECDSAPub(ecOID, pubBlob);
         pubSSH = genOpenSSHECDSAPub(ecOID, pubBlob);
         break;
+      }
     }
 
     return new OpenSSH_Old_Private(type, '', privPEM, pubPEM, pubSSH, algo,
@@ -25129,9 +27758,7 @@ PPK_Private.prototype = BaseKey;
       if (cipherKey.length > encInfo.keyLen)
         cipherKey = bufferSlice(cipherKey, 0, encInfo.keyLen);
       try {
-        const decipher = createDecipheriv(encInfo.sslName,
-                                        cipherKey,
-                                        PPK_IV);
+        const decipher = createDecipheriv(encInfo.sslName, cipherKey, PPK_IV);
         decipher.setAutoPadding(false);
         privBlob = combineBuffers(decipher.update(privBlob),
                                   decipher.final());
@@ -25558,14 +28185,14 @@ module.exports = {
 
 /***/ }),
 
-/***/ 7609:
+/***/ 3208:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
 
-const assert = __nccwpck_require__(9491);
-const { inspect } = __nccwpck_require__(3837);
+const assert = __nccwpck_require__(2613);
+const { inspect } = __nccwpck_require__(9023);
 
 // Only use this for integers! Decimal numbers do not work with this function.
 function addNumericalSeparator(val) {
@@ -25681,13 +28308,13 @@ exports.validateNumber = function validateNumber(value, name) {
 
 /***/ }),
 
-/***/ 9475:
+/***/ 2184:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
 
 
-const Ber = (__nccwpck_require__(970).Ber);
+const Ber = (__nccwpck_require__(9837).Ber);
 
 let DISCONNECT_REASON;
 
@@ -25858,7 +28485,7 @@ module.exports = {
   doFatalError: (protocol, msg, level, reason) => {
     let err;
     if (DISCONNECT_REASON === undefined)
-      ({ DISCONNECT_REASON } = __nccwpck_require__(6832));
+      ({ DISCONNECT_REASON } = __nccwpck_require__(4020));
     if (msg instanceof Error) {
       // doFatalError(protocol, err[, reason])
       err = msg;
@@ -26045,13 +28672,13 @@ module.exports = {
 
 /***/ }),
 
-/***/ 6715:
+/***/ 4592:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
 
 
-const { kMaxLength } = __nccwpck_require__(4300);
+const { kMaxLength } = __nccwpck_require__(181);
 const {
   createInflate,
   constants: {
@@ -26064,7 +28691,7 @@ const {
     Z_DEFAULT_WINDOWBITS,
     Z_PARTIAL_FLUSH,
   }
-} = __nccwpck_require__(9796);
+} = __nccwpck_require__(3106);
 const ZlibHandle = createInflate()._handle.constructor;
 
 function processCallback() {
@@ -26308,7 +28935,7 @@ module.exports = {
 
 /***/ }),
 
-/***/ 2986:
+/***/ 2605:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
@@ -26319,8 +28946,8 @@ module.exports = {
 //     immediate connection status checking
 
 
-const { Server: netServer } = __nccwpck_require__(1808);
-const EventEmitter = __nccwpck_require__(2361);
+const { Server: netServer } = __nccwpck_require__(9278);
+const EventEmitter = __nccwpck_require__(4434);
 const { listenerCount } = EventEmitter;
 
 const {
@@ -26337,13 +28964,13 @@ const {
   SUPPORTED_KEX,
   SUPPORTED_MAC,
   SUPPORTED_SERVER_HOST_KEY,
-} = __nccwpck_require__(6832);
-const { init: cryptoInit } = __nccwpck_require__(5708);
-const { KexInit } = __nccwpck_require__(4126);
-const { parseKey } = __nccwpck_require__(2218);
-const Protocol = __nccwpck_require__(9031);
-const { SFTP } = __nccwpck_require__(2026);
-const { writeUInt32BE } = __nccwpck_require__(9475);
+} = __nccwpck_require__(4020);
+const { init: cryptoInit } = __nccwpck_require__(2888);
+const { KexInit } = __nccwpck_require__(4637);
+const { parseKey } = __nccwpck_require__(1789);
+const Protocol = __nccwpck_require__(7841);
+const { SFTP } = __nccwpck_require__(4996);
+const { writeUInt32BE } = __nccwpck_require__(2184);
 
 const {
   Channel,
@@ -26351,7 +28978,7 @@ const {
   PACKET_SIZE,
   windowAdjust,
   WINDOW_THRESHOLD,
-} = __nccwpck_require__(3204);
+} = __nccwpck_require__(5683);
 
 const {
   ChannelManager,
@@ -26359,7 +28986,7 @@ const {
   isWritable,
   onChannelOpenFailure,
   onCHANNEL_CLOSE,
-} = __nccwpck_require__(834);
+} = __nccwpck_require__(2137);
 
 const MAX_PENDING_AUTHS = 10;
 
@@ -26450,6 +29077,7 @@ class PKAuthContext extends AuthContext {
     super(protocol, username, service, method, cb);
 
     this.key = { algo: pkInfo.keyAlgo, data: pkInfo.key };
+    this.hashAlgo = pkInfo.hashAlgo;
     this.signature = pkInfo.signature;
     this.blob = pkInfo.blob;
   }
@@ -26469,6 +29097,7 @@ class HostbasedAuthContext extends AuthContext {
     super(protocol, username, service, method, cb);
 
     this.key = { algo: pkInfo.keyAlgo, data: pkInfo.key };
+    this.hashAlgo = pkInfo.hashAlgo;
     this.signature = pkInfo.signature;
     this.blob = pkInfo.blob;
     this.localHostname = pkInfo.localHostname;
@@ -26606,7 +29235,11 @@ class Server extends EventEmitter {
     }
 
     const algorithms = {
-      kex: generateAlgorithmList(cfgAlgos.kex, DEFAULT_KEX, SUPPORTED_KEX),
+      kex: generateAlgorithmList(
+        cfgAlgos.kex,
+        DEFAULT_KEX,
+        SUPPORTED_KEX
+      ).concat(['kex-strict-s-v00@openssh.com']),
       serverHostKey: hostKeyAlgoOrder,
       cs: {
         cipher: generateAlgorithmList(
@@ -27630,6 +30263,13 @@ class Client extends EventEmitter {
         this.once('rekey', cb);
     }
   }
+
+  setNoDelay(noDelay) {
+    if (this._sock && typeof this._sock.setNoDelay === 'function')
+      this._sock.setNoDelay(noDelay);
+
+    return this;
+  }
 }
 
 
@@ -27683,13 +30323,13 @@ module.exports.IncomingClient = Client;
 
 /***/ }),
 
-/***/ 834:
+/***/ 2137:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
 
 
-const { SFTP } = __nccwpck_require__(2026);
+const { SFTP } = __nccwpck_require__(4996);
 
 const MAX_CHANNEL = 2 ** 32 - 1;
 
@@ -28027,7 +30667,7 @@ module.exports = {
 
 /***/ }),
 
-/***/ 4841:
+/***/ 634:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
@@ -28056,7 +30696,7 @@ module.exports = {
 
 /*<replacement>*/
 
-var Buffer = (__nccwpck_require__(1867).Buffer);
+var Buffer = (__nccwpck_require__(3058).Buffer);
 /*</replacement>*/
 
 var isEncoding = Buffer.isEncoding || function (encoding) {
@@ -28108,7 +30748,7 @@ function normalizeEncoding(enc) {
 // StringDecoder provides an interface for efficiently splitting a series of
 // buffers into a series of JS strings without breaking apart multi-byte
 // characters.
-exports.s = StringDecoder;
+exports.I = StringDecoder;
 function StringDecoder(encoding) {
   this.encoding = normalizeEncoding(encoding);
   var nb;
@@ -28330,27 +30970,27 @@ function simpleEnd(buf) {
 
 /***/ }),
 
-/***/ 4294:
+/***/ 770:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-module.exports = __nccwpck_require__(4219);
+module.exports = __nccwpck_require__(218);
 
 
 /***/ }),
 
-/***/ 4219:
+/***/ 218:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
 
-var net = __nccwpck_require__(1808);
-var tls = __nccwpck_require__(4404);
-var http = __nccwpck_require__(3685);
-var https = __nccwpck_require__(5687);
-var events = __nccwpck_require__(2361);
-var assert = __nccwpck_require__(9491);
-var util = __nccwpck_require__(3837);
+var net = __nccwpck_require__(9278);
+var tls = __nccwpck_require__(4756);
+var http = __nccwpck_require__(8611);
+var https = __nccwpck_require__(5692);
+var events = __nccwpck_require__(4434);
+var assert = __nccwpck_require__(2613);
+var util = __nccwpck_require__(9023);
 
 
 exports.httpOverHttp = httpOverHttp;
@@ -28610,7 +31250,7 @@ exports.debug = debug; // for test
 
 /***/ }),
 
-/***/ 8729:
+/***/ 668:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 (function(nacl) {
@@ -30989,7 +33629,7 @@ nacl.setPRNG = function(fn) {
     });
   } else if (true) {
     // Node.js.
-    crypto = __nccwpck_require__(6113);
+    crypto = __nccwpck_require__(6982);
     if (crypto && crypto.randomBytes) {
       nacl.setPRNG(function(x, n) {
         var i, v = crypto.randomBytes(n);
@@ -31005,7 +33645,7 @@ nacl.setPRNG = function(fn) {
 
 /***/ }),
 
-/***/ 5027:
+/***/ 2317:
 /***/ ((__unused_webpack_module, exports) => {
 
 var undefined = (void 0); // Paranoia
@@ -31271,7 +33911,7 @@ function packF32(v) { return packIEEE754(v, 8, 23); }
     configureProperties(this);
   };
 
-  exports.eT = exports.eT || ArrayBuffer;
+  exports.Az = exports.Az || ArrayBuffer;
 
   //
   // 4 The ArrayBufferView Type
@@ -31508,15 +34148,15 @@ function packF32(v) { return packIEEE754(v, 8, 23); }
   var Float32Array = makeConstructor(4, packF32, unpackF32);
   var Float64Array = makeConstructor(8, packF64, unpackF64);
 
-  exports.iq = exports.iq || Int8Array;
-  exports.U2 = exports.U2 || Uint8Array;
-  exports.we = exports.we || Uint8ClampedArray;
-  exports.M2 = exports.M2 || Int16Array;
-  exports.HA = exports.HA || Uint16Array;
-  exports.ZV = exports.ZV || Int32Array;
-  exports._R = exports._R || Uint32Array;
-  exports.$L = exports.$L || Float32Array;
-  exports.I = exports.I || Float64Array;
+  exports.fo = exports.fo || Int8Array;
+  exports.SE = exports.SE || Uint8Array;
+  exports.ER = exports.ER || Uint8ClampedArray;
+  exports.ss = exports.ss || Int16Array;
+  exports.hR = exports.hR || Uint16Array;
+  exports.GM = exports.GM || Int32Array;
+  exports.bt = exports.bt || Uint32Array;
+  exports.l6 = exports.l6 || Float32Array;
+  exports.aQ = exports.aQ || Float64Array;
 }());
 
 //
@@ -31529,8 +34169,8 @@ function packF32(v) { return packIEEE754(v, 8, 23); }
   }
 
   var IS_BIG_ENDIAN = (function() {
-    var u16array = new(exports.HA)([0x1234]),
-        u8array = new(exports.U2)(u16array.buffer);
+    var u16array = new(exports.hR)([0x1234]),
+        u8array = new(exports.SE)(u16array.buffer);
     return r(u8array, 0) === 0x12;
   }());
 
@@ -31540,12 +34180,12 @@ function packF32(v) { return packIEEE754(v, 8, 23); }
   /** @constructor */
   var DataView = function DataView(buffer, byteOffset, byteLength) {
     if (arguments.length === 0) {
-      buffer = new exports.eT(0);
-    } else if (!(buffer instanceof exports.eT || ECMAScript.Class(buffer) === 'ArrayBuffer')) {
+      buffer = new exports.Az(0);
+    } else if (!(buffer instanceof exports.Az || ECMAScript.Class(buffer) === 'ArrayBuffer')) {
       throw new TypeError("TypeError");
     }
 
-    this.buffer = buffer || new exports.eT(0);
+    this.buffer = buffer || new exports.Az(0);
 
     this.byteOffset = ECMAScript.ToUint32(byteOffset);
     if (this.byteOffset > this.buffer.byteLength) {
@@ -31575,7 +34215,7 @@ function packF32(v) { return packIEEE754(v, 8, 23); }
       }
       byteOffset += this.byteOffset;
 
-      var uint8Array = new exports.U2(this.buffer, byteOffset, arrayType.BYTES_PER_ELEMENT),
+      var uint8Array = new exports.SE(this.buffer, byteOffset, arrayType.BYTES_PER_ELEMENT),
           bytes = [], i;
       for (i = 0; i < arrayType.BYTES_PER_ELEMENT; i += 1) {
         bytes.push(r(uint8Array, i));
@@ -31585,18 +34225,18 @@ function packF32(v) { return packIEEE754(v, 8, 23); }
         bytes.reverse();
       }
 
-      return r(new arrayType(new exports.U2(bytes).buffer), 0);
+      return r(new arrayType(new exports.SE(bytes).buffer), 0);
     };
   }
 
-  DataView.prototype.getUint8 = makeGetter(exports.U2);
-  DataView.prototype.getInt8 = makeGetter(exports.iq);
-  DataView.prototype.getUint16 = makeGetter(exports.HA);
-  DataView.prototype.getInt16 = makeGetter(exports.M2);
-  DataView.prototype.getUint32 = makeGetter(exports._R);
-  DataView.prototype.getInt32 = makeGetter(exports.ZV);
-  DataView.prototype.getFloat32 = makeGetter(exports.$L);
-  DataView.prototype.getFloat64 = makeGetter(exports.I);
+  DataView.prototype.getUint8 = makeGetter(exports.SE);
+  DataView.prototype.getInt8 = makeGetter(exports.fo);
+  DataView.prototype.getUint16 = makeGetter(exports.hR);
+  DataView.prototype.getInt16 = makeGetter(exports.ss);
+  DataView.prototype.getUint32 = makeGetter(exports.bt);
+  DataView.prototype.getInt32 = makeGetter(exports.GM);
+  DataView.prototype.getFloat32 = makeGetter(exports.l6);
+  DataView.prototype.getFloat64 = makeGetter(exports.aQ);
 
   function makeSetter(arrayType) {
     return function(byteOffset, value, littleEndian) {
@@ -31608,7 +34248,7 @@ function packF32(v) { return packIEEE754(v, 8, 23); }
 
       // Get bytes
       var typeArray = new arrayType([value]),
-          byteArray = new exports.U2(typeArray.buffer),
+          byteArray = new exports.SE(typeArray.buffer),
           bytes = [], i, byteView;
 
       for (i = 0; i < arrayType.BYTES_PER_ELEMENT; i += 1) {
@@ -31621,28 +34261,28 @@ function packF32(v) { return packIEEE754(v, 8, 23); }
       }
 
       // Write them
-      byteView = new exports.U2(this.buffer, byteOffset, arrayType.BYTES_PER_ELEMENT);
+      byteView = new exports.SE(this.buffer, byteOffset, arrayType.BYTES_PER_ELEMENT);
       byteView.set(bytes);
     };
   }
 
-  DataView.prototype.setUint8 = makeSetter(exports.U2);
-  DataView.prototype.setInt8 = makeSetter(exports.iq);
-  DataView.prototype.setUint16 = makeSetter(exports.HA);
-  DataView.prototype.setInt16 = makeSetter(exports.M2);
-  DataView.prototype.setUint32 = makeSetter(exports._R);
-  DataView.prototype.setInt32 = makeSetter(exports.ZV);
-  DataView.prototype.setFloat32 = makeSetter(exports.$L);
-  DataView.prototype.setFloat64 = makeSetter(exports.I);
+  DataView.prototype.setUint8 = makeSetter(exports.SE);
+  DataView.prototype.setInt8 = makeSetter(exports.fo);
+  DataView.prototype.setUint16 = makeSetter(exports.hR);
+  DataView.prototype.setInt16 = makeSetter(exports.ss);
+  DataView.prototype.setUint32 = makeSetter(exports.bt);
+  DataView.prototype.setInt32 = makeSetter(exports.GM);
+  DataView.prototype.setFloat32 = makeSetter(exports.l6);
+  DataView.prototype.setFloat64 = makeSetter(exports.aQ);
 
-  exports.VO = exports.VO || DataView;
+  exports.U$ = exports.U$ || DataView;
 
 }());
 
 
 /***/ }),
 
-/***/ 7127:
+/***/ 4488:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 
@@ -31650,674 +34290,26 @@ function packF32(v) { return packIEEE754(v, 8, 23); }
  * For Node.js, simply re-export the core `util.deprecate` function.
  */
 
-module.exports = __nccwpck_require__(3837).deprecate;
+module.exports = __nccwpck_require__(9023).deprecate;
 
 
 /***/ }),
 
-/***/ 5840:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+/***/ 5243:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-Object.defineProperty(exports, "v1", ({
-  enumerable: true,
-  get: function () {
-    return _v.default;
-  }
-}));
-Object.defineProperty(exports, "v3", ({
-  enumerable: true,
-  get: function () {
-    return _v2.default;
-  }
-}));
-Object.defineProperty(exports, "v4", ({
-  enumerable: true,
-  get: function () {
-    return _v3.default;
-  }
-}));
-Object.defineProperty(exports, "v5", ({
-  enumerable: true,
-  get: function () {
-    return _v4.default;
-  }
-}));
-Object.defineProperty(exports, "NIL", ({
-  enumerable: true,
-  get: function () {
-    return _nil.default;
-  }
-}));
-Object.defineProperty(exports, "version", ({
-  enumerable: true,
-  get: function () {
-    return _version.default;
-  }
-}));
-Object.defineProperty(exports, "validate", ({
-  enumerable: true,
-  get: function () {
-    return _validate.default;
-  }
-}));
-Object.defineProperty(exports, "stringify", ({
-  enumerable: true,
-  get: function () {
-    return _stringify.default;
-  }
-}));
-Object.defineProperty(exports, "parse", ({
-  enumerable: true,
-  get: function () {
-    return _parse.default;
-  }
-}));
-
-var _v = _interopRequireDefault(__nccwpck_require__(8628));
-
-var _v2 = _interopRequireDefault(__nccwpck_require__(6409));
-
-var _v3 = _interopRequireDefault(__nccwpck_require__(5122));
-
-var _v4 = _interopRequireDefault(__nccwpck_require__(9120));
-
-var _nil = _interopRequireDefault(__nccwpck_require__(5332));
-
-var _version = _interopRequireDefault(__nccwpck_require__(1595));
-
-var _validate = _interopRequireDefault(__nccwpck_require__(6900));
-
-var _stringify = _interopRequireDefault(__nccwpck_require__(8950));
-
-var _parse = _interopRequireDefault(__nccwpck_require__(2746));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+module.exports = require(__nccwpck_require__.ab + "build/Release/cpufeatures.node")
 
 /***/ }),
 
-/***/ 4569:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+/***/ 8440:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-exports["default"] = void 0;
-
-var _crypto = _interopRequireDefault(__nccwpck_require__(6113));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function md5(bytes) {
-  if (Array.isArray(bytes)) {
-    bytes = Buffer.from(bytes);
-  } else if (typeof bytes === 'string') {
-    bytes = Buffer.from(bytes, 'utf8');
-  }
-
-  return _crypto.default.createHash('md5').update(bytes).digest();
-}
-
-var _default = md5;
-exports["default"] = _default;
+module.exports = require(__nccwpck_require__.ab + "lib/protocol/crypto/build/Release/sshcrypto.node")
 
 /***/ }),
 
-/***/ 5332:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-exports["default"] = void 0;
-var _default = '00000000-0000-0000-0000-000000000000';
-exports["default"] = _default;
-
-/***/ }),
-
-/***/ 2746:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-exports["default"] = void 0;
-
-var _validate = _interopRequireDefault(__nccwpck_require__(6900));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function parse(uuid) {
-  if (!(0, _validate.default)(uuid)) {
-    throw TypeError('Invalid UUID');
-  }
-
-  let v;
-  const arr = new Uint8Array(16); // Parse ########-....-....-....-............
-
-  arr[0] = (v = parseInt(uuid.slice(0, 8), 16)) >>> 24;
-  arr[1] = v >>> 16 & 0xff;
-  arr[2] = v >>> 8 & 0xff;
-  arr[3] = v & 0xff; // Parse ........-####-....-....-............
-
-  arr[4] = (v = parseInt(uuid.slice(9, 13), 16)) >>> 8;
-  arr[5] = v & 0xff; // Parse ........-....-####-....-............
-
-  arr[6] = (v = parseInt(uuid.slice(14, 18), 16)) >>> 8;
-  arr[7] = v & 0xff; // Parse ........-....-....-####-............
-
-  arr[8] = (v = parseInt(uuid.slice(19, 23), 16)) >>> 8;
-  arr[9] = v & 0xff; // Parse ........-....-....-....-############
-  // (Use "/" to avoid 32-bit truncation when bit-shifting high-order bytes)
-
-  arr[10] = (v = parseInt(uuid.slice(24, 36), 16)) / 0x10000000000 & 0xff;
-  arr[11] = v / 0x100000000 & 0xff;
-  arr[12] = v >>> 24 & 0xff;
-  arr[13] = v >>> 16 & 0xff;
-  arr[14] = v >>> 8 & 0xff;
-  arr[15] = v & 0xff;
-  return arr;
-}
-
-var _default = parse;
-exports["default"] = _default;
-
-/***/ }),
-
-/***/ 814:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-exports["default"] = void 0;
-var _default = /^(?:[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}|00000000-0000-0000-0000-000000000000)$/i;
-exports["default"] = _default;
-
-/***/ }),
-
-/***/ 807:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-exports["default"] = rng;
-
-var _crypto = _interopRequireDefault(__nccwpck_require__(6113));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-const rnds8Pool = new Uint8Array(256); // # of random values to pre-allocate
-
-let poolPtr = rnds8Pool.length;
-
-function rng() {
-  if (poolPtr > rnds8Pool.length - 16) {
-    _crypto.default.randomFillSync(rnds8Pool);
-
-    poolPtr = 0;
-  }
-
-  return rnds8Pool.slice(poolPtr, poolPtr += 16);
-}
-
-/***/ }),
-
-/***/ 5274:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-exports["default"] = void 0;
-
-var _crypto = _interopRequireDefault(__nccwpck_require__(6113));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function sha1(bytes) {
-  if (Array.isArray(bytes)) {
-    bytes = Buffer.from(bytes);
-  } else if (typeof bytes === 'string') {
-    bytes = Buffer.from(bytes, 'utf8');
-  }
-
-  return _crypto.default.createHash('sha1').update(bytes).digest();
-}
-
-var _default = sha1;
-exports["default"] = _default;
-
-/***/ }),
-
-/***/ 8950:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-exports["default"] = void 0;
-
-var _validate = _interopRequireDefault(__nccwpck_require__(6900));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-/**
- * Convert array of 16 byte values to UUID string format of the form:
- * XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
- */
-const byteToHex = [];
-
-for (let i = 0; i < 256; ++i) {
-  byteToHex.push((i + 0x100).toString(16).substr(1));
-}
-
-function stringify(arr, offset = 0) {
-  // Note: Be careful editing this code!  It's been tuned for performance
-  // and works in ways you may not expect. See https://github.com/uuidjs/uuid/pull/434
-  const uuid = (byteToHex[arr[offset + 0]] + byteToHex[arr[offset + 1]] + byteToHex[arr[offset + 2]] + byteToHex[arr[offset + 3]] + '-' + byteToHex[arr[offset + 4]] + byteToHex[arr[offset + 5]] + '-' + byteToHex[arr[offset + 6]] + byteToHex[arr[offset + 7]] + '-' + byteToHex[arr[offset + 8]] + byteToHex[arr[offset + 9]] + '-' + byteToHex[arr[offset + 10]] + byteToHex[arr[offset + 11]] + byteToHex[arr[offset + 12]] + byteToHex[arr[offset + 13]] + byteToHex[arr[offset + 14]] + byteToHex[arr[offset + 15]]).toLowerCase(); // Consistency check for valid UUID.  If this throws, it's likely due to one
-  // of the following:
-  // - One or more input array values don't map to a hex octet (leading to
-  // "undefined" in the uuid)
-  // - Invalid input values for the RFC `version` or `variant` fields
-
-  if (!(0, _validate.default)(uuid)) {
-    throw TypeError('Stringified UUID is invalid');
-  }
-
-  return uuid;
-}
-
-var _default = stringify;
-exports["default"] = _default;
-
-/***/ }),
-
-/***/ 8628:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-exports["default"] = void 0;
-
-var _rng = _interopRequireDefault(__nccwpck_require__(807));
-
-var _stringify = _interopRequireDefault(__nccwpck_require__(8950));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-// **`v1()` - Generate time-based UUID**
-//
-// Inspired by https://github.com/LiosK/UUID.js
-// and http://docs.python.org/library/uuid.html
-let _nodeId;
-
-let _clockseq; // Previous uuid creation time
-
-
-let _lastMSecs = 0;
-let _lastNSecs = 0; // See https://github.com/uuidjs/uuid for API details
-
-function v1(options, buf, offset) {
-  let i = buf && offset || 0;
-  const b = buf || new Array(16);
-  options = options || {};
-  let node = options.node || _nodeId;
-  let clockseq = options.clockseq !== undefined ? options.clockseq : _clockseq; // node and clockseq need to be initialized to random values if they're not
-  // specified.  We do this lazily to minimize issues related to insufficient
-  // system entropy.  See #189
-
-  if (node == null || clockseq == null) {
-    const seedBytes = options.random || (options.rng || _rng.default)();
-
-    if (node == null) {
-      // Per 4.5, create and 48-bit node id, (47 random bits + multicast bit = 1)
-      node = _nodeId = [seedBytes[0] | 0x01, seedBytes[1], seedBytes[2], seedBytes[3], seedBytes[4], seedBytes[5]];
-    }
-
-    if (clockseq == null) {
-      // Per 4.2.2, randomize (14 bit) clockseq
-      clockseq = _clockseq = (seedBytes[6] << 8 | seedBytes[7]) & 0x3fff;
-    }
-  } // UUID timestamps are 100 nano-second units since the Gregorian epoch,
-  // (1582-10-15 00:00).  JSNumbers aren't precise enough for this, so
-  // time is handled internally as 'msecs' (integer milliseconds) and 'nsecs'
-  // (100-nanoseconds offset from msecs) since unix epoch, 1970-01-01 00:00.
-
-
-  let msecs = options.msecs !== undefined ? options.msecs : Date.now(); // Per 4.2.1.2, use count of uuid's generated during the current clock
-  // cycle to simulate higher resolution clock
-
-  let nsecs = options.nsecs !== undefined ? options.nsecs : _lastNSecs + 1; // Time since last uuid creation (in msecs)
-
-  const dt = msecs - _lastMSecs + (nsecs - _lastNSecs) / 10000; // Per 4.2.1.2, Bump clockseq on clock regression
-
-  if (dt < 0 && options.clockseq === undefined) {
-    clockseq = clockseq + 1 & 0x3fff;
-  } // Reset nsecs if clock regresses (new clockseq) or we've moved onto a new
-  // time interval
-
-
-  if ((dt < 0 || msecs > _lastMSecs) && options.nsecs === undefined) {
-    nsecs = 0;
-  } // Per 4.2.1.2 Throw error if too many uuids are requested
-
-
-  if (nsecs >= 10000) {
-    throw new Error("uuid.v1(): Can't create more than 10M uuids/sec");
-  }
-
-  _lastMSecs = msecs;
-  _lastNSecs = nsecs;
-  _clockseq = clockseq; // Per 4.1.4 - Convert from unix epoch to Gregorian epoch
-
-  msecs += 12219292800000; // `time_low`
-
-  const tl = ((msecs & 0xfffffff) * 10000 + nsecs) % 0x100000000;
-  b[i++] = tl >>> 24 & 0xff;
-  b[i++] = tl >>> 16 & 0xff;
-  b[i++] = tl >>> 8 & 0xff;
-  b[i++] = tl & 0xff; // `time_mid`
-
-  const tmh = msecs / 0x100000000 * 10000 & 0xfffffff;
-  b[i++] = tmh >>> 8 & 0xff;
-  b[i++] = tmh & 0xff; // `time_high_and_version`
-
-  b[i++] = tmh >>> 24 & 0xf | 0x10; // include version
-
-  b[i++] = tmh >>> 16 & 0xff; // `clock_seq_hi_and_reserved` (Per 4.2.2 - include variant)
-
-  b[i++] = clockseq >>> 8 | 0x80; // `clock_seq_low`
-
-  b[i++] = clockseq & 0xff; // `node`
-
-  for (let n = 0; n < 6; ++n) {
-    b[i + n] = node[n];
-  }
-
-  return buf || (0, _stringify.default)(b);
-}
-
-var _default = v1;
-exports["default"] = _default;
-
-/***/ }),
-
-/***/ 6409:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-exports["default"] = void 0;
-
-var _v = _interopRequireDefault(__nccwpck_require__(5998));
-
-var _md = _interopRequireDefault(__nccwpck_require__(4569));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-const v3 = (0, _v.default)('v3', 0x30, _md.default);
-var _default = v3;
-exports["default"] = _default;
-
-/***/ }),
-
-/***/ 5998:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-exports["default"] = _default;
-exports.URL = exports.DNS = void 0;
-
-var _stringify = _interopRequireDefault(__nccwpck_require__(8950));
-
-var _parse = _interopRequireDefault(__nccwpck_require__(2746));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function stringToBytes(str) {
-  str = unescape(encodeURIComponent(str)); // UTF8 escape
-
-  const bytes = [];
-
-  for (let i = 0; i < str.length; ++i) {
-    bytes.push(str.charCodeAt(i));
-  }
-
-  return bytes;
-}
-
-const DNS = '6ba7b810-9dad-11d1-80b4-00c04fd430c8';
-exports.DNS = DNS;
-const URL = '6ba7b811-9dad-11d1-80b4-00c04fd430c8';
-exports.URL = URL;
-
-function _default(name, version, hashfunc) {
-  function generateUUID(value, namespace, buf, offset) {
-    if (typeof value === 'string') {
-      value = stringToBytes(value);
-    }
-
-    if (typeof namespace === 'string') {
-      namespace = (0, _parse.default)(namespace);
-    }
-
-    if (namespace.length !== 16) {
-      throw TypeError('Namespace must be array-like (16 iterable integer values, 0-255)');
-    } // Compute hash of namespace and value, Per 4.3
-    // Future: Use spread syntax when supported on all platforms, e.g. `bytes =
-    // hashfunc([...namespace, ... value])`
-
-
-    let bytes = new Uint8Array(16 + value.length);
-    bytes.set(namespace);
-    bytes.set(value, namespace.length);
-    bytes = hashfunc(bytes);
-    bytes[6] = bytes[6] & 0x0f | version;
-    bytes[8] = bytes[8] & 0x3f | 0x80;
-
-    if (buf) {
-      offset = offset || 0;
-
-      for (let i = 0; i < 16; ++i) {
-        buf[offset + i] = bytes[i];
-      }
-
-      return buf;
-    }
-
-    return (0, _stringify.default)(bytes);
-  } // Function#name is not settable on some platforms (#270)
-
-
-  try {
-    generateUUID.name = name; // eslint-disable-next-line no-empty
-  } catch (err) {} // For CommonJS default export support
-
-
-  generateUUID.DNS = DNS;
-  generateUUID.URL = URL;
-  return generateUUID;
-}
-
-/***/ }),
-
-/***/ 5122:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-exports["default"] = void 0;
-
-var _rng = _interopRequireDefault(__nccwpck_require__(807));
-
-var _stringify = _interopRequireDefault(__nccwpck_require__(8950));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function v4(options, buf, offset) {
-  options = options || {};
-
-  const rnds = options.random || (options.rng || _rng.default)(); // Per 4.4, set bits for version and `clock_seq_hi_and_reserved`
-
-
-  rnds[6] = rnds[6] & 0x0f | 0x40;
-  rnds[8] = rnds[8] & 0x3f | 0x80; // Copy bytes to buffer, if provided
-
-  if (buf) {
-    offset = offset || 0;
-
-    for (let i = 0; i < 16; ++i) {
-      buf[offset + i] = rnds[i];
-    }
-
-    return buf;
-  }
-
-  return (0, _stringify.default)(rnds);
-}
-
-var _default = v4;
-exports["default"] = _default;
-
-/***/ }),
-
-/***/ 9120:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-exports["default"] = void 0;
-
-var _v = _interopRequireDefault(__nccwpck_require__(5998));
-
-var _sha = _interopRequireDefault(__nccwpck_require__(5274));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-const v5 = (0, _v.default)('v5', 0x50, _sha.default);
-var _default = v5;
-exports["default"] = _default;
-
-/***/ }),
-
-/***/ 6900:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-exports["default"] = void 0;
-
-var _regex = _interopRequireDefault(__nccwpck_require__(814));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function validate(uuid) {
-  return typeof uuid === 'string' && _regex.default.test(uuid);
-}
-
-var _default = validate;
-exports["default"] = _default;
-
-/***/ }),
-
-/***/ 1595:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", ({
-  value: true
-}));
-exports["default"] = void 0;
-
-var _validate = _interopRequireDefault(__nccwpck_require__(6900));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function version(uuid) {
-  if (!(0, _validate.default)(uuid)) {
-    throw TypeError('Invalid UUID');
-  }
-
-  return parseInt(uuid.substr(14, 1), 16);
-}
-
-var _default = version;
-exports["default"] = _default;
-
-/***/ }),
-
-/***/ 9623:
-/***/ ((module) => {
-
-module.exports = eval("require")("./crypto/build/Release/sshcrypto.node");
-
-
-/***/ }),
-
-/***/ 7295:
-/***/ ((module) => {
-
-module.exports = eval("require")("cpu-features");
-
-
-/***/ }),
-
-/***/ 9491:
+/***/ 2613:
 /***/ ((module) => {
 
 "use strict";
@@ -32325,7 +34317,7 @@ module.exports = require("assert");
 
 /***/ }),
 
-/***/ 4300:
+/***/ 181:
 /***/ ((module) => {
 
 "use strict";
@@ -32333,7 +34325,7 @@ module.exports = require("buffer");
 
 /***/ }),
 
-/***/ 2081:
+/***/ 5317:
 /***/ ((module) => {
 
 "use strict";
@@ -32341,7 +34333,7 @@ module.exports = require("child_process");
 
 /***/ }),
 
-/***/ 6113:
+/***/ 6982:
 /***/ ((module) => {
 
 "use strict";
@@ -32349,7 +34341,7 @@ module.exports = require("crypto");
 
 /***/ }),
 
-/***/ 9523:
+/***/ 2250:
 /***/ ((module) => {
 
 "use strict";
@@ -32357,7 +34349,7 @@ module.exports = require("dns");
 
 /***/ }),
 
-/***/ 2361:
+/***/ 4434:
 /***/ ((module) => {
 
 "use strict";
@@ -32365,7 +34357,7 @@ module.exports = require("events");
 
 /***/ }),
 
-/***/ 7147:
+/***/ 9896:
 /***/ ((module) => {
 
 "use strict";
@@ -32373,7 +34365,7 @@ module.exports = require("fs");
 
 /***/ }),
 
-/***/ 3292:
+/***/ 1943:
 /***/ ((module) => {
 
 "use strict";
@@ -32381,7 +34373,7 @@ module.exports = require("fs/promises");
 
 /***/ }),
 
-/***/ 3685:
+/***/ 8611:
 /***/ ((module) => {
 
 "use strict";
@@ -32389,7 +34381,7 @@ module.exports = require("http");
 
 /***/ }),
 
-/***/ 5687:
+/***/ 5692:
 /***/ ((module) => {
 
 "use strict";
@@ -32397,7 +34389,7 @@ module.exports = require("https");
 
 /***/ }),
 
-/***/ 1808:
+/***/ 9278:
 /***/ ((module) => {
 
 "use strict";
@@ -32405,7 +34397,23 @@ module.exports = require("net");
 
 /***/ }),
 
-/***/ 2037:
+/***/ 3024:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("node:fs");
+
+/***/ }),
+
+/***/ 6760:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("node:path");
+
+/***/ }),
+
+/***/ 857:
 /***/ ((module) => {
 
 "use strict";
@@ -32413,7 +34421,7 @@ module.exports = require("os");
 
 /***/ }),
 
-/***/ 1017:
+/***/ 6928:
 /***/ ((module) => {
 
 "use strict";
@@ -32421,7 +34429,7 @@ module.exports = require("path");
 
 /***/ }),
 
-/***/ 2781:
+/***/ 2203:
 /***/ ((module) => {
 
 "use strict";
@@ -32429,7 +34437,23 @@ module.exports = require("stream");
 
 /***/ }),
 
-/***/ 4404:
+/***/ 3193:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("string_decoder");
+
+/***/ }),
+
+/***/ 3557:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("timers");
+
+/***/ }),
+
+/***/ 4756:
 /***/ ((module) => {
 
 "use strict";
@@ -32437,7 +34461,7 @@ module.exports = require("tls");
 
 /***/ }),
 
-/***/ 3837:
+/***/ 9023:
 /***/ ((module) => {
 
 "use strict";
@@ -32445,7 +34469,7 @@ module.exports = require("util");
 
 /***/ }),
 
-/***/ 9796:
+/***/ 3106:
 /***/ ((module) => {
 
 "use strict";
@@ -32453,21 +34477,815 @@ module.exports = require("zlib");
 
 /***/ }),
 
-/***/ 2002:
-/***/ (function(module, __unused_webpack_exports, __nccwpck_require__) {
+/***/ 7305:
+/***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
 
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.assertValidPattern = void 0;
+const MAX_PATTERN_LENGTH = 1024 * 64;
+const assertValidPattern = (pattern) => {
+    if (typeof pattern !== 'string') {
+        throw new TypeError('invalid pattern');
+    }
+    if (pattern.length > MAX_PATTERN_LENGTH) {
+        throw new TypeError('pattern is too long');
+    }
 };
-const index_js_1 = __importDefault(__nccwpck_require__(1953));
-module.exports = Object.assign(index_js_1.default, { default: index_js_1.default, minimatch: index_js_1.default });
-//# sourceMappingURL=index-cjs.js.map
+exports.assertValidPattern = assertValidPattern;
+//# sourceMappingURL=assert-valid-pattern.js.map
 
 /***/ }),
 
-/***/ 1953:
+/***/ 1803:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+// parse a single path portion
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.AST = void 0;
+const brace_expressions_js_1 = __nccwpck_require__(1090);
+const unescape_js_1 = __nccwpck_require__(851);
+const types = new Set(['!', '?', '+', '*', '@']);
+const isExtglobType = (c) => types.has(c);
+// Patterns that get prepended to bind to the start of either the
+// entire string, or just a single path portion, to prevent dots
+// and/or traversal patterns, when needed.
+// Exts don't need the ^ or / bit, because the root binds that already.
+const startNoTraversal = '(?!(?:^|/)\\.\\.?(?:$|/))';
+const startNoDot = '(?!\\.)';
+// characters that indicate a start of pattern needs the "no dots" bit,
+// because a dot *might* be matched. ( is not in the list, because in
+// the case of a child extglob, it will handle the prevention itself.
+const addPatternStart = new Set(['[', '.']);
+// cases where traversal is A-OK, no dot prevention needed
+const justDots = new Set(['..', '.']);
+const reSpecials = new Set('().*{}+?[]^$\\!');
+const regExpEscape = (s) => s.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
+// any single thing other than /
+const qmark = '[^/]';
+// * => any number of characters
+const star = qmark + '*?';
+// use + when we need to ensure that *something* matches, because the * is
+// the only thing in the path portion.
+const starNoEmpty = qmark + '+?';
+// remove the \ chars that we added if we end up doing a nonmagic compare
+// const deslash = (s: string) => s.replace(/\\(.)/g, '$1')
+class AST {
+    type;
+    #root;
+    #hasMagic;
+    #uflag = false;
+    #parts = [];
+    #parent;
+    #parentIndex;
+    #negs;
+    #filledNegs = false;
+    #options;
+    #toString;
+    // set to true if it's an extglob with no children
+    // (which really means one child of '')
+    #emptyExt = false;
+    constructor(type, parent, options = {}) {
+        this.type = type;
+        // extglobs are inherently magical
+        if (type)
+            this.#hasMagic = true;
+        this.#parent = parent;
+        this.#root = this.#parent ? this.#parent.#root : this;
+        this.#options = this.#root === this ? options : this.#root.#options;
+        this.#negs = this.#root === this ? [] : this.#root.#negs;
+        if (type === '!' && !this.#root.#filledNegs)
+            this.#negs.push(this);
+        this.#parentIndex = this.#parent ? this.#parent.#parts.length : 0;
+    }
+    get hasMagic() {
+        /* c8 ignore start */
+        if (this.#hasMagic !== undefined)
+            return this.#hasMagic;
+        /* c8 ignore stop */
+        for (const p of this.#parts) {
+            if (typeof p === 'string')
+                continue;
+            if (p.type || p.hasMagic)
+                return (this.#hasMagic = true);
+        }
+        // note: will be undefined until we generate the regexp src and find out
+        return this.#hasMagic;
+    }
+    // reconstructs the pattern
+    toString() {
+        if (this.#toString !== undefined)
+            return this.#toString;
+        if (!this.type) {
+            return (this.#toString = this.#parts.map(p => String(p)).join(''));
+        }
+        else {
+            return (this.#toString =
+                this.type + '(' + this.#parts.map(p => String(p)).join('|') + ')');
+        }
+    }
+    #fillNegs() {
+        /* c8 ignore start */
+        if (this !== this.#root)
+            throw new Error('should only call on root');
+        if (this.#filledNegs)
+            return this;
+        /* c8 ignore stop */
+        // call toString() once to fill this out
+        this.toString();
+        this.#filledNegs = true;
+        let n;
+        while ((n = this.#negs.pop())) {
+            if (n.type !== '!')
+                continue;
+            // walk up the tree, appending everthing that comes AFTER parentIndex
+            let p = n;
+            let pp = p.#parent;
+            while (pp) {
+                for (let i = p.#parentIndex + 1; !pp.type && i < pp.#parts.length; i++) {
+                    for (const part of n.#parts) {
+                        /* c8 ignore start */
+                        if (typeof part === 'string') {
+                            throw new Error('string part in extglob AST??');
+                        }
+                        /* c8 ignore stop */
+                        part.copyIn(pp.#parts[i]);
+                    }
+                }
+                p = pp;
+                pp = p.#parent;
+            }
+        }
+        return this;
+    }
+    push(...parts) {
+        for (const p of parts) {
+            if (p === '')
+                continue;
+            /* c8 ignore start */
+            if (typeof p !== 'string' && !(p instanceof AST && p.#parent === this)) {
+                throw new Error('invalid part: ' + p);
+            }
+            /* c8 ignore stop */
+            this.#parts.push(p);
+        }
+    }
+    toJSON() {
+        const ret = this.type === null
+            ? this.#parts.slice().map(p => (typeof p === 'string' ? p : p.toJSON()))
+            : [this.type, ...this.#parts.map(p => p.toJSON())];
+        if (this.isStart() && !this.type)
+            ret.unshift([]);
+        if (this.isEnd() &&
+            (this === this.#root ||
+                (this.#root.#filledNegs && this.#parent?.type === '!'))) {
+            ret.push({});
+        }
+        return ret;
+    }
+    isStart() {
+        if (this.#root === this)
+            return true;
+        // if (this.type) return !!this.#parent?.isStart()
+        if (!this.#parent?.isStart())
+            return false;
+        if (this.#parentIndex === 0)
+            return true;
+        // if everything AHEAD of this is a negation, then it's still the "start"
+        const p = this.#parent;
+        for (let i = 0; i < this.#parentIndex; i++) {
+            const pp = p.#parts[i];
+            if (!(pp instanceof AST && pp.type === '!')) {
+                return false;
+            }
+        }
+        return true;
+    }
+    isEnd() {
+        if (this.#root === this)
+            return true;
+        if (this.#parent?.type === '!')
+            return true;
+        if (!this.#parent?.isEnd())
+            return false;
+        if (!this.type)
+            return this.#parent?.isEnd();
+        // if not root, it'll always have a parent
+        /* c8 ignore start */
+        const pl = this.#parent ? this.#parent.#parts.length : 0;
+        /* c8 ignore stop */
+        return this.#parentIndex === pl - 1;
+    }
+    copyIn(part) {
+        if (typeof part === 'string')
+            this.push(part);
+        else
+            this.push(part.clone(this));
+    }
+    clone(parent) {
+        const c = new AST(this.type, parent);
+        for (const p of this.#parts) {
+            c.copyIn(p);
+        }
+        return c;
+    }
+    static #parseAST(str, ast, pos, opt) {
+        let escaping = false;
+        let inBrace = false;
+        let braceStart = -1;
+        let braceNeg = false;
+        if (ast.type === null) {
+            // outside of a extglob, append until we find a start
+            let i = pos;
+            let acc = '';
+            while (i < str.length) {
+                const c = str.charAt(i++);
+                // still accumulate escapes at this point, but we do ignore
+                // starts that are escaped
+                if (escaping || c === '\\') {
+                    escaping = !escaping;
+                    acc += c;
+                    continue;
+                }
+                if (inBrace) {
+                    if (i === braceStart + 1) {
+                        if (c === '^' || c === '!') {
+                            braceNeg = true;
+                        }
+                    }
+                    else if (c === ']' && !(i === braceStart + 2 && braceNeg)) {
+                        inBrace = false;
+                    }
+                    acc += c;
+                    continue;
+                }
+                else if (c === '[') {
+                    inBrace = true;
+                    braceStart = i;
+                    braceNeg = false;
+                    acc += c;
+                    continue;
+                }
+                if (!opt.noext && isExtglobType(c) && str.charAt(i) === '(') {
+                    ast.push(acc);
+                    acc = '';
+                    const ext = new AST(c, ast);
+                    i = AST.#parseAST(str, ext, i, opt);
+                    ast.push(ext);
+                    continue;
+                }
+                acc += c;
+            }
+            ast.push(acc);
+            return i;
+        }
+        // some kind of extglob, pos is at the (
+        // find the next | or )
+        let i = pos + 1;
+        let part = new AST(null, ast);
+        const parts = [];
+        let acc = '';
+        while (i < str.length) {
+            const c = str.charAt(i++);
+            // still accumulate escapes at this point, but we do ignore
+            // starts that are escaped
+            if (escaping || c === '\\') {
+                escaping = !escaping;
+                acc += c;
+                continue;
+            }
+            if (inBrace) {
+                if (i === braceStart + 1) {
+                    if (c === '^' || c === '!') {
+                        braceNeg = true;
+                    }
+                }
+                else if (c === ']' && !(i === braceStart + 2 && braceNeg)) {
+                    inBrace = false;
+                }
+                acc += c;
+                continue;
+            }
+            else if (c === '[') {
+                inBrace = true;
+                braceStart = i;
+                braceNeg = false;
+                acc += c;
+                continue;
+            }
+            if (isExtglobType(c) && str.charAt(i) === '(') {
+                part.push(acc);
+                acc = '';
+                const ext = new AST(c, part);
+                part.push(ext);
+                i = AST.#parseAST(str, ext, i, opt);
+                continue;
+            }
+            if (c === '|') {
+                part.push(acc);
+                acc = '';
+                parts.push(part);
+                part = new AST(null, ast);
+                continue;
+            }
+            if (c === ')') {
+                if (acc === '' && ast.#parts.length === 0) {
+                    ast.#emptyExt = true;
+                }
+                part.push(acc);
+                acc = '';
+                ast.push(...parts, part);
+                return i;
+            }
+            acc += c;
+        }
+        // unfinished extglob
+        // if we got here, it was a malformed extglob! not an extglob, but
+        // maybe something else in there.
+        ast.type = null;
+        ast.#hasMagic = undefined;
+        ast.#parts = [str.substring(pos - 1)];
+        return i;
+    }
+    static fromGlob(pattern, options = {}) {
+        const ast = new AST(null, undefined, options);
+        AST.#parseAST(pattern, ast, 0, options);
+        return ast;
+    }
+    // returns the regular expression if there's magic, or the unescaped
+    // string if not.
+    toMMPattern() {
+        // should only be called on root
+        /* c8 ignore start */
+        if (this !== this.#root)
+            return this.#root.toMMPattern();
+        /* c8 ignore stop */
+        const glob = this.toString();
+        const [re, body, hasMagic, uflag] = this.toRegExpSource();
+        // if we're in nocase mode, and not nocaseMagicOnly, then we do
+        // still need a regular expression if we have to case-insensitively
+        // match capital/lowercase characters.
+        const anyMagic = hasMagic ||
+            this.#hasMagic ||
+            (this.#options.nocase &&
+                !this.#options.nocaseMagicOnly &&
+                glob.toUpperCase() !== glob.toLowerCase());
+        if (!anyMagic) {
+            return body;
+        }
+        const flags = (this.#options.nocase ? 'i' : '') + (uflag ? 'u' : '');
+        return Object.assign(new RegExp(`^${re}$`, flags), {
+            _src: re,
+            _glob: glob,
+        });
+    }
+    get options() {
+        return this.#options;
+    }
+    // returns the string match, the regexp source, whether there's magic
+    // in the regexp (so a regular expression is required) and whether or
+    // not the uflag is needed for the regular expression (for posix classes)
+    // TODO: instead of injecting the start/end at this point, just return
+    // the BODY of the regexp, along with the start/end portions suitable
+    // for binding the start/end in either a joined full-path makeRe context
+    // (where we bind to (^|/), or a standalone matchPart context (where
+    // we bind to ^, and not /).  Otherwise slashes get duped!
+    //
+    // In part-matching mode, the start is:
+    // - if not isStart: nothing
+    // - if traversal possible, but not allowed: ^(?!\.\.?$)
+    // - if dots allowed or not possible: ^
+    // - if dots possible and not allowed: ^(?!\.)
+    // end is:
+    // - if not isEnd(): nothing
+    // - else: $
+    //
+    // In full-path matching mode, we put the slash at the START of the
+    // pattern, so start is:
+    // - if first pattern: same as part-matching mode
+    // - if not isStart(): nothing
+    // - if traversal possible, but not allowed: /(?!\.\.?(?:$|/))
+    // - if dots allowed or not possible: /
+    // - if dots possible and not allowed: /(?!\.)
+    // end is:
+    // - if last pattern, same as part-matching mode
+    // - else nothing
+    //
+    // Always put the (?:$|/) on negated tails, though, because that has to be
+    // there to bind the end of the negated pattern portion, and it's easier to
+    // just stick it in now rather than try to inject it later in the middle of
+    // the pattern.
+    //
+    // We can just always return the same end, and leave it up to the caller
+    // to know whether it's going to be used joined or in parts.
+    // And, if the start is adjusted slightly, can do the same there:
+    // - if not isStart: nothing
+    // - if traversal possible, but not allowed: (?:/|^)(?!\.\.?$)
+    // - if dots allowed or not possible: (?:/|^)
+    // - if dots possible and not allowed: (?:/|^)(?!\.)
+    //
+    // But it's better to have a simpler binding without a conditional, for
+    // performance, so probably better to return both start options.
+    //
+    // Then the caller just ignores the end if it's not the first pattern,
+    // and the start always gets applied.
+    //
+    // But that's always going to be $ if it's the ending pattern, or nothing,
+    // so the caller can just attach $ at the end of the pattern when building.
+    //
+    // So the todo is:
+    // - better detect what kind of start is needed
+    // - return both flavors of starting pattern
+    // - attach $ at the end of the pattern when creating the actual RegExp
+    //
+    // Ah, but wait, no, that all only applies to the root when the first pattern
+    // is not an extglob. If the first pattern IS an extglob, then we need all
+    // that dot prevention biz to live in the extglob portions, because eg
+    // +(*|.x*) can match .xy but not .yx.
+    //
+    // So, return the two flavors if it's #root and the first child is not an
+    // AST, otherwise leave it to the child AST to handle it, and there,
+    // use the (?:^|/) style of start binding.
+    //
+    // Even simplified further:
+    // - Since the start for a join is eg /(?!\.) and the start for a part
+    // is ^(?!\.), we can just prepend (?!\.) to the pattern (either root
+    // or start or whatever) and prepend ^ or / at the Regexp construction.
+    toRegExpSource(allowDot) {
+        const dot = allowDot ?? !!this.#options.dot;
+        if (this.#root === this)
+            this.#fillNegs();
+        if (!this.type) {
+            const noEmpty = this.isStart() && this.isEnd();
+            const src = this.#parts
+                .map(p => {
+                const [re, _, hasMagic, uflag] = typeof p === 'string'
+                    ? AST.#parseGlob(p, this.#hasMagic, noEmpty)
+                    : p.toRegExpSource(allowDot);
+                this.#hasMagic = this.#hasMagic || hasMagic;
+                this.#uflag = this.#uflag || uflag;
+                return re;
+            })
+                .join('');
+            let start = '';
+            if (this.isStart()) {
+                if (typeof this.#parts[0] === 'string') {
+                    // this is the string that will match the start of the pattern,
+                    // so we need to protect against dots and such.
+                    // '.' and '..' cannot match unless the pattern is that exactly,
+                    // even if it starts with . or dot:true is set.
+                    const dotTravAllowed = this.#parts.length === 1 && justDots.has(this.#parts[0]);
+                    if (!dotTravAllowed) {
+                        const aps = addPatternStart;
+                        // check if we have a possibility of matching . or ..,
+                        // and prevent that.
+                        const needNoTrav = 
+                        // dots are allowed, and the pattern starts with [ or .
+                        (dot && aps.has(src.charAt(0))) ||
+                            // the pattern starts with \., and then [ or .
+                            (src.startsWith('\\.') && aps.has(src.charAt(2))) ||
+                            // the pattern starts with \.\., and then [ or .
+                            (src.startsWith('\\.\\.') && aps.has(src.charAt(4)));
+                        // no need to prevent dots if it can't match a dot, or if a
+                        // sub-pattern will be preventing it anyway.
+                        const needNoDot = !dot && !allowDot && aps.has(src.charAt(0));
+                        start = needNoTrav ? startNoTraversal : needNoDot ? startNoDot : '';
+                    }
+                }
+            }
+            // append the "end of path portion" pattern to negation tails
+            let end = '';
+            if (this.isEnd() &&
+                this.#root.#filledNegs &&
+                this.#parent?.type === '!') {
+                end = '(?:$|\\/)';
+            }
+            const final = start + src + end;
+            return [
+                final,
+                (0, unescape_js_1.unescape)(src),
+                (this.#hasMagic = !!this.#hasMagic),
+                this.#uflag,
+            ];
+        }
+        // We need to calculate the body *twice* if it's a repeat pattern
+        // at the start, once in nodot mode, then again in dot mode, so a
+        // pattern like *(?) can match 'x.y'
+        const repeated = this.type === '*' || this.type === '+';
+        // some kind of extglob
+        const start = this.type === '!' ? '(?:(?!(?:' : '(?:';
+        let body = this.#partsToRegExp(dot);
+        if (this.isStart() && this.isEnd() && !body && this.type !== '!') {
+            // invalid extglob, has to at least be *something* present, if it's
+            // the entire path portion.
+            const s = this.toString();
+            this.#parts = [s];
+            this.type = null;
+            this.#hasMagic = undefined;
+            return [s, (0, unescape_js_1.unescape)(this.toString()), false, false];
+        }
+        // XXX abstract out this map method
+        let bodyDotAllowed = !repeated || allowDot || dot || !startNoDot
+            ? ''
+            : this.#partsToRegExp(true);
+        if (bodyDotAllowed === body) {
+            bodyDotAllowed = '';
+        }
+        if (bodyDotAllowed) {
+            body = `(?:${body})(?:${bodyDotAllowed})*?`;
+        }
+        // an empty !() is exactly equivalent to a starNoEmpty
+        let final = '';
+        if (this.type === '!' && this.#emptyExt) {
+            final = (this.isStart() && !dot ? startNoDot : '') + starNoEmpty;
+        }
+        else {
+            const close = this.type === '!'
+                ? // !() must match something,but !(x) can match ''
+                    '))' +
+                        (this.isStart() && !dot && !allowDot ? startNoDot : '') +
+                        star +
+                        ')'
+                : this.type === '@'
+                    ? ')'
+                    : this.type === '?'
+                        ? ')?'
+                        : this.type === '+' && bodyDotAllowed
+                            ? ')'
+                            : this.type === '*' && bodyDotAllowed
+                                ? `)?`
+                                : `)${this.type}`;
+            final = start + body + close;
+        }
+        return [
+            final,
+            (0, unescape_js_1.unescape)(body),
+            (this.#hasMagic = !!this.#hasMagic),
+            this.#uflag,
+        ];
+    }
+    #partsToRegExp(dot) {
+        return this.#parts
+            .map(p => {
+            // extglob ASTs should only contain parent ASTs
+            /* c8 ignore start */
+            if (typeof p === 'string') {
+                throw new Error('string type in extglob ast??');
+            }
+            /* c8 ignore stop */
+            // can ignore hasMagic, because extglobs are already always magic
+            const [re, _, _hasMagic, uflag] = p.toRegExpSource(dot);
+            this.#uflag = this.#uflag || uflag;
+            return re;
+        })
+            .filter(p => !(this.isStart() && this.isEnd()) || !!p)
+            .join('|');
+    }
+    static #parseGlob(glob, hasMagic, noEmpty = false) {
+        let escaping = false;
+        let re = '';
+        let uflag = false;
+        for (let i = 0; i < glob.length; i++) {
+            const c = glob.charAt(i);
+            if (escaping) {
+                escaping = false;
+                re += (reSpecials.has(c) ? '\\' : '') + c;
+                continue;
+            }
+            if (c === '\\') {
+                if (i === glob.length - 1) {
+                    re += '\\\\';
+                }
+                else {
+                    escaping = true;
+                }
+                continue;
+            }
+            if (c === '[') {
+                const [src, needUflag, consumed, magic] = (0, brace_expressions_js_1.parseClass)(glob, i);
+                if (consumed) {
+                    re += src;
+                    uflag = uflag || needUflag;
+                    i += consumed - 1;
+                    hasMagic = hasMagic || magic;
+                    continue;
+                }
+            }
+            if (c === '*') {
+                if (noEmpty && glob === '*')
+                    re += starNoEmpty;
+                else
+                    re += star;
+                hasMagic = true;
+                continue;
+            }
+            if (c === '?') {
+                re += qmark;
+                hasMagic = true;
+                continue;
+            }
+            re += regExpEscape(c);
+        }
+        return [re, (0, unescape_js_1.unescape)(glob), !!hasMagic, uflag];
+    }
+}
+exports.AST = AST;
+//# sourceMappingURL=ast.js.map
+
+/***/ }),
+
+/***/ 1090:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+// translate the various posix character classes into unicode properties
+// this works across all unicode locales
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.parseClass = void 0;
+// { <posix class>: [<translation>, /u flag required, negated]
+const posixClasses = {
+    '[:alnum:]': ['\\p{L}\\p{Nl}\\p{Nd}', true],
+    '[:alpha:]': ['\\p{L}\\p{Nl}', true],
+    '[:ascii:]': ['\\x' + '00-\\x' + '7f', false],
+    '[:blank:]': ['\\p{Zs}\\t', true],
+    '[:cntrl:]': ['\\p{Cc}', true],
+    '[:digit:]': ['\\p{Nd}', true],
+    '[:graph:]': ['\\p{Z}\\p{C}', true, true],
+    '[:lower:]': ['\\p{Ll}', true],
+    '[:print:]': ['\\p{C}', true],
+    '[:punct:]': ['\\p{P}', true],
+    '[:space:]': ['\\p{Z}\\t\\r\\n\\v\\f', true],
+    '[:upper:]': ['\\p{Lu}', true],
+    '[:word:]': ['\\p{L}\\p{Nl}\\p{Nd}\\p{Pc}', true],
+    '[:xdigit:]': ['A-Fa-f0-9', false],
+};
+// only need to escape a few things inside of brace expressions
+// escapes: [ \ ] -
+const braceEscape = (s) => s.replace(/[[\]\\-]/g, '\\$&');
+// escape all regexp magic characters
+const regexpEscape = (s) => s.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
+// everything has already been escaped, we just have to join
+const rangesToString = (ranges) => ranges.join('');
+// takes a glob string at a posix brace expression, and returns
+// an equivalent regular expression source, and boolean indicating
+// whether the /u flag needs to be applied, and the number of chars
+// consumed to parse the character class.
+// This also removes out of order ranges, and returns ($.) if the
+// entire class just no good.
+const parseClass = (glob, position) => {
+    const pos = position;
+    /* c8 ignore start */
+    if (glob.charAt(pos) !== '[') {
+        throw new Error('not in a brace expression');
+    }
+    /* c8 ignore stop */
+    const ranges = [];
+    const negs = [];
+    let i = pos + 1;
+    let sawStart = false;
+    let uflag = false;
+    let escaping = false;
+    let negate = false;
+    let endPos = pos;
+    let rangeStart = '';
+    WHILE: while (i < glob.length) {
+        const c = glob.charAt(i);
+        if ((c === '!' || c === '^') && i === pos + 1) {
+            negate = true;
+            i++;
+            continue;
+        }
+        if (c === ']' && sawStart && !escaping) {
+            endPos = i + 1;
+            break;
+        }
+        sawStart = true;
+        if (c === '\\') {
+            if (!escaping) {
+                escaping = true;
+                i++;
+                continue;
+            }
+            // escaped \ char, fall through and treat like normal char
+        }
+        if (c === '[' && !escaping) {
+            // either a posix class, a collation equivalent, or just a [
+            for (const [cls, [unip, u, neg]] of Object.entries(posixClasses)) {
+                if (glob.startsWith(cls, i)) {
+                    // invalid, [a-[] is fine, but not [a-[:alpha]]
+                    if (rangeStart) {
+                        return ['$.', false, glob.length - pos, true];
+                    }
+                    i += cls.length;
+                    if (neg)
+                        negs.push(unip);
+                    else
+                        ranges.push(unip);
+                    uflag = uflag || u;
+                    continue WHILE;
+                }
+            }
+        }
+        // now it's just a normal character, effectively
+        escaping = false;
+        if (rangeStart) {
+            // throw this range away if it's not valid, but others
+            // can still match.
+            if (c > rangeStart) {
+                ranges.push(braceEscape(rangeStart) + '-' + braceEscape(c));
+            }
+            else if (c === rangeStart) {
+                ranges.push(braceEscape(c));
+            }
+            rangeStart = '';
+            i++;
+            continue;
+        }
+        // now might be the start of a range.
+        // can be either c-d or c-] or c<more...>] or c] at this point
+        if (glob.startsWith('-]', i + 1)) {
+            ranges.push(braceEscape(c + '-'));
+            i += 2;
+            continue;
+        }
+        if (glob.startsWith('-', i + 1)) {
+            rangeStart = c;
+            i += 2;
+            continue;
+        }
+        // not the start of a range, just a single character
+        ranges.push(braceEscape(c));
+        i++;
+    }
+    if (endPos < i) {
+        // didn't see the end of the class, not a valid class,
+        // but might still be valid as a literal match.
+        return ['', false, 0, false];
+    }
+    // if we got no ranges and no negates, then we have a range that
+    // cannot possibly match anything, and that poisons the whole glob
+    if (!ranges.length && !negs.length) {
+        return ['$.', false, glob.length - pos, true];
+    }
+    // if we got one positive range, and it's a single character, then that's
+    // not actually a magic pattern, it's just that one literal character.
+    // we should not treat that as "magic", we should just return the literal
+    // character. [_] is a perfectly valid way to escape glob magic chars.
+    if (negs.length === 0 &&
+        ranges.length === 1 &&
+        /^\\?.$/.test(ranges[0]) &&
+        !negate) {
+        const r = ranges[0].length === 2 ? ranges[0].slice(-1) : ranges[0];
+        return [regexpEscape(r), false, endPos - pos, false];
+    }
+    const sranges = '[' + (negate ? '^' : '') + rangesToString(ranges) + ']';
+    const snegs = '[' + (negate ? '' : '^') + rangesToString(negs) + ']';
+    const comb = ranges.length && negs.length
+        ? '(' + sranges + '|' + snegs + ')'
+        : ranges.length
+            ? sranges
+            : snegs;
+    return [comb, uflag, endPos - pos, true];
+};
+exports.parseClass = parseClass;
+//# sourceMappingURL=brace-expressions.js.map
+
+/***/ }),
+
+/***/ 800:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.escape = void 0;
+/**
+ * Escape all magic characters in a glob pattern.
+ *
+ * If the {@link windowsPathsNoEscape | GlobOptions.windowsPathsNoEscape}
+ * option is used, then characters are escaped by wrapping in `[]`, because
+ * a magic character wrapped in a character class can only be satisfied by
+ * that exact character.  In this mode, `\` is _not_ escaped, because it is
+ * not interpreted as a magic character, but instead as a path separator.
+ */
+const escape = (s, { windowsPathsNoEscape = false, } = {}) => {
+    // don't need to escape +@! because we escape the parens
+    // that make those magic, and escaping ! as [!] isn't valid,
+    // because [!]] is a valid glob class meaning not ']'.
+    return windowsPathsNoEscape
+        ? s.replace(/[?*()[\]]/g, '[$&]')
+        : s.replace(/[?*()[\]\\]/g, '\\$&');
+};
+exports.escape = escape;
+//# sourceMappingURL=escape.js.map
+
+/***/ }),
+
+/***/ 6507:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -32476,9 +35294,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.Minimatch = exports.match = exports.makeRe = exports.braceExpand = exports.defaults = exports.filter = exports.GLOBSTAR = exports.sep = exports.minimatch = void 0;
+exports.unescape = exports.escape = exports.AST = exports.Minimatch = exports.match = exports.makeRe = exports.braceExpand = exports.defaults = exports.filter = exports.GLOBSTAR = exports.sep = exports.minimatch = void 0;
+const brace_expansion_1 = __importDefault(__nccwpck_require__(4691));
+const assert_valid_pattern_js_1 = __nccwpck_require__(7305);
+const ast_js_1 = __nccwpck_require__(1803);
+const escape_js_1 = __nccwpck_require__(800);
+const unescape_js_1 = __nccwpck_require__(851);
 const minimatch = (p, pattern, options = {}) => {
-    assertValidPattern(pattern);
+    (0, assert_valid_pattern_js_1.assertValidPattern)(pattern);
     // shortcut: comments match nothing.
     if (!options.nocomment && pattern.charAt(0) === '#') {
         return false;
@@ -32486,7 +35309,6 @@ const minimatch = (p, pattern, options = {}) => {
     return new Minimatch(pattern, options).match(p);
 };
 exports.minimatch = minimatch;
-exports["default"] = exports.minimatch;
 // Optimized checking for the most common glob patterns.
 const starDotExtRE = /^\*+([^+@!?\*\[\(]*)$/;
 const starDotExtTest = (ext) => (f) => !f.startsWith('.') && f.endsWith(ext);
@@ -32539,27 +35361,21 @@ const qmarksTestNoExtDot = ([$0]) => {
     return (f) => f.length === len && f !== '.' && f !== '..';
 };
 /* c8 ignore start */
-const platform = typeof process === 'object' && process
+const defaultPlatform = (typeof process === 'object' && process
     ? (typeof process.env === 'object' &&
         process.env &&
         process.env.__MINIMATCH_TESTING_PLATFORM__) ||
         process.platform
-    : 'posix';
-const isWindows = platform === 'win32';
-const path = isWindows ? { sep: '\\' } : { sep: '/' };
+    : 'posix');
+const path = {
+    win32: { sep: '\\' },
+    posix: { sep: '/' },
+};
 /* c8 ignore stop */
-exports.sep = path.sep;
+exports.sep = defaultPlatform === 'win32' ? path.win32.sep : path.posix.sep;
 exports.minimatch.sep = exports.sep;
 exports.GLOBSTAR = Symbol('globstar **');
 exports.minimatch.GLOBSTAR = exports.GLOBSTAR;
-const brace_expansion_1 = __importDefault(__nccwpck_require__(3717));
-const plTypes = {
-    '!': { open: '(?:(?!(?:', close: '))[^/]*?)' },
-    '?': { open: '(?:', close: ')?' },
-    '+': { open: '(?:', close: ')+' },
-    '*': { open: '(?:', close: ')*' },
-    '@': { open: '(?:', close: ')' },
-};
 // any single thing other than /
 // don't need to escape / when using new RegExp()
 const qmark = '[^/]';
@@ -32572,15 +35388,6 @@ const twoStarDot = '(?:(?!(?:\\/|^)(?:\\.{1,2})($|\\/)).)*?';
 // not a ^ or / followed by a dot,
 // followed by anything, any number of times.
 const twoStarNoDot = '(?:(?!(?:\\/|^)\\.).)*?';
-// "abc" -> { a:true, b:true, c:true }
-const charSet = (s) => s.split('').reduce((set, c) => {
-    set[c] = true;
-    return set;
-}, {});
-// characters that need to be escaped in RegExp.
-const reSpecials = charSet('().*{}+?[]^$\\!');
-// characters that indicate we have to add the pattern start
-const addPatternStartSet = charSet('[.(');
 const filter = (pattern, options = {}) => (p) => (0, exports.minimatch)(p, pattern, options);
 exports.filter = filter;
 exports.minimatch.filter = exports.filter;
@@ -32600,6 +35407,18 @@ const defaults = (def) => {
                 return orig.defaults(ext(def, options)).Minimatch;
             }
         },
+        AST: class AST extends orig.AST {
+            /* c8 ignore start */
+            constructor(type, parent, options = {}) {
+                super(type, parent, ext(def, options));
+            }
+            /* c8 ignore stop */
+            static fromGlob(pattern, options = {}) {
+                return orig.AST.fromGlob(pattern, ext(def, options));
+            }
+        },
+        unescape: (s, options = {}) => orig.unescape(s, ext(def, options)),
+        escape: (s, options = {}) => orig.escape(s, ext(def, options)),
         filter: (pattern, options = {}) => orig.filter(pattern, ext(def, options)),
         defaults: (options) => orig.defaults(ext(def, options)),
         makeRe: (pattern, options = {}) => orig.makeRe(pattern, ext(def, options)),
@@ -32622,7 +35441,7 @@ exports.minimatch.defaults = exports.defaults;
 // a{2..}b -> a{2..}b
 // a{b}c -> a{b}c
 const braceExpand = (pattern, options = {}) => {
-    assertValidPattern(pattern);
+    (0, assert_valid_pattern_js_1.assertValidPattern)(pattern);
     // Thanks to Yeting Li <https://github.com/yetingli> for
     // improving this regexp to avoid a ReDOS vulnerability.
     if (options.nobrace || !/\{(?:(?!\{).)*\}/.test(pattern)) {
@@ -32633,15 +35452,6 @@ const braceExpand = (pattern, options = {}) => {
 };
 exports.braceExpand = braceExpand;
 exports.minimatch.braceExpand = exports.braceExpand;
-const MAX_PATTERN_LENGTH = 1024 * 64;
-const assertValidPattern = (pattern) => {
-    if (typeof pattern !== 'string') {
-        throw new TypeError('invalid pattern');
-    }
-    if (pattern.length > MAX_PATTERN_LENGTH) {
-        throw new TypeError('pattern is too long');
-    }
-};
 // parse a component of the expanded set.
 // At this point, no pattern may contain "/" in it
 // so we're going to return a 2d array, where each entry is the full
@@ -32653,7 +35463,6 @@ const assertValidPattern = (pattern) => {
 // when it is the *only* thing in a path portion.  Otherwise, any series
 // of * is equivalent to a single *.  Globstar behavior is enabled by
 // default, and can be disabled by setting options.noglobstar.
-const SUBPARSE = Symbol('subparse');
 const makeRe = (pattern, options = {}) => new Minimatch(pattern, options).makeRe();
 exports.makeRe = makeRe;
 exports.minimatch.makeRe = exports.makeRe;
@@ -32668,10 +35477,8 @@ const match = (list, pattern, options = {}) => {
 exports.match = match;
 exports.minimatch.match = exports.match;
 // replace stuff like \* with *
-const globUnescape = (s) => s.replace(/\\(.)/g, '$1');
-const charUnescape = (s) => s.replace(/\\([^-\]])/g, '$1');
+const globMagic = /[?*]|[+@!]\(.*?\)|\[|\]/;
 const regExpEscape = (s) => s.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
-const braExpEscape = (s) => s.replace(/[[\]\\]/g, '\\$&');
 class Minimatch {
     options;
     set;
@@ -32685,12 +35492,18 @@ class Minimatch {
     partial;
     globSet;
     globParts;
+    nocase;
+    isWindows;
+    platform;
+    windowsNoMagicRoot;
     regexp;
     constructor(pattern, options = {}) {
-        assertValidPattern(pattern);
+        (0, assert_valid_pattern_js_1.assertValidPattern)(pattern);
         options = options || {};
         this.options = options;
         this.pattern = pattern;
+        this.platform = options.platform || defaultPlatform;
+        this.isWindows = this.platform === 'win32';
         this.windowsPathsNoEscape =
             !!options.windowsPathsNoEscape || options.allowWindowsEscape === false;
         if (this.windowsPathsNoEscape) {
@@ -32703,11 +35516,28 @@ class Minimatch {
         this.comment = false;
         this.empty = false;
         this.partial = !!options.partial;
+        this.nocase = !!this.options.nocase;
+        this.windowsNoMagicRoot =
+            options.windowsNoMagicRoot !== undefined
+                ? options.windowsNoMagicRoot
+                : !!(this.isWindows && this.nocase);
         this.globSet = [];
         this.globParts = [];
         this.set = [];
         // make the set of regexps etc.
         this.make();
+    }
+    hasMagic() {
+        if (this.options.magicalBraces && this.set.length > 1) {
+            return true;
+        }
+        for (const pattern of this.set) {
+            for (const part of pattern) {
+                if (typeof part !== 'string')
+                    return true;
+            }
+        }
+        return false;
     }
     debug(..._) { }
     make() {
@@ -32743,12 +35573,28 @@ class Minimatch {
         this.globParts = this.preprocess(rawGlobParts);
         this.debug(this.pattern, this.globParts);
         // glob --> regexps
-        let set = this.globParts.map((s, _, __) => s.map(ss => this.parse(ss)));
+        let set = this.globParts.map((s, _, __) => {
+            if (this.isWindows && this.windowsNoMagicRoot) {
+                // check if it's a drive or unc path.
+                const isUNC = s[0] === '' &&
+                    s[1] === '' &&
+                    (s[2] === '?' || !globMagic.test(s[2])) &&
+                    !globMagic.test(s[3]);
+                const isDrive = /^[a-z]:/i.test(s[0]);
+                if (isUNC) {
+                    return [...s.slice(0, 4), ...s.slice(4).map(ss => this.parse(ss))];
+                }
+                else if (isDrive) {
+                    return [s[0], ...s.slice(1).map(ss => this.parse(ss))];
+                }
+            }
+            return s.map(ss => this.parse(ss));
+        });
         this.debug(this.pattern, set);
         // filter out everything that didn't compile properly.
         this.set = set.filter(s => s.indexOf(false) === -1);
         // do not treat the ? in UNC paths as magic
-        if (isWindows) {
+        if (this.isWindows) {
             for (let i = 0; i < this.set.length; i++) {
                 const p = this.set[i];
                 if (p[0] === '' &&
@@ -32778,9 +35624,97 @@ class Minimatch {
                 }
             }
         }
-        globParts = this.firstPhasePreProcess(globParts);
-        globParts = this.secondPhasePreProcess(globParts);
+        const { optimizationLevel = 1 } = this.options;
+        if (optimizationLevel >= 2) {
+            // aggressive optimization for the purpose of fs walking
+            globParts = this.firstPhasePreProcess(globParts);
+            globParts = this.secondPhasePreProcess(globParts);
+        }
+        else if (optimizationLevel >= 1) {
+            // just basic optimizations to remove some .. parts
+            globParts = this.levelOneOptimize(globParts);
+        }
+        else {
+            // just collapse multiple ** portions into one
+            globParts = this.adjascentGlobstarOptimize(globParts);
+        }
         return globParts;
+    }
+    // just get rid of adjascent ** portions
+    adjascentGlobstarOptimize(globParts) {
+        return globParts.map(parts => {
+            let gs = -1;
+            while (-1 !== (gs = parts.indexOf('**', gs + 1))) {
+                let i = gs;
+                while (parts[i + 1] === '**') {
+                    i++;
+                }
+                if (i !== gs) {
+                    parts.splice(gs, i - gs);
+                }
+            }
+            return parts;
+        });
+    }
+    // get rid of adjascent ** and resolve .. portions
+    levelOneOptimize(globParts) {
+        return globParts.map(parts => {
+            parts = parts.reduce((set, part) => {
+                const prev = set[set.length - 1];
+                if (part === '**' && prev === '**') {
+                    return set;
+                }
+                if (part === '..') {
+                    if (prev && prev !== '..' && prev !== '.' && prev !== '**') {
+                        set.pop();
+                        return set;
+                    }
+                }
+                set.push(part);
+                return set;
+            }, []);
+            return parts.length === 0 ? [''] : parts;
+        });
+    }
+    levelTwoFileOptimize(parts) {
+        if (!Array.isArray(parts)) {
+            parts = this.slashSplit(parts);
+        }
+        let didSomething = false;
+        do {
+            didSomething = false;
+            // <pre>/<e>/<rest> -> <pre>/<rest>
+            if (!this.preserveMultipleSlashes) {
+                for (let i = 1; i < parts.length - 1; i++) {
+                    const p = parts[i];
+                    // don't squeeze out UNC patterns
+                    if (i === 1 && p === '' && parts[0] === '')
+                        continue;
+                    if (p === '.' || p === '') {
+                        didSomething = true;
+                        parts.splice(i, 1);
+                        i--;
+                    }
+                }
+                if (parts[0] === '.' &&
+                    parts.length === 2 &&
+                    (parts[1] === '.' || parts[1] === '')) {
+                    didSomething = true;
+                    parts.pop();
+                }
+            }
+            // <pre>/<p>/../<rest> -> <pre>/<rest>
+            let dd = 0;
+            while (-1 !== (dd = parts.indexOf('..', dd + 1))) {
+                const p = parts[dd - 1];
+                if (p && p !== '.' && p !== '..' && p !== '**') {
+                    didSomething = true;
+                    parts.splice(dd - 1, 2);
+                    dd -= 2;
+                }
+            }
+        } while (didSomething);
+        return parts.length === 0 ? [''] : parts;
     }
     // First phase: single-pattern processing
     // <pre> is 1 or more portions
@@ -32793,7 +35727,7 @@ class Minimatch {
     // and ** cannot be reduced out by a .. pattern part like a regexp
     // or most strings (other than .., ., and '') can be.
     //
-    // <pre>/**/../<p>/<rest> -> {<pre>/../<p>/<rest>,<pre>/**/<p>/<rest>}
+    // <pre>/**/../<p>/<p>/<rest> -> {<pre>/../<p>/<p>/<rest>,<pre>/**/<p>/<p>/<rest>}
     // <pre>/<e>/<rest> -> <pre>/<rest>
     // <pre>/<p>/../<rest> -> <pre>/<rest>
     // **/**/<rest> -> **/<rest>
@@ -32804,7 +35738,7 @@ class Minimatch {
         let didSomething = false;
         do {
             didSomething = false;
-            // <pre>/**/../<p>/<rest> -> {<pre>/../<p>/<rest>,<pre>/**/<p>/<rest>}
+            // <pre>/**/../<p>/<p>/<rest> -> {<pre>/../<p>/<p>/<rest>,<pre>/**/<p>/<p>/<rest>}
             for (let parts of globParts) {
                 let gs = -1;
                 while (-1 !== (gs = parts.indexOf('**', gs + 1))) {
@@ -32820,10 +35754,17 @@ class Minimatch {
                     }
                     let next = parts[gs + 1];
                     const p = parts[gs + 2];
+                    const p2 = parts[gs + 3];
                     if (next !== '..')
                         continue;
-                    if (!p || p === '.' || p === '..')
+                    if (!p ||
+                        p === '.' ||
+                        p === '..' ||
+                        !p2 ||
+                        p2 === '.' ||
+                        p2 === '..') {
                         continue;
+                    }
                     didSomething = true;
                     // edit parts in place, and push the new one
                     parts.splice(gs, 1);
@@ -32845,9 +35786,11 @@ class Minimatch {
                             i--;
                         }
                     }
-                    if (parts[0] === '.') {
+                    if (parts[0] === '.' &&
+                        parts.length === 2 &&
+                        (parts[1] === '.' || parts[1] === '')) {
                         didSomething = true;
-                        parts.shift();
+                        parts.pop();
                     }
                 }
                 // <pre>/<p>/../<rest> -> <pre>/<rest>
@@ -32856,7 +35799,9 @@ class Minimatch {
                     const p = parts[dd - 1];
                     if (p && p !== '.' && p !== '..' && p !== '**') {
                         didSomething = true;
-                        parts.splice(dd - 1, 2);
+                        const needDot = dd === 1 && parts[dd + 1] === '**';
+                        const splin = needDot ? ['.'] : [];
+                        parts.splice(dd - 1, 2, ...splin);
                         if (parts.length === 0)
                             parts.push('');
                         dd -= 2;
@@ -32877,10 +35822,11 @@ class Minimatch {
         for (let i = 0; i < globParts.length - 1; i++) {
             for (let j = i + 1; j < globParts.length; j++) {
                 const matched = this.partsMatch(globParts[i], globParts[j], !this.preserveMultipleSlashes);
-                if (!matched)
-                    continue;
-                globParts[i] = matched;
-                globParts[j] = [];
+                if (matched) {
+                    globParts[i] = [];
+                    globParts[j] = matched;
+                    break;
+                }
             }
         }
         return globParts.filter(gs => gs.length);
@@ -32906,7 +35852,7 @@ class Minimatch {
             }
             else if (a[ai] === '*' &&
                 b[bi] &&
-                !b[bi].startsWith('.') &&
+                (this.options.dot || !b[bi].startsWith('.')) &&
                 b[bi] !== '**') {
                 if (which === 'b')
                     return false;
@@ -32955,41 +35901,43 @@ class Minimatch {
     // the parts match.
     matchOne(file, pattern, partial = false) {
         const options = this.options;
-        // a UNC pattern like //?/c:/* can match a path like c:/x
-        // and vice versa
-        if (isWindows) {
-            const fileUNC = file[0] === '' &&
+        // UNC paths like //?/X:/... can match X:/... and vice versa
+        // Drive letters in absolute drive or unc paths are always compared
+        // case-insensitively.
+        if (this.isWindows) {
+            const fileDrive = typeof file[0] === 'string' && /^[a-z]:$/i.test(file[0]);
+            const fileUNC = !fileDrive &&
+                file[0] === '' &&
                 file[1] === '' &&
                 file[2] === '?' &&
-                typeof file[3] === 'string' &&
                 /^[a-z]:$/i.test(file[3]);
-            const patternUNC = pattern[0] === '' &&
+            const patternDrive = typeof pattern[0] === 'string' && /^[a-z]:$/i.test(pattern[0]);
+            const patternUNC = !patternDrive &&
+                pattern[0] === '' &&
                 pattern[1] === '' &&
                 pattern[2] === '?' &&
                 typeof pattern[3] === 'string' &&
                 /^[a-z]:$/i.test(pattern[3]);
-            if (fileUNC && patternUNC) {
-                const fd = file[3];
-                const pd = pattern[3];
+            const fdi = fileUNC ? 3 : fileDrive ? 0 : undefined;
+            const pdi = patternUNC ? 3 : patternDrive ? 0 : undefined;
+            if (typeof fdi === 'number' && typeof pdi === 'number') {
+                const [fd, pd] = [file[fdi], pattern[pdi]];
                 if (fd.toLowerCase() === pd.toLowerCase()) {
-                    file[3] = pd;
+                    pattern[pdi] = fd;
+                    if (pdi > fdi) {
+                        pattern = pattern.slice(pdi);
+                    }
+                    else if (fdi > pdi) {
+                        file = file.slice(fdi);
+                    }
                 }
             }
-            else if (patternUNC && typeof file[0] === 'string') {
-                const pd = pattern[3];
-                const fd = file[0];
-                if (pd.toLowerCase() === fd.toLowerCase()) {
-                    pattern[3] = fd;
-                    pattern = pattern.slice(3);
-                }
-            }
-            else if (fileUNC && typeof pattern[0] === 'string') {
-                const fd = file[3];
-                if (fd.toLowerCase() === pattern[0].toLowerCase()) {
-                    pattern[0] = fd;
-                    file = file.slice(3);
-                }
-            }
+        }
+        // resolve and reduce . and .. portions in the file as well.
+        // dont' need to do the second phase, because it's only one string[]
+        const { optimizationLevel = 1 } = this.options;
+        if (optimizationLevel >= 2) {
+            file = this.levelTwoFileOptimize(file);
         }
         this.debug('matchOne', this, { file, pattern });
         this.debug('matchOne', file.length, pattern.length);
@@ -33138,8 +36086,8 @@ class Minimatch {
     braceExpand() {
         return (0, exports.braceExpand)(this.pattern, this.options);
     }
-    parse(pattern, isSub) {
-        assertValidPattern(pattern);
+    parse(pattern) {
+        (0, assert_valid_pattern_js_1.assertValidPattern)(pattern);
         const options = this.options;
         // shortcuts
         if (pattern === '**')
@@ -33150,387 +36098,39 @@ class Minimatch {
         // *, *.*, and *.<ext>  Add a fast check method for those.
         let m;
         let fastTest = null;
-        if (isSub !== SUBPARSE) {
-            if ((m = pattern.match(starRE))) {
-                fastTest = options.dot ? starTestDot : starTest;
-            }
-            else if ((m = pattern.match(starDotExtRE))) {
-                fastTest = (options.nocase
-                    ? options.dot
-                        ? starDotExtTestNocaseDot
-                        : starDotExtTestNocase
-                    : options.dot
-                        ? starDotExtTestDot
-                        : starDotExtTest)(m[1]);
-            }
-            else if ((m = pattern.match(qmarksRE))) {
-                fastTest = (options.nocase
-                    ? options.dot
-                        ? qmarksTestNocaseDot
-                        : qmarksTestNocase
-                    : options.dot
-                        ? qmarksTestDot
-                        : qmarksTest)(m);
-            }
-            else if ((m = pattern.match(starDotStarRE))) {
-                fastTest = options.dot ? starDotStarTestDot : starDotStarTest;
-            }
-            else if ((m = pattern.match(dotStarRE))) {
-                fastTest = dotStarTest;
-            }
+        if ((m = pattern.match(starRE))) {
+            fastTest = options.dot ? starTestDot : starTest;
         }
-        let re = '';
-        let hasMagic = false;
-        let escaping = false;
-        // ? => one single character
-        const patternListStack = [];
-        const negativeLists = [];
-        let stateChar = false;
-        let inClass = false;
-        let reClassStart = -1;
-        let classStart = -1;
-        let cs;
-        let pl;
-        let sp;
-        // . and .. never match anything that doesn't start with .,
-        // even when options.dot is set.  However, if the pattern
-        // starts with ., then traversal patterns can match.
-        let dotTravAllowed = pattern.charAt(0) === '.';
-        let dotFileAllowed = options.dot || dotTravAllowed;
-        const patternStart = () => dotTravAllowed
-            ? ''
-            : dotFileAllowed
-                ? '(?!(?:^|\\/)\\.{1,2}(?:$|\\/))'
-                : '(?!\\.)';
-        const subPatternStart = (p) => p.charAt(0) === '.'
-            ? ''
-            : options.dot
-                ? '(?!(?:^|\\/)\\.{1,2}(?:$|\\/))'
-                : '(?!\\.)';
-        const clearStateChar = () => {
-            if (stateChar) {
-                // we had some state-tracking character
-                // that wasn't consumed by this pass.
-                switch (stateChar) {
-                    case '*':
-                        re += star;
-                        hasMagic = true;
-                        break;
-                    case '?':
-                        re += qmark;
-                        hasMagic = true;
-                        break;
-                    default:
-                        re += '\\' + stateChar;
-                        break;
-                }
-                this.debug('clearStateChar %j %j', stateChar, re);
-                stateChar = false;
-            }
-        };
-        for (let i = 0, c; i < pattern.length && (c = pattern.charAt(i)); i++) {
-            this.debug('%s\t%s %s %j', pattern, i, re, c);
-            // skip over any that are escaped.
-            if (escaping) {
-                // completely not allowed, even escaped.
-                // should be impossible.
-                /* c8 ignore start */
-                if (c === '/') {
-                    return false;
-                }
-                /* c8 ignore stop */
-                if (reSpecials[c]) {
-                    re += '\\';
-                }
-                re += c;
-                escaping = false;
-                continue;
-            }
-            switch (c) {
-                // Should already be path-split by now.
-                /* c8 ignore start */
-                case '/': {
-                    return false;
-                }
-                /* c8 ignore stop */
-                case '\\':
-                    if (inClass && pattern.charAt(i + 1) === '-') {
-                        re += c;
-                        continue;
-                    }
-                    clearStateChar();
-                    escaping = true;
-                    continue;
-                // the various stateChar values
-                // for the "extglob" stuff.
-                case '?':
-                case '*':
-                case '+':
-                case '@':
-                case '!':
-                    this.debug('%s\t%s %s %j <-- stateChar', pattern, i, re, c);
-                    // all of those are literals inside a class, except that
-                    // the glob [!a] means [^a] in regexp
-                    if (inClass) {
-                        this.debug('  in class');
-                        if (c === '!' && i === classStart + 1)
-                            c = '^';
-                        re += c;
-                        continue;
-                    }
-                    // if we already have a stateChar, then it means
-                    // that there was something like ** or +? in there.
-                    // Handle the stateChar, then proceed with this one.
-                    this.debug('call clearStateChar %j', stateChar);
-                    clearStateChar();
-                    stateChar = c;
-                    // if extglob is disabled, then +(asdf|foo) isn't a thing.
-                    // just clear the statechar *now*, rather than even diving into
-                    // the patternList stuff.
-                    if (options.noext)
-                        clearStateChar();
-                    continue;
-                case '(': {
-                    if (inClass) {
-                        re += '(';
-                        continue;
-                    }
-                    if (!stateChar) {
-                        re += '\\(';
-                        continue;
-                    }
-                    const plEntry = {
-                        type: stateChar,
-                        start: i - 1,
-                        reStart: re.length,
-                        open: plTypes[stateChar].open,
-                        close: plTypes[stateChar].close,
-                    };
-                    this.debug(this.pattern, '\t', plEntry);
-                    patternListStack.push(plEntry);
-                    // negation is (?:(?!(?:js)(?:<rest>))[^/]*)
-                    re += plEntry.open;
-                    // next entry starts with a dot maybe?
-                    if (plEntry.start === 0 && plEntry.type !== '!') {
-                        dotTravAllowed = true;
-                        re += subPatternStart(pattern.slice(i + 1));
-                    }
-                    this.debug('plType %j %j', stateChar, re);
-                    stateChar = false;
-                    continue;
-                }
-                case ')': {
-                    const plEntry = patternListStack[patternListStack.length - 1];
-                    if (inClass || !plEntry) {
-                        re += '\\)';
-                        continue;
-                    }
-                    patternListStack.pop();
-                    // closing an extglob
-                    clearStateChar();
-                    hasMagic = true;
-                    pl = plEntry;
-                    // negation is (?:(?!js)[^/]*)
-                    // The others are (?:<pattern>)<type>
-                    re += pl.close;
-                    if (pl.type === '!') {
-                        negativeLists.push(Object.assign(pl, { reEnd: re.length }));
-                    }
-                    continue;
-                }
-                case '|': {
-                    const plEntry = patternListStack[patternListStack.length - 1];
-                    if (inClass || !plEntry) {
-                        re += '\\|';
-                        continue;
-                    }
-                    clearStateChar();
-                    re += '|';
-                    // next subpattern can start with a dot?
-                    if (plEntry.start === 0 && plEntry.type !== '!') {
-                        dotTravAllowed = true;
-                        re += subPatternStart(pattern.slice(i + 1));
-                    }
-                    continue;
-                }
-                // these are mostly the same in regexp and glob
-                case '[':
-                    // swallow any state-tracking char before the [
-                    clearStateChar();
-                    if (inClass) {
-                        re += '\\' + c;
-                        continue;
-                    }
-                    inClass = true;
-                    classStart = i;
-                    reClassStart = re.length;
-                    re += c;
-                    continue;
-                case ']':
-                    //  a right bracket shall lose its special
-                    //  meaning and represent itself in
-                    //  a bracket expression if it occurs
-                    //  first in the list.  -- POSIX.2 2.8.3.2
-                    if (i === classStart + 1 || !inClass) {
-                        re += '\\' + c;
-                        continue;
-                    }
-                    // split where the last [ was, make sure we don't have
-                    // an invalid re. if so, re-walk the contents of the
-                    // would-be class to re-translate any characters that
-                    // were passed through as-is
-                    // TODO: It would probably be faster to determine this
-                    // without a try/catch and a new RegExp, but it's tricky
-                    // to do safely.  For now, this is safe and works.
-                    cs = pattern.substring(classStart + 1, i);
-                    try {
-                        RegExp('[' + braExpEscape(charUnescape(cs)) + ']');
-                        // looks good, finish up the class.
-                        re += c;
-                    }
-                    catch (er) {
-                        // out of order ranges in JS are errors, but in glob syntax,
-                        // they're just a range that matches nothing.
-                        re = re.substring(0, reClassStart) + '(?:$.)'; // match nothing ever
-                    }
-                    hasMagic = true;
-                    inClass = false;
-                    continue;
-                default:
-                    // swallow any state char that wasn't consumed
-                    clearStateChar();
-                    if (reSpecials[c] && !(c === '^' && inClass)) {
-                        re += '\\';
-                    }
-                    re += c;
-                    break;
-            } // switch
-        } // for
-        // handle the case where we left a class open.
-        // "[abc" is valid, equivalent to "\[abc"
-        if (inClass) {
-            // split where the last [ was, and escape it
-            // this is a huge pita.  We now have to re-walk
-            // the contents of the would-be class to re-translate
-            // any characters that were passed through as-is
-            cs = pattern.slice(classStart + 1);
-            sp = this.parse(cs, SUBPARSE);
-            re = re.substring(0, reClassStart) + '\\[' + sp[0];
-            hasMagic = hasMagic || sp[1];
+        else if ((m = pattern.match(starDotExtRE))) {
+            fastTest = (options.nocase
+                ? options.dot
+                    ? starDotExtTestNocaseDot
+                    : starDotExtTestNocase
+                : options.dot
+                    ? starDotExtTestDot
+                    : starDotExtTest)(m[1]);
         }
-        // handle the case where we had a +( thing at the *end*
-        // of the pattern.
-        // each pattern list stack adds 3 chars, and we need to go through
-        // and escape any | chars that were passed through as-is for the regexp.
-        // Go through and escape them, taking care not to double-escape any
-        // | chars that were already escaped.
-        for (pl = patternListStack.pop(); pl; pl = patternListStack.pop()) {
-            let tail;
-            tail = re.slice(pl.reStart + pl.open.length);
-            this.debug(this.pattern, 'setting tail', re, pl);
-            // maybe some even number of \, then maybe 1 \, followed by a |
-            tail = tail.replace(/((?:\\{2}){0,64})(\\?)\|/g, (_, $1, $2) => {
-                if (!$2) {
-                    // the | isn't already escaped, so escape it.
-                    $2 = '\\';
-                    // should already be done
-                    /* c8 ignore start */
-                }
-                /* c8 ignore stop */
-                // need to escape all those slashes *again*, without escaping the
-                // one that we need for escaping the | character.  As it works out,
-                // escaping an even number of slashes can be done by simply repeating
-                // it exactly after itself.  That's why this trick works.
-                //
-                // I am sorry that you have to see this.
-                return $1 + $1 + $2 + '|';
-            });
-            this.debug('tail=%j\n   %s', tail, tail, pl, re);
-            const t = pl.type === '*' ? star : pl.type === '?' ? qmark : '\\' + pl.type;
-            hasMagic = true;
-            re = re.slice(0, pl.reStart) + t + '\\(' + tail;
+        else if ((m = pattern.match(qmarksRE))) {
+            fastTest = (options.nocase
+                ? options.dot
+                    ? qmarksTestNocaseDot
+                    : qmarksTestNocase
+                : options.dot
+                    ? qmarksTestDot
+                    : qmarksTest)(m);
         }
-        // handle trailing things that only matter at the very end.
-        clearStateChar();
-        if (escaping) {
-            // trailing \\
-            re += '\\\\';
+        else if ((m = pattern.match(starDotStarRE))) {
+            fastTest = options.dot ? starDotStarTestDot : starDotStarTest;
         }
-        // only need to apply the nodot start if the re starts with
-        // something that could conceivably capture a dot
-        const addPatternStart = addPatternStartSet[re.charAt(0)];
-        // Hack to work around lack of negative lookbehind in JS
-        // A pattern like: *.!(x).!(y|z) needs to ensure that a name
-        // like 'a.xyz.yz' doesn't match.  So, the first negative
-        // lookahead, has to look ALL the way ahead, to the end of
-        // the pattern.
-        for (let n = negativeLists.length - 1; n > -1; n--) {
-            const nl = negativeLists[n];
-            const nlBefore = re.slice(0, nl.reStart);
-            const nlFirst = re.slice(nl.reStart, nl.reEnd - 8);
-            let nlAfter = re.slice(nl.reEnd);
-            const nlLast = re.slice(nl.reEnd - 8, nl.reEnd) + nlAfter;
-            // Handle nested stuff like *(*.js|!(*.json)), where open parens
-            // mean that we should *not* include the ) in the bit that is considered
-            // "after" the negated section.
-            const closeParensBefore = nlBefore.split(')').length;
-            const openParensBefore = nlBefore.split('(').length - closeParensBefore;
-            let cleanAfter = nlAfter;
-            for (let i = 0; i < openParensBefore; i++) {
-                cleanAfter = cleanAfter.replace(/\)[+*?]?/, '');
-            }
-            nlAfter = cleanAfter;
-            const dollar = nlAfter === '' && isSub !== SUBPARSE ? '(?:$|\\/)' : '';
-            re = nlBefore + nlFirst + nlAfter + dollar + nlLast;
+        else if ((m = pattern.match(dotStarRE))) {
+            fastTest = dotStarTest;
         }
-        // if the re is not "" at this point, then we need to make sure
-        // it doesn't match against an empty path part.
-        // Otherwise a/* will match a/, which it should not.
-        if (re !== '' && hasMagic) {
-            re = '(?=.)' + re;
+        const re = ast_js_1.AST.fromGlob(pattern, this.options).toMMPattern();
+        if (fastTest && typeof re === 'object') {
+            // Avoids overriding in frozen environments
+            Reflect.defineProperty(re, 'test', { value: fastTest });
         }
-        if (addPatternStart) {
-            re = patternStart() + re;
-        }
-        // parsing just a piece of a larger pattern.
-        if (isSub === SUBPARSE) {
-            return [re, hasMagic];
-        }
-        // if it's nocase, and the lcase/uppercase don't match, it's magic
-        if (options.nocase && !hasMagic && !options.nocaseMagicOnly) {
-            hasMagic = pattern.toUpperCase() !== pattern.toLowerCase();
-        }
-        // skip the regexp for non-magical patterns
-        // unescape anything in it, though, so that it'll be
-        // an exact match against a file etc.
-        if (!hasMagic) {
-            return globUnescape(pattern);
-        }
-        const flags = options.nocase ? 'i' : '';
-        try {
-            const ext = fastTest
-                ? {
-                    _glob: pattern,
-                    _src: re,
-                    test: fastTest,
-                }
-                : {
-                    _glob: pattern,
-                    _src: re,
-                };
-            return Object.assign(new RegExp('^' + re + '$', flags), ext);
-            /* c8 ignore start */
-        }
-        catch (er) {
-            // should be impossible
-            // If it was an invalid regular expression, then it can't match
-            // anything.  This trick looks for a character after the end of
-            // the string, which is of course impossible, except in multi-line
-            // mode, but it's not a /m regex.
-            this.debug('invalid regexp', er);
-            return new RegExp('$.');
-        }
-        /* c8 ignore stop */
+        return re;
     }
     makeRe() {
         if (this.regexp || this.regexp === false)
@@ -33552,7 +36152,7 @@ class Minimatch {
             : options.dot
                 ? twoStarDot
                 : twoStarNoDot;
-        const flags = options.nocase ? 'i' : '';
+        const flags = new Set(options.nocase ? ['i'] : []);
         // regexpify non-globstar patterns
         // if ** is only item, then we just do one twoStar
         // if ** is first, and there are more, prepend (\/|twoStar\/)? to next
@@ -33561,11 +36161,17 @@ class Minimatch {
         // then filter out GLOBSTAR symbols
         let re = set
             .map(pattern => {
-            const pp = pattern.map(p => typeof p === 'string'
-                ? regExpEscape(p)
-                : p === exports.GLOBSTAR
-                    ? exports.GLOBSTAR
-                    : p._src);
+            const pp = pattern.map(p => {
+                if (p instanceof RegExp) {
+                    for (const f of p.flags.split(''))
+                        flags.add(f);
+                }
+                return typeof p === 'string'
+                    ? regExpEscape(p)
+                    : p === exports.GLOBSTAR
+                        ? exports.GLOBSTAR
+                        : p._src;
+            });
             pp.forEach((p, i) => {
                 const next = pp[i + 1];
                 const prev = pp[i - 1];
@@ -33591,14 +36197,17 @@ class Minimatch {
             return pp.filter(p => p !== exports.GLOBSTAR).join('/');
         })
             .join('|');
+        // need to wrap in parens if we had more than one thing with |,
+        // otherwise only the first will be anchored to ^ and the last to $
+        const [open, close] = set.length > 1 ? ['(?:', ')'] : ['', ''];
         // must match entire pattern
         // ending in a * or ** will make it less strict.
-        re = '^(?:' + re + ')$';
+        re = '^' + open + re + close + '$';
         // can match anything, as long as it's not this.
         if (this.negate)
-            re = '^(?!' + re + ').*$';
+            re = '^(?!' + re + ').+$';
         try {
-            this.regexp = new RegExp(re, flags);
+            this.regexp = new RegExp(re, [...flags].join(''));
             /* c8 ignore start */
         }
         catch (ex) {
@@ -33616,7 +36225,7 @@ class Minimatch {
         if (this.preserveMultipleSlashes) {
             return p.split('/');
         }
-        else if (isWindows && /^\/\/[^\/]+/.test(p)) {
+        else if (this.isWindows && /^\/\/[^\/]+/.test(p)) {
             // add an extra '' for the one we lose
             return ['', ...p.split(/\/+/)];
         }
@@ -33639,8 +36248,8 @@ class Minimatch {
         }
         const options = this.options;
         // windows: need to use /, not \
-        if (path.sep !== '/') {
-            f = f.split(path.sep).join('/');
+        if (this.isWindows) {
+            f = f.split('\\').join('/');
         }
         // treat the test path as a set of pathparts.
         const ff = this.slashSplit(f);
@@ -33684,16 +36293,58 @@ class Minimatch {
     }
 }
 exports.Minimatch = Minimatch;
+/* c8 ignore start */
+var ast_js_2 = __nccwpck_require__(1803);
+Object.defineProperty(exports, "AST", ({ enumerable: true, get: function () { return ast_js_2.AST; } }));
+var escape_js_2 = __nccwpck_require__(800);
+Object.defineProperty(exports, "escape", ({ enumerable: true, get: function () { return escape_js_2.escape; } }));
+var unescape_js_2 = __nccwpck_require__(851);
+Object.defineProperty(exports, "unescape", ({ enumerable: true, get: function () { return unescape_js_2.unescape; } }));
+/* c8 ignore stop */
+exports.minimatch.AST = ast_js_1.AST;
 exports.minimatch.Minimatch = Minimatch;
+exports.minimatch.escape = escape_js_1.escape;
+exports.minimatch.unescape = unescape_js_1.unescape;
 //# sourceMappingURL=index.js.map
 
 /***/ }),
 
-/***/ 6674:
+/***/ 851:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.unescape = void 0;
+/**
+ * Un-escape a string that has been escaped with {@link escape}.
+ *
+ * If the {@link windowsPathsNoEscape} option is used, then square-brace
+ * escapes are removed, but not backslash escapes.  For example, it will turn
+ * the string `'[*]'` into `*`, but it will not turn `'\\*'` into `'*'`,
+ * becuase `\` is a path separator in `windowsPathsNoEscape` mode.
+ *
+ * When `windowsPathsNoEscape` is not set, then both brace escapes and
+ * backslash escapes are removed.
+ *
+ * Slashes (and backslashes in `windowsPathsNoEscape` mode) cannot be escaped
+ * or unescaped.
+ */
+const unescape = (s, { windowsPathsNoEscape = false, } = {}) => {
+    return windowsPathsNoEscape
+        ? s.replace(/\[([^\/\\])\]/g, '$1')
+        : s.replace(/((?!\\).|^)\[([^\/\\])\]/g, '$1$2').replace(/\\([^\/])/g, '$1');
+};
+exports.unescape = unescape;
+//# sourceMappingURL=unescape.js.map
+
+/***/ }),
+
+/***/ 8342:
 /***/ ((module) => {
 
 "use strict";
-module.exports = {"i8":"1.11.0"};
+module.exports = {"rE":"1.16.0"};
 
 /***/ })
 
@@ -33736,11 +36387,9 @@ module.exports = {"i8":"1.11.0"};
 /******/ 	
 /************************************************************************/
 var __webpack_exports__ = {};
-// This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
-(() => {
-const core = __nccwpck_require__(2186);
-const fs = __nccwpck_require__(7147);
-const { Deployer } = __nccwpck_require__(262);
+const core = __nccwpck_require__(7484);
+const fs = __nccwpck_require__(9896);
+const { Deployer } = __nccwpck_require__(8310);
 
 const config = {
   host: core.getInput('host'), // Required.
@@ -33775,8 +36424,6 @@ new Deployer(config, options)
   .sync()
   .then(() => console.log('sftp upload success!'));
 
-
-})();
 
 module.exports = __webpack_exports__;
 /******/ })()

@@ -2,7 +2,6 @@
 
 this is a github action script for upload files to server via SFTP protocol.
 
-![Snyk Vulnerabilities for GitHub Repo](https://img.shields.io/snyk/vulnerabilities/github/wangyucode/sftp-upload-action)
 ![release](https://flat.badgen.net/github/release/wangyucode/sftp-upload-action)
 [![Depfu](https://badges.depfu.com/badges/4b5cc2f5563a240e7b6c6106ded3e4c0/overview.svg)](https://depfu.com/github/wangyucode/sftp-upload-action?project_id=37917)
 
@@ -15,7 +14,6 @@ this is a github action script for upload files to server via SFTP protocol.
   password: 'password',                 # Optional.
   privateKey: '',                       # Optional, your private key(Raw content or key path).
   passphrase: '',                       # Optional.
-  agent: '',                            # Optional, path to the ssh-agent socket.
   compress: false,                      # Optional, compress for ssh connection. Default to false.
   localDir: 'dist',                     # Required, Absolute or relative to cwd.
   remoteDir: '/path/to/dest'            # Required, Absolute path only.
@@ -31,7 +29,7 @@ this is a github action script for upload files to server via SFTP protocol.
 
 ```yml
 - name: SFTP uploader
-  uses: wangyucode/sftp-upload-action@v2.0.2
+  uses: wangyucode/sftp-upload-action@v2.0.3
   with:
     host: 'wycode.cn'
     password: ${{ secrets.password }} 
@@ -43,7 +41,7 @@ this is a github action script for upload files to server via SFTP protocol.
 
 ```yml
 - name: SFTP uploader
-  uses: wangyucode/sftp-upload-action@v2.0.2
+  uses: wangyucode/sftp-upload-action@v2.0.3
   with:
     host: 'wycode.cn'
     privateKey: ${{ secrets.key }} 
@@ -67,7 +65,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: 📂 SFTP uploader                       # Upload to SFTP 
-        uses: wangyucode/sftp-upload-action@v2.0.2
+        uses: wangyucode/sftp-upload-action@v2.0.3
         with:
           host: ${{ secrets.HOST }}                  # Recommended to put the credentials in github secrets.
           username: ${{ secrets.USER }}
