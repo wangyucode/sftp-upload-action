@@ -2,7 +2,6 @@
 
 this is a github action script for upload files to server via SFTP protocol.
 
-![Snyk Vulnerabilities for GitHub Repo](https://img.shields.io/snyk/vulnerabilities/github/wangyucode/sftp-upload-action)
 ![release](https://flat.badgen.net/github/release/wangyucode/sftp-upload-action)
 [![Depfu](https://badges.depfu.com/badges/4b5cc2f5563a240e7b6c6106ded3e4c0/overview.svg)](https://depfu.com/github/wangyucode/sftp-upload-action?project_id=37917)
 
@@ -15,7 +14,6 @@ this is a github action script for upload files to server via SFTP protocol.
   password: 'password',                 # Optional.
   privateKey: '',                       # Optional, your private key(Raw content or key path).
   passphrase: '',                       # Optional.
-  agent: '',                            # Optional, path to the ssh-agent socket.
   compress: false,                      # Optional, compress for ssh connection. Default to false.
   localDir: 'dist',                     # Required, Absolute or relative to cwd.
   remoteDir: '/path/to/dest'            # Required, Absolute path only.
@@ -31,7 +29,7 @@ this is a github action script for upload files to server via SFTP protocol.
 
 ```yml
 - name: SFTP uploader
-  uses: wangyucode/sftp-upload-action@v2.0.2
+  uses: wangyucode/sftp-upload-action@v2.0.3
   with:
     host: 'wycode.cn'
     password: ${{ secrets.password }} 
@@ -43,7 +41,7 @@ this is a github action script for upload files to server via SFTP protocol.
 
 ```yml
 - name: SFTP uploader
-  uses: wangyucode/sftp-upload-action@v2.0.2
+  uses: wangyucode/sftp-upload-action@v2.0.3
   with:
     host: 'wycode.cn'
     privateKey: ${{ secrets.key }} 
@@ -54,6 +52,7 @@ this is a github action script for upload files to server via SFTP protocol.
 ### Example for a complete github action file
 
 ```yml
+
 name: Upload complete repo (e.g. website) to a SFTP destination
 
 on: [push]
@@ -66,7 +65,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: 📂 SFTP uploader                       # Upload to SFTP 
-        uses: wangyucode/sftp-upload-action@v2.0.2
+        uses: wangyucode/sftp-upload-action@v2.0.3
         with:
           host: ${{ secrets.HOST }}                  # Recommended to put the credentials in github secrets.
           username: ${{ secrets.USER }}
@@ -76,10 +75,14 @@ jobs:
           localDir: '.'                              # Required, Absolute or relative to cwd.
           remoteDir: '/'                             # Required, Absolute path only.
           exclude: '.git*,.DS_Store'                 # Optional. exclude patterns (glob) like .gitignore, use ',' to split, Default to ''.
-´´´
+```
+
 ## Upload newer files
 
 the action will check `modifyTime` and upload the newer files if `forceUpload` is false.
 but you should restore the modified time before uploading.
 here is an action that can change the modified time: https://github.com/marketplace/actions/git-restore-mtime
 
+## Other Options
+
+[Crane](https://github.com/wangyucode/crane) is a simple, fast, and secure tool written in Rust for downloading and deploying your `.tar.gz` archive files without the need for server passwords or keys.
