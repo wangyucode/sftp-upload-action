@@ -7,7 +7,7 @@ name: Test issue 15#
 on:
   workflow_dispatch:
 env:
-  TZ: "Asia/Shanghai"
+  TZ: 'Asia/Shanghai'
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -33,6 +33,6 @@ jobs:
         with:
           host: ${{ secrets.HOST }}
           port: 5190
-          privateKey: "./id_rsa"
-          localDir: "./test"
-          remoteDir: "/root/test/"
+          privateKey: './id_rsa'
+          localDir: './test'
+          remoteDir: '/root/test/'
