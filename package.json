@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "build": "ncc build sftp.js --license licenses.txt",
-    "test": "node test.js"
+    "test": "jest --coverage"
   },
   "repository": {
     "type": "git",
@@ -24,6 +24,7 @@
     "ssh2-sftp-client": "11.0.0"
   },
   "devDependencies": {
-    "@vercel/ncc": "^0.38.2"
+    "@vercel/ncc": "^0.38.2",
+    "jest": "^29.6.2"
   }
 }

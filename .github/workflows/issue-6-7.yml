@@ -17,12 +17,11 @@ jobs:
     runs-on: ubuntu-latest
 
     # Steps represent a sequence of tasks that will be executed as part of the job
-    steps:  
-
-      - uses: actions/checkout@v2
+    steps:
+      - uses: actions/checkout@v3
       - name: Setup Node.js environment
-        uses: actions/setup-node@v2.1.5
-        with: 
+        uses: actions/setup-node@v3
+        with:
           node-version: '16'
 
       - name: npm install
@@ -33,7 +32,7 @@ jobs:
         with:
           host: ${{ secrets.HOST }}
           port: 5190
-          privateKey: ${{ secrets.SERVER_KEY }} 
+          privateKey: ${{ secrets.SERVER_KEY }}
           localDir: './node_modules'
           remoteDir: '/root/test/blablabla'
 
@@ -48,7 +47,6 @@ jobs:
         with:
           host: ${{ secrets.HOST }}
           port: 5190
-          privateKey: ${{ secrets.SERVER_KEY }} 
+          privateKey: ${{ secrets.SERVER_KEY }}
           localDir: '/home/runner/work/blablabla/ok'
           remoteDir: '/root/test/blablabla'
-

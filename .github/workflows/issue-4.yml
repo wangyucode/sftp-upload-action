@@ -17,8 +17,7 @@ jobs:
     runs-on: ubuntu-latest
 
     # Steps represent a sequence of tasks that will be executed as part of the job
-    steps:  
-
+    steps:
       - name: create files
         run: |
           mkdir -p project/node_modules/library1/
@@ -32,12 +31,11 @@ jobs:
         uses: wangyucode/sftp-upload-action@v1.3.3
         with:
           host: ${{ secrets.HOST }}
-          port: 22 # optional, default is 22 
-          privateKey: ${{ secrets.SERVER_KEY }} 
+          port: 22 # optional, default is 22
+          privateKey: ${{ secrets.SERVER_KEY }}
           localDir: 'project'
           remoteDir: '/project/'
           exclude: 'node_modules/,**/*.spec.ts'
           excludeMode: 'ignore'
           dryRun: true # optional
-          
-          
+

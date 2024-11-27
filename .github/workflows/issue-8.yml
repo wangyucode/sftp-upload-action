@@ -17,9 +17,8 @@ jobs:
     runs-on: ubuntu-latest
 
     # Steps represent a sequence of tasks that will be executed as part of the job
-    steps:  
-
-      - uses: actions/checkout@v2
+    steps:
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 2
 
@@ -31,8 +30,7 @@ jobs:
         with:
           host: ${{ secrets.HOST }}
           port: 5190
-          privateKey: ${{ secrets.SERVER_KEY }} 
+          privateKey: ${{ secrets.SERVER_KEY }}
           localDir: './test'
           remoteDir: '/root/test/'
           dryRun: false
-

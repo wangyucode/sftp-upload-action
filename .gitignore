@@ -1,4 +1,4 @@
 id
 node_modules/
-package-lock.json
+coverage/
 test.js
