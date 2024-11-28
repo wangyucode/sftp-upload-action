@@ -29,30 +29,29 @@ this is a github action script for upload files to server via SFTP protocol.
 
 ```yml
 - name: SFTP uploader
-  uses: wangyucode/sftp-upload-action@v2.0.3
+  uses: wangyucode/sftp-upload-action@v2.0.4
   with:
-    host: 'wycode.cn'
-    password: ${{ secrets.password }} 
-    localDir: 'dist'
-    remoteDir: '/data/nginx/www/wycode.cn/'
+    host: "wycode.cn"
+    password: ${{ secrets.password }}
+    localDir: "dist"
+    remoteDir: "/data/nginx/www/wycode.cn/"
 ```
 
 ### Use privateKey
 
 ```yml
 - name: SFTP uploader
-  uses: wangyucode/sftp-upload-action@v2.0.3
+  uses: wangyucode/sftp-upload-action@v2.0.4
   with:
-    host: 'wycode.cn'
-    privateKey: ${{ secrets.key }} 
-    localDir: 'dist'
-    remoteDir: '/data/nginx/www/wycode.cn/'
+    host: "wycode.cn"
+    privateKey: ${{ secrets.key }}
+    localDir: "dist"
+    remoteDir: "/data/nginx/www/wycode.cn/"
 ```
 
 ### Example for a complete github action file
 
 ```yml
-
 name: Upload complete repo (e.g. website) to a SFTP destination
 
 on: [push]
@@ -61,20 +60,20 @@ jobs:
   Upload-to-SFTP:
     runs-on: ubuntu-latest
     steps:
-      - name: 🚚 Get latest code                     # Checkout the latest code
-        uses: actions/checkout@v2
+      - name: 🚚 Get latest code # Checkout the latest code
+        uses: actions/checkout@v3
 
-      - name: 📂 SFTP uploader                       # Upload to SFTP 
-        uses: wangyucode/sftp-upload-action@v2.0.3
+      - name: 📂 SFTP uploader # Upload to SFTP
+        uses: wangyucode/sftp-upload-action@v2.0.4
         with:
-          host: ${{ secrets.HOST }}                  # Recommended to put the credentials in github secrets.
+          host: ${{ secrets.HOST }} # Recommended to put the credentials in github secrets.
           username: ${{ secrets.USER }}
           password: ${{ secrets.PASSWORD }}
-          compress: true                             # Compression
-          forceUpload: true                          # Optional, Force uploading all files, Default to false(upload only newer files).
-          localDir: '.'                              # Required, Absolute or relative to cwd.
-          remoteDir: '/'                             # Required, Absolute path only.
-          exclude: '.git*,.DS_Store'                 # Optional. exclude patterns (glob) like .gitignore, use ',' to split, Default to ''.
+          compress: true # Compression
+          forceUpload: true # Optional, Force uploading all files, Default to false(upload only newer files).
+          localDir: "." # Required, Absolute or relative to cwd.
+          remoteDir: "/" # Required, Absolute path only.
+          exclude: ".git,.DS_Store,**/node_modules" # Optional. exclude patterns (glob) like .gitignore, use ',' to split, Default to ''.
 ```
 
 ## Upload newer files
