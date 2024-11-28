@@ -22,6 +22,9 @@ jobs:
         with:
           fetch-depth: 2
 
+      - name: restore timestamps
+        uses: chetan/git-restore-mtime-action@v2
+
       - name: SFTP uploader v2.0.4
         uses: wangyucode/sftp-upload-action@v2.0.4
         with:
