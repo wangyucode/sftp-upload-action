@@ -22,24 +22,26 @@ jobs:
         with:
           fetch-depth: 2
 
-      - name: SFTP uploader
-        uses: wangyucode/sftp-upload-action@v2.0.3
-        with:
-          host: ${{ secrets.HOST }}
-          port: 22
-          privateKey: ${{ secrets.SERVER_KEY }}
-          localDir: "."
-          remoteDir: "/tmp/test/"
-          dryRun: false
-          exclude: "**/.git,**/node_modules"
-
-      - name: SFTP uploader
+      - name: SFTP uploader v2.0.4
         uses: wangyucode/sftp-upload-action@v2.0.4
         with:
           host: ${{ secrets.HOST }}
           port: 22
+          username: ${{ secrets.USERNAME }}
           privateKey: ${{ secrets.SERVER_KEY }}
           localDir: "."
           remoteDir: "/tmp/test/"
           dryRun: false
-          exclude: ".git,node_modules,not-remove"
+          exclude: ".git,node_modules,not-remove,dist/*,*.json"
+
+      - name: SFTP uploader v2.0.3
+        uses: wangyucode/sftp-upload-action@v2.0.3
+        with:
+          host: ${{ secrets.HOST }}
+          port: 22
+          username: ${{ secrets.USERNAME }}
+          privateKey: ${{ secrets.SERVER_KEY }}
+          localDir: "."
+          remoteDir: "/tmp/test/"
+          dryRun: false
+          exclude: "**/.git,**/node_modules,**/not-remove,**/dist/*,**/*.json"
